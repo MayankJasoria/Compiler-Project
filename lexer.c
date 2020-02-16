@@ -10,10 +10,17 @@
 token * makeNewToken(int id) {
 	token * t = (token *)malloc(sizeof(token));
 	token -> line_num = line_num;
-	token -> id = 31;
+	token -> id = id;
 	strcpy(token -> lex, lexeme);
 	token -> value = -1; 
 	return t;
+}
+
+/* push back the desired number of characters back onto the input stream */
+void retract(int num) {
+	int len = strlen(lexeme);
+	buffer_id -= num;
+	lexeme[len - num] = '\0';
 }
 
 token * getNextToken() {
@@ -104,6 +111,11 @@ token * getNextToken() {
 				state = 42;
 				strcat(lexeme, "*");
 			}
+			else {	
+				error();
+				buffer_id--;
+			}
+			buffer_id++;
 			break;
 		case 2:
 			token * newtok = makeNewToken(31);
@@ -133,6 +145,137 @@ token * getNextToken() {
 			token * newtok = makeNewToken(51);
 			return newtok;
 		case 11:
+			char nxt = streamBuffer[buffer_id];
+			if(nxt == '=') {
+				state = 12;
+				strcat(lexeme, '=');
+			}
+			else {
+				error();
+				buffer_id--;
+			}
+			buffer_id++;
+			break;
+		case 12:
+			token * newtok = makeNewToken(39);
+			return newtok;
+		case 13:
+			char nxt = streamBuffer[buffer_id];
+			if(nxt == '=') {
+				state = 14;
+				strcat(lexeme, "=");
+			}
+			else {
+				error();
+				buffer_id--;
+			}
+			buffer_id++;
+			break;
+		case 14:
+			token * newtok = makeNewToken(40);
+			return newtok;
+		case 15:
+			char nxt = streamBuffer[buffer_id];
+			if(nxt == '=') {
+				state = 16;
+				strcat(lexeme, "=");
+			}
+			else {
+				state = 17;
+				char tmp[2];
+				tmp[0] = nxt;
+				tmp[1] = '\0';
+				strcat(lexeme, tmp);
+			}
+			buffer_id++;
+			break;
+		case 16:
+			token * newtok = makeNewToken(47);
+			return newtok;
+		case 17:
+			retract(1);
+			token * newtok = makeNewToken(43);
+			return newtok;
+		case 18:
+			char nxt = streamBuffer[buffer_id];
+			if(nxt == '<') {
+				state = 19;
+				strcat(lexeme, "<");
+			}
+			else if(nxt == '=') {
+				state = 20;
+				strcat(lexeme, "=");
+			}
+			else {
+				state = 21;
+				char tmp[2];
+				tmp[0] = nxt;
+				tmp[1] = '\0';
+				strcat(lexeme, tmp);
+			}
+			buffer_id++;
+			break;
+		case 19:
+			token * newtok = makeNewToken(41);
+			return newtok;
+		case 20:
+			token * newtok = makeNewToken(36);
+			return newtok;
+		case 21:
+			retract(1);
+			token * newtok = makeNewToken(35);
+			return newtok;
+		case 22:
+			char nxt = streamBuffer[buffer_id];
+			if(nxt == '>') {
+				state = 23;
+				strcat(lexeme, ">");
+			}
+			else if(nxt == '=') {
+				state = 24;
+				strcat(lexeme, "=");
+			}
+			else {
+				state = 25;
+				char tmp[2];
+				tmp[0] = nxt;
+				tmp[1] = '\0';
+				strcat(lexeme, tmp);
+			}
+			buffer_id++;
+			break;
+		case 23:
+			token * newtok = makeNewToken(42);
+			return newtok;
+		case 24:
+			token * newtok = makeNewToken(37);
+			return newtok;
+		case 25:
+			retract(1);
+			token * newtok = makeNewToken(38);
+			return newtok;
+		case 26:
+			line_num++;
+			state = 1;
+			break;
+		case 27:
+			state = 1;
+			break;
+		case 28:
+			char nxt = streamBuffer[buffer_id];
+			if(nxt == '.') {
+				state = 29;
+				strcat(lexeme, ".");
+			}
+			else {
+				error();
+				buffer_id--;
+			}
+			buffer_id++;
+			break;
+		case 29:
+			token * newtok = makeNewToken(44);
+			return newtok;
 	}
 }
 
