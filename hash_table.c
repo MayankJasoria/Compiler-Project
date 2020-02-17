@@ -11,13 +11,14 @@
 #define EXP             151
 #define HASH_TABLE_SIZE 1000
 
-/* Hash function picked up from https://github.com/jamesroutley/write-a-hash-table/tree/master/03-hashing 
-   Note that this function depends on the ASCII values, so it is case sensitive */
+/* Hashing function. Simple adds the length and ascii value of each character in the string. */
+
 static int hash(const char* s) {
     long hash = 0;
-    const int len_s = strlen(s);
-    for (int i = 0; i < len_s; i++) {
-        hash += (long)pow(EXP, len_s - (i+1)) * s[i];
+    const int len = strlen(s);
+    hash += len;
+    for (int i = 0; i < len; i++) {
+        hash += (long) s[i];
         hash = hash % HASH_TABLE_SIZE;
     }
     return (int)hash;
