@@ -91,4 +91,10 @@ extern int tokenStream_cap;
 /* ntokens is the number of tokens recognized by lexer */
 extern int ntokens;
 
+/* state maintains the current state of the dfa */
+extern int state;
+
+/* lexeme maintains the current lexeme whilw the dfa traversal */
+extern char lexeme[chunk_size].
+
 #endif
