@@ -8,10 +8,9 @@
 #include <math.h>
 #include <string.h>
 
-#define EXP             151
 #define HASH_TABLE_SIZE 1000
 
-/* Hashing function. Simple adds the length and ascii value of each character in the string. */
+/* Hash function. Simply adds the length and ascii value of each character in the string. */
 
 static int hash(const char* s) {
     long hash = 0;
