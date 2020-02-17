@@ -59,10 +59,19 @@
 #define DRIVERDEF		55
 #define DRIVERENDDEF	56
 
+
+
 /* type definition of a Token */
 typedef struct {
 	int id;
-	double value; // doubt. how to distinguish between float and integer values.
+
+	union {
+		int val_int;
+		double val_float;
+	} val;
+	/* 1 bit tag 
+	   0 indicates integer, 1 indicates float */
+	unsigned is_float:1;
 	char * lex;
 	int line_num;
 } token;
