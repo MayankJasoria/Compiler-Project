@@ -81,6 +81,7 @@ void lexerinit() {
 	endofLexer = 0;
 	lexeme[0] = '\0';
 	streamBuffer[0] = '\0';
+	chunk_size = 30;
 	/* 
 		To DO:
 		chunk_size;
@@ -158,7 +159,7 @@ token * getNextToken() {
 	char ch, nxt;
 	token * newtok;
 	while(1) {
-		if(buffer_id == strlen(streamBuffer))
+		if(buffer_id == strlen(streamBuffer) || streamBuffer[buffer_id] == 4)
 			break;
 		switch(state) { 
 			/* To Do : DRIVERDEF, DRIVERENDDEF */
