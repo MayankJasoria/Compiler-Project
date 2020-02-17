@@ -59,7 +59,42 @@
 // #define DRIVERDEF		55
 // #define DRIVERENDDEF	56
 
-char * keywordList[]
+#define HASH_TABLE_SIZE 1000
+
+char * keywordList[] = {
+		"<empty>",
+		"INTEGER",
+		"REAL",
+		"BOOLEAN",
+		"OF",
+		"ARRAY",
+		"START",
+		"END",
+		"DECLARE",
+		"MODULE",
+		"DRIVER",
+		"PROGRAM",
+		"GET_VALUE",
+		"PRINT",
+		"USE",
+		"WITH",
+		"PARAMETERS",
+		"TRUE",
+		"FALSE",
+		"TAKES",
+		"INPUT",
+		"AND",
+		"OR",
+		"FOR",
+		"IN",
+		"SWITCH",
+		"CASE",
+		"BREAK",
+		"DEFAULT",
+		"WHILE"
+	};
+
+extern int num_keywords;
 
 /* enum for the tokens */
 /* TODO: Replace '#define'd tokens with the enum -- uncomment to use enum  */
@@ -135,8 +170,13 @@ typedef struct {
 	int line_num;
 } token;
 
+typedef struct {
+	char * lex;
+	int line_num;
+} errorInst;
+
 /* hash_table to store the keyworkds */
-extern char * hash_table[1000];
+extern int hash_table[1000];
 
 /* line_num will store the instantaneous line number position of the lexer */
 extern int line_num;
@@ -144,8 +184,18 @@ extern int line_num;
 /* chunk_size is the size of code loaded in the memory bt getStream() */
 extern int chunk_size;
 
+/* 
+	size of these arrays hardcoded. Take Care.
+*/
+
 /* streamBuffer stores the part of code loaded by getStream() */
-extern char streamBuffer[chunk_size];
+extern char streamBuffer[100];
+
+/* lexeme maintains the current lexeme whilw the dfa traversal */
+extern char lexeme[100];
+
+/* state maintains the current state of the dfa */
+extern int state;
 
 /* buffer_id gives us the index till which the cide chunk has been read by getNextToken() */
 extern int buffer_id;
@@ -159,10 +209,9 @@ extern int tokenStream_cap;
 /* ntokens is the number of tokens recognized by lexer */
 extern int ntokens;
 
-/* state maintains the current state of the dfa */
-extern int state;
+/* data structure to store the list of error, definition above */
+extern errorInst ** lexErrorlist;
 
-/* lexeme maintains the current lexeme whilw the dfa traversal */
-extern char lexeme[chunk_size];
+extern int endofLexer;
 
 #endif

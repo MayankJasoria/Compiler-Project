@@ -12,6 +12,6 @@ token * getNextToken();
 
 void removeComments(char * testcaseFile, char * cheanFile);
 
-bool isKeyword(token * tok);
+// bool isKeyword(token * tok);
 
 #endif

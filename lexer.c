@@ -7,53 +7,109 @@
 #include <string.h>
 #include <math.h>
 
-void hashTableinit() {
-	
-
-
+static int hash(const char* s) {
+	long hash = 0;
+	const int len = strlen(s);
+	hash += len;
+	int i;
+	for (i = 0; i < len; i++) {
+		hash += (long) s[i];
+		hash = hash % HASH_TABLE_SIZE;
+	}
+	return (int)hash;
 }
 
+void hashTableinit() {
+	int i;
+	for(i = 0; i < HASH_TABLE_SIZE; i++)
+		hash_table[i] = -1;
+	for(i = 1; i <= num_keywords; i++) {
+		int key = hash(keywordList[i]);
+		hash_table[key] = i;
+	}
+}
+
+int checkIdentifier(char * str) {
+	if(strlen(str) > 20)
+		return -1;
+	int key = hash(str);
+	if(hash_table[key] == -1)
+		return 0;
+	if(strcmp(keywordList[key], str))
+		return 0;
+	return hash_table[key];
+}
 
 void lexerinit() {
 	state = 1;
+	num_keywords = 29;
+	hashTableinit();
+	endofLexer = 0;
+	lexeme[0] = '\0';
+	streamBuffer[0] = '\0';
 	/* 
 		To DO:
 		chunk_size;
 		extern's;
 	*/
-	hashTableinit();
 }
 
 /* allocates memory to a new token */
 token * makeNewToken(int id) {
 	token * t = (token *)malloc(sizeof(token));
-	token -> line_num = line_num;
-	token -> id = id;
-	strcpy(token -> lex, lexeme);
+	t -> line_num = line_num;
+	t -> id = id;
+	strcpy(t -> lex, lexeme);
 	int val = -1;
-	if(id == 52)
+	if(id == 52) {
 		val = atoi(lexeme);
-	else if(id == 53)
+		t -> is_float = 0;
+		t -> val.val_int = val;
+	}
+	else if(id == 53) {
 		val = atof(lexeme);
-
-	token -> value = -1; 
+		t -> is_float = 1;
+		t -> val.val_float = val;
+	}
+	t -> val.val_float = -1;
 	lexeme[0] = '\0';
 	return t;
 }
 
-/* check if it is a valid id/ keyword */
-int checkIdentifier() {
-	if(strlen(lexeme) > 20)
-		return -1;
-	return isKeyword(lexeme);
+errorInst * makeNewError(int line_num, char * lex) {
+	errorInst * e = (errorInst *)malloc(sizeof(errorInst));
+	e -> lex = lex;
+	e -> line_num = line_num;
+	return e;
 }
 
+// /* check if it is a valid id/ keyword */
+// int checkIdentifier() {
+// 	if(strlen(lexeme) > 20)
+// 		return -1;
+// 	return isKeyword(lexeme);
+// }
 
 /* push back the desired number of characters back onto the input stream */
 void retract(int num) {
 	int len = strlen(lexeme);
 	buffer_id -= num;
 	lexeme[len - num] = '\0';
+}
+
+void error() {
+	errorInst * e = makeNewError(line_num, lexeme);
+	/* To do: should we store errors or just print? */
+	printf("Lexical Error || %s on line %d\n", lexeme, line_num);
+	lexeme[0] = '\0';
+	state = 1;
+}
+
+
+void idlengthError() {
+	printf("Lexical Error || %s (length of the identifier exceeded) on line %d\n", lexeme, line_num);
+	lexeme[0] = '\0';
+	state = 1;
 }
 
 /* converts a sigle character to a string */
@@ -65,11 +121,15 @@ char * ctoa(char ch) {
 }
 
 token * getNextToken() {
+	char ch, nxt;
+	token * newtok;
 	while(1) {
+		if(buffer_id == strlen(streamBuffer))
+			break;
 		switch(state) { 
 			/* To Do : DRIVERDEF, DRIVERENDDEF */
 			case 1: 
-				char ch = streamBuffer[buffer_id];
+				ch = streamBuffer[buffer_id];
 				if(ch == '+') {
 					state = 2;
 					strcat(lexeme, "+");
@@ -153,37 +213,37 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 2:
-				token * newtok = makeNewToken(31);
+				newtok = makeNewToken(31);
 				return newtok;
 			case 3:
-				token * newtok = makeNewToken(32);
+				newtok = makeNewToken(32);
 				return newtok;
 			case 4:
-				token * newtok = makeNewToken(34);
+				newtok = makeNewToken(34);
 				return newtok;
 			case 5:
-				token * newtok = makeNewToken(45);
+				newtok = makeNewToken(45);
 				return newtok;
 			case 6:
-				token * newtok = makeNewToken(46);
+				newtok = makeNewToken(46);
 				return newtok;
 			case 7:
-				token * newtok = makeNewToken(48);
+				newtok = makeNewToken(48);
 				return newtok;
 			case 8:
-				token * newtok = makeNewToken(49);
+				newtok = makeNewToken(49);
 				return newtok;
 			case 9:
-				token * newtok = makeNewToken(50);
+				newtok = makeNewToken(50);
 				return newtok;
 			case 10:
-				token * newtok = makeNewToken(51);
+				newtok = makeNewToken(51);
 				return newtok;
 			case 11:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '=') {
 					state = 12;
-					strcat(lexeme, '=');
+					strcat(lexeme, "=");
 				}
 				else {
 					error();
@@ -192,10 +252,10 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 12:
-				token * newtok = makeNewToken(39);
+				newtok = makeNewToken(39);
 				return newtok;
 			case 13:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '=') {
 					state = 14;
 					strcat(lexeme, "=");
@@ -207,10 +267,10 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 14:
-				token * newtok = makeNewToken(40);
+				newtok = makeNewToken(40);
 				return newtok;
 			case 15:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '=') {
 					state = 16;
 					strcat(lexeme, "=");
@@ -222,14 +282,14 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 16:
-				token * newtok = makeNewToken(47);
+				newtok = makeNewToken(47);
 				return newtok;
 			case 17:
 				retract(1);
-				token * newtok = makeNewToken(43);
+				newtok = makeNewToken(43);
 				return newtok;
 			case 18:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '<') {
 					state = 19;
 					strcat(lexeme, "<");
@@ -245,17 +305,17 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 19:
-				token * newtok = makeNewToken(41);
+				newtok = makeNewToken(41);
 				return newtok;
 			case 20:
-				token * newtok = makeNewToken(36);
+				newtok = makeNewToken(36);
 				return newtok;
 			case 21:
 				retract(1);
-				token * newtok = makeNewToken(35);
+				newtok = makeNewToken(35);
 				return newtok;
 			case 22:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '>') {
 					state = 23;
 					strcat(lexeme, ">");
@@ -271,14 +331,14 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 23:
-				token * newtok = makeNewToken(42);
+				newtok = makeNewToken(42);
 				return newtok;
 			case 24:
-				token * newtok = makeNewToken(37);
+				newtok = makeNewToken(37);
 				return newtok;
 			case 25:
 				retract(1);
-				token * newtok = makeNewToken(38);
+				newtok = makeNewToken(38);
 				return newtok;
 			case 26:
 				line_num++;
@@ -288,7 +348,7 @@ token * getNextToken() {
 				state = 1;
 				break;
 			case 28:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '.') {
 					state = 29;
 					strcat(lexeme, ".");
@@ -300,10 +360,10 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 29:
-				token * newtok = makeNewToken(44);
+				newtok = makeNewToken(44);
 				return newtok;
 			case 30:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '.') {
 					state = 31;
 					strcat(lexeme, ".");
@@ -318,7 +378,7 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 31:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '.') {
 					state = 32;
 					strcat(lexeme, ".");
@@ -336,10 +396,10 @@ token * getNextToken() {
 				break;
 			case 32:
 				retract(2);
-				token * newtok = makeNewToken(52);
+				newtok = makeNewToken(52);
 				return newtok;
 			case 33:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 33;
 					strcat(lexeme, ctoa(nxt));
@@ -356,14 +416,14 @@ token * getNextToken() {
 				break;
 			case 34:
 				retract(1);
-				token * newtok = makeNewToken(53);
+				newtok = makeNewToken(53);
 				return newtok;
 			case 35:
 				retract(1);
-				token * newtok = makeNewToken(52);
+				newtok = makeNewToken(52);
 				return newtok;
 			case 36:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 38;
 					strcat(lexeme, ctoa(nxt));
@@ -379,7 +439,7 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 37:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 38;
 					strcat(lexeme, ctoa(nxt));
@@ -391,7 +451,7 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 38:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					strcat(lexeme, ctoa(nxt));
 				}
@@ -403,11 +463,11 @@ token * getNextToken() {
 				break;
 			case 39:
 				retract(1);
-				token * newtok = makeNewToken(53);
+				newtok = makeNewToken(53);
 				return newtok;
 			case 40:
-				char nxt = streamBuffer[buffer_id];
-				if((nxt >= 'a' && nxt <= 'z')||(nxt >= 'A' && nxt <= 'Z')||(nxt >= '0' && nxt <= '9')||(nct == '_')) {
+				nxt = streamBuffer[buffer_id];
+				if((nxt >= 'a' && nxt <= 'z')||(nxt >= 'A' && nxt <= 'Z')||(nxt >= '0' && nxt <= '9')||(nxt == '_')) {
 					strcat(lexeme, ctoa(nxt));
 				}
 				else {
@@ -423,14 +483,13 @@ token * getNextToken() {
 					idlengthError();
 					break;
 				}
-				token * newtok;
 				else if(keyid == 0)
 					newtok = makeNewToken(54);
 				else 
 					newtok = makeNewToken(keyid);
 				return newtok;
 			case 42:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '*') {
 					state = 44;
 					lexeme[0] = '\0';
@@ -443,10 +502,10 @@ token * getNextToken() {
 				break;
 			case 43:
 				retract(1);
-				token * newtok = makeNewToken(33);
+				newtok = makeNewToken(33);
 				return newtok;
 			case 44:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '*')
 					state = 46;
 				else if(nxt == '\n')
@@ -455,14 +514,14 @@ token * getNextToken() {
 				break;
 			case 45:
 				line_num++;
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt != '\n')
 					state = 44; 
 				// To DO: what if we reach end of chunk here.
 				buffer_id++;
 				break;
 			case 46:
-				char nxt = streamBuffer[buffer_id];
+				nxt = streamBuffer[buffer_id];
 				if(nxt == '*')
 					state = 47;
 				else if(nxt == '\n')
@@ -477,19 +536,35 @@ token * getNextToken() {
 				break;
 		}
 	}
+	token * tok = makeNewToken(-1);
+	return tok;
 }
 
 FILE * getStream(FILE * fp) {
 
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
-	size_t bytes_read = fread (streamBuffer, sizeof(char), 30, f);
-	buffer_id = 0;
+	char tmpBuffer[50];
+	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
+	strcpy(streamBuffer, lexeme);
+	buffer_id = strlen(lexeme);
+	if(bytes_read > 0)
+		strcat(streamBuffer, tmpBuffer);
+	else if(bytes_read == 0) 
+		strcat(streamBuffer, ctoa(4));
+	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
+	if(strlen(streamBuffer) <= 1) {
+		endofLexer = 1;
+		return fp;
+	}
+
 	while(1) {
+		state = 1;
+		lexeme[0] = '\0';
 		token * tok = getNextToken();
 		if(tok -> id == -1)
 			break;
 		else {
-			if(ntoken >= tokenStream_cap) {
+			if(ntokens >= tokenStream_cap) {
 				realloc(tokenStream, 2*tokenStream_cap);
 				tokenStream_cap *= 2;
 			}
@@ -497,6 +572,5 @@ FILE * getStream(FILE * fp) {
 			ntokens++;
 		}
 	}
-
-	return f;
+	return fp;
 }
