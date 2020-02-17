@@ -69,7 +69,7 @@ int checkIdentifier(char * str) {
 	int key = hash(str);
 	if(hash_table[key] == -1)
 		return 0;
-	if(strcmp(keywordList[key], str))
+	if(strcmp(keywordList[hash_table[key]], str))
 		return 0;
 	return hash_table[key];
 }
@@ -112,7 +112,9 @@ token * makeNewToken(int id) {
 		(t -> val).val_float = val;
 	}
 	(t -> val).val_float = -1;
-	lexeme[0] = '\0';
+	if(id != -1)
+		lexeme[0] = '\0';
+	printf("%s\n", t -> lex);
 	return t;
 }
 
@@ -164,7 +166,7 @@ token * getNextToken() {
 	char ch, nxt;
 	token * newtok;
 	while(1) {
-		if(buffer_id == strlen(streamBuffer) || streamBuffer[buffer_id] == 4)
+		if((buffer_id == strlen(streamBuffer)))
 			break;
 		switch(state) { 
 			/* To Do : DRIVERDEF, DRIVERENDDEF */
@@ -591,20 +593,20 @@ FILE * getStream(FILE * fp) {
 	if(bytes_read > 0)
 		strcat(streamBuffer, tmpBuffer);
 	else if(bytes_read == 0) {
-		char tmp[2];
-		tmp[1] = '\0';
+		char tmp[3];
+		tmp[2] = '\0';
+		tmp[1] = 4;
 		tmp[0] = 4;
 		strcat(streamBuffer, tmp);
 	}
+	
 	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
 	if(strlen(streamBuffer) <= 1) {
 		endofLexer = 1;
 		return fp;
-	}
+	}/* to do: check this */
 
 	while(1) {
-		state = 1;
-		lexeme[0] = '\0';
 		token * tok = getNextToken();
 		if(tok -> id == -1)
 			break;
@@ -615,6 +617,12 @@ FILE * getStream(FILE * fp) {
 			}
 			tokenStream[ntokens] = tok;
 			ntokens++;
+		}
+		state = 1;
+		lexeme[0] = '\0';
+		if(streamBuffer[buffer_id] == 4) {
+			endofLexer = 1;
+			break;
 		}
 	}
 	return fp;
