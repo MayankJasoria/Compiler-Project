@@ -1,6 +1,8 @@
 #ifndef _LEXERDEF
 #define _LEXERDEF
 
+#define NUM_KEYWORDS 29
+
 /* mapping tokens to unique integers */
 // #define INTEGER 		1
 // #define REAL 			2
@@ -61,40 +63,7 @@
 
 #define HASH_TABLE_SIZE 1000
 
-char * keywordList[] = {
-		"<empty>",
-		"INTEGER",
-		"REAL",
-		"BOOLEAN",
-		"OF",
-		"ARRAY",
-		"START",
-		"END",
-		"DECLARE",
-		"MODULE",
-		"DRIVER",
-		"PROGRAM",
-		"GET_VALUE",
-		"PRINT",
-		"USE",
-		"WITH",
-		"PARAMETERS",
-		"TRUE",
-		"FALSE",
-		"TAKES",
-		"INPUT",
-		"AND",
-		"OR",
-		"FOR",
-		"IN",
-		"SWITCH",
-		"CASE",
-		"BREAK",
-		"DEFAULT",
-		"WHILE"
-	};
-
-extern int num_keywords;
+int num_keywords;
 
 /* enum for the tokens */
 /* TODO: Replace '#define'd tokens with the enum -- uncomment to use enum  */
@@ -176,42 +145,44 @@ typedef struct {
 } errorInst;
 
 /* hash_table to store the keyworkds */
-extern int hash_table[1000];
+int hash_table[1000];
 
 /* line_num will store the instantaneous line number position of the lexer */
-extern int line_num;
+int line_num;
 
 /* chunk_size is the size of code loaded in the memory bt getStream() */
-extern int chunk_size;
+int chunk_size;
 
 /* 
 	size of these arrays hardcoded. Take Care.
 */
 
 /* streamBuffer stores the part of code loaded by getStream() */
-extern char streamBuffer[100];
+char streamBuffer[100];
 
 /* lexeme maintains the current lexeme whilw the dfa traversal */
-extern char lexeme[100];
+char lexeme[100];
 
 /* state maintains the current state of the dfa */
-extern int state;
+int state;
 
 /* buffer_id gives us the index till which the cide chunk has been read by getNextToken() */
-extern int buffer_id;
+int buffer_id;
 
 /* tokenStream is the stream of tokens that will be populated by tokenStream */
-extern token ** tokenStream;
+token ** tokenStream;
 
 /* capacity of tokenStream allocated to the heap */
-extern int tokenStream_cap;
+int tokenStream_cap;
 
 /* ntokens is the number of tokens recognized by lexer */
-extern int ntokens;
+int ntokens;
 
 /* data structure to store the list of error, definition above */
-extern errorInst ** lexErrorlist;
+errorInst ** lexErrorlist;
 
-extern int endofLexer;
+int endofLexer;
+
+char * keywordList[NUM_KEYWORDS + 2];
 
 #endif

@@ -7,7 +7,41 @@
 #include <string.h>
 #include <math.h>
 
-static int hash(const char* s) {
+char * keywordList[] = {
+		"<empty>",
+		"INTEGER",
+		"REAL",
+		"BOOLEAN",
+		"OF",
+		"ARRAY",
+		"START",
+		"END",
+		"DECLARE",
+		"MODULE",
+		"DRIVER",
+		"PROGRAM",
+		"GET_VALUE",
+		"PRINT",
+		"USE",
+		"WITH",
+		"PARAMETERS",
+		"TRUE",
+		"FALSE",
+		"TAKES",
+		"INPUT",
+		"AND",
+		"OR",
+		"FOR",
+		"IN",
+		"SWITCH",
+		"CASE",
+		"BREAK",
+		"DEFAULT",
+		"WHILE"
+	};
+
+
+int hash(const char* s) {
 	long hash = 0;
 	const int len = strlen(s);
 	hash += len;
@@ -549,7 +583,7 @@ FILE * getStream(FILE * fp) {
 	buffer_id = strlen(lexeme);
 	if(bytes_read > 0)
 		strcat(streamBuffer, tmpBuffer);
-	else if(bytes_read == 0) 
+	else if(bytes_read == 0)
 		strcat(streamBuffer, ctoa(4));
 	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
 	if(strlen(streamBuffer) <= 1) {

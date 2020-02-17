@@ -12,6 +12,24 @@ token * getNextToken();
 
 void removeComments(char * testcaseFile, char * cheanFile);
 
-// bool isKeyword(token * tok);
+int hash(const char* s);
+
+void hashTableinit();
+
+int checkIdentifier(char * str);
+
+void lexerinit();
+
+token * makeNewToken(int id);
+
+errorInst * makeNewError(int line_num, char * lex);
+
+void retract(int num);
+
+void error();
+
+void idlengthError();
+
+char * ctoa(char ch);
 
 #endif
