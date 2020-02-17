@@ -97,6 +97,8 @@ extern int state;
 /* lexeme maintains the current lexeme whilw the dfa traversal */
 extern char lexeme[chunk_size];
 
+char * keywordList[]
+
 /* enum for the tokens */
 /* TODO: Replace '#define'd tokens with the enum -- uncomment to use enum
 typedef enum {

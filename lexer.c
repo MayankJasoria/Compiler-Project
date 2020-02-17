@@ -7,8 +7,21 @@
 #include <string.h>
 #include <math.h>
 
+void hashTableinit() {
+	
+
+
+}
+
+
 void lexerinit() {
 	state = 1;
+	/* 
+		To DO:
+		chunk_size;
+		extern's;
+	*/
+	hashTableinit();
 }
 
 /* allocates memory to a new token */
@@ -28,6 +41,7 @@ token * makeNewToken(int id) {
 	return t;
 }
 
+/* check if it is a valid id/ keyword */
 int checkIdentifier() {
 	if(strlen(lexeme) > 20)
 		return -1;
@@ -42,6 +56,7 @@ void retract(int num) {
 	lexeme[len - num] = '\0';
 }
 
+/* converts a sigle character to a string */
 char * ctoa(char ch) {
 	char * tmp = (char *)malloc(2*sizeof(char));
 	tmp[0] = ch;
@@ -52,6 +67,7 @@ char * ctoa(char ch) {
 token * getNextToken() {
 	while(1) {
 		switch(state) { 
+			/* To Do : DRIVERDEF, DRIVERENDDEF */
 			case 1: 
 				char ch = streamBuffer[buffer_id];
 				if(ch == '+') {
