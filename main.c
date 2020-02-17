@@ -13,5 +13,8 @@ int main() {
 	while(endofLexer == 0) {
 		fp = getStream(fp);
 	}
+	int i;
+	for(i = 0; i < ntokens; i++)
+		printf("%d %s\n", tokenStream[i] -> id, tokenStream[i] -> lex);
 	printf("%d\n", ntokens);
 }

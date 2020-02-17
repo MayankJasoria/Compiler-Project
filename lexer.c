@@ -82,6 +82,10 @@ void lexerinit() {
 	lexeme[0] = '\0';
 	streamBuffer[0] = '\0';
 	chunk_size = 30;
+	tokenStream_cap = 4;
+	line_num = 1;
+	tokenStream = (token **)malloc(tokenStream_cap * (sizeof(token *)));
+
 	/* 
 		To DO:
 		chunk_size;
@@ -92,6 +96,7 @@ void lexerinit() {
 /* allocates memory to a new token */
 token * makeNewToken(int id) {
 	token * t = (token *)malloc(sizeof(token));
+	t -> lex = (char *)malloc(30*sizeof(char));
 	t -> line_num = line_num;
 	t -> id = id;
 	strcpy(t -> lex, lexeme);
@@ -104,9 +109,9 @@ token * makeNewToken(int id) {
 	else if(id == 53) {
 		val = atof(lexeme);
 		t -> is_float = 1;
-		t -> val.val_float = val;
+		(t -> val).val_float = val;
 	}
-	t -> val.val_float = -1;
+	(t -> val).val_float = -1;
 	lexeme[0] = '\0';
 	return t;
 }
@@ -148,11 +153,11 @@ void idlengthError() {
 }
 
 /* converts a sigle character to a string */
-char * ctoa(char ch) {
-	char * tmp = (char *)malloc(2*sizeof(char));
+void ctoa(char ch) {
+	char tmp[2];
 	tmp[0] = ch;
 	tmp[1] = '\0';
-	return tmp;
+	strcat(lexeme, tmp);
 }
 
 token * getNextToken() {
@@ -231,11 +236,11 @@ token * getNextToken() {
 					state = 27;
 				else if(ch >= '0' && ch <= '9') {
 					state = 30;
-					strcat(lexeme, ctoa(ch));
+					ctoa(ch);
 				}
 				else if((ch >= 'a' && ch <= 'z')||(ch >= 'A' && ch <= 'Z')) {
 					state = 40;
-					strcat(lexeme, ctoa(ch));
+					ctoa(ch);
 				}
 				else if(ch == '*') {
 					state = 42;
@@ -312,7 +317,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 17;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -335,7 +340,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 21;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -361,7 +366,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 25;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -404,11 +409,11 @@ token * getNextToken() {
 					strcat(lexeme, ".");
 				}
 				else if(nxt >= '0' && nxt <= '9') {
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 35;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -420,7 +425,7 @@ token * getNextToken() {
 				}
 				else if(nxt >= '0' && nxt <= '9') {
 					state = 33;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else 
 				{
@@ -437,11 +442,11 @@ token * getNextToken() {
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 33;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else if(nxt == 'E' || nxt == 'e') {
 					state = 36;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 34;
@@ -461,11 +466,11 @@ token * getNextToken() {
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 38;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else if(nxt == '+' || nxt == '-') {
 					state = 37;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					error();
@@ -477,7 +482,7 @@ token * getNextToken() {
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 38;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					error();
@@ -488,11 +493,11 @@ token * getNextToken() {
 			case 38:
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 39;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -503,11 +508,11 @@ token * getNextToken() {
 			case 40:
 				nxt = streamBuffer[buffer_id];
 				if((nxt >= 'a' && nxt <= 'z')||(nxt >= 'A' && nxt <= 'Z')||(nxt >= '0' && nxt <= '9')||(nxt == '_')) {
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 41;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -531,7 +536,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 43;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -581,11 +586,16 @@ FILE * getStream(FILE * fp) {
 	char tmpBuffer[50];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
 	strcpy(streamBuffer, lexeme);
+	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);
 	if(bytes_read > 0)
 		strcat(streamBuffer, tmpBuffer);
-	else if(bytes_read == 0)
-		strcat(streamBuffer, ctoa(4));
+	else if(bytes_read == 0) {
+		char tmp[2];
+		tmp[1] = '\0';
+		tmp[0] = 4;
+		strcat(streamBuffer, tmp);
+	}
 	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
 	if(strlen(streamBuffer) <= 1) {
 		endofLexer = 1;
@@ -600,7 +610,7 @@ FILE * getStream(FILE * fp) {
 			break;
 		else {
 			if(ntokens >= tokenStream_cap) {
-				realloc(tokenStream, 2*tokenStream_cap);
+				tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
 				tokenStream_cap *= 2;
 			}
 			tokenStream[ntokens] = tok;

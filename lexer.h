@@ -30,6 +30,6 @@ void error();
 
 void idlengthError();
 
-char * ctoa(char ch);
+void ctoa(char ch);
 
 #endif
