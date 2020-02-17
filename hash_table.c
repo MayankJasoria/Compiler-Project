@@ -1,11 +1,4 @@
-/* A note about about compiling:
-   It seems that the math library is not automatically being linked by gcc version 7.4.0.
-   If that is the case, use -lm to link math library explicitly
-   Example: gcc hash_table.c -lm
-            ./a.out
-*/   
 #include <stdio.h>
-#include <math.h>
 #include <string.h>
 
 #define HASH_TABLE_SIZE 1000
