@@ -30,6 +30,8 @@ void error();
 
 void idlengthError();
 
-char * ctoa(char ch);
+void ctoa(char ch);
+
+void removeComments(char *testcaseFile, char *cleanFile);
 
 #endif

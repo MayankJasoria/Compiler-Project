@@ -10,35 +10,35 @@
 
 char * keywordList[] = {
 		"<empty>",
-		"INTEGER",
-		"REAL",
-		"BOOLEAN",
-		"OF",
-		"ARRAY",
-		"START",
-		"END",
-		"DECLARE",
-		"MODULE",
-		"DRIVER",
-		"PROGRAM",
-		"GET_VALUE",
-		"PRINT",
-		"USE",
-		"WITH",
-		"PARAMETERS",
-		"TRUE",
-		"FALSE",
-		"TAKES",
-		"INPUT",
-		"AND",
-		"OR",
-		"FOR",
-		"IN",
-		"SWITCH",
-		"CASE",
-		"BREAK",
-		"DEFAULT",
-		"WHILE"
+		"integer",
+		"real",
+		"boolean",
+		"of",
+		"array",
+		"start",
+		"end",
+		"declare",
+		"module",
+		"driver",
+		"program",
+		"get_value",
+		"print",
+		"use",
+		"with",
+		"parameters",
+		"true",
+		"false",
+		"takes",
+		"input",
+		"and",
+		"or",
+		"for",
+		"in",
+		"switch",
+		"case",
+		"break",
+		"default",
+		"while"
 	};
 
 
@@ -70,12 +70,13 @@ int checkIdentifier(char * str) {
 	int key = hash(str);
 	if(hash_table[key] == -1)
 		return 0;
-	if(strcmp(keywordList[key], str))
+	if(strcmp(keywordList[hash_table[key]], str))
 		return 0;
 	return hash_table[key];
 }
 
 void lexerinit() {
+	printf("Lexical Analysis is being initialized\n");
 	state = 1;
 	num_keywords = 29;
 	hashTableinit();
@@ -83,16 +84,15 @@ void lexerinit() {
 	lexeme[0] = '\0';
 	streamBuffer[0] = '\0';
 	chunk_size = 30;
-	/* 
-		To DO:
-		chunk_size;
-		extern's;
-	*/
+	tokenStream_cap = 4;
+	line_num = 1;
+	tokenStream = (token **)malloc(tokenStream_cap * (sizeof(token *)));
 }
 
 /* allocates memory to a new token */
 token * makeNewToken(int id) {
 	token * t = (token *)malloc(sizeof(token));
+	t -> lex = (char *)malloc(30*sizeof(char));
 	t -> line_num = line_num;
 	t -> id = id;
 	strcpy(t -> lex, lexeme);
@@ -105,10 +105,11 @@ token * makeNewToken(int id) {
 	else if(id == 53) {
 		val = atof(lexeme);
 		t -> is_float = 1;
-		t -> val.val_float = val;
+		(t -> val).val_float = val;
 	}
-	t -> val.val_float = -1;
-	lexeme[0] = '\0';
+	(t -> val).val_float = -1;
+	if(id != -1)
+		lexeme[0] = '\0';
 	return t;
 }
 
@@ -118,13 +119,6 @@ errorInst * makeNewError(int line_num, char * lex) {
 	e -> line_num = line_num;
 	return e;
 }
-
-// /* check if it is a valid id/ keyword */
-// int checkIdentifier() {
-// 	if(strlen(lexeme) > 20)
-// 		return -1;
-// 	return isKeyword(lexeme);
-// }
 
 /* push back the desired number of characters back onto the input stream */
 void retract(int num) {
@@ -136,31 +130,31 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	/* To do: should we store errors or just print? */
-	printf("Lexical Error || %s on line %d\n", lexeme, line_num);
+	printf("Lexical Error: '%s' on line %d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
 
 
 void idlengthError() {
-	printf("Lexical Error || %s (length of the identifier exceeded) on line %d\n", lexeme, line_num);
+	printf("Lexical Error: '%s' (length of the identifier exceeded) on line %d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
 
 /* converts a sigle character to a string */
-char * ctoa(char ch) {
-	char * tmp = (char *)malloc(2*sizeof(char));
+void ctoa(char ch) {
+	char tmp[2];
 	tmp[0] = ch;
 	tmp[1] = '\0';
-	return tmp;
+	strcat(lexeme, tmp);
 }
 
 token * getNextToken() {
 	char ch, nxt;
 	token * newtok;
 	while(1) {
-		if(buffer_id == strlen(streamBuffer) || streamBuffer[buffer_id] == 4)
+		if((buffer_id == strlen(streamBuffer)))
 			break;
 		switch(state) { 
 			/* To Do : DRIVERDEF, DRIVERENDDEF */
@@ -232,11 +226,11 @@ token * getNextToken() {
 					state = 27;
 				else if(ch >= '0' && ch <= '9') {
 					state = 30;
-					strcat(lexeme, ctoa(ch));
+					ctoa(ch);
 				}
 				else if((ch >= 'a' && ch <= 'z')||(ch >= 'A' && ch <= 'Z')) {
 					state = 40;
-					strcat(lexeme, ctoa(ch));
+					ctoa(ch);
 				}
 				else if(ch == '*') {
 					state = 42;
@@ -313,7 +307,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 17;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -336,7 +330,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 21;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -362,7 +356,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 25;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -405,11 +399,11 @@ token * getNextToken() {
 					strcat(lexeme, ".");
 				}
 				else if(nxt >= '0' && nxt <= '9') {
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 35;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -421,7 +415,7 @@ token * getNextToken() {
 				}
 				else if(nxt >= '0' && nxt <= '9') {
 					state = 33;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else 
 				{
@@ -438,11 +432,11 @@ token * getNextToken() {
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 33;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else if(nxt == 'E' || nxt == 'e') {
 					state = 36;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 34;
@@ -462,11 +456,11 @@ token * getNextToken() {
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 38;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else if(nxt == '+' || nxt == '-') {
 					state = 37;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					error();
@@ -478,7 +472,7 @@ token * getNextToken() {
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
 					state = 38;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					error();
@@ -489,11 +483,11 @@ token * getNextToken() {
 			case 38:
 				nxt = streamBuffer[buffer_id];
 				if(nxt >= '0' && nxt <= '9') {
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 39;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -504,11 +498,11 @@ token * getNextToken() {
 			case 40:
 				nxt = streamBuffer[buffer_id];
 				if((nxt >= 'a' && nxt <= 'z')||(nxt >= 'A' && nxt <= 'Z')||(nxt >= '0' && nxt <= '9')||(nxt == '_')) {
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				else {
 					state = 41;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -532,7 +526,7 @@ token * getNextToken() {
 				}
 				else {
 					state = 43;
-					strcat(lexeme, ctoa(nxt));
+					ctoa(nxt);
 				}
 				buffer_id++;
 				break;
@@ -581,32 +575,87 @@ FILE * getStream(FILE * fp) {
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
 	char tmpBuffer[50];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
+	printf("Loaded a block from the source code file of size: %d bytes\n", bytes_read);
 	strcpy(streamBuffer, lexeme);
+	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);
 	if(bytes_read > 0)
 		strcat(streamBuffer, tmpBuffer);
-	else if(bytes_read == 0)
-		strcat(streamBuffer, ctoa(4));
+	else if(bytes_read == 0) {
+		char tmp[3];
+		tmp[2] = '\0';
+		tmp[1] = 4;
+		tmp[0] = 4;
+		strcat(streamBuffer, tmp);
+	}
+	
 	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
 	if(strlen(streamBuffer) <= 1) {
 		endofLexer = 1;
 		return fp;
-	}
+	}/* to do: check this */
 
 	while(1) {
-		state = 1;
-		lexeme[0] = '\0';
 		token * tok = getNextToken();
 		if(tok -> id == -1)
 			break;
 		else {
 			if(ntokens >= tokenStream_cap) {
-				tokenStream = realloc(tokenStream, 2*tokenStream_cap);
+				tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
 				tokenStream_cap *= 2;
 			}
 			tokenStream[ntokens] = tok;
 			ntokens++;
 		}
+		state = 1;
+		lexeme[0] = '\0';
+		if(streamBuffer[buffer_id] == 4) {
+			endofLexer = 1;
+			break;
+		}
 	}
 	return fp;
+}
+
+void removeComments(char *testcaseFile, char *cleanFile) {
+	FILE * test = fopen(testcaseFile, "r");
+	FILE * clean = fopen(cleanFile, "w");
+
+	char ch;
+	bool commentOn = false;
+	bool end1 = false;
+	bool start1 = false;
+	while((ch = fgetc(test)) != EOF) {
+		if(commentOn) {
+			if(ch == '\n')
+				fputc(ch, clean);
+			else if(ch == '*' && end1) {
+				end1 = false;
+				commentOn = false;
+			} 
+			else if(ch != '*' && end1) {
+				end1 = false;
+			}
+			else if(ch == '*')
+				end1 = true;
+		}
+		else {
+			if(ch == '*' && start1) {
+				start1 = false;
+				commentOn = true;
+			}
+			else if(ch == '*') {
+				start1 = true;
+			}
+			else if(ch != '*' && start1) {
+				fputc('*', clean);
+				fputc(ch, clean);
+				start1 = false;
+			}
+			else
+				fputc(ch, clean);
+		}
+	}
+	fclose(test);
+	fclose(clean);
 }
