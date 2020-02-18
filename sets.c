@@ -145,6 +145,7 @@ void mov_next(struct symbol** curr) {
 }
 
 int first_set(struct symbol** table, int index) {
+    // firt of which NT : index
     char *name = map[index].val;
     int term = map[index].term;
 

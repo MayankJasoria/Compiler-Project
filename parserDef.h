@@ -13,55 +13,56 @@
 unsigned long long int first[NUM_NONTERM + 2];
 unsigned long long int follow[NUM_NONTERM + 2];
 
+/* turned to lower case to remove the conflict with Keywords */
 typedef enum {
-	PROGRAM,
-	MODULEDECLARATIONS,
-	MODULEDECLARATION,
-	OTHERMODULES,
-	DRIVERMODULE,
-	MODULE,
-	RET,
-	INPUT_PLIST,
-	INPUT_PLISTNEW,
-	OUTPUT_PLIST,
-	OUTPUT_PLISTNEW,
-	TYPE,
-	DATATYPE,
-	MODULEDEF,
-	STATEMENTS,
-	STATEMENT,
-	IOSTMT,
-	WHICHID,
-	INDEX,
-	SIMPLESTMT,
-	ASSIGNMENTSTMT,
-	MODULEREUSESTMT,
-	OPTIONAL,
-	IDLIST,
-	IDLISTNEW,
-	EXPRESSION,
-	ARITHORBOOLEXPR,
-	ARITHORBOOLEXPRNEW,
-	RELOPEXPR,
-	RELOPEXPRNEW,
-	ARITHMETICEXPR,	
-	ARITHMETICEXPRNEW,
-	TERM,
-	TERMNEW,
-	FACTOR,
-	VAR,
-	PM,
-	MD,
-	LOGICALOP,
-	RELATIONALOP,
-	DECLARESTMT,
-	CONDIONALSTMT,
-	CASESTMTS,
-	CASESTMTSNEW,
-	VALUE,
-	DEFAULT,
-	ITERATIVESTMT,
-	RANGE
+	program,
+	moduledeclarations,
+	moduledeclaration,
+	othermodules,
+	drivermodule,
+	module,
+	ret,
+	input_plist,
+	input_plistnew,
+	output_plist,
+	output_plistnew,
+	type,
+	datatype,
+	moduledef,
+	statements,
+	statement,
+	iostmt,
+	whichid,
+	index,
+	simplestmt,
+	assignmentstmt,
+	modulereusestmt,
+	optional,
+	idlist,
+	idlistnew,
+	expression,
+	arithorboolexpr,
+	arithorboolexprnew,
+	relopexpr,
+	relopexprnew,
+	arithmeticexpr,	
+	arithmeticexprnew,
+	term,
+	termnew,
+	factor,
+	var,
+	pm,
+	md,
+	logicalop,
+	relationalop,
+	declarestmt,
+	condionalstmt,
+	casestmts,
+	casestmtsnew,
+	value,
+	_default, /* for removing the conflict */
+	iterativestmt,
+	range
 } nonterminal;
 
 typedef enum {T, NT} typeOfSymbol;
@@ -72,17 +73,17 @@ typedef union {
 	nonterminal NT;
 } symbol;
 
-struct rhsnode{
+struct rhsNode{
 	symbol sym;
 	typeOfSymbol tag;
-	struct rhsnode * next;
+	struct rhsNode * next;
 };
 
-typedef struct rhsnode rhsnode;
+typedef struct rhsNode rhsNode;
 
 typedef struct {
-	nonterminal sym;
-	rhsnode * head;
+	nonterminal left;
+	rhsNode * head;
 } grammar[100];
 
 grammar G;
@@ -94,5 +95,7 @@ typedef struct {
 } hashTable[1009];
 
 hashTable HT;
+
+
 
 #endif
