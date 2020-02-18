@@ -14,6 +14,11 @@
 unsigned long long int first[NUM_NONTERM + 2];
 unsigned long long int follow[NUM_NONTERM + 2];
 
+typedef struct sets {
+	unsigned long long int first[NUM_NONTERM + 2];
+	unsigned long long int follow[NUM_NONTERM + 2];
+} FirstAndFollow;
+
 /* turned to lower case to remove the conflict with Keywords */
 typedef enum {
 	program,
@@ -34,7 +39,7 @@ typedef enum {
 	statement,
 	iostmt,
 	whichid,
-	index,
+	_index, /* For removing conflict with index */
 	simplestmt,
 	assignmentstmt,
 	modulereusestmt,
@@ -98,5 +103,15 @@ typedef struct {
 hashTable HT;
 
 int num_rules;
+
+/* POSSIBLE PLACEHOLDERS - AVOIDING COMPILE ERRORS */
+/* Update definitions below when relevant */
+typedef struct tb {
+	int adf;
+} table;
+
+typedef struct pt {
+	int asd;
+} parseTree;
 
 #endif

@@ -574,7 +574,7 @@ FILE * getStream(FILE * fp) {
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
 	char tmpBuffer[50];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
-	printf("Loaded a block from the source code file of size: %d bytes\n", bytes_read);
+	printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);
 	strcpy(streamBuffer, lexeme);
 	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);

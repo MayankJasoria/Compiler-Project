@@ -1,17 +1,6 @@
 
 #include "parserDef.h"
 
-void parserInit(char * filename) {
-	num_rules = 0;
-	int i;
-	for(i = 0; i < 100; i++) {
-		first[i] = 0;
-		follow[i] = 0;
-	}
-	populateHashTable();
-	populateGrammar(filename);
-}
-
 void insertElement (int idx, char * str, typeOfSymbol t, nonterminal e) {
 	symbol s;
 	s.NT = e;
@@ -183,7 +172,7 @@ void populateGrammar(char * filename) {
 	num_rules = grammar_id;
 }
 
-unsigned long long int setUnion {unsigned long long int a, unsigned long long int b} {
+unsigned long long int setUnion(unsigned long long int a, unsigned long long int b) {
 	return a | b;
 }
 
@@ -208,7 +197,7 @@ unsigned long long int firstSet(nonterminal en) {
 			break;
 		rhsNode * node = G[i].head;
 		while(node != NULL) {
-			if(node.tag == 0) {
+			if(node->tag == 0) {
 				first[en] = setUnion(first[en], ((unsigned long long int)1 << tag));
 				if(first[en] % 2)
 					first[en]--;
@@ -243,12 +232,12 @@ unsigned long long int followSet(nonterminal en) {
 	for(i = 0; i < num_rules; i++) {
 		rhsNode * node = G[en].head;
 		while(node != NULL) {
-			if(node.sym.tag == T) {
+			if(node->tag == T) {
 				node = node -> next;
 				continue;
 			}
 			else {
-				if(node.sym.NT == en) {
+				if(node->sym.NT == en) {
 					unsigned long long int tmp = firstFollow(node -> next);
 					follow[en] = setUnion(follow[en], tmp);
 					if(follow[en] % 2)
@@ -269,7 +258,7 @@ unsigned long long int firstFollow(rhsNode * node) {
 	unsigned long long int tmp = 0;
 	rhsNode * tmpNode = node;
 	while(tmpNode != NULL) {
-		if(tmpNode.tag == T) {
+		if(tmpNode->tag == T) {
 			tmp = setUnion(tmp, (unsigned long long int) 1 << (tmp -> sym).T)
 			if(tmp % 2)
 				tmp--;
