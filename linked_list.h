@@ -1,9 +1,10 @@
 typedef struct node {
     int value;
     struct node* next;
+    struct node* prev;
 } Node;
 
-typedef Node* List;
+typedef Node* List; /* Doubly-linked list */
 
 typedef enum {
     BEGIN,
@@ -27,7 +28,15 @@ List insert(int value, position dir);
  * 
  * @return updated List
  */
-List delete(int value);
+List deleteByValue(int value);
+
+/**
+ * deletes the given node from the list
+ * @param element The element (Node address) to be deleted
+ * 
+ * @return updated list
+ */
+List deleteByNode(Node* element);
 
 /**
  * Returns the address of an element in list
