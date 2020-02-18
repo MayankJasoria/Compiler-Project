@@ -46,3 +46,9 @@ Stack popMany(int num);
  * Returns the value present at the top of the stack
  */
 int top();
+
+/**
+ * Returns number of elements in stack
+ * Hint: Useful for checking if stack is empty
+ */
+int numElementsInStack();
