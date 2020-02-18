@@ -1,6 +1,17 @@
 
 #include "parserDef.h"
 
+void parserInit(char * filename) {
+	num_rules = 0;
+	int i;
+	for(i = 0; i < 100; i++) {
+		first[i] = 0;
+		follow[i] = 0;
+	}
+	populateHashTable();
+	populateGrammar(filename);
+}
+
 void insertElement (int idx, char * str, typeOfSymbol t, nonterminal e) {
 	symbol s;
 	s.NT = e;
@@ -169,15 +180,63 @@ void populateGrammar(char * filename) {
 		}
 		grammar_id++;
 	}
+	num_rules = grammar_id;
 }
 
-void firstSet(int en) {
+unsigned long long int setUnion {unsigned long long int a, unsigned long long int b} {
+	return a | b;
+}
+
+int findinSet(unsigned long long int a, int i) {
+	unsigned long long int tmp = (unsigned long long int) 1 << i;
+	if(tmp & a)
+		return 1;
+	return 0;
+}
+
+void firstSet(nonterminal en) {
 	
 	int i;
-	
+	int isEmpty = 0;
+	for(i = 0; i < num_rules; i++) {
+		if(G[i].left < en)
+			continue;
+		else if(G[i].left > en)
+			break;
+		rhsNode * node = G[i].head;
+		while(node != NULL) {
+			if(node.tag == 0) {
+				first[en] = setUnion(first[en], ((unsigned long long int)1 << tag));
+				if(first[en] % 2)
+					first[en]--;
+				break;
+			}
+			else {
+				unsigned long long tmp = firstSet(node.left);
+				if(findinSet(tmp, 0)) {
+					first[en] = setUnion(first[en], tmp);
+					node = node -> next;
+					continue;
+				}
+				else {
+					first[en] = setUnion(first[en], tmp);
+					if(first[en] % 2)
+						first[en]--;
+					break;
+				}
+			}
+		}
+	}
+}
 
+void followSet(nonterminal en) {
 
+	int i;
+	int isEmpty = 0;
+	for(i = 0; i < num_rules; i++) {
+		rhsNode * node = G[en].left;
 
+	}
 }
 
 int main() {

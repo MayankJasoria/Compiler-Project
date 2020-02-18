@@ -10,6 +10,7 @@
 #define NUM_NONTERM 50
 
 /* structure for maintaining the first and follow sets of the Non Terminals */
+
 unsigned long long int first[NUM_NONTERM + 2];
 unsigned long long int follow[NUM_NONTERM + 2];
 
@@ -96,6 +97,6 @@ typedef struct {
 
 hashTable HT;
 
-
+int num_rules;
 
 #endif
