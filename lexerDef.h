@@ -3,13 +3,14 @@
 
 #define NUM_KEYWORDS 29
 
-#define HASH_TABLE_SIZE 1000
+#define HASH_TABLE_SIZE 1009
 
 int num_keywords;
 
 /* enum for the tokens */
 /* TODO: Replace '#define'd tokens with the enum -- uncomment to use enum  */
 typedef enum {
+	EMPTY,
 	INTEGER,
 	REAL,
 	BOOLEAN,
@@ -64,7 +65,7 @@ typedef enum {
 	ID,
 	DRIVERDEF,
 	DRIVERENDDEF
-} tokenList;
+} terminal;
 
 /* type definition of a Token */
 typedef struct {
@@ -87,7 +88,7 @@ typedef struct {
 } errorInst;
 
 /* hash_table to store the keyworkds */
-int hash_table[1000];
+int hash_table[1009];
 
 /* line_num will store the instantaneous line number position of the lexer */
 int line_num;
