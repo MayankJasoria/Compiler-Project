@@ -75,6 +75,7 @@ int checkIdentifier(char * str) {
 }
 
 void lexerinit() {
+	printf("Lexical Analysis is being initialized\n");
 	state = 1;
 	num_keywords = 29;
 	hashTableinit();
@@ -85,12 +86,6 @@ void lexerinit() {
 	tokenStream_cap = 4;
 	line_num = 1;
 	tokenStream = (token **)malloc(tokenStream_cap * (sizeof(token *)));
-
-	/* 
-		To DO:
-		chunk_size;
-		extern's;
-	*/
 }
 
 /* allocates memory to a new token */
@@ -114,7 +109,6 @@ token * makeNewToken(int id) {
 	(t -> val).val_float = -1;
 	if(id != -1)
 		lexeme[0] = '\0';
-	printf("%s\n", t -> lex);
 	return t;
 }
 
@@ -124,13 +118,6 @@ errorInst * makeNewError(int line_num, char * lex) {
 	e -> line_num = line_num;
 	return e;
 }
-
-// /* check if it is a valid id/ keyword */
-// int checkIdentifier() {
-// 	if(strlen(lexeme) > 20)
-// 		return -1;
-// 	return isKeyword(lexeme);
-// }
 
 /* push back the desired number of characters back onto the input stream */
 void retract(int num) {
@@ -142,14 +129,14 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	/* To do: should we store errors or just print? */
-	printf("Lexical Error || %s on line %d\n", lexeme, line_num);
+	printf("Lexical Error: '%s' on line %d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
 
 
 void idlengthError() {
-	printf("Lexical Error || %s (length of the identifier exceeded) on line %d\n", lexeme, line_num);
+	printf("Lexical Error: '%s' (length of the identifier exceeded) on line %d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
@@ -587,6 +574,7 @@ FILE * getStream(FILE * fp) {
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
 	char tmpBuffer[50];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
+	printf("Loaded a block from the source code file of size: %d bytes\n", bytes_read);
 	strcpy(streamBuffer, lexeme);
 	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);
@@ -626,4 +614,47 @@ FILE * getStream(FILE * fp) {
 		}
 	}
 	return fp;
+}
+
+void removeComments(char *testcaseFile, char *cleanFile) {
+	FILE * test = fopen(testcaseFile, "r");
+	FILE * clean = fopen(cleanFile, "w");
+
+	char ch;
+	bool commentOn = false;
+	bool end1 = false;
+	bool start1 = false;
+	while((ch = fgetc(test)) != EOF) {
+		if(commentOn) {
+			if(ch == '\n')
+				fputc(ch, clean);
+			else if(ch == '*' && end1) {
+				end1 = false;
+				commentOn = false;
+			} 
+			else if(ch != '*' && end1) {
+				end1 = false;
+			}
+			else if(ch == '*')
+				end1 = true;
+		}
+		else {
+			if(ch == '*' && start1) {
+				start1 = false;
+				commentOn = true;
+			}
+			else if(ch == '*') {
+				start1 = true;
+			}
+			else if(ch != '*' && start1) {
+				fputc('*', clean);
+				fputc(ch, clean);
+				start1 = false;
+			}
+			else
+				fputc(ch, clean);
+		}
+	}
+	fclose(test);
+	fclose(clean);
 }
