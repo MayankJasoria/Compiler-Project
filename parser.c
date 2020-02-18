@@ -194,8 +194,11 @@ int findinSet(unsigned long long int a, int i) {
 	return 0;
 }
 
-void firstSet(nonterminal en) {
+unsigned long long int firstSet(nonterminal en) {
 	
+	/* check this */
+	if(first[en] != 0)
+		return first[en];
 	int i;
 	int isEmpty = 0;
 	for(i = 0; i < num_rules; i++) {
@@ -227,16 +230,62 @@ void firstSet(nonterminal en) {
 			}
 		}
 	}
+	return first[en];
 }
 
-void followSet(nonterminal en) {
+unsigned long long int followSet(nonterminal en) {
 
+	/* check for indirect right recursion in the grammar */
+	if(follow[en] != 0)
+		return follow[en];
 	int i;
 	int isEmpty = 0;
 	for(i = 0; i < num_rules; i++) {
-		rhsNode * node = G[en].left;
-
+		rhsNode * node = G[en].head;
+		while(node != NULL) {
+			if(node.sym.tag == T) {
+				node = node -> next;
+				continue;
+			}
+			else {
+				if(node.sym.NT == en) {
+					unsigned long long int tmp = firstFollow(node -> next);
+					follow[en] = setUnion(follow[en], tmp);
+					if(follow[en] % 2)
+						follow[en]--;
+					if(tmp % 2) {
+						if(G[en].left != en)s
+							follow[en] = setUnion(follow[en], followSet(G[en].left));
+					}
+				}
+			}
+		}
 	}
+	return follow[en];
+}
+
+unsigned long long int firstFollow(rhsNode * node) {
+	
+	unsigned long long int tmp = 0;
+	rhsNode * tmpNode = node;
+	while(tmpNode != NULL) {
+		if(tmpNode.tag == T) {
+			tmp = setUnion(tmp, (unsigned long long int) 1 << (tmp -> sym).T)
+			if(tmp % 2)
+				tmp--;
+			break;
+		}
+		else {
+			tmp = setUnion(tmp, first[(tmpNode -> sym).NT]);
+			if(!findinSet(first[(tmpNode -> syn).NT], 0)) {
+				if(tmp % 2)
+					tmp--;
+				break;
+			}
+			tmpNode = tmpNode -> next;
+		}
+	}
+	return tmp;
 }
 
 int main() {
