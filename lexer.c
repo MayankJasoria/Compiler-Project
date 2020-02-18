@@ -7,7 +7,6 @@
 #include <string.h>
 #include <math.h>
 
-
 char * keywordList[] = {
 		"<empty>",
 		"integer",

@@ -1,1 +1,62 @@
+declare module mod1;
+<<driver Program>>
+start
+	declare v, w, r :integer;
+	get_value(v);
+	w:=5;
+	declare m:real;
+	[r,m] := use mod1 with parameters v, w;
+	print(r);
+	print(m);
+end
+<<module mod1>>
+	takes input [a: integer, b: integer];
+	returns [x: integer, abc: real];
+	start
+	declare c: real;
+	declare djdjdjdjdjdjdjdjdjdjdjdjdjdj : 				integer;
+	c:=10.4;
+	x:=a+b-10;
+	abc:=b/5+c;
+end
+
+<<module mod5>>
+takes input [index: integer, val_: integer];
+
+
+start
+	dec*lare 2;
+	declare i_1: integer;
+	i_1:= val_+ index - 4;
+	print(i_1);
+end
+<<driver Program>>
+start
+	declare a,b, dummy:integer;
+	a:=48;
+	b:=10;
+	dummy:=100;
+	declare flag: boolean;
+	flag:=(a>=30)AND(b<30);
+	switch(flag)
+	start
+		case FALSE :print(100);
+		break;
+		case TRUE :use mod1 with parameters a, b;
+		break;
+	end
+end
+
+<<driver Program>>
+start
+	declare num, k:integer;
+	declare A:array [1..10] of integer;
+	num:=5;
+	for( k in 1..10)
+	start
+		A[k]:=(num-k)*(num-k);
+		print(A[k]);
+	end
+end
+
 <20.aef>>mod1;
