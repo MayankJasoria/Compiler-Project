@@ -68,7 +68,8 @@ typedef enum {
 	value,
 	_default, /* for removing the conflict */
 	iterativestmt,
-	range
+	range,
+	
 } nonterminal;
 
 typedef enum {T, NT} typeOfSymbol;
@@ -98,7 +99,7 @@ typedef struct {
 	char str[25];
 	symbol sym;
 	typeOfSymbol tag;
-} hashTable[1009];
+} hashTable[HASH_TABLE_SIZE];
 
 hashTable HT;
 

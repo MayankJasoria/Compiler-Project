@@ -1,9 +1,9 @@
 #ifndef _LEXERDEF
 #define _LEXERDEF
 
-#define NUM_KEYWORDS 29
+#define NUM_KEYWORDS 30
 
-#define HASH_TABLE_SIZE 1009
+#define HASH_TABLE_SIZE 2003
 
 int num_keywords;
 
@@ -31,6 +31,7 @@ typedef enum {
 	FALSE,
 	TAKES,
 	INPUT,
+	RETURNS,
 	AND,
 	OR,
 	FOR,
@@ -46,12 +47,13 @@ typedef enum {
 	DIV,
 	LT,
 	LE,
-	GT,
 	GE,
+	GT,
 	EQ,
 	NE,
 	DEF,
 	ENDDEF,
+	COLON,
 	RANGEOP,
 	SEMICOL,
 	COMMA,
@@ -64,7 +66,8 @@ typedef enum {
 	RNUM,
 	ID,
 	DRIVERDEF,
-	DRIVERENDDEF
+	DRIVERENDDEF,
+	DOLLAR
 } terminal;
 
 /* type definition of a Token */
@@ -88,7 +91,7 @@ typedef struct {
 } errorInst;
 
 /* hash_table to store the keyworkds */
-int hash_table[1009];
+int hash_table[HASH_TABLE_SIZE];
 
 /* line_num will store the instantaneous line number position of the lexer */
 int line_num;

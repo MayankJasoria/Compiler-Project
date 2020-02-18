@@ -1,6 +1,7 @@
 
 #include "parserDef.h"
 
+
 void insertElement (int idx, char * str, typeOfSymbol t, nonterminal e) {
 	symbol s;
 	s.NT = e;
@@ -33,7 +34,7 @@ void populateHashTable() {
 		"index",
 		"simpleStmt",
 		"assignmentStmt",
-		"modulereuseStmt",
+		"moduleReuseStmt",
 		"optional",
 		"idList",
 		"idListNew",
@@ -89,6 +90,7 @@ void populateHashTable() {
 		"FALSE",
 		"TAKES",
 		"INPUT",
+		"RETURNS",
 		"AND",
 		"OR",
 		"FOR",
@@ -104,12 +106,13 @@ void populateHashTable() {
 		"DIV",
 		"LT",
 		"LE",
-		"GT",
 		"GE",
+		"GT",
 		"EQ",
 		"NE",
 		"DEF",
 		"ENDDEF",
+		"COLON",
 		"RANGEOP",
 		"SEMICOL",
 		"COMMA",
@@ -122,9 +125,10 @@ void populateHashTable() {
 		"RNUM",
 		"ID",
 		"DRIVERDEF",
-		"DRIVERENDDEF"
+		"DRIVERENDDEF",
+		"DOLLAR"
 	};
-	for(i = 0; i < 55; i++) {
+	for(i = 0; i < 58; i++) {
 		int idx = hash(terminals[i]);
 		insertElement(idx, terminals[i], T, i);
 	}
@@ -133,11 +137,16 @@ void populateHashTable() {
 rhsNode * make_rhsNode(char * str, rhsNode * prev, int id) {
 	rhsNode * r = (rhsNode *)malloc(sizeof(rhsNode));
 	int idx = hash(str);
-	r -> sym = HT[idx].sym;
+	if(str[0] >= 'A')
+		(r -> sym).T = (HT[idx].sym).T;
+	else
+		(r -> sym).NT = (HT[idx].sym).NT;
 	r -> tag = HT[idx].tag;
 	r -> next = NULL;
-	if(prev == NULL)
+	if(prev == NULL) {
 		G[id].head = r;
+		// printf("HEAD:       %d   %d   %d       %s\n", idx, (r -> sym).T, r -> tag, str);
+	}
 	else
 		prev -> next = r;
 	return r;
@@ -155,24 +164,28 @@ void populateGrammar(char * filename) {
 		G[grammar_id].left = HT[idx].sym.NT;
 		rhsNode * prev = (rhsNode *)malloc(sizeof(rhsNode));
 		prev = NULL;
+		// printf("%s\n", tok);
 		while(tok != NULL) {
-			if(strcmp(tok, ":")) {
-				rhsNode * r = make_rhsNode(tok, prev, grammar_id);
-				prev = r;
-			}
-			else if(strcmp(tok, "|")) {
+			tok = strtok(NULL, " \t\n");
+			// printf("%s__ %d\n", tok, grammar_id);
+			if(tok == NULL)
+				break;
+			if(strcmp(tok, "|") == 0) {
 				prev = NULL;
 				grammar_id++;
 				G[grammar_id].left = HT[idx].sym.NT;
 			}
-			tok = strtok(NULL, " \t\n");
+			else if(strcmp(tok, ":") ) {
+				rhsNode * r = make_rhsNode(tok, prev, grammar_id);
+				prev = r;
+			}
 		}
 		grammar_id++;
 	}
 	num_rules = grammar_id;
 }
 
-unsigned long long int setUnion(unsigned long long int a, unsigned long long int b) {
+unsigned long long int setUnion (unsigned long long int a, unsigned long long int b) {
 	return a | b;
 }
 
@@ -183,74 +196,43 @@ int findinSet(unsigned long long int a, int i) {
 	return 0;
 }
 
-unsigned long long int firstSet(nonterminal en) {
+unsigned long long int firstSet(nonterminal nonT) {
 	
 	/* check this */
-	if(first[en] != 0)
-		return first[en];
+	if(first[nonT] != 0)
+		return first[nonT];
 	int i;
 	int isEmpty = 0;
 	for(i = 0; i < num_rules; i++) {
-		if(G[i].left < en)
+		if(G[i].left < nonT)
 			continue;
-		else if(G[i].left > en)
+		else if(G[i].left > nonT)
 			break;
 		rhsNode * node = G[i].head;
 		while(node != NULL) {
-			if(node->tag == 0) {
-				first[en] = setUnion(first[en], ((unsigned long long int)1 << tag));
-				if(first[en] % 2)
-					first[en]--;
+			if(node -> tag == T) {
+				first[nonT] = setUnion(first[nonT], ((unsigned long long int)1 << (node -> sym).T));
+				if(first[nonT] % 2)
+					first[nonT]--;
 				break;
 			}
 			else {
-				unsigned long long tmp = firstSet(node.left);
+				unsigned long long tmp = firstSet((node -> sym).NT);
 				if(findinSet(tmp, 0)) {
-					first[en] = setUnion(first[en], tmp);
+					first[nonT] = setUnion(first[nonT], tmp);
 					node = node -> next;
 					continue;
 				}
 				else {
-					first[en] = setUnion(first[en], tmp);
-					if(first[en] % 2)
-						first[en]--;
+					first[nonT] = setUnion(first[nonT], tmp);
+					if(first[nonT] % 2)
+						first[nonT]--;
 					break;
 				}
 			}
 		}
 	}
-	return first[en];
-}
-
-unsigned long long int followSet(nonterminal en) {
-
-	/* check for indirect right recursion in the grammar */
-	if(follow[en] != 0)
-		return follow[en];
-	int i;
-	int isEmpty = 0;
-	for(i = 0; i < num_rules; i++) {
-		rhsNode * node = G[en].head;
-		while(node != NULL) {
-			if(node->tag == T) {
-				node = node -> next;
-				continue;
-			}
-			else {
-				if(node->sym.NT == en) {
-					unsigned long long int tmp = firstFollow(node -> next);
-					follow[en] = setUnion(follow[en], tmp);
-					if(follow[en] % 2)
-						follow[en]--;
-					if(tmp % 2) {
-						if(G[en].left != en)s
-							follow[en] = setUnion(follow[en], followSet(G[en].left));
-					}
-				}
-			}
-		}
-	}
-	return follow[en];
+	return first[nonT];
 }
 
 unsigned long long int firstFollow(rhsNode * node) {
@@ -258,15 +240,15 @@ unsigned long long int firstFollow(rhsNode * node) {
 	unsigned long long int tmp = 0;
 	rhsNode * tmpNode = node;
 	while(tmpNode != NULL) {
-		if(tmpNode->tag == T) {
-			tmp = setUnion(tmp, (unsigned long long int) 1 << (tmp -> sym).T)
+		if(tmpNode -> tag == T) {
+			tmp = setUnion(tmp, (unsigned long long int) 1 << (tmpNode -> sym).T);
 			if(tmp % 2)
 				tmp--;
 			break;
 		}
 		else {
 			tmp = setUnion(tmp, first[(tmpNode -> sym).NT]);
-			if(!findinSet(first[(tmpNode -> syn).NT], 0)) {
+			if(!findinSet(first[(tmpNode -> sym).NT], 0)) {
 				if(tmp % 2)
 					tmp--;
 				break;
@@ -277,6 +259,50 @@ unsigned long long int firstFollow(rhsNode * node) {
 	return tmp;
 }
 
-int main() {
-	populateGrammar("grammar.erp");
+unsigned long long int followSet(nonterminal nonT) {
+
+	/* check for indirect right recursion in the grammar */
+	if(follow[nonT] != 0 && nonT != 0)
+		return follow[nonT];
+	if(nonT == 0)
+		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 55);
+	int i;
+	int isEmpty = 0;
+	for(i = 0; i < num_rules; i++) {
+		rhsNode * node = G[nonT].head;
+		while(node != NULL) {
+			if(node -> tag == T) {
+				node = node -> next;
+				continue;
+			}
+			else {
+				if((node -> sym).NT == nonT) {
+					unsigned long long int tmp = firstFollow(node -> next);
+					follow[nonT] = setUnion(follow[nonT], tmp);
+					if(follow[nonT] % 2)
+						follow[nonT]--;
+					if(tmp % 2) {
+						if(G[nonT].left != nonT)
+							follow[nonT] = setUnion(follow[nonT], followSet(G[nonT].left));
+					}
+				}
+			}
+		}
+	}
+	return follow[nonT];
 }
+
+void parserInit(char * filename) {
+	num_rules = 0;
+	int i;
+	for(i = 0; i < 100; i++) {
+		first[i] = 0;
+		follow[i] = 0;
+	}
+	populateHashTable();
+	populateGrammar(filename);
+}
+
+// int main() {
+// 	populateGrammar("grammar.erp");
+// }

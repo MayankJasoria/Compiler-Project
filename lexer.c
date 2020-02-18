@@ -29,6 +29,7 @@ char * keywordList[] = {
 		"false",
 		"takes",
 		"input",
+		"returns",
 		"and",
 		"or",
 		"for",
@@ -40,17 +41,14 @@ char * keywordList[] = {
 		"while"
 	};
 
+int hash(const char *str)
+{
+	unsigned long hash = 5381;
+	int c;
+	while (c = *str++)
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-int hash(const char* s) {
-	long hash = 0;
-	const int len = strlen(s);
-	hash += len;
-	int i;
-	for (i = 0; i < len; i++) {
-		hash += (long) s[i];
-		hash = hash % HASH_TABLE_SIZE;
-	}
-	return (int)hash;
+	return hash % HASH_TABLE_SIZE;
 }
 
 void hashTableinit() {
