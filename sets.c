@@ -3,7 +3,7 @@
 #include <string.h>
 
 typedef enum nts {
-    PROGRAM,			
+    PROGRAM,	
     MODULEDECLARATIONS,
     MODULEDECLARATION,	
     OTHERMODULES,			
