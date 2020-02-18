@@ -1,7 +1,9 @@
-#include<stdlib.h>
-#include"linked_list.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "linked_list.h"
 
 Node* end;
+List head = NULL;
 
 List insert(int value, position dir) {
 	if(head == NULL) {
@@ -30,14 +32,14 @@ List insert(int value, position dir) {
 		end = newNode;
 	} else {
 		/* Some unknown type of position has been entered */
-		perror("Error: Unknown Direction\n");
+		fprintf(stderr,"Error: Unknown Direction\n");
 	}
 	return head;
 }
 
 List deleteByValue(int value) {
 	if(head == NULL) {
-		perror("List is empty\n");
+		fprintf(stderr,"List is empty\n");
 		return head;
 	}
 	Node* curr = head;
@@ -73,18 +75,18 @@ List deleteByValue(int value) {
 		curr = curr->next;
 	}
 	if(deleted == 0) {
-		perror("Element to be deleted not found\n");
+		fprintf(stderr,"Element to be deleted not found\n");
 	}
 	return head;
 }
 
 List deleteByNode(Node* element) {
 	if(element == NULL) {
-		perror("Element does not exist\n");
+		fprintf(stderr,"Element does not exist\n");
 		return head;
 	}
 	if(head == NULL) {
-		perror("List is empty\n");
+		fprintf(stderr,"List is empty\n");
 		return head;
 	}
 	if(element->prev != NULL) {

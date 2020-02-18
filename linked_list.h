@@ -11,6 +11,8 @@ typedef enum {
     END
 } position;
 
+extern List head;
+
 /**
  * Inserts 'value' to the start or end of the list,
  * depending on position
@@ -45,5 +47,3 @@ List deleteByNode(Node* element);
  * @return Node address of the value; NULL if not found
  */
 Node* find(int value);
-
-extern List head;
