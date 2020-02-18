@@ -7,6 +7,7 @@
 #include <string.h>
 #include <math.h>
 
+
 char * keywordList[] = {
 		"<empty>",
 		"INTEGER",
@@ -600,7 +601,7 @@ FILE * getStream(FILE * fp) {
 			break;
 		else {
 			if(ntokens >= tokenStream_cap) {
-				realloc(tokenStream, 2*tokenStream_cap);
+				tokenStream = realloc(tokenStream, 2*tokenStream_cap);
 				tokenStream_cap *= 2;
 			}
 			tokenStream[ntokens] = tok;

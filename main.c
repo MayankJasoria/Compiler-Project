@@ -8,6 +8,11 @@
 
 
 int main() {
+
+	tokenStream_cap = 20;
+	ntokens = sizeof(keywordList)/sizeof(keywordList[0]);
+	chunk_size = 10;
+
 	lexerinit();
 	FILE * fp = fopen("prog.eg", "r");
 	while(endofLexer == 0) {

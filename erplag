@@ -1,0 +1,49 @@
+<program>				--> <moduleDeclarations> <otherModules> <driverModule> <otherModules>
+<moduleDeclarations>	--> <moduleDeclaration> <moduleDeclarations> | E
+<moduleDeclaration>		--> DECLARE MODULE ID SEMICOL
+<otherModules>			--> <module> <otherModules> | E
+<driverModule>			--> DRIVERDEF DRIVER PROGRAM DRIVERENDDEF <moduleDef>
+<module>				--> DEF MODULE ID ENDDEF TAKES INPUT SQBO <input_plist> SQBC SEMICOL <ret> <moduleDef>
+<ret>					--> RETURNS SQBO <output_plist> SQBC SEMICOL | E
+<input_plist>			--> ID COLON <dataType> <input_plistNew>
+<input_plistNew>		--> COMMA ID COLON <dataType> <input_plistNew> | E
+<output_plist>			--> ID COLON <type> <output_plistNew>
+<output_plistNew>		--> COMMA ID COLON <type> <output_plistNew> | E
+<type>					--> INTEGER | REAL | BOOLEAN
+<dataType>				--> <type> | ARRAY SQBO <range> SQBC OF <type>
+<moduleDef>				--> START <statements> END
+<statements>			--> <statement> <statements> | E
+<statement>				--> <ioStmt> | <simpleStmt> | <declareStmt> | <condionalStmt> | <iterativeStmt>
+<ioStmt>				--> GET_VALUE BO ID <whichId> BC SEMICOL | PRINT BO <expression> BC SEMICOL
+<whichId>				--> SQBO <index> SQBC | E
+<index>					--> NUM | ID
+<simpleStmt>			--> <assignmentStmt> | <moduleReuseStmt>
+<assignmentStmt>		--> ID <whichId> ASSIGNOP <expression> SEMICOL
+<moduleReuseStmt>		--> <optional> USE MODULE ID WITH PARAMETERS <idList> SEMICOL
+<optional>				--> SQBO <idList> SQBC ASSIGNOP | E
+<idList>				--> ID <idListNew>
+<idListNew>				--> COMMA ID <idListNew> | E
+<expression>			--> <arithOrBoolExpr> | MINUS BO <arithmeticExpr> BC | PLUS BO <arithmeticExpr> BC
+<arithOrBoolExpr> 		--> <RelopExpr> <arithOrBoolExprNew>
+<arithOrBoolExprNew> 	--> <logicalOp> <RelopExpr> <arithOrBoolExprNew> | E
+<RelopExpr> 			--> <arithmeticExpr> <RelopExprNew>
+<RelopExprNew> 			--> <relationalOp> <arithmeticExpr> <RelopExprNew> | E
+<arithmeticExpr>		--> <term> <arithmeticExprNew>
+<arithmeticExprNew>		--> <pm> <term> <arithmeticExprNew> | E 
+<term>					--> <factor> <termNew>
+<termNew>				--> <md> <factor> <termNew> | E
+<factor>				--> BO <arithOrBoolExpr> BC | <varNew>
+<varNew>				--> <pm> <varNew> | <var>
+<var>					--> ID <whichId> | NUM | RNUM | TRUE | FALSE
+<pm>					--> PLUS | MINUS
+<md>					--> MUL | DIV
+<logicalOp>				--> AND | OR
+<relationalOp>			--> LT | LE | GT | GE | EQ | NE
+<declareStmt>			--> DECLARE <idList> COLON <dataType> SEMICOL
+<condionalStmt>			--> SWITCH BO ID BC START <caseStmts> <default> END 
+<caseStmts>				--> CASE <value> COLON <statements> BREAK SEMICOL <caseStmtsNew>
+<caseStmtsNew>			--> CASE <value> COLON <statements> BREAK SEMICOL <caseStmtsNew> | E
+<value>					--> NUM | TRUE | FALSE
+<default>				--> DEFAULT COLON <statements> BREAK SEMICOL | E
+<iterativeStmt>			--> FOR BO ID IN <range> BC START <statements> END | WHILE BO <arithOrBoolExpr> BC START <statements> END
+<range>					--> NUM RANGEOP NUM
