@@ -41,48 +41,48 @@ List insertToList(List list, void* data, position dir) {
 	return list;
 }
 
-List deleteByData(List list, void* data) {
-	if(list->head == NULL) {
-		fprintf(stderr,"List is empty\n");
-		return list;
-	}
-	Node* curr = list->head;
-	Node* prev = NULL;
-	short deleted = 0;
-	while(curr != NULL) {
-		if(curr->data == data) {
-			/* this is the node to be deleted */
-			if(prev == NULL) {
-				/* First element */
-				list->head = curr->next;
-				if(list->head == NULL) {
-					/* only element of the list; update end pointer */
-					list->end = NULL;
-				} else {
-					list->head->prev = NULL;
-				}
-			} else {
-				/* internal element */
-				prev->next = curr->next;
-				if(prev->next == NULL) {
-					/* delete from end of list; update end pointer */
-					list->end = prev;
-				} else {
-					prev->next->prev = curr->prev;
-				}
-			}
-			free(curr);
-			deleted = 1;
-			break;
-		}
-		prev = curr;
-		curr = curr->next;
-	}
-	if(deleted == 0) {
-		fprintf(stderr,"Element to be deleted not found\n");
-	}
-	return list;
-}
+// List deleteByData(List list, void* data) {
+// 	if(list->head == NULL) {
+// 		fprintf(stderr,"List is empty\n");
+// 		return list;
+// 	}
+// 	Node* curr = list->head;
+// 	Node* prev = NULL;
+// 	short deleted = 0;
+// 	while(curr != NULL) {
+// 		if(curr->data == data) {
+// 			/* this is the node to be deleted */
+// 			if(prev == NULL) {
+// 				/* First element */
+// 				list->head = curr->next;
+// 				if(list->head == NULL) {
+// 					/* only element of the list; update end pointer */
+// 					list->end = NULL;
+// 				} else {
+// 					list->head->prev = NULL;
+// 				}
+// 			} else {
+// 				/* internal element */
+// 				prev->next = curr->next;
+// 				if(prev->next == NULL) {
+// 					/* delete from end of list; update end pointer */
+// 					list->end = prev;
+// 				} else {
+// 					prev->next->prev = curr->prev;
+// 				}
+// 			}
+// 			free(curr);
+// 			deleted = 1;
+// 			break;
+// 		}
+// 		prev = curr;
+// 		curr = curr->next;
+// 	}
+// 	if(deleted == 0) {
+// 		fprintf(stderr,"Element to be deleted not found\n");
+// 	}
+// 	return list;
+// }
 
 List deleteByNodeList(List list, Node* element) {
 	if(element == NULL) {
@@ -115,13 +115,13 @@ List deleteByNodeList(List list, Node* element) {
 	return list->head;
 }
 
-Node* findInList(List list, void* data) {
-	Node* curr = list->head;
-	while(curr != NULL) {
-		if(curr->data == data) {
-			break;
-		}
-		curr = curr->next;
-	}
-	return curr;
-}
+// Node* findInList(List list, void* data) {
+// 	Node* curr = list->head;
+// 	while(curr != NULL) {
+// 		if(curr->data == data) {
+// 			break;
+// 		}
+// 		curr = curr->next;
+// 	}
+// 	return curr;
+// }

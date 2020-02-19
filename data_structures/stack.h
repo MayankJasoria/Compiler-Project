@@ -1,6 +1,7 @@
 #ifndef _STACK
 #define _STACK
 
+#include "../utils/utils.h"
 #include "linked_list.h"
 
 struct stack {
@@ -56,8 +57,9 @@ int top(Stack stack);
 
 /**
  * Returns number of elements in stack
- * Hint: Useful for checking if stack is empty
  */
 int numElementsInStack(Stack stack);
+
+boolean isEmpty();
 
 #endif

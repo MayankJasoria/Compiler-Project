@@ -1,5 +1,6 @@
 #ifndef _LINKED_LIST
 #define _LINKED_LIST
+#include "../utils/utils.h"
 
 typedef struct node {
     void* data;
@@ -22,6 +23,7 @@ typedef enum {
 /**
  * Creates and returns a doubly-linked list
  * @return a new Doubly-linked list
+ */
 List getList();
 
 /**
@@ -36,14 +38,14 @@ List getList();
  */
 List insertToList(List list, void* data, position dir);
 
-/**
- * Deletes a data from the list
- * @param list  The list from which the data is to be deleted
- * @param data  The data to be deleted
- * 
- * @return updated List
- */
-List deleteByData(List list, void* data);
+// /**
+//  * Deletes a data from the list
+//  * @param list  The list from which the data is to be deleted
+//  * @param data  The data to be deleted
+//  * 
+//  * @return updated List
+//  */
+// List deleteByData(List list, void* data);
 
 /**
  * Deletes the given node from the list
@@ -54,14 +56,14 @@ List deleteByData(List list, void* data);
  */
 List deleteByNode(List list, Node* element);
 
-/**
- * Returns the address of an element in list
- * @param list  The list to be searched
- * @param data  The data to be found in the list
- * 
- * @return Node address of the data; NULL if not found
- */
-Node* findInList(List list, void* data);
+// /**
+//  * Returns the address of an element in list
+//  * @param list  The list to be searched
+//  * @param data  The data to be found in the list
+//  * 
+//  * @return Node address of the data; NULL if not found
+//  */
+// Node* findInList(List list, void* data);
 
 /**
  * Completely destroys a list, freeing all associated memory

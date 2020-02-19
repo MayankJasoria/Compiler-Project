@@ -8,7 +8,7 @@
 typedef struct {
 	void* key;
 	void* data;
-} hash_element;
+} hashElement;
 
 typedef List* HashTable;
 
