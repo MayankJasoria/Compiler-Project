@@ -9,7 +9,7 @@
  * Simple ENUM to use as boolean
  */
 typedef enum {
-    FALSE, TRUE
+    False, True
 } boolean;
 
 /* enum for the tokens */
@@ -140,4 +140,13 @@ typedef struct {
 	symbol sym;
 	typeOfSymbol tag;
 } stackElement;
+
+struct rhsNode{
+	symbol sym;
+	typeOfSymbol tag;
+	struct rhsNode * next;
+};
+
+typedef struct rhsNode rhsNode;
+
 #endif

@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash_map.h"
+#include "../utils/utils.h"
 
-boolean initialized = FALSE;
+boolean initialized = False;
 
 HashTable getHashTable() {
 	/* Creating a Hash Table */

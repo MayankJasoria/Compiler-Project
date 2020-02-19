@@ -32,6 +32,9 @@ Tree getTree(TreeElement data);
  */
 Tree insertChild(Tree node, TreeElement data);
 
+// Tree insertChildList(Tree node, List children)
+Tree insertChildren(Tree node, rhsNode* children);
+
 // Tree findElement(Tree root, TreeElement data);
 
 #endif

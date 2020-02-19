@@ -26,6 +26,7 @@ Tree insertChild(Tree node, TreeElement data) {
 		node->child = childNode;
 		childNode->next = NULL;
 	} else {
+		/* parent has children, add to end of list of children */
 		TreeNode* curr = node->child;
 		while(curr->next != NULL) {
 			curr = curr->next;

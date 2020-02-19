@@ -23,13 +23,13 @@ List insertToList(List list, void* data, position dir) {
 		list->end = newNode;
 		return list;
 	}
-	if(dir == BEGIN) {
+	if(dir == FRONT) {
 		/* Insert at beginning of list */
 		newNode->next = list->head;
 		newNode->prev = NULL;
 		list->head->prev = newNode;
 		list->head = newNode;
-	} else if(dir == END) {
+	} else if(dir == BACK) {
 		/* Inserting at end of list */
 		newNode->next = NULL;
 		list->end->next = newNode;

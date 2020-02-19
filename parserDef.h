@@ -24,13 +24,7 @@ int parseTable[NUM_NONTERM][NUM_TERM];
 
 FirstAndFollow F;
 
-struct rhsNode{
-	symbol sym;
-	typeOfSymbol tag;
-	struct rhsNode * next;
-};
 
-typedef struct rhsNode rhsNode;
 
 typedef struct {
 	nonterminal left;

@@ -16,8 +16,8 @@ typedef struct {
 typedef Head* List; /* Doubly-linked list */
 
 typedef enum {
-    BEGIN,
-    END
+    FRONT,
+    BACK
 } position;
 
 /**
