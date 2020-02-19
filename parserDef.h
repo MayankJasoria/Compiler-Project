@@ -5,7 +5,7 @@
 #include <string.h>
 #include "lexerDef.h"
 #include "lexer.h"
-#include "stack.h"
+#include "data_structures/stack.h"
 
 #define NUM_TERM 58
 #define NUM_NONTERM 48
