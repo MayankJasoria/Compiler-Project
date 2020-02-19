@@ -128,7 +128,7 @@ int main() {
     parserInit("grammar.erp");
 
     // printing grammar rules [array of linked_lists]
-    // printf("****** Grmmar Rules ******\n");
+    printf("****** Grmmar Rules ******\n");
     int i;
     // printf("%d %d\n", hash("MINUS"), hash("iterativeStmt"));
     for(i = 0; i < 100; i++) {

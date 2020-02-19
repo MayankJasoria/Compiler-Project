@@ -2,12 +2,46 @@
 #include "parserDef.h"
 
 
-void insertElement (int idx, char * str, typeOfSymbol t, nonterminal e) {
+void insertElement (int idx, char * str, typeOfSymbol t, int en) {
+	hashNode * prev = NULL, * curr = NULL;
+	
+	/* initializing the new Node to be inserted */
+	hashNode * new = (hashNode *)malloc(sizeof(hashNode));
 	symbol s;
-	s.NT = e;
-	HT[idx].sym = s;
-	strcpy(HT[idx].str, str);
-	HT[idx].tag = t;
+	if(t == T)
+		s.T = en;
+	else
+		s.NT = en;
+	new -> sym = s;
+	strcpy(new -> str, str);
+	new -> tag = t;
+	new -> next = NULL;
+
+	curr = HT[idx].head;
+	
+	if(HT[idx].count == 0) {
+		HT[idx].head = new;
+		HT[idx].count++;
+		return;
+	}
+	
+	while(curr != NULL) {
+		prev = curr;
+		curr = curr -> next;
+	}
+	prev -> next = new;
+	HT[idx].count++;
+}
+
+hashNode * hashLookup(int idx, char * str) {
+
+	hashNode * curr = HT[idx].head;
+	while(curr != NULL) {
+		if(strcmp(curr -> str, str) == 0)
+			break;
+		curr = curr -> next;
+	}
+	return curr;
 }
 
 void populateHashTable() {
@@ -137,11 +171,12 @@ void populateHashTable() {
 rhsNode * make_rhsNode(char * str, rhsNode * prev, int id) {
 	rhsNode * r = (rhsNode *)malloc(sizeof(rhsNode));
 	int idx = hash(str);
+	hashNode * lookup = hashLookup(idx, str);
 	if(str[0] >= 'A')
-		(r -> sym).T = (HT[idx].sym).T;
+		(r -> sym).T = (lookup -> sym).T;
 	else
-		(r -> sym).NT = (HT[idx].sym).NT;
-	r -> tag = HT[idx].tag;
+		(r -> sym).NT = (lookup -> sym).NT;
+	r -> tag = lookup -> tag;
 	r -> next = NULL;
 	if(prev == NULL) {
 		G[id].head = r;
@@ -161,19 +196,18 @@ void populateGrammar(char * filename) {
 	while(fgets(str, 200, fp) != NULL) {
 		char * tok = strtok(str, " \t\n");
 		int idx = hash(tok);
-		G[grammar_id].left = HT[idx].sym.NT;
+		hashNode * lookup = hashLookup(idx, tok);
+		G[grammar_id].left = (lookup -> sym).NT;
 		rhsNode * prev = (rhsNode *)malloc(sizeof(rhsNode));
 		prev = NULL;
-		// printf("%s\n", tok);
 		while(tok != NULL) {
 			tok = strtok(NULL, " \t\n");
-			// printf("%s__ %d\n", tok, grammar_id);
 			if(tok == NULL)
 				break;
 			if(strcmp(tok, "|") == 0) {
 				prev = NULL;
 				grammar_id++;
-				G[grammar_id].left = HT[idx].sym.NT;
+				G[grammar_id].left = (lookup -> sym).NT;
 			}
 			else if(strcmp(tok, ":") ) {
 				rhsNode * r = make_rhsNode(tok, prev, grammar_id);
@@ -298,6 +332,10 @@ void parserInit(char * filename) {
 	for(i = 0; i < 100; i++) {
 		first[i] = 0;
 		follow[i] = 0;
+	}
+	for(i = 0; i < HASH_TABLE_SIZE; i++) {
+		HT[i].head = NULL;
+		HT[i].count = 0;
 	}
 	populateHashTable();
 	populateGrammar(filename);

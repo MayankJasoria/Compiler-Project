@@ -69,7 +69,7 @@ typedef enum {
 	_default, /* for removing the conflict */
 	iterativestmt,
 	range,
-	
+
 } nonterminal;
 
 typedef enum {T, NT} typeOfSymbol;
@@ -95,10 +95,28 @@ typedef struct {
 
 grammar G;
 
-typedef struct {
+// typedef struct {
+// 	char str[25];
+// 	symbol sym;
+// 	typeOfSymbol tag;
+// } hashTable[HASH_TABLE_SIZE];
+
+// hashTable HT;
+
+/* changed the declaration of hashNode and hashTable */
+
+struct hashNode {
 	char str[25];
 	symbol sym;
 	typeOfSymbol tag;
+	struct hashNode * next;
+};
+
+typedef struct hashNode hashNode;
+
+typedef struct {
+	hashNode * head;
+	int count;
 } hashTable[HASH_TABLE_SIZE];
 
 hashTable HT;
