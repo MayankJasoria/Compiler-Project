@@ -32,9 +32,9 @@ unsigned long long int followSet(nonterminal nonT);
 void parserInit(char* filename);
 
 /* Function return types may need to be changed. Check and update as necessary */
-void ComputeFirstAndFollowSets (grammar G, FirstAndFollow F);
+void ComputeFirstAndFollowSets();
 
-void createParseTable(FirstAndFollow F, table T);
+void createParseTable();
 
 void parseInputSourceCode(char *testcaseFile, table T);
 

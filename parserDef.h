@@ -5,8 +5,9 @@
 #include <string.h>
 #include "lexerDef.h"
 #include "lexer.h"
+#include "stack.h"
 
-#define NUM_TERM 50
+#define NUM_TERM 58
 #define NUM_NONTERM 48
 
 /* structure for maintaining the first and follow sets of the Non Terminals */
@@ -15,9 +16,13 @@ unsigned long long int first[NUM_NONTERM + 2];
 unsigned long long int follow[NUM_NONTERM + 2];
 
 typedef struct sets {
-	unsigned long long int first[NUM_NONTERM + 2];
-	unsigned long long int follow[NUM_NONTERM + 2];
-} FirstAndFollow;
+	unsigned long long int firstset;
+	unsigned long long int followset;
+} FirstAndFollow[NUM_NONTERM];
+
+int parseTable[NUM_NONTERM][NUM_TERM];
+
+FirstAndFollow F;
 
 /* turned to lower case to remove the conflict with Keywords */
 typedef enum {
@@ -71,6 +76,8 @@ typedef enum {
 	range,
 } nonterminal;
 
+terminal * delimit[];
+
 typedef enum {T, NT} typeOfSymbol;
 
 /* Enumerated interger value of the corresponding T/NT */
@@ -78,6 +85,11 @@ typedef union {
 	terminal T;
 	nonterminal NT;
 } symbol;
+
+typedef struct {
+	symbol sym;
+	typeOfSymbol tag;
+} stackElement;
 
 struct rhsNode{
 	symbol sym;

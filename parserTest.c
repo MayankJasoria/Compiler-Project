@@ -166,4 +166,18 @@ int main() {
                 printf("%s ", terminals[j]);
         printf("\n"); 
     }
+    
+    ComputeFirstAndFollowSets();
+    createParseTable();
+    printf("\n ****** Parse Table ******\n");
+    for(i = -1; i < NUM_NONTERM; i++) {
+        printf("%s\n%d\t\t\t", nonterminals[i], i);
+        for(j = 1; j < NUM_TERM; j++) {
+            if(i == -1) 
+                printf("%s\t\t\t", terminals[j]);
+            else
+                printf("%d\t\t\t", parseTable[i][j]);
+        }
+        printf("\n");
+    }
 }

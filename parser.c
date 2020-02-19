@@ -1,6 +1,7 @@
 
 #include "parserDef.h"
 
+terminal * delimit[] = {SEMICOL};
 
 void insertElement (int idx, char * str, typeOfSymbol t, int en) {
 	hashNode * prev = NULL, * curr = NULL;
@@ -330,6 +331,98 @@ unsigned long long int followSet(nonterminal nonT) {
 		}
 	}
 	return follow[nonT];
+}
+
+void ComputeFirstAndFollowSets() {
+	int i = 0;
+	for(i = 0; i < NUM_NONTERM; i++) {
+		firstSet(i);
+		followSet(i);
+		F[i].firstset = first[i];
+		F[i].followset = follow[i];
+	}
+}
+
+void createParseTable() {
+	/* i denotes the rule number */
+	/*
+		-1 : syntactic error
+		-2 : syn
+		otherwise : corresponding rule number
+	*/
+	int i, j;
+	for(i = 0; i < NUM_NONTERM; i++)
+        for(j = 0; j < NUM_TERM; j++)
+            parseTable[i][j] = -1;
+	for(i = 0; i < num_rules; i++) {
+		nonterminal left = G[i].left;
+		unsigned long long int first_set = F[left].firstset;
+		unsigned long long int follow_set = F[left].followset;
+		for(j = 1; j < NUM_TERM; j++) {
+			if(findinSet(first_set, j))
+				parseTable[left][j] = i;
+		}
+		for(j = 1; j < NUM_TERM; j++) {
+			if(findinSet(first_set, 0) && findinSet(follow_set, j))
+				parseTable[left][j] = i;
+			else if(findinSet(follow_set, j))
+				parseTable[left][j] = -2;
+		}
+	}
+}
+
+void parseInputSourceCode(char *testcaseFile) {
+
+	/* Fetching the tokens from the lexer by reading blocks from the source code file */
+	FILE * fp = fopen(testcaseFile, "r");
+	lexerinit();
+	while(endofLexer == 0) {
+		fp = getStream(fp);
+	}
+	Stack S = getStack();
+
+	/* pushing Dollar and <program> onto the stack */
+	stackElement * s = (stackElement *)malloc(sizeof(stackElement));
+	s -> sym.T = DOLLAR;
+	s -> tag = T;
+	S = push(S, s);
+
+	s = (stackElement *)malloc(sizeof(stackElement));
+	s -> sym.NT = program;
+	s -> tag = NT;
+	S = push(S, s);
+
+	/* pushing DOLLAR at the end of the token Stream. */
+	if(ntokens >= tokenStream_cap) {
+		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
+		tokenStream_cap *= 2;
+	}
+	token * endToken = makeNewToken(57);
+	tokenStream[ntokens] = endToken;
+	ntokens++;
+
+	/* declaring the lookAhead pointer */
+	int lookAhead = 0;
+	while(lookAhead < ntokens) {
+		stackElement * Top = top(S);
+		token * nextToken = tokenStream[lookAhead];
+		terminal t = nextToken -> id;
+		if(Top -> tag == T) {
+			if(t == (Top -> sym).T) {
+				lookAhead++;
+				S = pop(S);
+			}
+			else {
+				/* only took SEMICOL as a delimiter */
+				while(lookAhead < ntokens && t != (Top -> sym).T && t != SEMICOL) {
+					lookAhead++;
+					nextToken = tokenStream[lookAhead];
+					t = nextToken -> id;
+				} 
+			}
+		}
+		int ptEntry = parseTable[Top -> ]
+	}
 }
 
 void parserInit(char * filename) {
