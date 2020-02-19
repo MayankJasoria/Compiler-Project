@@ -25,15 +25,15 @@ Stack getStack();
  */
 Stack push(Stack stack, void* element);
 
-/**
- * Adds multiple elements, present within an array of size num, sequentially
- * to the top of the stack, in the same order as they appear in the array
- * @param elements Array of elements to be added to the stack
- * @param num Number of elements to be added to the stack
- * 
- * @return Updated Stack
- */
-Stack pushMany(Stack stack, void** elements, int num);
+// /**
+//  * Adds multiple elements, present within an array of size num, sequentially
+//  * to the top of the stack, in the same order as they appear in the array
+//  * @param elements Array of elements to be added to the stack
+//  * @param num Number of elements to be added to the stack
+//  * 
+//  * @return Updated Stack
+//  */
+// Stack pushMany(Stack stack, void** elements, int num);
 
 /**
  * Removes the top element from the stack
@@ -53,7 +53,7 @@ Stack popMany(Stack stack, int num);
 /**
  * Returns the element present at the top of the stack
  */
-int top(Stack stack);
+void* top(Stack stack);
 
 /**
  * Returns number of elements in stack

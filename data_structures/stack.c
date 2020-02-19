@@ -19,25 +19,25 @@ Stack push(Stack stack, void* element) {
         stack->st = getList();
         stack->elemCount = 0;
     }
-    stack->st = insert(element, BEGIN);
+    stack->st = insertToList(stack->st, element, BEGIN);
     stack->elemCount++;
     return stack;
 }
 
-Stack pushMany(Stack stack, void** elements, int num) {
-    int i;
-    for(i = 0; i < num; i++) {
-        stack = push(stack, elements[i]);
-    }
-    return stack;
-}
+// Stack pushMany(Stack stack, void* elements, int num) {
+//     int i;
+//     for(i = 0; i < num; i++) {
+//         stack = push(stack, elements[i]);
+//     }
+//     return stack;
+// }
 
 Stack pop(Stack stack) {
     if(stack->st == NULL) {
         fprintf(stderr, "The stack is empty\n");
         return stack;
     }
-    stack->st = deleteByNode(stack->st->head);
+    stack->st = deleteByNode(stack->st, stack->st->head);
     stack->elemCount--;
 
     if(stack->elemCount == 0) {
@@ -66,12 +66,12 @@ Stack popMany(Stack stack, int num) {
     return stack;
 }
 
-int top(Stack stack) {
+void* top(Stack stack) {
     if(stack->st != NULL) {
         return stack->st->head->data;
     } else {
         fprintf(stderr, "The stack is empty\n");
-        return -1;
+        return NULL;
     }
 }
 

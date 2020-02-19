@@ -27,6 +27,7 @@ List insertToList(List list, void* data, position dir) {
 		/* Insert at beginning of list */
 		newNode->next = list->head;
 		newNode->prev = NULL;
+		list->head->prev = newNode;
 		list->head = newNode;
 	} else if(dir == END) {
 		/* Inserting at end of list */
@@ -84,7 +85,7 @@ List insertToList(List list, void* data, position dir) {
 // 	return list;
 // }
 
-List deleteByNodeList(List list, Node* element) {
+List deleteByNode(List list, Node* element) {
 	if(element == NULL) {
 		fprintf(stderr,"Element does not exist\n");
 		return list;
@@ -93,7 +94,7 @@ List deleteByNodeList(List list, Node* element) {
 		fprintf(stderr,"List is empty\n");
 		return list;
 	}
-	if(element->prev != NULL) {
+	if(element->prev == NULL) {
 		/* first element */
 		list->head = element->next;
 		if(list->head == NULL) {
@@ -111,8 +112,9 @@ List deleteByNodeList(List list, Node* element) {
 			element->next->prev = element->prev;
 		}
 	}
+	free(element->data);
 	free(element);
-	return list->head;
+	return list;
 }
 
 // Node* findInList(List list, void* data) {
@@ -125,3 +127,19 @@ List deleteByNodeList(List list, Node* element) {
 // 	}
 // 	return curr;
 // }
+
+void destroyList(List list) {
+	/* traverse from end of list */
+	while(list->end != NULL) {
+		Node* del = list->end;
+		list->end = list->end->prev;
+		free(del);
+		list->end->next = NULL;
+	}
+	/* list is empty */
+	list->head = NULL;
+
+	/* finally, delete the list */
+	free(list);
+	list = NULL;
+}
