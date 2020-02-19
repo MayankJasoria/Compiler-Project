@@ -1,4 +1,4 @@
-program			: moduleDeclarations otherModules driverModule   otherModules
+program			: moduleDeclarations otherModules driverModule otherModules
 moduleDeclarations	: moduleDeclaration moduleDeclarations | EMPTY
 moduleDeclaration	: DECLARE MODULE ID SEMICOL
 otherModules		: module otherModules | EMPTY
