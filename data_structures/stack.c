@@ -37,7 +37,7 @@ Stack pop(Stack stack) {
         fprintf(stderr, "The stack is empty\n");
         return stack;
     }
-    stack->st = deleteByData(top(stack));
+    stack->st = deleteByNode(stack->st->head);
     stack->elemCount--;
 
     if(stack->elemCount == 0) {

@@ -4,12 +4,15 @@
 
 boolean initialized = FALSE;
 
-/**
- * Initializes the hash table for first time use
- * (May overwrite a hash table with memory leaks
- * if used on an existing hash table)
- * @return A newly initialized hash table
- */
+HashTable getHashTable() {
+	/* Creating a Hash Table */
+	HashTable table = (HashTable) malloc(sizeof(List)*HASH_TABLE_SIZE);
+	for(int i = 0; i < HASH_TABLE_SIZE; i++) {
+		/* Initializing all hash cells to NULL */
+		table[i] = NULL;
+	}
+	return table;
+}
 
 
 /**
@@ -28,6 +31,14 @@ int computeHash(const char *str)
 	return hash % HASH_TABLE_SIZE;
 }
 
-HashTable insertToTable(void* key, void* data) {
-	int idx = computeHash((char*) key);
+HashTable insertToTable(HashTable table, void* key, void* data) {
+	int idx = computeHash((char*) key); /* check */
+	if(table[idx] == NULL) {
+		table[idx] = getList();
+	}
+	hash_element* elem = (hash_element*) malloc(sizeof(hash_element));
+	elem->key = key;
+	elem->data = data;
+	table[idx] = insertToList(table[idx], elem, BEGIN);
+	return table;
 }
