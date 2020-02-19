@@ -7,7 +7,7 @@
 #include "lexer.h"
 
 #define NUM_TERM 50
-#define NUM_NONTERM 50
+#define NUM_NONTERM 48
 
 /* structure for maintaining the first and follow sets of the Non Terminals */
 
@@ -69,7 +69,6 @@ typedef enum {
 	_default, /* for removing the conflict */
 	iterativestmt,
 	range,
-
 } nonterminal;
 
 typedef enum {T, NT} typeOfSymbol;
@@ -91,7 +90,7 @@ typedef struct rhsNode rhsNode;
 typedef struct {
 	nonterminal left;
 	rhsNode * head;
-} grammar[100];
+} grammar[200];
 
 grammar G;
 
