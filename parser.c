@@ -312,13 +312,13 @@ unsigned long long int followSet(nonterminal nonT) {
 			}
 			else {
 				if((node -> sym).NT == nonT) {
-					unsigned long long int tmp;
+					unsigned long long int tmp = 0;
 					if(node -> next != NULL)
 						tmp = firstFollow(node -> next);
 					follow[nonT] = setUnion(follow[nonT], tmp);
 					if(follow[nonT] % 2)
 						follow[nonT]--;
-					if(tmp % 2) {
+					if(tmp % 2 || (node -> next == NULL)) {
 						if(G[i].left != nonT)
 							follow[nonT] = setUnion(follow[nonT], followSet(G[i].left));
 					}
