@@ -62,6 +62,7 @@ Stack popMany(Stack stack, int num) {
     }
     while(num > 0) {
         stack = pop(stack);
+        num--;
     }
     return stack;
 }

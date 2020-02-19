@@ -17,6 +17,16 @@ void printList(List ll) {
 	printf("NULL\n");
 }
 
+void printListReverse(List ll) {
+	Node* curr = ll->end;
+	printf("NULL");
+	while(curr != NULL) {
+		printf(" <-- [%d]", *((int*)curr->data));
+		curr = curr->prev;
+	}
+	printf("\n");
+}
+
 int main() {
 	// lexerinit();
 	// FILE * fp = fopen("progerr.eg", "r");
@@ -43,27 +53,27 @@ int main() {
 	// 	ll = insertToList(ll, ins, j);
 	// }
 
-	// printList(ll);
+	// printListReverse(ll);
 
 	// // delete third element
 	// ll = deleteByNode(ll, ll->head->next->next);
 
 	// while (ll->head) {
 	// 	ll = deleteByNode(ll, ll->head);
-	// 	printList(ll);
+	// 	printListReverse(ll);
 	// }
 
-	// printList(ll);
+	// printListReverse(ll);
 
 	// // delete head
 	// ll = deleteByNode(ll, ll->head);
 
-	// printList(ll);
+	// printListReverse(ll);
 
 	// // delete tail
 	// ll = deleteByNode(ll, ll->end);
 
-	// printList(ll);
+	// printListReverse(ll);
 
 	// testing stack
 	Stack st = getStack();
@@ -86,4 +96,6 @@ int main() {
 	popMany(st, 4);
 
 	printf("new Top: %d\n", *((int*)top(st)));
+
+	popMany(st, 39);
 }
