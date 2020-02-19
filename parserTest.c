@@ -26,7 +26,7 @@ char * nonterminals[] = {
         "index",
         "simpleStmt",
         "assignmentStmt",
-        "modulereuseStmt",
+        "moduleReuseStmt",
         "optional",
         "idList",
         "idListNew",
@@ -129,9 +129,9 @@ int main() {
 
     // printing grammar rules [array of linked_lists]
     printf("****** Grmmar Rules ******\n");
-    int i;
+    int i, j;
     // printf("%d %d\n", hash("MINUS"), hash("iterativeStmt"));
-    for(i = 0; i < 100; i++) {
+    for(i = 0; i < num_rules; i++) {
         printf("%s :", nonterminals[G[i].left]);
         rhsNode* curr = G[i].head;
         while(curr != NULL) {
@@ -146,10 +146,24 @@ int main() {
         printf("\n");
     }
 
-    // printf("\n****** First and Follow Sets ******\n");
-    // for(i = 0; i < NUM_NONTERM + 2; i++) {
-    //     printBinary(first[i]);
-    //     printf("  |  ");
-    //     printBinary(follow[i]);
-    // }
+    printf("\n****** First Sets ******\n");
+    for(i = 0; i < NUM_NONTERM + 2; i++)
+        firstSet(i);
+    for(i = 0; i < NUM_NONTERM + 2; i++) {
+        printf("%s:    ", nonterminals[i]);
+        for(j = 0; j < 58; j ++)
+            if(findinSet(first[i], j))
+                printf("%s ", terminals[j]);
+        printf("\n");    
+    }
+    printf("\n****** Follow Sets ******\n");
+    for(i = 0; i < NUM_NONTERM; i++)
+        followSet(i);
+    for(i = 0; i < NUM_NONTERM; i++) {
+        printf("%s:    ", nonterminals[i]);
+        for(j = 0; j < 58; j ++)
+            if(findinSet(follow[i], j))
+                printf("%s ", terminals[j]);
+        printf("\n"); 
+    }
 }

@@ -35,9 +35,9 @@ whichId : EMPTY
 index : NUM
 index : ID
 simpleStmt : assignmentStmt
-simpleStmt : modulereuseStmt
+simpleStmt : moduleReuseStmt
 assignmentStmt : ID whichId ASSIGNOP expression SEMICOL
-modulereuseStmt : optional USE MODULE ID WITH PARAMETERS idList SEMICOL
+moduleReuseStmt : optional USE MODULE ID WITH PARAMETERS idList SEMICOL
 optional : SQBO idList SQBC ASSIGNOP
 optional : EMPTY
 idList : ID idListNew
@@ -92,10 +92,3 @@ default : EMPTY
 iterativeStmt : FOR BO ID IN range BC START statements END
 iterativeStmt : WHILE BO arithOrBoolExpr BC START statements END
 range : NUM RANGEOP NUM
-program :
-program :
-program :
-program :
-program :
-program :
-program :

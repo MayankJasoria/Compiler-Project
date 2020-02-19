@@ -3,7 +3,7 @@
 
 #define NUM_KEYWORDS 30
 
-#define HASH_TABLE_SIZE 2003
+#define HASH_TABLE_SIZE 199
 
 int num_keywords;
 

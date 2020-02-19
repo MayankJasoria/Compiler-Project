@@ -246,8 +246,9 @@ unsigned long long int firstSet(nonterminal nonT) {
 		while(node != NULL) {
 			if(node -> tag == T) {
 				first[nonT] = setUnion(first[nonT], ((unsigned long long int)1 << (node -> sym).T));
-				if(first[nonT] % 2)
+				if((first[nonT] % 2) && ((node -> sym).T != 0)) {
 					first[nonT]--;
+				}
 				break;
 			}
 			else {
@@ -276,7 +277,7 @@ unsigned long long int firstFollow(rhsNode * node) {
 	while(tmpNode != NULL) {
 		if(tmpNode -> tag == T) {
 			tmp = setUnion(tmp, (unsigned long long int) 1 << (tmpNode -> sym).T);
-			if(tmp % 2)
+			if((tmp % 2) && ((tmpNode -> sym).T != 0))
 				tmp--;
 			break;
 		}
@@ -299,11 +300,11 @@ unsigned long long int followSet(nonterminal nonT) {
 	if(follow[nonT] != 0 && nonT != 0)
 		return follow[nonT];
 	if(nonT == 0)
-		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 55);
+		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 57);
 	int i;
 	int isEmpty = 0;
 	for(i = 0; i < num_rules; i++) {
-		rhsNode * node = G[nonT].head;
+		rhsNode * node = G[i].head;
 		while(node != NULL) {
 			if(node -> tag == T) {
 				node = node -> next;
@@ -311,15 +312,20 @@ unsigned long long int followSet(nonterminal nonT) {
 			}
 			else {
 				if((node -> sym).NT == nonT) {
-					unsigned long long int tmp = firstFollow(node -> next);
+					unsigned long long int tmp = 0;
+					if(node -> next != NULL)
+						tmp = firstFollow(node -> next);
 					follow[nonT] = setUnion(follow[nonT], tmp);
 					if(follow[nonT] % 2)
 						follow[nonT]--;
-					if(tmp % 2) {
-						if(G[nonT].left != nonT)
-							follow[nonT] = setUnion(follow[nonT], followSet(G[nonT].left));
+					if(tmp % 2 || (node -> next == NULL)) {
+						if(G[i].left != nonT)
+							follow[nonT] = setUnion(follow[nonT], followSet(G[i].left));
 					}
+					node = node -> next;
 				}
+				else
+					node = node -> next;
 			}
 		}
 	}
