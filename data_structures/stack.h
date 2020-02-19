@@ -1,3 +1,6 @@
+#ifndef _STACK
+#define _STACK
+
 #include "linked_list.h"
 
 struct stack {
@@ -7,32 +10,36 @@ struct stack {
 
 typedef struct stack* Stack;
 
-extern Stack st;
+/**
+ * Creates and returns a new stack
+ * @return a new Stack
+ */
+Stack getStack();
 
 /**
- * Adds the given value to top of stack
- * @param value The value to be added to the top of the stack
+ * Adds the given element to top of stack
+ * @param element The element to be added to the top of the stack
  * 
  * @return Updated Stack
  */
-Stack push(int value);
+Stack push(Stack stack, void* element);
 
 /**
- * Adds multiple values, present within an array of size num, sequentially
+ * Adds multiple elements, present within an array of size num, sequentially
  * to the top of the stack, in the same order as they appear in the array
- * @param values Array of values to be added to the stack
+ * @param elements Array of elements to be added to the stack
  * @param num Number of elements to be added to the stack
  * 
  * @return Updated Stack
  */
-Stack pushMany(int* values, int num);
+Stack pushMany(Stack stack, void** elements, int num);
 
 /**
  * Removes the top element from the stack
  * 
  * @return Updated Stack
  */
-Stack pop();
+Stack pop(Stack stack);
 
 /**
  * Removes the specified number of elements from the top of the stack
@@ -40,15 +47,17 @@ Stack pop();
  * @param num Number of elements to remove
  * @return Updated Stack
  */
-Stack popMany(int num);
+Stack popMany(Stack stack, int num);
 
 /**
- * Returns the value present at the top of the stack
+ * Returns the element present at the top of the stack
  */
-int top();
+int top(Stack stack);
 
 /**
  * Returns number of elements in stack
  * Hint: Useful for checking if stack is empty
  */
-int numElementsInStack();
+int numElementsInStack(Stack stack);
+
+#endif
