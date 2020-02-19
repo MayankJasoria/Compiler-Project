@@ -25,7 +25,7 @@ Tree getTree(TreeElement data);
 
 /**
  * Inserts a new child to a given node of the tree
- * @param node	The node whise child is to be added
+ * @param node	The node whose child is to be added
  * @param data	The data to be added as the child
  * 
  * @return updated tree
@@ -33,6 +33,15 @@ Tree getTree(TreeElement data);
 Tree insertChild(Tree node, TreeElement data);
 
 // Tree insertChildList(Tree node, List children)
+
+/**
+ * Inserts a list of children (present in linked list rhsNode)
+ * to the specified node (whose children have not yet been added)
+ * @param node		The node whise children are to be added
+ * @param children	The list of children to be added
+ * 
+ * @return updated tree
+ */ 
 Tree insertChildren(Tree node, rhsNode* children);
 
 // Tree findElement(Tree root, TreeElement data);
