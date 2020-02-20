@@ -10,6 +10,7 @@
 
 #define NUM_TERM 58
 #define NUM_NONTERM 48
+#define NUM_RULES 200
 
 /* structure for maintaining the first and follow sets of the Non Terminals */
 
@@ -28,7 +29,7 @@ FirstAndFollow F;
 typedef struct {
 	nonterminal left;
 	rhsNode * head;
-} grammar[200];
+} grammar[NUM_RULES];
 
 grammar G;
 

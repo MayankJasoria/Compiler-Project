@@ -40,6 +40,42 @@ char * keywordList[] = {
 		"while"
 	};
 
+void insertkey (int idx, char * str, int en) {
+	keyNode * prev = NULL, * curr = NULL;
+	
+	/* initializing the new Node to be inserted */
+	keyNode * new = (keyNode *)malloc(sizeof(keyNode));
+	strcpy(new -> str, str);
+	new -> next = NULL;
+	new -> id = en;
+
+	curr = keys[idx].head;
+	
+	if(keys[idx].count == 0) {
+		keys[idx].head = new;
+		keys[idx].count++;
+		return;
+	}
+	
+	while(curr != NULL) {
+		prev = curr;
+		curr = curr -> next;
+	}
+	prev -> next = new;
+	keys[idx].count++;
+}
+
+keyNode * keyLookup(int idx, char * str) {
+
+	keyNode * curr = keys[idx].head;
+	while(curr != NULL) {
+		if(strcmp(curr -> str, str) == 0)
+			break;
+		curr = curr -> next;
+	}
+	return curr;
+}
+
 int hash(const char *str)
 {
 	unsigned long hash = 5381;
@@ -52,11 +88,12 @@ int hash(const char *str)
 
 void hashTableinit() {
 	int i;
-	for(i = 0; i < HASH_TABLE_SIZE; i++)
+	for(i = 0; i < HASH_TABLE_SIZE; i++) 
 		hash_table[i] = -1;
 	for(i = 1; i <= num_keywords; i++) {
 		int key = hash(keywordList[i]);
-		hash_table[key] = i;
+		insertkey(key, keywordList[i], i);
+		// hash_table[key] = i;
 	}
 }
 
@@ -64,11 +101,12 @@ int checkIdentifier(char * str) {
 	if(strlen(str) > 20)
 		return -1;
 	int key = hash(str);
-	if(hash_table[key] == -1)
+	keyNode * k = keyLookup(key, str);
+	if(keyLookup(key, str) == NULL)
 		return 0;
-	if(strcmp(keywordList[hash_table[key]], str))
-		return 0;
-	return hash_table[key];
+	// if(strcmp(keywordList[hash_table[key]], str))
+	// 	return 0;
+	return k -> id;
 }
 
 void lexerinit() {
@@ -331,8 +369,19 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 19:
-				newtok = makeNewToken(41);
-				return newtok;
+				nxt = streamBuffer[buffer_id];
+				if(nxt == '<') {
+					state = 49;
+					strcat(lexeme, "<");
+				}
+				else {
+					state = 48;
+					ctoa(nxt);
+				}
+				buffer_id++;
+				break;
+				// newtok = makeNewToken(41);
+				// return newtok;
 			case 20:
 				newtok = makeNewToken(36);
 				return newtok;
@@ -357,8 +406,19 @@ token * getNextToken() {
 				buffer_id++;
 				break;
 			case 23:
-				newtok = makeNewToken(42);
-				return newtok;
+				nxt = streamBuffer[buffer_id];
+				if(nxt == '>') {
+					state = 51;
+					strcat(lexeme, ">");
+				}
+				else {
+					state = 50;
+					ctoa(nxt);
+				}
+				buffer_id++;
+				break;
+				// newtok = makeNewToken(42);
+				// return newtok;
 			case 24:
 				newtok = makeNewToken(37);
 				return newtok;
@@ -560,6 +620,20 @@ token * getNextToken() {
 				state = 1;
 				lexeme[0] = '\0';
 				break;
+			case 48:
+				retract(1);
+				newtok = makeNewToken(41);
+				return newtok;
+			case 49:
+				newtok = makeNewToken(55);
+				return newtok;
+			case 50:
+				retract(1);
+				newtok = makeNewToken(42);
+				return newtok;
+			case 51:
+				newtok = makeNewToken(56);
+				return newtok;
 		}
 	}
 	token * tok = makeNewToken(-1);

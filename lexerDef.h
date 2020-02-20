@@ -5,7 +5,7 @@
 
 #define NUM_KEYWORDS 30
 
-#define HASH_TABLE_SIZE 199
+#define HASH_TABLE_SIZE 200
 
 int num_keywords;
 
@@ -28,6 +28,21 @@ typedef struct {
 	char * lex;
 	int line_num;
 } errorInst;
+
+struct keyNode {
+	char str[25];
+	int id;
+	struct keyNode * next;
+};
+
+typedef struct keyNode keyNode;
+
+typedef struct {
+	keyNode * head;
+	int count;
+} keyTable[HASH_TABLE_SIZE];
+
+keyTable keys;
 
 /* hash_table to store the keyworkds */
 int hash_table[HASH_TABLE_SIZE];

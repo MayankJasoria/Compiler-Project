@@ -171,7 +171,7 @@ rhsNode * make_rhsNode(char * str, rhsNode * prev, int id) {
 	rhsNode * r = (rhsNode *)malloc(sizeof(rhsNode));
 	int idx = hash(str);
 	hashNode * lookup = hashLookup(idx, str);
-	if(str[0] >= 'A')
+	if(str[0] <= 'Z')
 		(r -> sym).T = (lookup -> sym).T;
 	else
 		(r -> sym).NT = (lookup -> sym).NT;
@@ -515,16 +515,22 @@ void parseInputSourceCode(char *testcaseFile) {
 	/* declaring the lookAhead pointer */
 	int lookAhead = 0;
 	while(lookAhead < ntokens) {
+		if(numElementsInStack(S) == 0)
+			break;
 		stackElement * Top = top(S);
 		token * nextToken = tokenStream[lookAhead];
 		terminal t = nextToken -> id;
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
+				fflush(stdout);
 				lookAhead++;
 				S = pop(S);
+				if(numElementsInStack(S) > 0)
+					printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
 			}
 			else { /* To do: Error Handling */
 				/* only took SEMICOL as a delimiter */
+				printf("error\n");
 				while(lookAhead < ntokens && t != (Top -> sym).T && t != SEMICOL) {
 					lookAhead++;
 					nextToken = tokenStream[lookAhead];
@@ -556,14 +562,14 @@ void parseInputSourceCode(char *testcaseFile) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
 					new -> sym = node -> sym;
 					new -> tag = node -> tag;
+					tmp = pop(tmp);
 					if((node -> tag == T)&&(node -> sym.T == 0))
 						continue;
 					S = push(S, new);
-					tmp = pop(tmp);
 				}
-				// lookAhead++;
 			}
 			else {
+				printf("error2\n");
 				/* To DO : Error Handling */
 			}
 		}
