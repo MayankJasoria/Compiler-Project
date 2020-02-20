@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "lexerDef.h"
 #include "utils/utils.h"
+#include "data_structures/hash_map.h"
 
 FILE * getStream(FILE * fp);
 
@@ -34,5 +35,7 @@ void idlengthError();
 void ctoa(char ch);
 
 void removeComments(char *testcaseFile, char *cleanFile);
+
+HashTable hashtable;
 
 #endif

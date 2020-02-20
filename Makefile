@@ -8,7 +8,7 @@ CFLAGS=-c
 DEPS_PROG=driver.o
 
 parser: parser.c
-	cls
+	#cls
 	$(CC) -g -o a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c
 	a
 
