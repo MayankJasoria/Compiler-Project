@@ -1,8 +1,6 @@
 
 #include "parserDef.h"
 
-terminal * delimit[] = {SEMICOL};
-
 void insertElement (int idx, char * str, typeOfSymbol t, int en) {
 	hashNode * prev = NULL, * curr = NULL;
 	
@@ -181,7 +179,6 @@ rhsNode * make_rhsNode(char * str, rhsNode * prev, int id) {
 	r -> next = NULL;
 	if(prev == NULL) {
 		G[id].head = r;
-		// printf("HEAD:       %d   %d   %d       %s\n", idx, (r -> sym).T, r -> tag, str);
 	}
 	else
 		prev -> next = r;
@@ -352,11 +349,11 @@ void createParseTable() {
 	*/
 	int i, j;
 	for(i = 0; i < NUM_NONTERM; i++)
-        for(j = 0; j < NUM_TERM; j++)
-            parseTable[i][j] = -1;
+		for(j = 0; j < NUM_TERM; j++)
+			parseTable[i][j] = -1;
 	for(i = 0; i < num_rules; i++) {
 		nonterminal left = G[i].left;
-		unsigned long long int first_set = F[left].firstset;
+		unsigned long long int first_set = firstFollow(G[i].head); //F[left].firstset;
 		unsigned long long int follow_set = F[left].followset;
 		for(j = 1; j < NUM_TERM; j++) {
 			if(findinSet(first_set, j))
@@ -371,8 +368,122 @@ void createParseTable() {
 	}
 }
 
-void parseInputSourceCode(char *testcaseFile) {
 
+
+void parseInputSourceCode(char *testcaseFile) {
+	
+	char * nonterminals[] = { 
+			"program",
+			"moduleDeclarations",
+			"moduleDeclaration",
+			"otherModules",
+			"driverModule",
+			"module",
+			"ret",
+			"input_plist",
+			"input_plistNew",
+			"output_plist",
+			"output_plistNew",
+			"type",
+			"dataType",
+			"moduleDef",
+			"statements",
+			"statement",
+			"ioStmt",
+			"whichId",
+			"index",
+			"simpleStmt",
+			"assignmentStmt",
+			"moduleReuseStmt",
+			"optional",
+			"idList",
+			"idListNew",
+			"expression",
+			"arithOrBoolExpr",
+			"arithOrBoolExprNew",
+			"relopExpr",
+			"relopExprNew",
+			"arithmeticExpr",	
+			"arithmeticExprNew",
+			"term",
+			"termNew",
+			"factor",
+			"var",
+			"pm",
+			"md",
+			"logicalOp",
+			"relationalOp",
+			"declareStmt",
+			"condionalStmt",
+			"caseStmts",
+			"caseStmtsNew",
+			"value",
+			"default",
+			"iterativeStmt",
+			"range"
+		};
+	
+	char * terminals[] = {
+			"EMPTY",
+			"INTEGER",
+			"REAL",
+			"BOOLEAN",
+			"OF",
+			"ARRAY",
+			"START",
+			"END",
+			"DECLARE",
+			"MODULE",
+			"DRIVER",
+			"PROGRAM",
+			"GET_VALUE",
+			"PRINT",
+			"USE",
+			"WITH",
+			"PARAMETERS",
+			"TRUE",
+			"FALSE",
+			"TAKES",
+			"INPUT",
+			"RETURNS",
+			"AND",
+			"OR",
+			"FOR",
+			"IN",
+			"SWITCH",
+			"CASE",
+			"BREAK",
+			"DEFAULT",
+			"WHILE",
+			"PLUS",
+			"MINUS",
+			"MUL",
+			"DIV",
+			"LT",
+			"LE",
+			"GE",
+			"GT",
+			"EQ",
+			"NE",
+			"DEF",
+			"ENDDEF",
+			"COLON",
+			"RANGEOP",
+			"SEMICOL",
+			"COMMA",
+			"ASSIGNOP",
+			"SQBO",
+			"SQBC",
+			"BO",
+			"BC",
+			"NUM",
+			"RNUM",
+			"ID",
+			"DRIVERDEF",
+			"DRIVERENDDEF",
+			"DOLLAR"
+		};
+	
 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
 	FILE * fp = fopen(testcaseFile, "r");
 	lexerinit();
@@ -412,16 +523,50 @@ void parseInputSourceCode(char *testcaseFile) {
 				lookAhead++;
 				S = pop(S);
 			}
-			else {
+			else { /* To do: Error Handling */
 				/* only took SEMICOL as a delimiter */
 				while(lookAhead < ntokens && t != (Top -> sym).T && t != SEMICOL) {
 					lookAhead++;
 					nextToken = tokenStream[lookAhead];
 					t = nextToken -> id;
-				} 
+				}
 			}
 		}
-		int ptEntry = parseTable[Top -> ]
+		else {
+			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
+			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
+			
+			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
+			
+			if(parseTableVal >= 0) {
+				rhsNode * node = G[parseTableVal].head;
+				printf("%s --> ", nonterminals[(Top -> sym).NT]);
+				S = pop(S);
+				Stack tmp = getStack();
+				while(node != NULL) {
+					tmp = push(tmp, node);
+					if(node -> tag == T)
+						printf("%s\t", terminals[node -> sym.T]);
+					else
+						printf("%s\t", nonterminals[node -> sym.NT]);
+					node = node -> next;
+				}
+				printf("\n");
+				while(node = top(tmp)) {
+					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
+					new -> sym = node -> sym;
+					new -> tag = node -> tag;
+					if((node -> tag == T)&&(node -> sym.T == 0))
+						continue;
+					S = push(S, new);
+					tmp = pop(tmp);
+				}
+				// lookAhead++;
+			}
+			else {
+				/* To DO : Error Handling */
+			}
+		}
 	}
 }
 

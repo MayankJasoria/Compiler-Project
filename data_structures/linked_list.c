@@ -21,6 +21,8 @@ List insertToList(List list, void* data, position dir) {
 		/* First element of list */
 		list->head = newNode;
 		list->end = newNode;
+		newNode -> next = NULL;
+		newNode -> prev = NULL;
 		return list;
 	}
 	if(dir == FRONT) {

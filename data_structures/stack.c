@@ -19,7 +19,7 @@ Stack push(Stack stack, void* element) {
         stack->st = getList();
         stack->elemCount = 0;
     }
-    stack->st = insertToList(stack->st, element, BEGIN);
+    stack->st = insertToList(stack->st, element, FRONT);
     stack->elemCount++;
     return stack;
 }
@@ -68,7 +68,7 @@ Stack popMany(Stack stack, int num) {
 }
 
 void* top(Stack stack) {
-    if(stack == NULL || stack->st != NULL) {
+    if(stack != NULL && stack->st != NULL) {
         return stack->st->head->data;
     } else {
         fprintf(stderr, "The stack is empty\n");

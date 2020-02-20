@@ -126,8 +126,6 @@ typedef enum {
 	range,
 } nonterminal;
 
-terminal * delimit[];
-
 typedef enum {T, NT} typeOfSymbol;
 
 /* Enumerated interger value of the corresponding T/NT */

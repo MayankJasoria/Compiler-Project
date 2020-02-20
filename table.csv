@@ -1,0 +1,247 @@
+****** Grmmar Rules ******
+program : moduleDeclarations otherModules driverModule otherModules
+moduleDeclarations : moduleDeclaration moduleDeclarations
+moduleDeclarations : EMPTY
+moduleDeclaration : DECLARE MODULE ID SEMICOL
+otherModules : module otherModules
+otherModules : EMPTY
+driverModule : DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
+module : DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
+ret : RETURNS SQBO output_plist SQBC SEMICOL
+ret : EMPTY
+input_plist : ID COLON dataType input_plistNew
+input_plistNew : COMMA ID COLON dataType input_plistNew
+input_plistNew : EMPTY
+output_plist : ID COLON type output_plistNew
+output_plistNew : COMMA ID COLON type output_plistNew
+output_plistNew : EMPTY
+type : INTEGER
+type : REAL
+type : BOOLEAN
+dataType : type
+dataType : ARRAY SQBO range SQBC OF type
+moduleDef : START statements END
+statements : statement statements
+statements : EMPTY
+statement : ioStmt
+statement : simpleStmt
+statement : declareStmt
+statement : condionalStmt
+statement : iterativeStmt
+ioStmt : GET_VALUE BO ID whichId BC SEMICOL
+ioStmt : PRINT BO expression BC SEMICOL
+whichId : SQBO index SQBC
+whichId : EMPTY
+index : NUM
+index : ID
+simpleStmt : assignmentStmt
+simpleStmt : moduleReuseStmt
+assignmentStmt : ID whichId ASSIGNOP expression SEMICOL
+moduleReuseStmt : optional USE MODULE ID WITH PARAMETERS idList SEMICOL
+optional : SQBO idList SQBC ASSIGNOP
+optional : EMPTY
+idList : ID idListNew
+idListNew : COMMA ID idListNew
+idListNew : EMPTY
+expression : arithOrBoolExpr
+expression : MINUS BO arithmeticExpr BC
+expression : PLUS BO arithmeticExpr BC
+expression : PLUS var
+expression : MINUS var
+arithOrBoolExpr : relopExpr arithOrBoolExprNew
+arithOrBoolExprNew : logicalOp relopExpr arithOrBoolExprNew
+arithOrBoolExprNew : EMPTY
+relopExpr : arithmeticExpr relopExprNew
+relopExprNew : relationalOp arithmeticExpr relopExprNew
+relopExprNew : EMPTY
+arithmeticExpr : term arithmeticExprNew
+arithmeticExprNew : pm term arithmeticExprNew
+arithmeticExprNew : EMPTY
+term : factor termNew
+termNew : md factor termNew
+termNew : EMPTY
+factor : BO arithmeticExpr BC
+factor : var
+var : ID whichId
+var : NUM
+var : RNUM
+var : TRUE
+var : FALSE
+pm : PLUS
+pm : MINUS
+md : MUL
+md : DIV
+logicalOp : AND
+logicalOp : OR
+relationalOp : LT
+relationalOp : LE
+relationalOp : GT
+relationalOp : GE
+relationalOp : EQ
+relationalOp : NE
+declareStmt : DECLARE idList COLON dataType SEMICOL
+condionalStmt : SWITCH BO ID BC START caseStmts default END
+caseStmts : CASE value COLON statements BREAK SEMICOL caseStmtsNew
+caseStmtsNew : CASE value COLON statements BREAK SEMICOL caseStmtsNew
+caseStmtsNew : EMPTY
+value : NUM
+value : TRUE
+value : FALSE
+default : DEFAULT COLON statements BREAK SEMICOL
+default : EMPTY
+iterativeStmt : FOR BO ID IN range BC START statements END
+iterativeStmt : WHILE BO arithOrBoolExpr BC START statements END
+range : NUM RANGEOP NUM
+
+****** First Sets ******
+program:    DECLARE DEF DRIVERDEF 
+moduleDeclarations:    EMPTY DECLARE 
+moduleDeclaration:    DECLARE 
+otherModules:    EMPTY DEF 
+driverModule:    DRIVERDEF 
+module:    DEF 
+ret:    EMPTY RETURNS 
+input_plist:    ID 
+input_plistNew:    EMPTY COMMA 
+output_plist:    ID 
+output_plistNew:    EMPTY COMMA 
+type:    INTEGER REAL BOOLEAN 
+dataType:    INTEGER REAL BOOLEAN ARRAY 
+moduleDef:    START 
+statements:    EMPTY DECLARE GET_VALUE PRINT USE FOR SWITCH WHILE SQBO ID 
+statement:    DECLARE GET_VALUE PRINT USE FOR SWITCH WHILE SQBO ID 
+ioStmt:    GET_VALUE PRINT 
+whichId:    EMPTY SQBO 
+index:    NUM ID 
+simpleStmt:    USE SQBO ID 
+assignmentStmt:    ID 
+moduleReuseStmt:    USE SQBO 
+optional:    EMPTY SQBO 
+idList:    ID 
+idListNew:    EMPTY COMMA 
+expression:    TRUE FALSE PLUS MINUS BO NUM RNUM ID 
+arithOrBoolExpr:    TRUE FALSE BO NUM RNUM ID 
+arithOrBoolExprNew:    EMPTY AND OR 
+relopExpr:    TRUE FALSE BO NUM RNUM ID 
+relopExprNew:    EMPTY LT LE GE GT EQ NE 
+arithmeticExpr:    TRUE FALSE BO NUM RNUM ID 
+arithmeticExprNew:    EMPTY PLUS MINUS 
+term:    TRUE FALSE BO NUM RNUM ID 
+termNew:    EMPTY MUL DIV 
+factor:    TRUE FALSE BO NUM RNUM ID 
+var:    TRUE FALSE NUM RNUM ID 
+pm:    PLUS MINUS 
+md:    MUL DIV 
+logicalOp:    AND OR 
+relationalOp:    LT LE GE GT EQ NE 
+declareStmt:    DECLARE 
+condionalStmt:    SWITCH 
+caseStmts:    CASE 
+caseStmtsNew:    EMPTY CASE 
+value:    TRUE FALSE NUM 
+default:    EMPTY DEFAULT 
+iterativeStmt:    FOR WHILE 
+range:    NUM 
+EMPTY:    
+INTEGER:    
+
+****** Follow Sets ******
+program:    DOLLAR 
+moduleDeclarations:    DEF DRIVERDEF 
+moduleDeclaration:    DECLARE DEF DRIVERDEF 
+otherModules:    DRIVERDEF DOLLAR 
+driverModule:    DEF DOLLAR 
+module:    DEF DRIVERDEF DOLLAR 
+ret:    START 
+input_plist:    SQBC 
+input_plistNew:    SQBC 
+output_plist:    SQBC 
+output_plistNew:    SQBC 
+type:    SEMICOL COMMA SQBC 
+dataType:    SEMICOL COMMA SQBC 
+moduleDef:    DEF DRIVERDEF DOLLAR 
+statements:    END BREAK 
+statement:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+ioStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+whichId:    AND OR PLUS MINUS MUL DIV LT LE GE GT EQ NE SEMICOL ASSIGNOP BC 
+index:    SQBC 
+simpleStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+assignmentStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+moduleReuseStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+optional:    USE 
+idList:    COLON SEMICOL SQBC 
+idListNew:    COLON SEMICOL SQBC 
+expression:    SEMICOL BC 
+arithOrBoolExpr:    SEMICOL BC 
+arithOrBoolExprNew:    SEMICOL BC 
+relopExpr:    AND OR SEMICOL BC 
+relopExprNew:    AND OR SEMICOL BC 
+arithmeticExpr:    AND OR LT LE GE GT EQ NE SEMICOL BC 
+arithmeticExprNew:    AND OR LT LE GE GT EQ NE SEMICOL BC 
+term:    AND OR PLUS MINUS LT LE GE GT EQ NE SEMICOL BC 
+termNew:    AND OR PLUS MINUS LT LE GE GT EQ NE SEMICOL BC 
+factor:    AND OR PLUS MINUS MUL DIV LT LE GE GT EQ NE SEMICOL BC 
+var:    AND OR PLUS MINUS MUL DIV LT LE GE GT EQ NE SEMICOL BC 
+pm:    TRUE FALSE BO NUM RNUM ID 
+md:    TRUE FALSE BO NUM RNUM ID 
+logicalOp:    TRUE FALSE BO NUM RNUM ID 
+relationalOp:    TRUE FALSE BO NUM RNUM ID 
+declareStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+condionalStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+caseStmts:    END DEFAULT 
+caseStmtsNew:    END DEFAULT 
+value:    COLON 
+default:    END 
+iterativeStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+range:    SQBC BC 
+
+ ****** Parse Table ******
+(null),INTEGER,REAL,BOOLEAN,OF,ARRAY,START,END,DECLARE,MODULE,DRIVER,PROGRAM,GET_VALUE,PRINT,USE,WITH,PARAMETERS,TRUE,FALSE,TAKES,INPUT,RETURNS,AND,OR,FOR,IN,SWITCH,CASE,BREAK,DEFAULT,WHILE,PLUS,MINUS,MUL,DIV,LT,LE,GE,GT,EQ,NE,DEF,ENDDEF,COLON,RANGEOP,SEMICOL,COMMA,ASSIGNOP,SQBO,SQBC,BO,BC,NUM,RNUM,ID,DRIVERDEF,DRIVERENDDEF,DOLLAR,
+program,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,-1,-2,
+moduleDeclarations,-1,-1,-1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,2,-1,-1,
+moduleDeclaration,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,
+otherModules,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5,-1,5,
+driverModule,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,6,-1,-2,
+module,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,
+ret,-1,-1,-1,-1,-1,9,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,8,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+input_plist,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,10,-1,-1,-1,
+input_plistNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,11,-1,-1,12,-1,-1,-1,-1,-1,-1,-1,-1,
+output_plist,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,13,-1,-1,-1,
+output_plistNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,14,-1,-1,15,-1,-1,-1,-1,-1,-1,-1,-1,
+type,16,17,18,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,
+dataType,19,19,19,-1,20,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,
+moduleDef,-1,-1,-1,-1,-1,21,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,
+statements,-1,-1,-1,-1,-1,-1,23,22,-1,-1,-1,22,22,22,-1,-1,-1,-1,-1,-1,-1,-1,-1,22,-1,22,-1,23,-1,22,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,22,-1,-1,-1,-1,-1,22,-1,-1,-1,
+statement,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+ioStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+whichId,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,32,32,-1,-1,-1,-1,-1,-1,-1,32,32,32,32,32,32,32,32,32,32,-1,-1,-1,-1,32,-1,32,31,-1,-1,32,-1,-1,-1,-1,-1,-1,
+index,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,33,-1,34,-1,-1,-1,
+simpleStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+assignmentStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+moduleReuseStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+optional,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,40,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,39,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+idList,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-1,-1,-2,-1,-1,-1,-1,41,-1,-1,-1,
+idListNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,43,-1,43,42,-1,-1,43,-1,-1,-1,-1,-1,-1,-1,-1,
+expression,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,44,44,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,47,48,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,44,-2,44,44,44,-1,-1,-1,
+arithOrBoolExpr,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,49,49,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,49,-2,49,49,49,-1,-1,-1,
+arithOrBoolExprNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,50,50,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,51,-1,-1,-1,-1,-1,51,-1,-1,-1,-1,-1,-1,
+relopExpr,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,52,52,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,52,-2,52,52,52,-1,-1,-1,
+relopExprNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,54,54,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,53,53,53,53,53,53,-1,-1,-1,-1,54,-1,-1,-1,-1,-1,54,-1,-1,-1,-1,-1,-1,
+arithmeticExpr,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,55,55,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-2,-2,-2,-2,-1,-1,-1,-1,-2,-1,-1,-1,-1,55,-2,55,55,55,-1,-1,-1,
+arithmeticExprNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,57,57,-1,-1,-1,-1,-1,-1,-1,56,56,-1,-1,57,57,57,57,57,57,-1,-1,-1,-1,57,-1,-1,-1,-1,-1,57,-1,-1,-1,-1,-1,-1,
+term,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,58,58,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-2,-2,-2,-2,-2,-2,-1,-1,-1,-1,-2,-1,-1,-1,-1,58,-2,58,58,58,-1,-1,-1,
+termNew,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,60,60,-1,-1,-1,-1,-1,-1,-1,60,60,59,59,60,60,60,60,60,60,-1,-1,-1,-1,60,-1,-1,-1,-1,-1,60,-1,-1,-1,-1,-1,-1,
+factor,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,62,62,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,-1,-1,-1,-2,-1,-1,-1,-1,61,-2,62,62,62,-1,-1,-1,
+var,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,66,67,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,64,65,63,-1,-1,-1,
+pm,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,68,69,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-2,-2,-1,-1,-1,
+md,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,70,71,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-2,-2,-1,-1,-1,
+logicalOp,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,72,73,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-2,-2,-1,-1,-1,
+relationalOp,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,74,75,77,76,78,79,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-2,-2,-1,-1,-1,
+declareStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+condionalStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+caseStmts,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,82,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+caseStmtsNew,-1,-1,-1,-1,-1,-1,84,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,83,-1,84,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+value,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,86,87,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,85,-1,-1,-1,-1,-1,
+default,-1,-1,-1,-1,-1,-1,89,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,88,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+iterativeStmt,-1,-1,-1,-1,-1,-1,-2,-2,-1,-1,-1,-2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,-1,-2,-1,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-1,-1,-1,-1,-2,-1,-1,-1,
+range,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-2,-1,-2,92,-1,-1,-1,-1,-1,

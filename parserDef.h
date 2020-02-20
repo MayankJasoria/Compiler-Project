@@ -6,6 +6,7 @@
 #include "lexerDef.h"
 #include "lexer.h"
 #include "data_structures/stack.h"
+#include "utils/utils.h"
 
 #define NUM_TERM 58
 #define NUM_NONTERM 48
@@ -23,8 +24,6 @@ typedef struct sets {
 int parseTable[NUM_NONTERM][NUM_TERM];
 
 FirstAndFollow F;
-
-
 
 typedef struct {
 	nonterminal left;

@@ -3,7 +3,6 @@
 #include "lexerDef.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 #include <math.h>
 
@@ -619,35 +618,35 @@ void removeComments(char *testcaseFile, char *cleanFile) {
 	FILE * clean = fopen(cleanFile, "w");
 
 	char ch;
-	bool commentOn = false;
-	bool end1 = false;
-	bool start1 = false;
+	boolean commentOn = False;
+	boolean end1 = False;
+	boolean start1 = False;
 	while((ch = fgetc(test)) != EOF) {
 		if(commentOn) {
 			if(ch == '\n')
 				fputc(ch, clean);
 			else if(ch == '*' && end1) {
-				end1 = false;
-				commentOn = false;
+				end1 = False;
+				commentOn = False;
 			} 
 			else if(ch != '*' && end1) {
-				end1 = false;
+				end1 = False;
 			}
 			else if(ch == '*')
-				end1 = true;
+				end1 = True;
 		}
 		else {
 			if(ch == '*' && start1) {
-				start1 = false;
-				commentOn = true;
+				start1 = False;
+				commentOn = True;
 			}
 			else if(ch == '*') {
-				start1 = true;
+				start1 = True;
 			}
 			else if(ch != '*' && start1) {
 				fputc('*', clean);
 				fputc(ch, clean);
-				start1 = false;
+				start1 = False;
 			}
 			else
 				fputc(ch, clean);

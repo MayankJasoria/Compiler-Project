@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "lexerDef.h"
+#include "utils/utils.h"
 
 FILE * getStream(FILE * fp);
 
