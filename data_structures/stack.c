@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "stack.h"
+#include "../utils/utils.h"
 
 Stack getStack() {
     Stack newStack = (Stack) malloc(sizeof(struct stack));
@@ -79,7 +80,13 @@ void* top(Stack stack) {
 int numElementsInStack(Stack stack) {
     if(stack == NULL) {
         return 0;
-    } else {
-        return stack->elemCount;
     }
+    return stack->elemCount;
+}
+
+boolean isStackEmpty(Stack stack) {
+    if(stack == NULL || stack->elemCount == 0) {
+        return True;
+    }
+    return False;
 }

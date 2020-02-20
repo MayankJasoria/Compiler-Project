@@ -46,4 +46,10 @@ Tree insertChildren(Tree node, rhsNode* children);
 
 // Tree findElement(Tree root, TreeElement data);
 
+// /**
+//  * Prints the list, level-wise, to the console
+//  * @param root The root node of the tree to be printed
+//  */
+// void printTree(Tree root);
+
 #endif

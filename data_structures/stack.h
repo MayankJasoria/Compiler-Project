@@ -60,6 +60,11 @@ void* top(Stack stack);
  */
 int numElementsInStack(Stack stack);
 
-boolean isEmpty();
+/**
+ * Informs if a given stack is empty
+ * 
+ * @return True if the stack is empty, false otherwise
+ */
+boolean isStackEmpty(Stack stack);
 
 #endif

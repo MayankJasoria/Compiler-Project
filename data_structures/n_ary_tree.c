@@ -1,4 +1,5 @@
 #include "n_ary_tree.h"
+#include "stack.h"
 #include <stdio.h>
 
 Tree getTree(TreeElement data) {
