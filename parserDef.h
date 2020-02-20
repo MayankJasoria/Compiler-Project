@@ -28,8 +28,8 @@ FirstAndFollow F;
 
 typedef struct {
 	nonterminal left;
-	rhsNode * head;
-} grammar[NUM_RULES];
+	List list;
+} grammar[200];
 
 grammar G;
 
