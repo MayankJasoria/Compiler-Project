@@ -9,8 +9,7 @@ DEPS_PROG=driver.o
 
 parser: parser.c
 	cls
-	$(CC) -g -o a parser.c parserTest.c lexer.c
-	a
+	$(CC) -g -o a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/hash_map.c
 
 # TODO: Complete the compilation dependencies etc..
 driver: $(DEPS_PROG)

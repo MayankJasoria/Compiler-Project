@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hash_map.h"
 #include "../utils/utils.h"
 
@@ -13,6 +14,19 @@ HashTable getHashTable() {
 		table[i] = NULL;
 	}
 	return table;
+}
+
+Node* checkKeyInList(HashTable table, void* key, int idx) {
+	/* Iterate through the list, checking for key */
+	Node* curr = table[idx]->head;
+	while(curr != NULL) {
+		if(strcmp((char*) key, (char*)((hashElement*) curr->data)->key) == 0) {
+			/* key found */
+			break;
+		}
+		curr = curr->next;
+	}
+	return curr;
 }
 
 
@@ -44,28 +58,28 @@ HashTable insertToTable(HashTable table, void* key, void* data) {
 	elem->data = data;
 
 	/* Insert the entry to the table */
-	table[idx] = insertToList(table[idx], elem, BEGIN);
+	table[idx] = insertToList(table[idx], elem, FRONT);
 	return table;
 }
 
 boolean isPresent(HashTable table, void* key) {
 	int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
-		return FALSE;
+		return False;
 	}
 
 	if(checkKeyInList(table, key, idx) != NULL) {
-		return TRUE;
+		return True;
 	}
 
 	/* key not found */
-	return FALSE;
+	return False;
 }
 
 void* getDataFromTable(HashTable table, void* key) {
 	int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
-		return FALSE;
+		return False;
 	}
 	
 	/* Find the node containing the {key, data} */
@@ -77,19 +91,6 @@ void* getDataFromTable(HashTable table, void* key) {
 
 	/* key not found */
 	return NULL;
-}
-
-Node* checkKeyInList(HashTable table, void* key, int idx) {
-	/* Iterate through the list, checking for key */
-	Node* curr = table[idx]->head;
-	while(curr != NULL) {
-		if(strcmp((char*) key, (char*)((hashElement*) curr->data)->key) == 0) {
-			/* key found */
-			break;
-		}
-		curr = curr->next;
-	}
-	return curr;
 }
 
 HashTable removeFromTable(HashTable table, void* key) {
