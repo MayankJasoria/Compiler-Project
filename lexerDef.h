@@ -5,7 +5,6 @@
 
 #define NUM_KEYWORDS 30
 
-#define HASH_TABLE_SIZE 200
 
 int num_keywords;
 
@@ -29,23 +28,23 @@ typedef struct {
 	int line_num;
 } errorInst;
 
-struct keyNode {
-	char str[25];
-	int id;
-	struct keyNode * next;
-};
+// struct keyNode {
+// 	char str[25];
+// 	int id;
+// 	struct keyNode * next;
+// };
 
-typedef struct keyNode keyNode;
+// typedef struct keyNode keyNode;
 
-typedef struct {
-	keyNode * head;
-	int count;
-} keyTable[HASH_TABLE_SIZE];
+// typedef struct {
+// 	keyNode * head;
+// 	int count;
+// } keyTable[HASH_TABLE_SIZE];
 
-keyTable keys;
+// keyTable keys;
 
-/* hash_table to store the keyworkds */
-int hash_table[HASH_TABLE_SIZE];
+// /* hash_table to store the keyworkds */
+// int hash_table[HASH_TABLE_SIZE];
 
 /* line_num will store the instantaneous line number position of the lexer */
 int line_num;

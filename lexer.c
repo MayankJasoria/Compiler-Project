@@ -1,6 +1,7 @@
 
 #include "lexer.h"
 #include "lexerDef.h"
+#include "data_structures/hash_map.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,76 +38,98 @@ char * keywordList[] = {
 		"case",
 		"break",
 		"default",
-		"while"
+		"while",
+		"\0"
 	};
 
-void insertkey (int idx, char * str, int en) {
-	keyNode * prev = NULL, * curr = NULL;
+// void insertkey (int idx, char * str, int en) {
+// 	keyNode * prev = NULL, * curr = NULL;
 	
-	/* initializing the new Node to be inserted */
-	keyNode * new = (keyNode *)malloc(sizeof(keyNode));
-	strcpy(new -> str, str);
-	new -> next = NULL;
-	new -> id = en;
+// 	/* initializing the new Node to be inserted */
+// 	keyNode * new = (keyNode *)malloc(sizeof(keyNode));
+// 	strcpy(new -> str, str);
+// 	new -> next = NULL;
+// 	new -> id = en;
 
-	curr = keys[idx].head;
+// 	curr = keys[idx].head;
 	
-	if(keys[idx].count == 0) {
-		keys[idx].head = new;
-		keys[idx].count++;
-		return;
-	}
+// 	if(keys[idx].count == 0) {
+// 		keys[idx].head = new;
+// 		keys[idx].count++;
+// 		return;
+// 	}
 	
-	while(curr != NULL) {
-		prev = curr;
-		curr = curr -> next;
-	}
-	prev -> next = new;
-	keys[idx].count++;
-}
+// 	while(curr != NULL) {
+// 		prev = curr;
+// 		curr = curr -> next;
+// 	}
+// 	prev -> next = new;
+// 	keys[idx].count++;
+// }
 
-keyNode * keyLookup(int idx, char * str) {
+// keyNode * keyLookup(int idx, char * str) {
 
-	keyNode * curr = keys[idx].head;
-	while(curr != NULL) {
-		if(strcmp(curr -> str, str) == 0)
-			break;
-		curr = curr -> next;
-	}
-	return curr;
-}
+// 	keyNode * curr = keys[idx].head;
+// 	while(curr != NULL) {
+// 		if(strcmp(curr -> str, str) == 0)
+// 			break;
+// 		curr = curr -> next;
+// 	}
+// 	return curr;
+// }
 
-int hash(const char *str)
-{
-	unsigned long hash = 5381;
-	int c;
-	while (c = *str++)
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+// int hash(const char *str)
+// {
+// 	unsigned long hash = 5381;
+// 	int c;
+// 	while (c = *str++)
+// 		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-	return hash % HASH_TABLE_SIZE;
-}
+// 	return hash % HASH_TABLE_SIZE;
+// }
 
 void hashTableinit() {
-	int i;
-	for(i = 0; i < HASH_TABLE_SIZE; i++) 
-		hash_table[i] = -1;
-	for(i = 1; i <= num_keywords; i++) {
-		int key = hash(keywordList[i]);
-		insertkey(key, keywordList[i], i);
-		// hash_table[key] = i;
+	// int i;
+	// for(i = 0; i < HASH_TABLE_SIZE; i++) 
+	// 	hash_table[i] = -1;
+	// for(i = 1; i <= num_keywords; i++) {
+	// 	int key = hash(keywordList[i]);
+	// 	insertkey(key, keywordList[i], i);
+	// 	// hash_table[key] = i;
+	// }
+
+	/* --- New table --- */
+	hashtable = getHashTable();
+	int keyword_size = sizeof(keywordList)/sizeof(keywordList[0]) - 1;
+	for (int i=0; i < keyword_size; i++) {
+		char* key = malloc(strlen(keywordList[i]));
+		strcpy(key, keywordList[i]);
+		int *data = malloc(sizeof(int));
+		*data = i;
+		hashtable = insertToTable(hashtable, key, data, stringHash);
 	}
+	/* ------------------*/
 }
 
 int checkIdentifier(char * str) {
 	if(strlen(str) > 20)
 		return -1;
-	int key = hash(str);
-	keyNode * k = keyLookup(key, str);
-	if(keyLookup(key, str) == NULL)
-		return 0;
-	// if(strcmp(keywordList[hash_table[key]], str))
+	// int key = hash(str);
+	// keyNode * k = keyLookup(key, str);
+	// if(keyLookup(key, str) == NULL)
 	// 	return 0;
-	return k -> id;
+	// // if(strcmp(keywordList[hash_table[key]], str))
+	// // 	return 0;
+	// return k -> id;
+
+	/* New hash */
+	if (isPresent(hashtable, str, stringHash)) { 
+		hashElement* ele = (hashElement *)getDataFromTable(hashtable, str, stringHash);
+		return *((int *)(ele->data)); 
+	} else {
+		return 0;
+	}
+	/*---------*/
 }
 
 void lexerinit() {

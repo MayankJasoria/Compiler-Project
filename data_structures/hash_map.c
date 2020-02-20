@@ -100,10 +100,12 @@ HashTable removeFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	return table;
 }
 
+
 /**
  * Credits: djb2 hash function from Dan Bernstein -> http://www.cse.yorku.ca/~oz/hash.html
  */
-int stringHash(const char *str) {
+int stringHash(void *y) {
+	const char *str = y;
 	unsigned long hash = 5381;
 	int c;
 	while (c = *str++)
@@ -115,9 +117,10 @@ int stringHash(const char *str) {
 /**
  * Credits: Answer by Thomal Mueller on https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
  */
-int numberHash(long long int x) {
+int numberHash(void *y) {
+	long long int x = *((long long int *)y);
 	x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = (x >> 16) ^ x;
-    return x;
+    return x % HASH_TABLE_SIZE;
 }
