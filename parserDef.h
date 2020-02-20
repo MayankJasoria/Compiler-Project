@@ -61,6 +61,9 @@ hashTable HT;
 
 int num_rules;
 
+char * terminals[NUM_TERM];
+char * nonterminals[NUM_NONTERM];
+
 /* POSSIBLE PLACEHOLDERS - AVOIDING COMPILE ERRORS */
 /* Update definitions below when relevant */
 typedef struct tb {

@@ -1,6 +1,118 @@
 
 #include "parserDef.h"
 
+char * nonterminals[] = { 
+			"program",
+			"moduleDeclarations",
+			"moduleDeclaration",
+			"otherModules",
+			"driverModule",
+			"module",
+			"ret",
+			"input_plist",
+			"input_plistNew",
+			"output_plist",
+			"output_plistNew",
+			"type",
+			"dataType",
+			"moduleDef",
+			"statements",
+			"statement",
+			"ioStmt",
+			"whichId",
+			"index",
+			"simpleStmt",
+			"assignmentStmt",
+			"moduleReuseStmt",
+			"optional",
+			"idList",
+			"idListNew",
+			"expression",
+			"arithOrBoolExpr",
+			"arithOrBoolExprNew",
+			"relopExpr",
+			"relopExprNew",
+			"arithmeticExpr",	
+			"arithmeticExprNew",
+			"term",
+			"termNew",
+			"factor",
+			"var",
+			"pm",
+			"md",
+			"logicalOp",
+			"relationalOp",
+			"declareStmt",
+			"condionalStmt",
+			"caseStmts",
+			"caseStmtsNew",
+			"value",
+			"default",
+			"iterativeStmt",
+			"range"
+		};
+	
+	char * terminals[] = {
+			"EMPTY",
+			"INTEGER",
+			"REAL",
+			"BOOLEAN",
+			"OF",
+			"ARRAY",
+			"START",
+			"END",
+			"DECLARE",
+			"MODULE",
+			"DRIVER",
+			"PROGRAM",
+			"GET_VALUE",
+			"PRINT",
+			"USE",
+			"WITH",
+			"PARAMETERS",
+			"TRUE",
+			"FALSE",
+			"TAKES",
+			"INPUT",
+			"RETURNS",
+			"AND",
+			"OR",
+			"FOR",
+			"IN",
+			"SWITCH",
+			"CASE",
+			"BREAK",
+			"DEFAULT",
+			"WHILE",
+			"PLUS",
+			"MINUS",
+			"MUL",
+			"DIV",
+			"LT",
+			"LE",
+			"GE",
+			"GT",
+			"EQ",
+			"NE",
+			"DEF",
+			"ENDDEF",
+			"COLON",
+			"RANGEOP",
+			"SEMICOL",
+			"COMMA",
+			"ASSIGNOP",
+			"SQBO",
+			"SQBC",
+			"BO",
+			"BC",
+			"NUM",
+			"RNUM",
+			"ID",
+			"DRIVERDEF",
+			"DRIVERENDDEF",
+			"DOLLAR"
+		};
+
 void insertElement (int idx, char * str, typeOfSymbol t, int en) {
 	hashNode * prev = NULL, * curr = NULL;
 	
@@ -44,123 +156,13 @@ hashNode * hashLookup(int idx, char * str) {
 }
 
 void populateHashTable() {
-
-	char * nonterminals[] = { 
-		"program",
-		"moduleDeclarations",
-		"moduleDeclaration",
-		"otherModules",
-		"driverModule",
-		"module",
-		"ret",
-		"input_plist",
-		"input_plistNew",
-		"output_plist",
-		"output_plistNew",
-		"type",
-		"dataType",
-		"moduleDef",
-		"statements",
-		"statement",
-		"ioStmt",
-		"whichId",
-		"index",
-		"simpleStmt",
-		"assignmentStmt",
-		"moduleReuseStmt",
-		"optional",
-		"idList",
-		"idListNew",
-		"expression",
-		"arithOrBoolExpr",
-		"arithOrBoolExprNew",
-		"relopExpr",
-		"relopExprNew",
-		"arithmeticExpr",	
-		"arithmeticExprNew",
-		"term",
-		"termNew",
-		"factor",
-		"var",
-		"pm",
-		"md",
-		"logicalOp",
-		"relationalOp",
-		"declareStmt",
-		"condionalStmt",
-		"caseStmts",
-		"caseStmtsNew",
-		"value",
-		"default",
-		"iterativeStmt",
-		"range"
-	};
+	
 	int i;
 	for(i = 0; i < 48; i++) {
 		int idx = hash(nonterminals[i]);
 		insertElement(idx, nonterminals[i], NT, i);
 	}
 
-	char * terminals[] = {
-		"EMPTY",
-		"INTEGER",
-		"REAL",
-		"BOOLEAN",
-		"OF",
-		"ARRAY",
-		"START",
-		"END",
-		"DECLARE",
-		"MODULE",
-		"DRIVER",
-		"PROGRAM",
-		"GET_VALUE",
-		"PRINT",
-		"USE",
-		"WITH",
-		"PARAMETERS",
-		"TRUE",
-		"FALSE",
-		"TAKES",
-		"INPUT",
-		"RETURNS",
-		"AND",
-		"OR",
-		"FOR",
-		"IN",
-		"SWITCH",
-		"CASE",
-		"BREAK",
-		"DEFAULT",
-		"WHILE",
-		"PLUS",
-		"MINUS",
-		"MUL",
-		"DIV",
-		"LT",
-		"LE",
-		"GE",
-		"GT",
-		"EQ",
-		"NE",
-		"DEF",
-		"ENDDEF",
-		"COLON",
-		"RANGEOP",
-		"SEMICOL",
-		"COMMA",
-		"ASSIGNOP",
-		"SQBO",
-		"SQBC",
-		"BO",
-		"BC",
-		"NUM",
-		"RNUM",
-		"ID",
-		"DRIVERDEF",
-		"DRIVERENDDEF",
-		"DOLLAR"
-	};
 	for(i = 0; i < 58; i++) {
 		int idx = hash(terminals[i]);
 		insertElement(idx, terminals[i], T, i);
@@ -368,121 +370,28 @@ void createParseTable() {
 	}
 }
 
+syntaxError(stackElement * st, token * tok, int lookAhead, Stack S) {
 
+	printf("Syntactic Error on line %d:", tok -> line_num);
+	if(st -> tag == T) {
+		printf("Expecting %s\n", terminals[(st -> sym).T]);
+	}
+	else {
+		unsigned long long int fs = F[st -> sym.NT].firstset;
+		int i;
+		printf("Expected");
+		for(i = 1; i < NUM_TERM; i++) {
+			if(findinSet(fs, i) == 1) {
+				printf("%s ", terminals[i]);
+			}
+		}
+		printf("\n");
+	}
+}
 
 void parseInputSourceCode(char *testcaseFile) {
 	
-	char * nonterminals[] = { 
-			"program",
-			"moduleDeclarations",
-			"moduleDeclaration",
-			"otherModules",
-			"driverModule",
-			"module",
-			"ret",
-			"input_plist",
-			"input_plistNew",
-			"output_plist",
-			"output_plistNew",
-			"type",
-			"dataType",
-			"moduleDef",
-			"statements",
-			"statement",
-			"ioStmt",
-			"whichId",
-			"index",
-			"simpleStmt",
-			"assignmentStmt",
-			"moduleReuseStmt",
-			"optional",
-			"idList",
-			"idListNew",
-			"expression",
-			"arithOrBoolExpr",
-			"arithOrBoolExprNew",
-			"relopExpr",
-			"relopExprNew",
-			"arithmeticExpr",	
-			"arithmeticExprNew",
-			"term",
-			"termNew",
-			"factor",
-			"var",
-			"pm",
-			"md",
-			"logicalOp",
-			"relationalOp",
-			"declareStmt",
-			"condionalStmt",
-			"caseStmts",
-			"caseStmtsNew",
-			"value",
-			"default",
-			"iterativeStmt",
-			"range"
-		};
 	
-	char * terminals[] = {
-			"EMPTY",
-			"INTEGER",
-			"REAL",
-			"BOOLEAN",
-			"OF",
-			"ARRAY",
-			"START",
-			"END",
-			"DECLARE",
-			"MODULE",
-			"DRIVER",
-			"PROGRAM",
-			"GET_VALUE",
-			"PRINT",
-			"USE",
-			"WITH",
-			"PARAMETERS",
-			"TRUE",
-			"FALSE",
-			"TAKES",
-			"INPUT",
-			"RETURNS",
-			"AND",
-			"OR",
-			"FOR",
-			"IN",
-			"SWITCH",
-			"CASE",
-			"BREAK",
-			"DEFAULT",
-			"WHILE",
-			"PLUS",
-			"MINUS",
-			"MUL",
-			"DIV",
-			"LT",
-			"LE",
-			"GE",
-			"GT",
-			"EQ",
-			"NE",
-			"DEF",
-			"ENDDEF",
-			"COLON",
-			"RANGEOP",
-			"SEMICOL",
-			"COMMA",
-			"ASSIGNOP",
-			"SQBO",
-			"SQBC",
-			"BO",
-			"BC",
-			"NUM",
-			"RNUM",
-			"ID",
-			"DRIVERDEF",
-			"DRIVERENDDEF",
-			"DOLLAR"
-		};
 	
 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
 	FILE * fp = fopen(testcaseFile, "r");
@@ -530,12 +439,9 @@ void parseInputSourceCode(char *testcaseFile) {
 			}
 			else { /* To do: Error Handling */
 				/* only took SEMICOL as a delimiter */
-				printf("error\n");
-				while(lookAhead < ntokens && t != (Top -> sym).T && t != SEMICOL) {
-					lookAhead++;
-					nextToken = tokenStream[lookAhead];
-					t = nextToken -> id;
-				}
+				syntaxError(Top, nextToken, lookAhead, S);
+
+
 			}
 		}
 		else {
