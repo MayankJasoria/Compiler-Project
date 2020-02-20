@@ -362,7 +362,7 @@ void createParseTable() {
 		for(j = 1; j < NUM_TERM; j++) {
 			if(findinSet(first_set, 0) && findinSet(follow_set, j))
 				parseTable[left][j] = i;
-			else if(findinSet(follow_set, j))
+			else if((findinSet(first_set, 0) == 0) && (findinSet(follow_set, j)) && (parseTable[left][j] < 0))
 				parseTable[left][j] = -2;
 		}
 	}
