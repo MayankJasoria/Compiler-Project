@@ -30,23 +30,9 @@ Node* checkKeyInList(HashTable table, void* key, int idx) {
 }
 
 
-/**
- * Computes a hash value for a given input
- * @param str	The string whose hash value is to be computed
- * 
- * @return hash value for the given string
- */
-int computeHash(const char *str) {
-	unsigned long hash = 5381;
-	int c;
-	while (c = *str++)
-		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-	return hash % HASH_TABLE_SIZE;
-}
-
-HashTable insertToTable(HashTable table, void* key, void* data) {
-	int idx = computeHash((char*) key); /* check */
+HashTable insertToTable(HashTable table, void* key, void* data, int (*hash)(void *)) {
+	int idx = hash(key);
+	// int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
 		/* Create a new List */
 		table[idx] = getList();
@@ -62,8 +48,9 @@ HashTable insertToTable(HashTable table, void* key, void* data) {
 	return table;
 }
 
-boolean isPresent(HashTable table, void* key) {
-	int idx = computeHash((char*) key);
+boolean isPresent(HashTable table, void* key, int (*hash)(void *)) {
+	int idx = hash(key);
+	// int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
 		return False;
 	}
@@ -76,8 +63,9 @@ boolean isPresent(HashTable table, void* key) {
 	return False;
 }
 
-void* getDataFromTable(HashTable table, void* key) {
-	int idx = computeHash((char*) key);
+void* getDataFromTable(HashTable table, void* key, int (*hash)(void *)) {
+	int idx = hash(key);
+	// int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
 		return False;
 	}
@@ -93,12 +81,13 @@ void* getDataFromTable(HashTable table, void* key) {
 	return NULL;
 }
 
-HashTable removeFromTable(HashTable table, void* key) {
+HashTable removeFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	if(table == NULL) {
 		fprintf(stderr, "The provided hash table is undefined\n");
 		return table;
-	} 
-	int idx = computeHash((char*) key);
+	}
+	int idx = hash(key);
+	// int idx = computeHash((char*) key);
 	if(table[idx] != NULL) {
 		/* Some key(s) present in this index, search for required key */
 		Node* remNode = checkKeyInList(table, key, idx);
@@ -109,4 +98,26 @@ HashTable removeFromTable(HashTable table, void* key) {
 	}
 
 	return table;
+}
+
+/**
+ * Credits: djb2 hash function from Dan Bernstein -> http://www.cse.yorku.ca/~oz/hash.html
+ */
+int stringHash(const char *str) {
+	unsigned long hash = 5381;
+	int c;
+	while (c = *str++)
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+	return hash % HASH_TABLE_SIZE;
+}
+
+/**
+ * Credits: Answer by Thomal Mueller on https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
+ */
+int numberHash(long long int x) {
+	x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return x;
 }

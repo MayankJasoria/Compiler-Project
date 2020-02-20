@@ -51,4 +51,22 @@ void* getDataFromTable(HashTable table, void* key);
  */
 HashTable removeFromTable(HashTable table, void* key);
 
+/**
+ * Computes a hash value for a given number
+ * @param val	The number whose hash value is to be computed
+ * 
+ * @return hash value for the given string
+ */
+int numberHash(long long int val);
+
+/**
+ * Computes a hash value for a given string
+ * @param str	The string whose hash value is to be computed
+ * 
+ * @return hash value for the given string
+ */
+int stringHash(const char *str);
+
+
+
 #endif
