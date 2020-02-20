@@ -4,118 +4,6 @@
 
 #include "parser.h"
 
-char * nonterminals[] = { 
-        "program",
-        "moduleDeclarations",
-        "moduleDeclaration",
-        "otherModules",
-        "driverModule",
-        "module",
-        "ret",
-        "input_plist",
-        "input_plistNew",
-        "output_plist",
-        "output_plistNew",
-        "type",
-        "dataType",
-        "moduleDef",
-        "statements",
-        "statement",
-        "ioStmt",
-        "whichId",
-        "index",
-        "simpleStmt",
-        "assignmentStmt",
-        "moduleReuseStmt",
-        "optional",
-        "idList",
-        "idListNew",
-        "expression",
-        "arithOrBoolExpr",
-        "arithOrBoolExprNew",
-        "relopExpr",
-        "relopExprNew",
-        "arithmeticExpr",   
-        "arithmeticExprNew",
-        "term",
-        "termNew",
-        "factor",
-        "var",
-        "pm",
-        "md",
-        "logicalOp",
-        "relationalOp",
-        "declareStmt",
-        "condionalStmt",
-        "caseStmts",
-        "caseStmtsNew",
-        "value",
-        "default",
-        "iterativeStmt",
-        "range"
-    };
-
-char * terminals[] = {
-        "EMPTY",
-        "INTEGER",
-        "REAL",
-        "BOOLEAN",
-        "OF",
-        "ARRAY",
-        "START",
-        "END",
-        "DECLARE",
-        "MODULE",
-        "DRIVER",
-        "PROGRAM",
-        "GET_VALUE",
-        "PRINT",
-        "USE",
-        "WITH",
-        "PARAMETERS",
-        "TRUE",
-        "FALSE",
-        "TAKES",
-        "INPUT",
-        "RETURNS",
-        "AND",
-        "OR",
-        "FOR",
-        "IN",
-        "SWITCH",
-        "CASE",
-        "BREAK",
-        "DEFAULT",
-        "WHILE",
-        "PLUS",
-        "MINUS",
-        "MUL",
-        "DIV",
-        "LT",
-        "LE",
-        "GE",
-        "GT",
-        "EQ",
-        "NE",
-        "DEF",
-        "ENDDEF",
-        "COLON",
-        "RANGEOP",
-        "SEMICOL",
-        "COMMA",
-        "ASSIGNOP",
-        "SQBO",
-        "SQBC",
-        "BO",
-        "BC",
-        "NUM",
-        "RNUM",
-        "ID",
-        "DRIVERDEF",
-        "DRIVERENDDEF",
-        "DOLLAR"
-    };
-
 
 void printBinary(unsigned long long int n) {
     unsigned long long int j;
@@ -147,9 +35,9 @@ int main() {
     }
 
     printf("\n****** First Sets ******\n");
-    for(i = 0; i < NUM_NONTERM + 2; i++)
+    for(i = 0; i < NUM_NONTERM; i++)
         firstSet(i);
-    for(i = 0; i < NUM_NONTERM + 2; i++) {
+    for(i = 0; i < NUM_NONTERM; i++) {
         printf("%s:    ", nonterminals[i]);
         for(j = 0; j < 58; j ++)
             if(findinSet(first[i], j))
