@@ -156,7 +156,7 @@ hashNode * hashLookup(int idx, char * str) {
 }
 
 void populateHashTable() {
-	
+
 	int i;
 	for(i = 0; i < 48; i++) {
 		int idx = hash(nonterminals[i]);
@@ -370,22 +370,44 @@ void createParseTable() {
 	}
 }
 
-syntaxError(stackElement * st, token * tok, int lookAhead, Stack S) {
+void syntaxError(int * lookAhead, Stack S) {
 
+	token * tok = tokenStream[*lookAhead];
+	stackElement * st = top(S);
 	printf("Syntactic Error on line %d:", tok -> line_num);
 	if(st -> tag == T) {
 		printf("Expecting %s\n", terminals[(st -> sym).T]);
 	}
 	else {
+		printf("%sNoooo\n", nonterminals[(st -> sym).NT]);
 		unsigned long long int fs = F[st -> sym.NT].firstset;
 		int i;
-		printf("Expected");
+		printf("Expected ");
 		for(i = 1; i < NUM_TERM; i++) {
 			if(findinSet(fs, i) == 1) {
 				printf("%s ", terminals[i]);
 			}
 		}
 		printf("\n");
+	}
+
+	/* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
+	while(*lookAhead < ntokens) {
+		tok = tokenStream[*lookAhead];
+		*lookAhead = *lookAhead + 1;
+		if(tok -> id == SEMICOL || tok -> id == DOLLAR)
+			break;
+	}
+
+	/* popping the stack until:
+	We pop out 1 SEMICOL/DOLLAR */
+	while(numElementsInStack(S) > 0) {
+		stackElement * tp = top(S);
+		S = pop(S);
+		if(tp -> tag == T && tp -> sym.T == SEMICOL)
+			break;
+		else if(tp -> tag == T && tp -> sym.T == DOLLAR)
+			break;
 	}
 }
 
@@ -420,15 +442,17 @@ void parseInputSourceCode(char *testcaseFile) {
 	token * endToken = makeNewToken(57);
 	tokenStream[ntokens] = endToken;
 	ntokens++;
-
 	/* declaring the lookAhead pointer */
 	int lookAhead = 0;
-	while(lookAhead < ntokens) {
-		if(numElementsInStack(S) == 0)
+	while(lookAhead <= ntokens) {
+		if(numElementsInStack(S) == 0) {
+			printf("Parsing Complete\n");
 			break;
+		}
 		stackElement * Top = top(S);
 		token * nextToken = tokenStream[lookAhead];
 		terminal t = nextToken -> id;
+		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
 				fflush(stdout);
@@ -437,11 +461,8 @@ void parseInputSourceCode(char *testcaseFile) {
 				if(numElementsInStack(S) > 0)
 					printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
 			}
-			else { /* To do: Error Handling */
-				/* only took SEMICOL as a delimiter */
-				syntaxError(Top, nextToken, lookAhead, S);
-
-
+			else {
+				syntaxError(&lookAhead, S);
 			}
 		}
 		else {
@@ -475,8 +496,7 @@ void parseInputSourceCode(char *testcaseFile) {
 				}
 			}
 			else {
-				printf("error2\n");
-				/* To DO : Error Handling */
+				syntaxError(&lookAhead, S);
 			}
 		}
 	}
