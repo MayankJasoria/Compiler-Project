@@ -12,11 +12,14 @@ Tree getTree(TreeElement data) {
 }
 
 Tree insertChild(Tree node, TreeElement data) {
+
+	if(node == NULL) {
+		fprintf(stderr, "The given tree is undefined\n");
+		return node;
+	}
+
 	/* initialize a new child node */
-	Tree childNode = (Tree) malloc(sizeof(TreeNode));
-	childNode->data = data;
-	childNode->prev = NULL;
-	childNode->child = NULL;
+	Tree childNode = getTree(data);
 
 	/* set parent of this node as the given parent node */
 	childNode->parent = node;
@@ -34,4 +37,40 @@ Tree insertChild(Tree node, TreeElement data) {
 		curr->next = childNode;
 		childNode->prev = curr;
 	}
+	return node;
+}
+
+Tree insertChildren(Tree node, rhsNode* children) {
+	if(node == NULL) {
+		fprintf(stderr, "Given tree is undefined\n");
+		return node;
+	}
+	if(node->child != NULL) {
+		fprintf(stderr, "This tree already has children defined\n");
+		return node;
+	}
+
+	rhsNode* curr = children;
+	Tree currChild = NULL;
+	while(curr != NULL) {
+		/* Create the element to add to the tree */
+		TreeElement newEl;
+		newEl.sym = curr->sym;
+		newEl.tag = curr->tag;
+
+		/* insert this element into the tree */
+		if(currChild == NULL) {
+			/* First child of the given node */
+			currChild = (insertChild(node, newEl))->child;
+		} else {
+			/* Add to list of existing children */
+			Tree newChild = getTree(newEl);
+			newChild->parent = node;
+			newChild->prev = currChild;
+			currChild->next = newChild;
+			currChild = newChild;
+		}
+		curr = curr->next;
+	}
+	return node;
 }
