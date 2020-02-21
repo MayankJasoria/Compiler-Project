@@ -2,6 +2,7 @@
 #define _LEXERDEF
 
 #include "utils/utils.h"
+#include "data_structures/hash_map.h"
 
 #define NUM_KEYWORDS 30
 

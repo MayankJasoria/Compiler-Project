@@ -74,9 +74,9 @@ void destroyList(List list);
 /**
  * Prints a given linked list, from head to tail
  * 
- * @param list  The list to be printed
- * @param print Function to print an element of the given list
+ * @param list  		The list to be printed
+ * @param printElement 	Function to print an element of the given list
  */
-void printList(List list, void (*print)(void* data));
+void printList(List list, void (*printElement)(void* data));
 
 #endif

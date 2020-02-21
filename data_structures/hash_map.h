@@ -67,4 +67,6 @@ int numberHash(void *y);
  */
 int stringHash(void *y);
 
+void printHashTable(HashTable hashtable, void (*printElement)(void*));
+
 #endif

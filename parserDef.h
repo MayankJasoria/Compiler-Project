@@ -44,21 +44,21 @@ grammar G;
 
 /* changed the declaration of hashNode and hashTable */
 
-struct hashNode {
-	char str[25];
-	symbol sym;
-	typeOfSymbol tag;
-	struct hashNode * next;
-};
+// struct hashNode {
+// 	char str[25];
+// 	symbol sym;
+// 	typeOfSymbol tag;
+// 	struct hashNode * next;
+// };
 
-typedef struct hashNode hashNode;
+// typedef struct hashNode hashNode;
 
-typedef struct {
-	hashNode * head;
-	int count;
-} hashTable[HASH_TABLE_SIZE];
+// typedef struct {
+// 	hashNode * head;
+// 	int count;
+// } hashTable[HASH_TABLE_SIZE];
 
-hashTable HT;
+// hashTable HT;
 
 int num_rules;
 

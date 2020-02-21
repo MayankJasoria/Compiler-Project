@@ -152,10 +152,11 @@ void printList(List list, void (*printElement)(void* data)) {
 	}
 
 	Node* curr = list->head;
-	while(!curr == NULL) {
+	while(curr != NULL) {
 		printf("{");
-		print(curr->data);
+		printElement(curr->data);
 		printf("} --> ");
+		curr = curr->next;
 	}
 	printf("NULL\n");
 }

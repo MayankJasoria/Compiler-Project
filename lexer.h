@@ -36,6 +36,4 @@ void ctoa(char ch);
 
 void removeComments(char *testcaseFile, char *cleanFile);
 
-HashTable hashtable;
-
 #endif

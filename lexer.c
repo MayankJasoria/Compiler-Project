@@ -7,6 +7,8 @@
 #include <string.h>
 #include <math.h>
 
+HashTable hashtable;
+
 char * keywordList[] = {
 		"<empty>",
 		"integer",

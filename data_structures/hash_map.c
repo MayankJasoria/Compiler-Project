@@ -67,14 +67,14 @@ void* getDataFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	int idx = hash(key);
 	// int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
-		return False;
+		return NULL;
 	}
 	
 	/* Find the node containing the {key, data} */
 	Node* hashNode = checkKeyInList(table, key, idx);
 
 	if(hashNode != NULL) {
-		return hashNode->data;
+		return ((hashElement *)(hashNode->data))->data;
 	}
 
 	/* key not found */
@@ -123,4 +123,19 @@ int numberHash(void *y) {
     x = ((x >> 16) ^ x) * 0x45d9f3b;
     x = (x >> 16) ^ x;
     return x % HASH_TABLE_SIZE;
+}
+
+/**
+ * Print the hash table for debugging purposes 
+ */  
+
+void printHashTable(HashTable hashtable, void (*printHash)(void* data)) {
+	for (int i=0; i < HASH_TABLE_SIZE; i++) {
+		if(hashtable[i] == NULL) {
+			printf("[NULL]\n");
+		} else {
+			printf("[%d] --> ", i);
+			printList(hashtable[i], printHash);
+		}
+	}
 }
