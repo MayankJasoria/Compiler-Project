@@ -497,6 +497,10 @@ void parseInputSourceCode(char *testcaseFile) {
 					// if(ch -> next != NULL)
 						ch = ch -> next;
 				}
+				if(ch -> tag == T)
+					printf("%s\t", terminals[ch -> sym.T]);
+				else
+					printf("%s\t", nonterminals[ch -> sym.NT]);
 				printf("\n");
 				while(ch != NULL) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
