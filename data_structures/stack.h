@@ -70,8 +70,9 @@ boolean isStackEmpty(Stack stack);
 /**
  * Prints the contents of stack from top to bottom
  * 
- * @param st    The stack whose values are to be printed
+ * @param st            The stack whose values are to be printed
+ * @param printElement  Function specifying how to print each 
  */
-void printStack(Stack st);
+void printStack(Stack st, void (*printElement)(void* data));
 
 #endif
