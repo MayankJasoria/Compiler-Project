@@ -1,0 +1,194 @@
+****** Grmmar Rules ******
+program : moduleDeclarations otherModules driverModule otherModules
+moduleDeclarations : moduleDeclaration moduleDeclarations
+moduleDeclarations : EMPTY
+moduleDeclaration : DECLARE MODULE ID SEMICOL
+otherModules : module otherModules
+otherModules : EMPTY
+driverModule : DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
+module : DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
+ret : RETURNS SQBO output_plist SQBC SEMICOL
+ret : EMPTY
+input_plist : ID COLON dataType input_plistNew
+input_plistNew : COMMA ID COLON dataType input_plistNew
+input_plistNew : EMPTY
+output_plist : ID COLON type output_plistNew
+output_plistNew : COMMA ID COLON type output_plistNew
+output_plistNew : EMPTY
+type : INTEGER
+type : REAL
+type : BOOLEAN
+dataType : type
+dataType : ARRAY SQBO range SQBC OF type
+moduleDef : START statements END
+statements : statement statements
+statements : EMPTY
+statement : ioStmt
+statement : simpleStmt
+statement : declareStmt
+statement : condionalStmt
+statement : iterativeStmt
+ioStmt : GET_VALUE BO ID whichId BC SEMICOL
+ioStmt : PRINT BO expression BC SEMICOL
+whichId : SQBO index SQBC
+whichId : EMPTY
+index : NUM
+index : ID
+simpleStmt : assignmentStmt
+simpleStmt : moduleReuseStmt
+assignmentStmt : ID whichId ASSIGNOP expression SEMICOL
+moduleReuseStmt : optional USE MODULE ID WITH PARAMETERS idList SEMICOL
+optional : SQBO idList SQBC ASSIGNOP
+optional : EMPTY
+idList : ID idListNew
+idListNew : COMMA ID idListNew
+idListNew : EMPTY
+expression : arithOrBoolExpr
+expression : MINUS BO arithmeticExpr BC
+expression : PLUS BO arithmeticExpr BC
+expression : PLUS var
+expression : MINUS var
+arithOrBoolExpr : relopExpr arithOrBoolExprNew
+arithOrBoolExprNew : logicalOp relopExpr arithOrBoolExprNew
+arithOrBoolExprNew : EMPTY
+relopExpr : arithmeticExpr relopExprNew
+relopExprNew : relationalOp arithmeticExpr relopExprNew
+relopExprNew : EMPTY
+arithmeticExpr : term arithmeticExprNew
+arithmeticExprNew : pm term arithmeticExprNew
+arithmeticExprNew : EMPTY
+term : factor termNew
+termNew : md factor termNew
+termNew : EMPTY
+factor : BO arithmeticExpr BC
+factor : var
+var : ID whichId
+var : NUM
+var : RNUM
+var : TRUE
+var : FALSE
+pm : PLUS
+pm : MINUS
+md : MUL
+md : DIV
+logicalOp : AND
+logicalOp : OR
+relationalOp : LT
+relationalOp : LE
+relationalOp : GT
+relationalOp : GE
+relationalOp : EQ
+relationalOp : NE
+declareStmt : DECLARE idList COLON dataType SEMICOL
+condionalStmt : SWITCH BO ID BC START caseStmts default END
+caseStmts : CASE value COLON statements BREAK SEMICOL caseStmtsNew
+caseStmtsNew : CASE value COLON statements BREAK SEMICOL caseStmtsNew
+caseStmtsNew : EMPTY
+value : NUM
+value : TRUE
+value : FALSE
+default : DEFAULT COLON statements BREAK SEMICOL
+default : EMPTY
+iterativeStmt : FOR BO ID IN range BC START statements END
+iterativeStmt : WHILE BO arithOrBoolExpr BC START statements END
+range : NUM RANGEOP NUM
+
+****** First Sets ******
+program:    DECLARE DEF DRIVERDEF 
+moduleDeclarations:    EMPTY DECLARE 
+moduleDeclaration:    DECLARE 
+otherModules:    EMPTY DEF 
+driverModule:    DRIVERDEF 
+module:    DEF 
+ret:    EMPTY RETURNS 
+input_plist:    ID 
+input_plistNew:    EMPTY COMMA 
+output_plist:    ID 
+output_plistNew:    EMPTY COMMA 
+type:    INTEGER REAL BOOLEAN 
+dataType:    INTEGER REAL BOOLEAN ARRAY 
+moduleDef:    START 
+statements:    EMPTY DECLARE GET_VALUE PRINT USE FOR SWITCH WHILE SQBO ID 
+statement:    DECLARE GET_VALUE PRINT USE FOR SWITCH WHILE SQBO ID 
+ioStmt:    GET_VALUE PRINT 
+whichId:    EMPTY SQBO 
+index:    NUM ID 
+simpleStmt:    USE SQBO ID 
+assignmentStmt:    ID 
+moduleReuseStmt:    USE SQBO 
+optional:    EMPTY SQBO 
+idList:    ID 
+idListNew:    EMPTY COMMA 
+expression:    TRUE FALSE PLUS MINUS BO NUM RNUM ID 
+arithOrBoolExpr:    TRUE FALSE BO NUM RNUM ID 
+arithOrBoolExprNew:    EMPTY AND OR 
+relopExpr:    TRUE FALSE BO NUM RNUM ID 
+relopExprNew:    EMPTY LT LE GE GT EQ NE 
+arithmeticExpr:    TRUE FALSE BO NUM RNUM ID 
+arithmeticExprNew:    EMPTY PLUS MINUS 
+term:    TRUE FALSE BO NUM RNUM ID 
+termNew:    EMPTY MUL DIV 
+factor:    TRUE FALSE BO NUM RNUM ID 
+var:    TRUE FALSE NUM RNUM ID 
+pm:    PLUS MINUS 
+md:    MUL DIV 
+logicalOp:    AND OR 
+relationalOp:    LT LE GE GT EQ NE 
+declareStmt:    DECLARE 
+condionalStmt:    SWITCH 
+caseStmts:    CASE 
+caseStmtsNew:    EMPTY CASE 
+value:    TRUE FALSE NUM 
+default:    EMPTY DEFAULT 
+iterativeStmt:    FOR WHILE 
+range:    NUM 
+
+****** Follow Sets ******
+program:    DOLLAR 
+moduleDeclarations:    DEF DRIVERDEF 
+moduleDeclaration:    DECLARE DEF DRIVERDEF 
+otherModules:    DRIVERDEF DOLLAR 
+driverModule:    DEF DOLLAR 
+module:    DEF DRIVERDEF DOLLAR 
+ret:    START 
+input_plist:    SQBC 
+input_plistNew:    SQBC 
+output_plist:    SQBC 
+output_plistNew:    SQBC 
+type:    SEMICOL COMMA SQBC 
+dataType:    SEMICOL COMMA SQBC 
+moduleDef:    DEF DRIVERDEF DOLLAR 
+statements:    END BREAK 
+statement:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+ioStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+whichId:    AND OR PLUS MINUS MUL DIV LT LE GE GT EQ NE SEMICOL ASSIGNOP BC 
+index:    SQBC 
+simpleStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+assignmentStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+moduleReuseStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+optional:    USE 
+idList:    COLON SEMICOL SQBC 
+idListNew:    COLON SEMICOL SQBC 
+expression:    SEMICOL BC 
+arithOrBoolExpr:    SEMICOL BC 
+arithOrBoolExprNew:    SEMICOL BC 
+relopExpr:    AND OR SEMICOL BC 
+relopExprNew:    AND OR SEMICOL BC 
+arithmeticExpr:    AND OR LT LE GE GT EQ NE SEMICOL BC 
+arithmeticExprNew:    AND OR LT LE GE GT EQ NE SEMICOL BC 
+term:    AND OR PLUS MINUS LT LE GE GT EQ NE SEMICOL BC 
+termNew:    AND OR PLUS MINUS LT LE GE GT EQ NE SEMICOL BC 
+factor:    AND OR PLUS MINUS MUL DIV LT LE GE GT EQ NE SEMICOL BC 
+var:    AND OR PLUS MINUS MUL DIV LT LE GE GT EQ NE SEMICOL BC 
+pm:    TRUE FALSE BO NUM RNUM ID 
+md:    TRUE FALSE BO NUM RNUM ID 
+logicalOp:    TRUE FALSE BO NUM RNUM ID 
+relationalOp:    TRUE FALSE BO NUM RNUM ID 
+declareStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+condionalStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+caseStmts:    END DEFAULT 
+caseStmtsNew:    END DEFAULT 
+value:    COLON 
+default:    END 
+iterativeStmt:    END DECLARE GET_VALUE PRINT USE FOR SWITCH BREAK WHILE SQBO ID 
+range:    SQBC BC 

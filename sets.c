@@ -565,131 +565,134 @@ void populateGrammar(char * filename) {
 	num_rules = grammar_id;
 }
 
-// unsigned long long int setUnion (unsigned long long int a, unsigned long long int b) {
-// 	return a | b;
-// }
+unsigned long long int setUnion (unsigned long long int a, unsigned long long int b) {
+	return a | b;
+}
 
-// int findinSet(unsigned long long int a, int i) {
-// 	unsigned long long int tmp = (unsigned long long int) 1 << i;
-// 	if(tmp & a)
-// 		return 1;
-// 	return 0;
-// }
+int findinSet(unsigned long long int a, int i) {
+	unsigned long long int tmp = (unsigned long long int) 1 << i;
+	if(tmp & a)
+		return 1;
+	return 0;
+}
 
-// unsigned long long int firstSet(nonterminal nonT) {
+unsigned long long int firstSet(nonterminal nonT) {
 	
-// 	/* check this */
-// 	if(first[nonT] != 0)
-// 		return first[nonT];
-// 	int i;
-// 	int isEmpty = 0;
-// 	for(i = 0; i < num_rules; i++) {
-// 		if(G[i].left < nonT)
-// 			continue;
-// 		else if(G[i].left > nonT)
-// 			break;
-//         Node* node = G[i].list->head;
-// 		while(node != NULL) {
-//             stackElement* elem = node->data;
-// 			if(elem -> tag == T) {
-// 				first[nonT] = setUnion(first[nonT], ((unsigned long long int)1 << (elem -> sym).T));
-// 				if((first[nonT] % 2) && ((elem -> sym).T != 0)) {
-// 					first[nonT]--;
-// 				}
-// 				break;
-// 			}
-// 			else {
-// 				unsigned long long tmp = firstSet((elem -> sym).NT);
-// 				if(findinSet(tmp, 0)) {
-// 					first[nonT] = setUnion(first[nonT], tmp);
-// 					node = node -> next;
-// 					continue;
-// 				}
-// 				else {
-// 					first[nonT] = setUnion(first[nonT], tmp);
-// 					if(first[nonT] % 2)
-// 						first[nonT]--;
-// 					break;
-// 				}
-// 			}
-// 		}
-// 	}
-// 	return first[nonT];
-// }
+	/* check this */
+	if(first[nonT] != 0)
+		return first[nonT];
+	int i;
+	int isEmpty = 0;
+	for(i = 0; i < num_rules; i++) {
+		if(G[i].left < nonT)
+			continue;
+		else if(G[i].left > nonT)
+			break;
+        Node* node = G[i].list->head;
+		while(node != NULL) {
+            stackElement* elem = node->data;
+			if(elem -> tag == T) {
+				first[nonT] = setUnion(first[nonT], ((unsigned long long int)1 << (elem -> sym).T));
+				if((first[nonT] % 2) && ((elem -> sym).T != 0)) {
+					first[nonT]--;
+				}
+				break;
+			}
+			else {
+				unsigned long long tmp = firstSet((elem -> sym).NT);
+				if(findinSet(tmp, 0)) {
+					first[nonT] = setUnion(first[nonT], tmp);
+					node = node -> next;
+					continue;
+				}
+				else {
+					first[nonT] = setUnion(first[nonT], tmp);
+					if(first[nonT] % 2)
+						first[nonT]--;
+					break;
+				}
+			}
+		}
+	}
+	return first[nonT];
+}
 
-// unsigned long long int firstFollow(Node * node) {
+unsigned long long int firstFollow(Node * node) {
 	
-// 	unsigned long long int tmp = 0;
-// 	Node * tmpNode = node;
-// 	while(tmpNode != NULL) {
-//         stackElement* elem = tmpNode->data;
-// 		if(elem -> tag == T) {
-// 			tmp = setUnion(tmp, (unsigned long long int) 1 << (elem -> sym).T);
-// 			if((tmp % 2) && ((elem -> sym).T != 0))
-// 				tmp--;
-// 			break;
-// 		}
-// 		else {
-// 			tmp = setUnion(tmp, first[(elem -> sym).NT]);
-// 			if(!findinSet(first[(elem -> sym).NT], 0)) {
-// 				if(tmp % 2)
-// 					tmp--;
-// 				break;
-// 			}
-// 			tmpNode = tmpNode -> next;
-// 		}
-// 	}
-// 	return tmp;
-// }
+	unsigned long long int tmp = 0;
+	Node * tmpNode = node;
+	while(tmpNode != NULL) {
+        stackElement* elem = tmpNode->data;
+		if(elem -> tag == T) {
+			tmp = setUnion(tmp, (unsigned long long int) 1 << (elem -> sym).T);
+			if((tmp % 2) && ((elem -> sym).T != 0))
+				tmp--;
+			break;
+		}
+		else {
+			tmp = setUnion(tmp, first[(elem -> sym).NT]);
+			if(!findinSet(first[(elem -> sym).NT], 0)) {
+				if(tmp % 2)
+					tmp--;
+				break;
+			}
+			tmpNode = tmpNode -> next;
+		}
+	}
+	return tmp;
+}
 
-// unsigned long long int followSet(nonterminal nonT) {
+unsigned long long int followSet(nonterminal nonT) {
 
-// 	/* check for indirect right recursion in the grammar */
-// 	if(follow[nonT] != 0 && nonT != 0)
-// 		return follow[nonT];
-// 	if(nonT == 0)
-// 		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 57);
-// 	int i;
-// 	int isEmpty = 0;
-// 	for(i = 0; i < num_rules; i++) {
-//         Node* node = G[i].list->head;
-// 		while(node != NULL) {
-//             stackElement* elem = node->data;
-// 			if(elem -> tag == T) {
-// 				node = node -> next;
-// 				continue;
-// 			}
-// 			else {
-// 				if((elem -> sym).NT == nonT) {
-// 					unsigned long long int tmp = 0;
-// 					if(node -> next != NULL)
-// 						tmp = firstFollow(node -> next);
-// 					follow[nonT] = setUnion(follow[nonT], tmp);
-// 					if(follow[nonT] % 2)
-// 						follow[nonT]--;
-// 					if(tmp % 2 || (node -> next == NULL)) {
-// 						if(G[i].left != nonT)
-// 							follow[nonT] = setUnion(follow[nonT], followSet(G[i].left));
-// 					}
-// 					node = node -> next;
-// 				}
-// 				else
-// 					node = node -> next;
-// 			}
-// 		}
-// 	}
-// 	return follow[nonT];
-// }
+	/* check for indirect right recursion in the grammar */
+	if(follow[nonT] != 0 && nonT != 0)
+		return follow[nonT];
+	if(nonT == 0)
+		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 57);
+	int i;
+	int isEmpty = 0;
+	for(i = 0; i < num_rules; i++) {
+        Node* node = G[i].list->head;
+		while(node != NULL) {
+            stackElement* elem = node->data;
+			if(elem -> tag == T) {
+				node = node -> next;
+				continue;
+			}
+			else {
+				if((elem -> sym).NT == nonT) {
+					unsigned long long int tmp = 0;
+					if(node -> next != NULL)
+						tmp = firstFollow(node -> next);
+					follow[nonT] = setUnion(follow[nonT], tmp);
+					if(follow[nonT] % 2)
+						follow[nonT]--;
+					if(tmp % 2 || (node -> next == NULL)) {
+						if(G[i].left != nonT)
+							follow[nonT] = setUnion(follow[nonT], followSet(G[i].left));
+					}
+					node = node -> next;
+				}
+				else
+					node = node -> next;
+			}
+		}
+	}
+	return follow[nonT];
+}
 
-// void ComputeFirstAndFollowSets() {
-// 	int i = 0;
-// 	for(i = 0; i < NUM_NONTERM; i++) {
-// 		firstSet(i);
-// 		followSet(i);
-// 		F[i].firstset = first[i];
-// 		F[i].followset = follow[i];
-// 	}
-// }
+void ComputeFirstAndFollowSets() {
+	int i = 0;
+	for(i = 0; i < NUM_NONTERM; i++) {
+		firstSet(i);
+		F[i].firstset = first[i];
+	}
+	for(i = 0; i < NUM_NONTERM; i++) {
+		followSet(i);
+		F[i].followset = follow[i];
+	}
+
+}
 
 // void createParseTable() {
 // 	/* i denotes the rule number */
@@ -899,7 +902,7 @@ int main() {
     printf("****** Grmmar Rules ******\n");
     int i, j;
 
-    printHashTable(hashtable, printElement);
+    // printHashTable(hashtable, printElement);
     //stackElement* st = hashtable[stringHash("program")];
     // printf("%d %d\n", hash("MINUS"), hash("iterativeStmt"));
     for(i = 0; i < num_rules; i++) {
@@ -918,28 +921,28 @@ int main() {
         printf("\n");
     }
 
-    // ComputeFirstAndFollowSets();
+    ComputeFirstAndFollowSets();
 
-    // printf("\n****** First Sets ******\n");
-    // // for(i = 0; i < NUM_NONTERM; i++)
-    // //     firstSet(i);
-    // for(i = 0; i < NUM_NONTERM; i++) {
-    //     printf("%s:    ", nonterminals[i]);
-    //     for(j = 0; j < 58; j ++)
-    //         if(findinSet(first[i], j))
-    //             printf("%s ", terminals[j]);
-    //     printf("\n");    
-    // }
-    // printf("\n****** Follow Sets ******\n");
-    // // for(i = 0; i < NUM_NONTERM; i++)
-    // //     followSet(i);
-    // for(i = 0; i < NUM_NONTERM; i++) {
-    //     printf("%s:    ", nonterminals[i]);
-    //     for(j = 0; j < 58; j ++)
-    //         if(findinSet(follow[i], j))
-    //             printf("%s ", terminals[j]);
-    //     printf("\n"); 
-    // }
+    printf("\n****** First Sets ******\n");
+    // for(i = 0; i < NUM_NONTERM; i++)
+    //     firstSet(i);
+    for(i = 0; i < NUM_NONTERM; i++) {
+        printf("%s:    ", nonterminals[i]);
+        for(j = 0; j < 58; j ++)
+            if(findinSet(first[i], j))
+                printf("%s ", terminals[j]);
+        printf("\n");    
+    }
+    printf("\n****** Follow Sets ******\n");
+    // for(i = 0; i < NUM_NONTERM; i++)
+    //     followSet(i);
+    for(i = 0; i < NUM_NONTERM; i++) {
+        printf("%s:    ", nonterminals[i]);
+        for(j = 0; j < 58; j ++)
+            if(findinSet(follow[i], j))
+                printf("%s ", terminals[j]);
+        printf("\n"); 
+    }
 
     // createParseTable();
     // printf("\n ****** Parse Table ******\n");

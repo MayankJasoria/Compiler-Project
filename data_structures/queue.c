@@ -43,3 +43,12 @@ boolean isQueueEmpty(Queue queue) {
 	}
 	return False;
 }
+
+void printQueue(Queue q, void (*printElement)(void* data)) {
+    if(q == NULL) {
+        fprintf(stderr, "The given queue is empty\n");
+        return;
+    }
+    printf("Front of queue -> ");
+    printList(q, printElement);
+}
