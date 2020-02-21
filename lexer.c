@@ -270,6 +270,9 @@ token * getNextToken() {
 					state = 42;
 					strcat(lexeme, "*");
 				}
+				else if(ch == 4) {
+					break;
+				}
 				else {	
 					error();
 					buffer_id--;
@@ -635,6 +638,8 @@ token * getNextToken() {
 				newtok = makeNewToken(56);
 				return newtok;
 		}
+		if(streamBuffer[buffer_id] == 4)
+			break;
 	}
 	token * tok = makeNewToken(-1);
 	return tok;
@@ -660,15 +665,16 @@ FILE * getStream(FILE * fp) {
 	}
 	
 	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
-	if(strlen(streamBuffer) <= 1) {
+	if(strlen(streamBuffer) <= 2) {
 		endofLexer = 1;
 		return fp;
 	}/* to do: check this */
-
 	while(1) {
 		token * tok = getNextToken();
-		if(tok -> id == -1)
+		// printf("%s\n", tok -> lex);
+		if(tok -> id == -1){
 			break;
+		}
 		else {
 			if(ntokens >= tokenStream_cap) {
 				tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));

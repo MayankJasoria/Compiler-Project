@@ -336,6 +336,8 @@ void ComputeFirstAndFollowSets() {
 	int i = 0;
 	for(i = 0; i < NUM_NONTERM; i++) {
 		firstSet(i);
+	}
+	for(i = 0; i < NUM_NONTERM; i++) {
 		followSet(i);
 		F[i].firstset = first[i];
 		F[i].followset = follow[i];
@@ -447,7 +449,7 @@ void parseInputSourceCode(char *testcaseFile) {
 	int lookAhead = 0;
 	while(lookAhead <= ntokens) {
 		if(numElementsInStack(S) == 0) {
-			printf("Parsing Complete\n");
+			printf("Input source code is syntactically correct.\n");
 			break;
 		}
 		stackElement * Top = top(S);
@@ -513,20 +515,7 @@ void parseInputSourceCode(char *testcaseFile) {
 					}
 					S = push(S, new);
 				}
-				// while(node = top(tmp)) {
-				// 	stackElement * new = (stackElement *)malloc(sizeof(stackElement));
-				// 	new -> sym = node -> sym;
-				// 	new -> tag = node -> tag;
-				// 	new -> tn = ch;
-				// 	ch = ch -> prev;
-				// 	tmp = pop(tmp);
-
-				// 	if((new -> tag == T)&&(new -> sym.T == 0)) {
-				// 		continue;
-				// 	}
-				// 	S = push(S, new);
 				// 	/** Remember : after popping from stack the memory get deallocated **/
-				// }
 			}
 			else {
 				syntaxError(&lookAhead, S);
