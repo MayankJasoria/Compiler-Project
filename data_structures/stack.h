@@ -67,4 +67,11 @@ int numElementsInStack(Stack stack);
  */
 boolean isStackEmpty(Stack stack);
 
+/**
+ * Prints the contents of stack from top to bottom
+ * 
+ * @param st    The stack whose values are to be printed
+ */
+void printStack(Stack st);
+
 #endif
