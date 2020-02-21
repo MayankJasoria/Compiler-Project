@@ -13,7 +13,7 @@ void printBinary(unsigned long long int n) {
 }
 
 int main() {
-    parserInit("grammar.erp");
+    parserInit("grammar_new.erp");
 
     // printing grammar rules [array of linked_lists]
     printf("****** Grmmar Rules ******\n");

@@ -8,9 +8,9 @@ CFLAGS=-c
 DEPS_PROG=driver.o
 
 parser: parser.c
-	cls
+	#cls
 	$(CC) -g -o a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c
-	a
+	./a
 
 # TODO: Complete the compilation dependencies etc..
 driver: $(DEPS_PROG)

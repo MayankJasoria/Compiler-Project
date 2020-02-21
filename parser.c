@@ -167,12 +167,12 @@ hashNode * hashLookup(int idx, char * str) {
 void populateHashTable() {
 
 	int i;
-	for(i = 0; i < 48; i++) {
+	for(i = 0; i < NUM_NONTERM; i++) {
 		int idx = hash(nonterminals[i]);
 		insertElement(idx, nonterminals[i], NT, i);
 	}
 
-	for(i = 0; i < 58; i++) {
+	for(i = 0; i < NUM_TERM; i++) {
 		int idx = hash(terminals[i]);
 		insertElement(idx, terminals[i], T, i);
 	}
