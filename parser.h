@@ -25,10 +25,6 @@ unsigned long long int followSet(nonterminal nonT);
 
 /* To do: include only those which will be used. */
 
-
-
-
-
 void parserInit(char* filename);
 
 /* Function return types may need to be changed. Check and update as necessary */

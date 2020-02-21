@@ -69,5 +69,7 @@ int main() {
         printf("\n");
     }
 
+
+
     parseInputSourceCode("prog.eg");
 }

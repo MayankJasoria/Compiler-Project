@@ -7,6 +7,7 @@
 #include "lexer.h"
 #include "data_structures/stack.h"
 #include "utils/utils.h"
+#include "data_structures/n_ary_tree.h"
 
 #define NUM_TERM 58
 #define NUM_NONTERM 48
@@ -63,6 +64,8 @@ int num_rules;
 
 char * terminals[NUM_TERM];
 char * nonterminals[NUM_NONTERM];
+
+Tree PT;
 
 /* POSSIBLE PLACEHOLDERS - AVOIDING COMPILE ERRORS */
 /* Update definitions below when relevant */

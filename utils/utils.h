@@ -134,10 +134,27 @@ typedef union {
 	nonterminal NT;
 } symbol;
 
+typedef struct treeNode {
+	symbol sym;
+	typeOfSymbol tag;
+	char lex[25];
+	int depth;
+	int id;
+	struct treeNode * parent;
+	struct treeNode * prev;
+	struct treeNode * next;
+	struct treeNode * child;
+} treeNode;
+
+typedef treeNode * Tree;
+
 typedef struct {
 	symbol sym;
 	typeOfSymbol tag;
+	treeNode * tn;
 } stackElement;
+
+typedef stackElement treeElement;
 
 struct rhsNode{
 	symbol sym;

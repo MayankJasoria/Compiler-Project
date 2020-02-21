@@ -3,17 +3,7 @@
 
 #include "../utils/utils.h"
 
-typedef stackElement TreeElement;
 
-typedef struct treeNode {
-	TreeElement data;
-	struct treeNode* parent;
-	struct treeNode* prev;
-	struct treeNode* next;
-	struct treeNode* child;
-} TreeNode;
-
-typedef TreeNode* Tree;
 
 /**
  * Creates and returns a new tree, having given data at its root
@@ -21,7 +11,7 @@ typedef TreeNode* Tree;
  * 
  * @return new tree
  */
-Tree getTree(TreeElement data);
+Tree getTree(stackElement * s);
 
 /**
  * Inserts a new child to a given node of the tree
@@ -30,7 +20,7 @@ Tree getTree(TreeElement data);
  * 
  * @return updated tree
  */
-Tree insertChild(Tree node, TreeElement data);
+// Tree insertChild(Tree node, rhsNode * ch);
 
 // Tree insertChildList(Tree node, List children)
 
@@ -51,5 +41,7 @@ Tree insertChildren(Tree node, rhsNode* children);
 //  * @param root The root node of the tree to be printed
 //  */
 // void printTree(Tree root);
+
+int numNodes;
 
 #endif

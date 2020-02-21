@@ -1,77 +1,103 @@
 #include "n_ary_tree.h"
 #include "stack.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-Tree getTree(TreeElement data) {
-	Tree root = (Tree) malloc(sizeof(TreeNode));
-	root->data = data;
-	root->parent = NULL;
-	root->prev = NULL;
-	root->next = NULL;
-	root->child = NULL;
+treeNode * getTree(stackElement * s) {
+	treeNode * root = (treeNode *) malloc(sizeof(treeNode));
+	s -> tn = root;
+	root -> sym = s -> sym;
+	root -> tag = s -> tag;
+	root -> parent = NULL;
+	root -> child = NULL;
+	root -> prev = NULL;
+	root -> next = NULL;
+	root -> lex[25];
+	root -> depth;
+	root -> id;
 	return root;
 }
 
-Tree insertChild(Tree node, TreeElement data) {
+// Tree insertChild(Tree node, TreeElement data) {
 
-	if(node == NULL) {
-		fprintf(stderr, "The given tree is undefined\n");
-		return node;
-	}
+// 	if(node == NULL) {
+// 		fprintf(stderr, "The given tree is undefined\n");
+// 		return node;
+// 	}
 
-	/* initialize a new child node */
-	Tree childNode = getTree(data);
+// 	/* initialize a new child node */
+// 	treeNode * childNode = getTree(data);
 
-	/* set parent of this node as the given parent node */
-	childNode->parent = node;
+// 	/* set parent of this node as the given parent node */
+// 	childNode->parent = node;
 
-	if(node->child == NULL) {
-		/* parent had no children */
-		node->child = childNode;
-		childNode->next = NULL;
-	} else {
-		/* parent has children, add to end of list of children */
-		TreeNode* curr = node->child;
-		while(curr->next != NULL) {
-			curr = curr->next;
-		}
-		curr->next = childNode;
-		childNode->prev = curr;
-	}
-	return node;
-}
+// 	if(node->child == NULL) {
+// 		/* parent had no children */
+// 		node->child = childNode;
+// 		childNode->next = NULL;
+// 	} else {
+// 		/* parent has children, add to end of list of children */
+// 		treeNode* curr = node->child;
+// 		while(curr->next != NULL) {
+// 			curr = curr->next;
+// 		}
+// 		curr->next = childNode;
+// 		childNode->prev = curr;
+// 	}
+// 	return node;
+// }
 
 Tree insertChildren(Tree node, rhsNode* children) {
-	if(node == NULL) {
-		fprintf(stderr, "Given tree is undefined\n");
-		return node;
-	}
-	if(node->child != NULL) {
-		fprintf(stderr, "This tree already has children defined\n");
-		return node;
-	}
+	// if(node == NULL) {
+	// 	fprintf(stderr, "Given tree is undefined\n");
+	// 	return node;
+	// }
+	// if(node->child != NULL) {
+	// 	fprintf(stderr, "This tree already has children defined\n");
+	// 	return node;
+	// }
 
-	rhsNode* curr = children;
-	Tree currChild = NULL;
+	rhsNode * curr = children;
+
+	treeNode * prev = NULL;
+	// treeNode * currChild = NULL;
+	
 	while(curr != NULL) {
 		/* Create the element to add to the tree */
-		TreeElement newEl;
-		newEl.sym = curr->sym;
-		newEl.tag = curr->tag;
+		
+		// stackElement newEl;
+		// newEl.sym = curr->sym;
+		// newEl.tag = curr->tag;
 
-		/* insert this element into the tree */
-		if(currChild == NULL) {
-			/* First child of the given node */
-			currChild = (insertChild(node, newEl))->child;
-		} else {
-			/* Add to list of existing children */
-			Tree newChild = getTree(newEl);
-			newChild->parent = node;
-			newChild->prev = currChild;
-			currChild->next = newChild;
-			currChild = newChild;
+		treeNode * ch = (treeNode *)malloc(sizeof(treeNode));
+		if(prev == NULL) {
+			node -> child = ch;	
 		}
-		curr = curr->next;
+		ch -> sym = curr -> sym;
+		ch -> tag = curr -> tag;
+		ch -> id = numNodes;
+		numNodes++;
+		ch -> parent = node;
+		ch -> next = NULL;
+		ch -> prev = prev;
+		if(prev != NULL)
+			prev -> next = ch;
+		prev = ch;
+		curr = curr -> next;
+		/* insert this element into the tree */
+		// if(currChild == NULL) {
+		// 	/* First child of the given node */
+		// 	currChild = (insertChild(node, newEl))->child;
+		// } 
+		// else {
+		// 	/* Add to list of existing children */
+		// 	treeNode * newChild = getTree(newEl);
+		// 	newChild->parent = node;
+		// 	newChild->prev = currChild;
+		// 	currChild->next = newChild;
+		// 	currChild = newChild;
+		// }
+		// curr = curr->next;
 	}
 	return node;
 }
