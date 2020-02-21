@@ -496,24 +496,6 @@ void populateHashTable() {
 	}
 }
 
-// rhsNode * make_rhsNode(char * str, rhsNode * prev, int id) {
-// 	rhsNode * r = (rhsNode *)malloc(sizeof(rhsNode));
-// 	int idx = hash(str);
-// 	hashNode * lookup = hashLookup(idx, str);
-// 	if(str[0] >= 'A')
-// 		(r -> sym).T = (lookup -> sym).T;
-// 	else
-// 		(r -> sym).NT = (lookup -> sym).NT;
-// 	r -> tag = lookup -> tag;
-// 	r -> next = NULL;
-// 	if(prev == NULL) {
-// 		G[id].head = r;
-// 	}
-// 	else
-// 		prev -> next = r;
-// 	return r;
-// }
-
 void add_grammarNode(char* str, int id, List list) {
     stackElement* newElement = (stackElement*) malloc(sizeof(stackElement));
     int idx = hash(str);
@@ -551,8 +533,6 @@ void populateGrammar(char * filename) {
                 G[grammar_id].list = getList();
 			}
 			else if(strcmp(tok, ":") ) {
-				// rhsNode * r = make_rhsNode(tok, prev, grammar_id);
-				// prev = r;
                 add_grammarNode(tok, grammar_id, G[grammar_id].list);
 			}
 		}
@@ -584,7 +564,6 @@ unsigned long long int firstSet(nonterminal nonT) {
 			continue;
 		else if(G[i].left > nonT)
 			break;
-		// rhsNode * node = G[i].head;
         Node* node = G[i].list->head;
 		while(node != NULL) {
             stackElement* elem = node->data;
@@ -614,307 +593,252 @@ unsigned long long int firstSet(nonterminal nonT) {
 	return first[nonT];
 }
 
-// unsigned long long int firstFollow(rhsNode * node) {
+unsigned long long int firstFollow(Node * node) {
 	
-// 	unsigned long long int tmp = 0;
-// 	rhsNode * tmpNode = node;
-// 	while(tmpNode != NULL) {
-// 		if(tmpNode -> tag == T) {
-// 			tmp = setUnion(tmp, (unsigned long long int) 1 << (tmpNode -> sym).T);
-// 			if((tmp % 2) && ((tmpNode -> sym).T != 0))
-// 				tmp--;
-// 			break;
-// 		}
-// 		else {
-// 			tmp = setUnion(tmp, first[(tmpNode -> sym).NT]);
-// 			if(!findinSet(first[(tmpNode -> sym).NT], 0)) {
-// 				if(tmp % 2)
-// 					tmp--;
-// 				break;
-// 			}
-// 			tmpNode = tmpNode -> next;
-// 		}
-// 	}
-// 	return tmp;
-// }
+	unsigned long long int tmp = 0;
+	Node * tmpNode = node;
+	while(tmpNode != NULL) {
+        stackElement* elem = tmpNode->data;
+		if(elem -> tag == T) {
+			tmp = setUnion(tmp, (unsigned long long int) 1 << (elem -> sym).T);
+			if((tmp % 2) && ((elem -> sym).T != 0))
+				tmp--;
+			break;
+		}
+		else {
+			tmp = setUnion(tmp, first[(elem -> sym).NT]);
+			if(!findinSet(first[(elem -> sym).NT], 0)) {
+				if(tmp % 2)
+					tmp--;
+				break;
+			}
+			tmpNode = tmpNode -> next;
+		}
+	}
+	return tmp;
+}
 
-// unsigned long long int followSet(nonterminal nonT) {
+unsigned long long int followSet(nonterminal nonT) {
 
-// 	/* check for indirect right recursion in the grammar */
-// 	if(follow[nonT] != 0 && nonT != 0)
-// 		return follow[nonT];
-// 	if(nonT == 0)
-// 		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 57);
-// 	int i;
-// 	int isEmpty = 0;
-// 	for(i = 0; i < num_rules; i++) {
-// 		rhsNode * node = G[i].head;
-// 		while(node != NULL) {
-// 			if(node -> tag == T) {
-// 				node = node -> next;
-// 				continue;
-// 			}
-// 			else {
-// 				if((node -> sym).NT == nonT) {
-// 					unsigned long long int tmp = 0;
-// 					if(node -> next != NULL)
-// 						tmp = firstFollow(node -> next);
-// 					follow[nonT] = setUnion(follow[nonT], tmp);
-// 					if(follow[nonT] % 2)
-// 						follow[nonT]--;
-// 					if(tmp % 2 || (node -> next == NULL)) {
-// 						if(G[i].left != nonT)
-// 							follow[nonT] = setUnion(follow[nonT], followSet(G[i].left));
-// 					}
-// 					node = node -> next;
-// 				}
-// 				else
-// 					node = node -> next;
-// 			}
-// 		}
-// 	}
-// 	return follow[nonT];
-// }
+	/* check for indirect right recursion in the grammar */
+	if(follow[nonT] != 0 && nonT != 0)
+		return follow[nonT];
+	if(nonT == 0)
+		follow[nonT] = setUnion(follow[nonT], (unsigned long long int) 1 << 57);
+	int i;
+	int isEmpty = 0;
+	for(i = 0; i < num_rules; i++) {
+        Node* node = G[i].list->head;
+		while(node != NULL) {
+            stackElement* elem = node->data;
+			if(elem -> tag == T) {
+				node = node -> next;
+				continue;
+			}
+			else {
+				if((elem -> sym).NT == nonT) {
+					unsigned long long int tmp = 0;
+					if(node -> next != NULL)
+						tmp = firstFollow(node -> next);
+					follow[nonT] = setUnion(follow[nonT], tmp);
+					if(follow[nonT] % 2)
+						follow[nonT]--;
+					if(tmp % 2 || (node -> next == NULL)) {
+						if(G[i].left != nonT)
+							follow[nonT] = setUnion(follow[nonT], followSet(G[i].left));
+					}
+					node = node -> next;
+				}
+				else
+					node = node -> next;
+			}
+		}
+	}
+	return follow[nonT];
+}
 
-// void ComputeFirstAndFollowSets() {
-// 	int i = 0;
-// 	for(i = 0; i < NUM_NONTERM; i++) {
-// 		firstSet(i);
-// 		followSet(i);
-// 		F[i].firstset = first[i];
-// 		F[i].followset = follow[i];
-// 	}
-// }
+void ComputeFirstAndFollowSets() {
+	int i = 0;
+	for(i = 0; i < NUM_NONTERM; i++) {
+		firstSet(i);
+		followSet(i);
+		F[i].firstset = first[i];
+		F[i].followset = follow[i];
+	}
+}
 
-// void createParseTable() {
-// 	/* i denotes the rule number */
-// 	/*
-// 		-1 : syntactic error
-// 		-2 : syn
-// 		otherwise : corresponding rule number
-// 	*/
-// 	int i, j;
-// 	for(i = 0; i < NUM_NONTERM; i++)
-// 		for(j = 0; j < NUM_TERM; j++)
-// 			parseTable[i][j] = -1;
-// 	for(i = 0; i < num_rules; i++) {
-// 		nonterminal left = G[i].left;
-// 		unsigned long long int first_set = firstFollow(G[i].head); //F[left].firstset;
-// 		unsigned long long int follow_set = F[left].followset;
-// 		for(j = 1; j < NUM_TERM; j++) {
-// 			if(findinSet(first_set, j))
-// 				parseTable[left][j] = i;
-// 		}
-// 		for(j = 1; j < NUM_TERM; j++) {
-// 			if(findinSet(first_set, 0) && findinSet(follow_set, j))
-// 				parseTable[left][j] = i;
-// 			else if((findinSet(first_set, 0) == 0) && (findinSet(follow_set, j)) && (parseTable[left][j] < 0))
-// 				parseTable[left][j] = -2;
-// 		}
-// 	}
-// }
+void createParseTable() {
+	/* i denotes the rule number */
+	/*
+		-1 : syntactic error
+		-2 : syn
+		otherwise : corresponding rule number
+	*/
+	int i, j;
+	for(i = 0; i < NUM_NONTERM; i++)
+		for(j = 0; j < NUM_TERM; j++)
+			parseTable[i][j] = -1;
+	for(i = 0; i < num_rules; i++) {
+		nonterminal left = G[i].left;
+		unsigned long long int first_set = firstFollow(G[i].list->head); //F[left].firstset;
+		unsigned long long int follow_set = F[left].followset;
+		for(j = 1; j < NUM_TERM; j++) {
+			if(findinSet(first_set, j))
+				parseTable[left][j] = i;
+		}
+		for(j = 1; j < NUM_TERM; j++) {
+			if(findinSet(first_set, 0) && findinSet(follow_set, j))
+				parseTable[left][j] = i;
+			else if((findinSet(first_set, 0) == 0) && (findinSet(follow_set, j)) && (parseTable[left][j] < 0))
+				parseTable[left][j] = -2;
+		}
+	}
+}
 
+void syntaxError(int * lookAhead, Stack S) {
 
+	token * tok = tokenStream[*lookAhead];
+	stackElement * st = top(S);
+	printf("Syntactic Error on line %d:", tok -> line_num);
+	if(st -> tag == T) {
+		printf("Expecting %s\n", terminals[(st -> sym).T]);
+	}
+	else {
+		printf("%sNoooo\n", nonterminals[(st -> sym).NT]);
+		unsigned long long int fs = F[st -> sym.NT].firstset;
+		int i;
+		printf("Expected ");
+		for(i = 1; i < NUM_TERM; i++) {
+			if(findinSet(fs, i) == 1) {
+				printf("%s ", terminals[i]);
+			}
+		}
+		printf("\n");
+	}
 
-// void parseInputSourceCode(char *testcaseFile) {
-	
-// 	char * nonterminals[] = { 
-// 			"program",
-// 			"moduleDeclarations",
-// 			"moduleDeclaration",
-// 			"otherModules",
-// 			"driverModule",
-// 			"module",
-// 			"ret",
-// 			"input_plist",
-// 			"input_plistNew",
-// 			"output_plist",
-// 			"output_plistNew",
-// 			"type",
-// 			"dataType",
-// 			"moduleDef",
-// 			"statements",
-// 			"statement",
-// 			"ioStmt",
-// 			"whichId",
-// 			"index",
-// 			"simpleStmt",
-// 			"assignmentStmt",
-// 			"moduleReuseStmt",
-// 			"optional",
-// 			"idList",
-// 			"idListNew",
-// 			"expression",
-// 			"arithOrBoolExpr",
-// 			"arithOrBoolExprNew",
-// 			"relopExpr",
-// 			"relopExprNew",
-// 			"arithmeticExpr",	
-// 			"arithmeticExprNew",
-// 			"term",
-// 			"termNew",
-// 			"factor",
-// 			"var",
-// 			"pm",
-// 			"md",
-// 			"logicalOp",
-// 			"relationalOp",
-// 			"declareStmt",
-// 			"condionalStmt",
-// 			"caseStmts",
-// 			"caseStmtsNew",
-// 			"value",
-// 			"default",
-// 			"iterativeStmt",
-// 			"range"
-// 		};
-	
-// 	char * terminals[] = {
-// 			"EMPTY",
-// 			"INTEGER",
-// 			"REAL",
-// 			"BOOLEAN",
-// 			"OF",
-// 			"ARRAY",
-// 			"START",
-// 			"END",
-// 			"DECLARE",
-// 			"MODULE",
-// 			"DRIVER",
-// 			"PROGRAM",
-// 			"GET_VALUE",
-// 			"PRINT",
-// 			"USE",
-// 			"WITH",
-// 			"PARAMETERS",
-// 			"TRUE",
-// 			"FALSE",
-// 			"TAKES",
-// 			"INPUT",
-// 			"RETURNS",
-// 			"AND",
-// 			"OR",
-// 			"FOR",
-// 			"IN",
-// 			"SWITCH",
-// 			"CASE",
-// 			"BREAK",
-// 			"DEFAULT",
-// 			"WHILE",
-// 			"PLUS",
-// 			"MINUS",
-// 			"MUL",
-// 			"DIV",
-// 			"LT",
-// 			"LE",
-// 			"GE",
-// 			"GT",
-// 			"EQ",
-// 			"NE",
-// 			"DEF",
-// 			"ENDDEF",
-// 			"COLON",
-// 			"RANGEOP",
-// 			"SEMICOL",
-// 			"COMMA",
-// 			"ASSIGNOP",
-// 			"SQBO",
-// 			"SQBC",
-// 			"BO",
-// 			"BC",
-// 			"NUM",
-// 			"RNUM",
-// 			"ID",
-// 			"DRIVERDEF",
-// 			"DRIVERENDDEF",
-// 			"DOLLAR"
-// 		};
-	
-// 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
-// 	FILE * fp = fopen(testcaseFile, "r");
-// 	lexerinit();
-// 	while(endofLexer == 0) {
-// 		fp = getStream(fp);
-// 	}
-// 	Stack S = getStack();
+	/* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
+	while(*lookAhead < ntokens) {
+		tok = tokenStream[*lookAhead];
+		*lookAhead = *lookAhead + 1;
+		if(tok -> id == SEMICOL || tok -> id == DOLLAR)
+			break;
+	}
 
-// 	/* pushing Dollar and <program> onto the stack */
-// 	stackElement * s = (stackElement *)malloc(sizeof(stackElement));
-// 	s -> sym.T = DOLLAR;
-// 	s -> tag = T;
-// 	S = push(S, s);
+	/* popping the stack until:
+	We pop out 1 SEMICOL/DOLLAR */
+	while(numElementsInStack(S) > 0) {
+		stackElement * tp = top(S);
+		S = pop(S);
+		if(tp -> tag == T && tp -> sym.T == SEMICOL)
+			break;
+		else if(tp -> tag == T && tp -> sym.T == DOLLAR)
+			break;
+	}
+}
 
-// 	s = (stackElement *)malloc(sizeof(stackElement));
-// 	s -> sym.NT = program;
-// 	s -> tag = NT;
-// 	S = push(S, s);
+void parseInputSourceCode(char *testcaseFile) {
+	/* Fetching the tokens from the lexer by reading blocks from the source code file */
+	FILE * fp = fopen(testcaseFile, "r");
+	lexerinit();
+	while(endofLexer == 0) {
+		fp = getStream(fp);
+	}
+	Stack S = getStack();
 
-// 	/* pushing DOLLAR at the end of the token Stream. */
-// 	if(ntokens >= tokenStream_cap) {
-// 		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-// 		tokenStream_cap *= 2;
-// 	}
-// 	token * endToken = makeNewToken(57);
-// 	tokenStream[ntokens] = endToken;
-// 	ntokens++;
+	/* pushing Dollar and <program> onto the stack */
+	stackElement * s = (stackElement *)malloc(sizeof(stackElement));
+	s -> sym.T = DOLLAR;
+	s -> tag = T;
+	S = push(S, s);
 
-// 	/* declaring the lookAhead pointer */
-// 	int lookAhead = 0;
-// 	while(lookAhead < ntokens) {
-// 		stackElement * Top = top(S);
-// 		token * nextToken = tokenStream[lookAhead];
-// 		terminal t = nextToken -> id;
-// 		if(Top -> tag == T) {
-// 			if(t == (Top -> sym).T) {
-// 				lookAhead++;
-// 				S = pop(S);
-// 			}
-// 			else { /* To do: Error Handling */
-// 				/* only took SEMICOL as a delimiter */
-// 				while(lookAhead < ntokens && t != (Top -> sym).T && t != SEMICOL) {
-// 					lookAhead++;
-// 					nextToken = tokenStream[lookAhead];
-// 					t = nextToken -> id;
-// 				}
-// 			}
-// 		}
-// 		else {
-// 			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
-// 			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
+	s = (stackElement *)malloc(sizeof(stackElement));
+	s -> sym.NT = program;
+	s -> tag = NT;
+	S = push(S, s);
+
+	/* pushing DOLLAR at the end of the token Stream. */
+	if(ntokens >= tokenStream_cap) {
+		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
+		tokenStream_cap *= 2;
+	}
+	token * endToken = makeNewToken(57);
+	tokenStream[ntokens] = endToken;
+	ntokens++;
+	/* declaring the lookAhead pointer */
+	int lookAhead = 0;
+	while(lookAhead <= ntokens) {
+		if(numElementsInStack(S) == 0) {
+			printf("Parsing Complete\n");
+			break;
+		}
+		stackElement * Top = top(S);
+		token * nextToken = tokenStream[lookAhead];
+		terminal t = nextToken -> id;
+		// printf("%s\n", terminals[t]);
+		if(Top -> tag == T) {
+			if(t == (Top -> sym).T) {
+				fflush(stdout);
+				lookAhead++;
+				S = pop(S);
+				if(numElementsInStack(S) > 0)
+					printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
+			}
+			else {
+				syntaxError(&lookAhead, S);
+			}
+		}
+		else {
+			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
+			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
 			
-// 			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
+			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
 			
-// 			if(parseTableVal >= 0) {
-// 				rhsNode * node = G[parseTableVal].head;
-// 				printf("%s --> ", nonterminals[(Top -> sym).NT]);
-// 				S = pop(S);
-// 				Stack tmp = getStack();
-// 				while(node != NULL) {
-// 					tmp = push(tmp, node);
-// 					if(node -> tag == T)
-// 						printf("%s\t", terminals[node -> sym.T]);
-// 					else
-// 						printf("%s\t", nonterminals[node -> sym.NT]);
-// 					node = node -> next;
-// 				}
-// 				printf("\n");
-// 				while(node = top(tmp)) {
-// 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
-// 					new -> sym = node -> sym;
-// 					new -> tag = node -> tag;
-// 					if((node -> tag == T)&&(node -> sym.T == 0))
-// 						continue;
-// 					S = push(S, new);
-// 					tmp = pop(tmp);
-// 				}
-// 				// lookAhead++;
-// 			}
-// 			else {
-// 				/* To DO : Error Handling */
-// 			}
-// 		}
-// 	}
-// }
+			if(parseTableVal >= 0) {
+				Node * node = G[parseTableVal].list->end;
+				Node* printNode = G[parseTableVal].list->head;
+				printf("%s --> ", nonterminals[(Top -> sym).NT]);
+				S = pop(S);
+				while(node != NULL) {
+                    if(!(((stackElement*)node->data)->tag == T && ((stackElement*)node->data)->sym.T == EMPTY)) {
+                        /* Non-Terminal or terminal != EMPTY */
+                        S = push(S, node->data); 
+                    }
+					if(((stackElement*)(printNode->data))->tag == T) {
+						printf("%s  ", terminals[((stackElement*)printNode->data)->sym.T]);
+					} else {
+						printf("%s  ", nonterminals[((stackElement*)printNode->data)->sym.NT]);
+					}
+					node = node->prev;
+					printNode = printNode->next;
+				}
+                printf("\n");
+				// Stack tmp = getStack();
+				// while(node != NULL) {
+				// 	tmp = push(tmp, node);
+				// 	if(node -> tag == T)
+				// 		printf("%s\t", terminals[node -> sym.T]);
+				// 	else
+				// 		printf("%s\t", nonterminals[node -> sym.NT]);
+				// 	node = node -> next;
+				// }
+				// printf("\n");
+				// while(node = top(tmp)) {
+				// 	stackElement * new = (stackElement *)malloc(sizeof(stackElement));
+				// 	new -> sym = node -> sym;
+				// 	new -> tag = node -> tag;
+				// 	tmp = pop(tmp);
+				// 	if((node -> tag == T)&&(node -> sym.T == 0))
+				// 		continue;
+				// 	S = push(S, new);
+				// }
+
+			}
+			else {
+				syntaxError(&lookAhead, S);
+			}
+		}
+	}
+}
 
 void parserInit(char * filename) {
 	num_rules = 0;
@@ -932,8 +856,9 @@ void parserInit(char * filename) {
 }
 
 int main() {
-	parserInit("grammar.erp");
+    parserInit("grammar.erp");
 
+    // printing grammar rules [array of linked_lists]
     printf("****** Grmmar Rules ******\n");
     int i, j;
     // printf("%d %d\n", hash("MINUS"), hash("iterativeStmt"));
@@ -941,26 +866,53 @@ int main() {
         printf("%s :", nonterminals[G[i].left]);
         Node* curr = G[i].list->head;
         while(curr != NULL) {
+            stackElement* elem = curr->data;
             // printf("{tag: %d, ", curr->tag);
-            stackElement* data = curr->data;
-            if(data->tag == T) {
-                printf(" %s", terminals[data->sym.T]);
+            if(elem->tag == T) {
+                printf(" %s", terminals[elem->sym.T]);
             } else {
-                printf(" %s", nonterminals[data->sym.NT]);
+                printf(" %s", nonterminals[elem->sym.NT]);
             }
             curr = curr->next;
         }
         printf("\n");
     }
 
+    ComputeFirstAndFollowSets();
+
     printf("\n****** First Sets ******\n");
-    for(i = 0; i < NUM_NONTERM + 2; i++)
-        firstSet(i);
-    for(i = 0; i < NUM_NONTERM + 2; i++) {
+    // for(i = 0; i < NUM_NONTERM; i++)
+    //     firstSet(i);
+    for(i = 0; i < NUM_NONTERM; i++) {
         printf("%s:    ", nonterminals[i]);
         for(j = 0; j < 58; j ++)
             if(findinSet(first[i], j))
                 printf("%s ", terminals[j]);
         printf("\n");    
     }
+    printf("\n****** Follow Sets ******\n");
+    // for(i = 0; i < NUM_NONTERM; i++)
+    //     followSet(i);
+    for(i = 0; i < NUM_NONTERM; i++) {
+        printf("%s:    ", nonterminals[i]);
+        for(j = 0; j < 58; j ++)
+            if(findinSet(follow[i], j))
+                printf("%s ", terminals[j]);
+        printf("\n"); 
+    }
+
+    createParseTable();
+    printf("\n ****** Parse Table ******\n");
+    for(i = -1; i < NUM_NONTERM; i++) {
+        printf("%s,", nonterminals[i]);
+        for(j = 1; j < NUM_TERM; j++) {
+            if(i == -1) 
+                printf("%s,", terminals[j]);
+            else
+                printf("%d,", parseTable[i][j]);
+        }
+        printf("\n");
+    }
+
+    parseInputSourceCode("prog.eg");
 }
