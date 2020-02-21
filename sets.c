@@ -694,178 +694,189 @@ void ComputeFirstAndFollowSets() {
 
 }
 
-// void createParseTable() {
-// 	/* i denotes the rule number */
-// 	/*
-// 		-1 : syntactic error
-// 		-2 : syn
-// 		otherwise : corresponding rule number
-// 	*/
-// 	int i, j;
-// 	for(i = 0; i < NUM_NONTERM; i++)
-// 		for(j = 0; j < NUM_TERM; j++)
-// 			parseTable[i][j] = -1;
-// 	for(i = 0; i < num_rules; i++) {
-// 		nonterminal left = G[i].left;
-// 		unsigned long long int first_set = firstFollow(G[i].list->head); //F[left].firstset;
-// 		unsigned long long int follow_set = F[left].followset;
-// 		for(j = 1; j < NUM_TERM; j++) {
-// 			if(findinSet(first_set, j))
-// 				parseTable[left][j] = i;
-// 		}
-// 		for(j = 1; j < NUM_TERM; j++) {
-// 			if(findinSet(first_set, 0) && findinSet(follow_set, j))
-// 				parseTable[left][j] = i;
-// 			else if((findinSet(first_set, 0) == 0) && (findinSet(follow_set, j)) && (parseTable[left][j] < 0))
-// 				parseTable[left][j] = -2;
-// 		}
-// 	}
-// }
+void createParseTable() {
+	/* i denotes the rule number */
+	/*
+		-1 : syntactic error
+		-2 : syn
+		otherwise : corresponding rule number
+	*/
+	int i, j;
+	for(i = 0; i < NUM_NONTERM; i++)
+		for(j = 0; j < NUM_TERM; j++)
+			parseTable[i][j] = -1;
+	for(i = 0; i < num_rules; i++) {
+		nonterminal left = G[i].left;
+		unsigned long long int first_set = firstFollow(G[i].list->head); //F[left].firstset;
+		unsigned long long int follow_set = F[left].followset;
+		for(j = 1; j < NUM_TERM; j++) {
+			if(findinSet(first_set, j))
+				parseTable[left][j] = i;
+		}
+		for(j = 1; j < NUM_TERM; j++) {
+			if(findinSet(first_set, 0) && findinSet(follow_set, j))
+				parseTable[left][j] = i;
+			else if((findinSet(first_set, 0) == 0) && (findinSet(follow_set, j)) && (parseTable[left][j] < 0))
+				parseTable[left][j] = -2;
+		}
+	}
+}
 
-// void syntaxError(int * lookAhead, Stack S) {
+void syntaxError(int * lookAhead, Stack S) {
 
-// 	token * tok = tokenStream[*lookAhead];
-// 	stackElement * st = top(S);
-// 	printf("Syntactic Error on line %d:", tok -> line_num);
-// 	if(st -> tag == T) {
-// 		printf("Expecting %s\n", terminals[(st -> sym).T]);
-// 	}
-// 	else {
-// 		printf("%sNoooo\n", nonterminals[(st -> sym).NT]);
-// 		unsigned long long int fs = F[st -> sym.NT].firstset;
-// 		int i;
-// 		printf("Expected ");
-// 		for(i = 1; i < NUM_TERM; i++) {
-// 			if(findinSet(fs, i) == 1) {
-// 				printf("%s ", terminals[i]);
-// 			}
-// 		}
-// 		printf("\n");
-// 	}
+	token * tok = tokenStream[*lookAhead];
+	stackElement * st = top(S);
+	printf("Syntactic Error on line %d:", tok -> line_num);
+	if(st -> tag == T) {
+		printf("Expecting %s\n", terminals[(st -> sym).T]);
+	}
+	else {
+		printf("%sNoooo\n", nonterminals[(st -> sym).NT]);
+		unsigned long long int fs = F[st -> sym.NT].firstset;
+		int i;
+		printf("Expected ");
+		for(i = 1; i < NUM_TERM; i++) {
+			if(findinSet(fs, i) == 1) {
+				printf("%s ", terminals[i]);
+			}
+		}
+		printf("\n");
+	}
 
-// 	/* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
-// 	while(*lookAhead < ntokens) {
-// 		tok = tokenStream[*lookAhead];
-// 		*lookAhead = *lookAhead + 1;
-// 		if(tok -> id == SEMICOL || tok -> id == DOLLAR)
-// 			break;
-// 	}
+	/* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
+	while(*lookAhead < ntokens) {
+		tok = tokenStream[*lookAhead];
+		*lookAhead = *lookAhead + 1;
+		if(tok -> id == SEMICOL || tok -> id == DOLLAR)
+			break;
+	}
 
-// 	/* popping the stack until:
-// 	We pop out 1 SEMICOL/DOLLAR */
-// 	while(numElementsInStack(S) > 0) {
-// 		stackElement * tp = top(S);
-// 		S = pop(S);
-// 		if(tp -> tag == T && tp -> sym.T == SEMICOL)
-// 			break;
-// 		else if(tp -> tag == T && tp -> sym.T == DOLLAR)
-// 			break;
-// 	}
-// }
+	/* popping the stack until:
+	We pop out 1 SEMICOL/DOLLAR */
+	while(numElementsInStack(S) > 0) {
+		stackElement * tp = top(S);
+		S = pop(S);
+		if(tp -> tag == T && tp -> sym.T == SEMICOL)
+			break;
+		else if(tp -> tag == T && tp -> sym.T == DOLLAR)
+			break;
+	}
+}
 
-// void parseInputSourceCode(char *testcaseFile) {
-// 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
-// 	FILE * fp = fopen(testcaseFile, "r");
-// 	lexerinit();
-// 	while(endofLexer == 0) {
-// 		fp = getStream(fp);
-// 	}
-// 	Stack S = getStack();
+void parseInputSourceCode(char *testcaseFile) {
+	/* Fetching the tokens from the lexer by reading blocks from the source code file */
+	FILE * fp = fopen(testcaseFile, "r");
+	lexerinit();
+	while(endofLexer == 0) {
+		fp = getStream(fp);
+	}
+	Stack S = getStack();
 
-// 	/* pushing Dollar and <program> onto the stack */
-// 	stackElement * s = (stackElement *)malloc(sizeof(stackElement));
-// 	s -> sym.T = DOLLAR;
-// 	s -> tag = T;
-// 	S = push(S, s);
+	/* pushing Dollar and <program> onto the stack */
+	stackElement * s = (stackElement *)malloc(sizeof(stackElement));
+	s -> sym.T = DOLLAR;
+	s -> tag = T;
+	S = push(S, s);
 
-// 	s = (stackElement *)malloc(sizeof(stackElement));
-// 	s -> sym.NT = program;
-// 	s -> tag = NT;
-// 	S = push(S, s);
+	s = (stackElement *)malloc(sizeof(stackElement));
+	s -> sym.NT = program;
+	s -> tag = NT;
+	S = push(S, s);
 
-// 	/* pushing DOLLAR at the end of the token Stream. */
-// 	if(ntokens >= tokenStream_cap) {
-// 		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-// 		tokenStream_cap *= 2;
-// 	}
-// 	token * endToken = makeNewToken(57);
-// 	tokenStream[ntokens] = endToken;
-// 	ntokens++;
-// 	/* declaring the lookAhead pointer */
-// 	int lookAhead = 0;
-// 	while(lookAhead <= ntokens) {
-// 		if(numElementsInStack(S) == 0) {
-// 			printf("Parsing Complete\n");
-// 			break;
-// 		}
-// 		stackElement * Top = top(S);
-// 		token * nextToken = tokenStream[lookAhead];
-// 		terminal t = nextToken -> id;
-// 		// printf("%s\n", terminals[t]);
-// 		if(Top -> tag == T) {
-// 			if(t == (Top -> sym).T) {
-// 				fflush(stdout);
-// 				lookAhead++;
-// 				S = pop(S);
-// 				if(numElementsInStack(S) > 0)
-// 					printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
-// 			}
-// 			else {
-// 				syntaxError(&lookAhead, S);
-// 			}
-// 		}
-// 		else {
-// 			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
-// 			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
+	/* pushing DOLLAR at the end of the token Stream. */
+	if(ntokens >= tokenStream_cap) {
+		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
+		tokenStream_cap *= 2;
+	}
+	token * endToken = makeNewToken(57);
+	tokenStream[ntokens] = endToken;
+	ntokens++;
+	/* declaring the lookAhead pointer */
+	int lookAhead = 0;
+	while(lookAhead <= ntokens) {
+		if(numElementsInStack(S) == 0) {
+			printf("Parsing Complete\n");
+			break;
+		}
+		stackElement * Top = top(S);
+		token * nextToken = tokenStream[lookAhead];
+		terminal t = nextToken -> id;
+		// printf("%s\n", terminals[t]);
+		if(Top -> tag == T) {
+			if(t == (Top -> sym).T) {
+				fflush(stdout);
+				lookAhead++;
+				S = pop(S);
+				if(numElementsInStack(S) > 0)
+					// printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
+					S = pop(S);
+			}
+			else {
+				syntaxError(&lookAhead, S);
+			}
+		}
+		else {
+			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
+			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
 			
-// 			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
+			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
 			
-// 			if(parseTableVal >= 0) {
-// 				Node * node = G[parseTableVal].list->end;
-// 				Node* printNode = G[parseTableVal].list->head;
-// 				printf("%s --> ", nonterminals[(Top -> sym).NT]);
-// 				S = pop(S);
-// 				while(node != NULL) {
-//                     if(!(((stackElement*)node->data)->tag == T && ((stackElement*)node->data)->sym.T == EMPTY)) {
-//                         /* Non-Terminal or terminal != EMPTY */
-//                         S = push(S, node->data); 
-//                     }
-// 					if(((stackElement*)(printNode->data))->tag == T) {
-// 						printf("%s  ", terminals[((stackElement*)printNode->data)->sym.T]);
-// 					} else {
-// 						printf("%s  ", nonterminals[((stackElement*)printNode->data)->sym.NT]);
-// 					}
-// 					node = node->prev;
-// 					printNode = printNode->next;
-// 				}
-//                 printf("\n");
-// 				// Stack tmp = getStack();
-// 				// while(node != NULL) {
-// 				// 	tmp = push(tmp, node);
-// 				// 	if(node -> tag == T)
-// 				// 		printf("%s\t", terminals[node -> sym.T]);
-// 				// 	else
-// 				// 		printf("%s\t", nonterminals[node -> sym.NT]);
-// 				// 	node = node -> next;
-// 				// }
-// 				// printf("\n");
-// 				// while(node = top(tmp)) {
-// 				// 	stackElement * new = (stackElement *)malloc(sizeof(stackElement));
-// 				// 	new -> sym = node -> sym;
-// 				// 	new -> tag = node -> tag;
-// 				// 	tmp = pop(tmp);
-// 				// 	if((node -> tag == T)&&(node -> sym.T == 0))
-// 				// 		continue;
-// 				// 	S = push(S, new);
-// 				// }
+			if(parseTableVal >= 0) {
+				Node * node = G[parseTableVal].list->end;
+				Node* printNode = G[parseTableVal].list->head;
+				printf("%s --> ", nonterminals[(Top -> sym).NT]);
 
-// 			}
-// 			else {
-// 				syntaxError(&lookAhead, S);
-// 			}
-// 		}
-// 	}
-// }
+				if(((stackElement *)(node -> data))->sym.T > 60 && ((stackElement *)(node -> data))->sym.NT > 60) {
+					printf("caught %d %d\n", parseTableVal, lookAhead);
+					return;
+				}
+				// insertChildren(Top -> tn, node);
+				// treeNode * ch = Top -> tn -> child;
+				
+
+
+				S = pop(S);
+				while(node != NULL) {
+                    if(!(((stackElement*)node->data)->tag == T && ((stackElement*)node->data)->sym.T == EMPTY)) {
+                        /* Non-Terminal or terminal != EMPTY */
+                        S = push(S, node->data); 
+                    }
+					if(((stackElement*)(printNode->data))->tag == T) {
+						printf("%s  ", terminals[((stackElement*)printNode->data)->sym.T]);
+					} else {
+						printf("%s  ", nonterminals[((stackElement*)printNode->data)->sym.NT]);
+					}
+					node = node->prev;
+					printNode = printNode->next;
+				}
+                printf("\n");
+				// Stack tmp = getStack();
+				// while(node != NULL) {
+				// 	tmp = push(tmp, node);
+				// 	if(node -> tag == T)
+				// 		printf("%s\t", terminals[node -> sym.T]);
+				// 	else
+				// 		printf("%s\t", nonterminals[node -> sym.NT]);
+				// 	node = node -> next;
+				// }
+				// printf("\n");
+				// while(node = top(tmp)) {
+				// 	stackElement * new = (stackElement *)malloc(sizeof(stackElement));
+				// 	new -> sym = node -> sym;
+				// 	new -> tag = node -> tag;
+				// 	tmp = pop(tmp);
+				// 	if((node -> tag == T)&&(node -> sym.T == 0))
+				// 		continue;
+				// 	S = push(S, new);
+				// }
+
+			}
+			else {
+				syntaxError(&lookAhead, S);
+			}
+		}
+	}
+}
 
 void printElement(void* hashEl) {
     hashElement* currEl = (hashElement*) hashEl;
@@ -944,18 +955,18 @@ int main() {
         printf("\n"); 
     }
 
-    // createParseTable();
-    // printf("\n ****** Parse Table ******\n");
-    // for(i = -1; i < NUM_NONTERM; i++) {
-    //     printf("%s,", nonterminals[i]);
-    //     for(j = 1; j < NUM_TERM; j++) {
-    //         if(i == -1) 
-    //             printf("%s,", terminals[j]);
-    //         else
-    //             printf("%d,", parseTable[i][j]);
-    //     }
-    //     printf("\n");
-    // }
+    createParseTable();
+    printf("\n ****** Parse Table ******\n");
+    for(i = -1; i < NUM_NONTERM; i++) {
+        printf("%s,", nonterminals[i]);
+        for(j = 1; j < NUM_TERM; j++) {
+            if(i == -1) 
+                printf("%s,", terminals[j]);
+            else
+                printf("%d,", parseTable[i][j]);
+        }
+        printf("\n");
+    }
 
-    // parseInputSourceCode("prog.eg");
+    parseInputSourceCode("prog.eg");
 }

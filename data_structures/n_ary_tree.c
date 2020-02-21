@@ -41,7 +41,7 @@ Tree insertChild(Tree node, TreeElement data) {
 	return node;
 }
 
-Tree insertChildren(Tree node, rhsNode* children) {
+Tree insertChildren(Tree node, List children) {
 	if(node == NULL) {
 		fprintf(stderr, "Given tree is undefined\n");
 		return node;
@@ -51,7 +51,7 @@ Tree insertChildren(Tree node, rhsNode* children) {
 		return node;
 	}
 
-	rhsNode* curr = children;
+	Node* curr = children->head;
 	Tree currChild = NULL;
 	while(curr != NULL) {
 		/* Create the element to add to the tree */

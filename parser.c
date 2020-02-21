@@ -413,8 +413,6 @@ void syntaxError(int * lookAhead, Stack S) {
 
 void parseInputSourceCode(char *testcaseFile) {
 	
-	
-	
 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
 	FILE * fp = fopen(testcaseFile, "r");
 	lexerinit();
@@ -427,12 +425,14 @@ void parseInputSourceCode(char *testcaseFile) {
 	stackElement * s = (stackElement *)malloc(sizeof(stackElement));
 	s -> sym.T = DOLLAR;
 	s -> tag = T;
+	s -> tn = NULL;
 	S = push(S, s);
 
 	s = (stackElement *)malloc(sizeof(stackElement));
 	s -> sym.NT = program;
 	s -> tag = NT;
 	S = push(S, s);
+	PT = (treeNode *)getTree(s);
 
 	/* pushing DOLLAR at the end of the token Stream. */
 	if(ntokens >= tokenStream_cap) {
@@ -442,6 +442,7 @@ void parseInputSourceCode(char *testcaseFile) {
 	token * endToken = makeNewToken(57);
 	tokenStream[ntokens] = endToken;
 	ntokens++;
+
 	/* declaring the lookAhead pointer */
 	int lookAhead = 0;
 	while(lookAhead <= ntokens) {
@@ -455,17 +456,17 @@ void parseInputSourceCode(char *testcaseFile) {
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
-				fflush(stdout);
 				lookAhead++;
-				S = pop(S);
 				if(numElementsInStack(S) > 0)
-					printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
+					// printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
+					S = pop(S);
 			}
 			else {
 				syntaxError(&lookAhead, S);
 			}
 		}
 		else {
+
 			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
 			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
 			
@@ -474,26 +475,54 @@ void parseInputSourceCode(char *testcaseFile) {
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
 				printf("%s --> ", nonterminals[(Top -> sym).NT]);
+
+				// if(node -> sym.NT == 55) {
+				// 	printf("I got caught\n");
+				// }
+
+				if(node -> sym.T > 60 && node -> sym.NT > 60) {
+					printf("caught %d %d\n", parseTableVal, lookAhead);
+					return;
+				}
+				insertChildren(Top -> tn, node);
+				treeNode * ch = Top -> tn -> child;
 				S = pop(S);
-				Stack tmp = getStack();
-				while(node != NULL) {
-					tmp = push(tmp, node);
-					if(node -> tag == T)
-						printf("%s\t", terminals[node -> sym.T]);
+				while(ch -> next != NULL) {
+					// tmp = push(tmp, node);
+					if(ch -> tag == T)
+						printf("%s\t", terminals[ch -> sym.T]);
 					else
-						printf("%s\t", nonterminals[node -> sym.NT]);
-					node = node -> next;
+						printf("%s\t", nonterminals[ch -> sym.NT]);
+					// node = node -> next;
+					// if(ch -> next != NULL)
+						ch = ch -> next;
 				}
 				printf("\n");
-				while(node = top(tmp)) {
+				while(ch != NULL) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
-					new -> sym = node -> sym;
-					new -> tag = node -> tag;
-					tmp = pop(tmp);
-					if((node -> tag == T)&&(node -> sym.T == 0))
+					new -> sym = ch -> sym;
+					new -> tag = ch -> tag;
+					new -> tn = ch;
+					ch = ch -> prev;
+					if((new -> tag == T)&&(new -> sym.T == 0)) {
 						continue;
+					}
 					S = push(S, new);
 				}
+				// while(node = top(tmp)) {
+				// 	stackElement * new = (stackElement *)malloc(sizeof(stackElement));
+				// 	new -> sym = node -> sym;
+				// 	new -> tag = node -> tag;
+				// 	new -> tn = ch;
+				// 	ch = ch -> prev;
+				// 	tmp = pop(tmp);
+
+				// 	if((new -> tag == T)&&(new -> sym.T == 0)) {
+				// 		continue;
+				// 	}
+				// 	S = push(S, new);
+				// 	/** Remember : after popping from stack the memory get deallocated **/
+				// }
 			}
 			else {
 				syntaxError(&lookAhead, S);
@@ -516,7 +545,3 @@ void parserInit(char * filename) {
 	populateHashTable();
 	populateGrammar(filename);
 }
-
-// int main() {
-// 	populateGrammar("grammar.erp");
-// }

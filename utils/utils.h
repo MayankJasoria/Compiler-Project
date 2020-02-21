@@ -139,12 +139,14 @@ typedef struct {
 	typeOfSymbol tag;
 } stackElement;
 
-struct rhsNode{
-	symbol sym;
-	typeOfSymbol tag;
-	struct rhsNode * next;
-};
 
-typedef struct rhsNode rhsNode;
+
+// struct rhsNode{
+// 	symbol sym;
+// 	typeOfSymbol tag;
+// 	struct rhsNode * next;
+// };
+
+// typedef struct rhsNode rhsNode;
 
 #endif

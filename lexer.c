@@ -126,8 +126,9 @@ int checkIdentifier(char * str) {
 
 	/* New hash */
 	if (isPresent(hashtable, str, stringHash)) { 
-		hashElement* ele = (hashElement *)getDataFromTable(hashtable, str, stringHash);
-		return *((int *)(ele->data)); 
+		// hashElement* ele = (hashElement *)getDataFromTable(hashtable, str, stringHash);
+		// return *((int *)(ele->data));
+		return *((int *)getDataFromTable(hashtable, str, stringHash)); 
 	} else {
 		return 0;
 	}
