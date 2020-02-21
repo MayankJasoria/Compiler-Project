@@ -124,6 +124,15 @@ typedef enum {
 	_default, /* for removing the conflict */
 	iterativestmt,
 	range,
+	range_arrays,
+	boolconstt,
+	var_id_num,
+	whichstmt,
+	lvalueidstmt,
+	lvaluearrstmt,
+	u,
+	unary_op,
+	new_nt
 } nonterminal;
 
 typedef enum {T, NT} typeOfSymbol;

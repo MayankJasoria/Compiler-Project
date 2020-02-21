@@ -49,7 +49,16 @@ char * nonterminals[] = {
 			"value",
 			"default",
 			"iterativeStmt",
-			"range"
+			"range",
+			"range_arrays",
+			"boolConstt",
+			"var_id_num",
+			"whichStmt",
+			"lvalueIDStmt",
+			"lvalueARRStmt",
+			"u",
+			"unary_op",
+			"new_NT"
 		};
 	
 	char * terminals[] = {

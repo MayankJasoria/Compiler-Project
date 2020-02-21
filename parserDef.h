@@ -10,7 +10,7 @@
 #include "data_structures/n_ary_tree.h"
 
 #define NUM_TERM 58
-#define NUM_NONTERM 48
+#define NUM_NONTERM 57
 #define NUM_RULES 200
 
 /* structure for maintaining the first and follow sets of the Non Terminals */
