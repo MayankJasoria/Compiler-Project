@@ -14,7 +14,9 @@ treeNode * getTree(stackElement * s) {
 	root -> next = NULL;
 	root -> lex[25];
 	root -> depth;
-	root -> id;
+	root -> id = 0;
+	numNodes++;
+	root -> isLeaf = True;
 	return root;
 }
 
@@ -59,6 +61,8 @@ Tree insertChildren(Tree node, rhsNode* children) {
 
 	rhsNode * curr = children;
 
+	node -> isLeaf = False;
+
 	treeNode * prev = NULL;
 	// treeNode * currChild = NULL;
 	
@@ -70,6 +74,8 @@ Tree insertChildren(Tree node, rhsNode* children) {
 		// newEl.tag = curr->tag;
 
 		treeNode * ch = (treeNode *)malloc(sizeof(treeNode));
+		ch -> child = NULL;
+		ch -> isLeaf = True;
 		if(prev == NULL) {
 			node -> child = ch;	
 		}

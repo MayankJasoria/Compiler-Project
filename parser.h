@@ -34,6 +34,6 @@ void createParseTable();
 
 void parseInputSourceCode(char *testcaseFile);
 
-void printParseTree(parseTree PT, char *outfile);
+void printParseTree(Tree PT, char *outfile);
 
 #endif

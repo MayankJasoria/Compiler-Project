@@ -144,6 +144,7 @@ typedef struct treeNode {
 	struct treeNode * prev;
 	struct treeNode * next;
 	struct treeNode * child;
+	boolean isLeaf;
 } treeNode;
 
 typedef treeNode * Tree;

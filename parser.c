@@ -381,7 +381,7 @@ void syntaxError(int * lookAhead, Stack S) {
 		printf("Expecting %s\n", terminals[(st -> sym).T]);
 	}
 	else {
-		printf("%sNoooo\n", nonterminals[(st -> sym).NT]);
+		printf("%s\n", nonterminals[(st -> sym).NT]);
 		unsigned long long int fs = F[st -> sym.NT].firstset;
 		int i;
 		printf("Expected ");
@@ -482,10 +482,6 @@ void parseInputSourceCode(char *testcaseFile) {
 				// 	printf("I got caught\n");
 				// }
 
-				if(node -> sym.T > 60 && node -> sym.NT > 60) {
-					printf("caught %d %d\n", parseTableVal, lookAhead);
-					return;
-				}
 				insertChildren(Top -> tn, node);
 				treeNode * ch = Top -> tn -> child;
 				S = pop(S);
@@ -523,6 +519,39 @@ void parseInputSourceCode(char *testcaseFile) {
 		}
 	}
 }
+
+void inorder(Tree root, FILE * fp) {
+
+	if(root -> tag == T) {
+		fprintf(fp, "%s %d\n", terminals[root -> sym.T], root -> id);
+		return;
+	}
+	treeNode * t = root -> child;
+	int i = 0;
+	while(t != NULL) {
+		inorder(t, fp);
+		if(i == 0) {
+			if(root -> tag == T)
+				fprintf(fp, "%s %d\n", terminals[root -> sym.T], root -> id);
+			else 
+				fprintf(fp, "%s %d\n", nonterminals[root -> sym.NT], root -> id);
+		}
+		i++;
+		t = t -> next;
+	}
+	// if(t -> tag == T)
+	// 	fprintf(fp, "%s %d\n", t -> sym.T, t -> id);
+	// else 
+	// 	fprintf(fp, "%s %d\n", t -> sym.NT, t -> id);
+}
+
+void printParseTree(Tree PT, char *outfile) {
+
+	FILE * fp = fopen(outfile, "w");
+	inorder(PT, fp);
+	fclose(fp);
+}
+
 
 void parserInit(char * filename) {
 	num_rules = 0;
