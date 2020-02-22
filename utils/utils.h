@@ -11,13 +11,13 @@
 /**
  * Defining constants for print highlighting
  */
-#define KNRM "\e[0m" /* NORMAL */
-#define KRED "\e[1;91m" /* RED*/
-#define KGRN "\e[1;92m" /* GREEN */
-#define KYEL "\e[1;93m" /* YELLOW */
-#define KBLU "\e[1;94m" /* BLUE */
-#define KMAG "\e[1;95m" /* MAGENTA */
-#define KCYN "\e[1;96m" /* CYAN */
+#define KNRM ""//"\e[0m" /* NORMAL */
+#define KRED ""//"\e[1;91m" /* RED*/
+#define KGRN ""//"\e[1;92m" /* GREEN */
+#define KYEL ""//"\e[1;93m" /* YELLOW */
+#define KBLU ""//"\e[1;94m" /* BLUE */
+#define KMAG ""//"\e[1;95m" /* MAGENTA */
+#define KCYN ""//"\e[1;96m" /* CYAN */
 
 /**
  * Simple ENUM to use as boolean

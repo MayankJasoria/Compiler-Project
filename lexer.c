@@ -144,7 +144,7 @@ token * makeNewToken(int id) {
 		t -> is_float = 1;
 	}
 	// (t -> val).val_float = -1;
-	if(id != -1) {
+	if(id != 57) {
 		lexeme[0] = '\0';
 		ntokens++;
 	}
@@ -661,7 +661,7 @@ token * getNextToken(FILE * fp) {
 				return newtok;
 		}
 	}
-	token * tok = makeNewToken(-1);
+	token * tok = makeNewToken(57);
 	return tok;
 }
 

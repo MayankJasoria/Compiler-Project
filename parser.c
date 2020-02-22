@@ -3,6 +3,16 @@
 
 #define ull unsigned long long int
 
+void sdsd(void* data) {
+	stackElement * tmp = data;
+	// printf("%d %s %s",stackElement->tag, terminals[stackElement->sym.T], nonterminals[stackElement->sym.NT]);
+	if(tmp->tag == T) {
+		printf("%d %s", tmp->tag, terminals[tmp->sym.T]);	
+	} else {
+		printf("%d %s", tmp->tag, nonterminals[tmp->sym.T]);
+	}
+}
+
 char * nonterminals[] = { 
 			"program",
 			"moduleDeclarations",
@@ -385,10 +395,9 @@ void createParseTable() {
 	}
 }
 
-void syntaxError(int * lookAhead, Stack *S) {
+void syntaxError(token * tok, Stack *S, FILE * fp) {
 
 	syntacticallyCorrect = False;
-	token * tok = tokenStream[*lookAhead];
 	stackElement * st = top(*S);
 	printf(KRED "Syntax Error " KNRM "on line " KMAG "%d" KNRM ": \n", tok -> line_num);
 	int num_delim = sizeof(delim)/sizeof(delim[0]);
@@ -447,11 +456,11 @@ void syntaxError(int * lookAhead, Stack *S) {
 	ull first_set = F[st -> sym.NT].firstset;
 
 	boolean unexp = False;
-	while(*lookAhead < ntokens) {
-		tok = tokenStream[*lookAhead];
-		*lookAhead = *lookAhead + 1;
+	while(tok -> id != -1) {
+		// tok = tokenStream[*lookAhead];
+		// *lookAhead = *lookAhead + 1;
 		if((findinSet(follow_set, tok -> id))) {
-			*lookAhead = *lookAhead - 1;
+			// *lookAhead = *lookAhead - 1;
 			*S = pop(*S);
 			printf("\n");
 			printf(KYEL "Expected one of: ");
@@ -464,7 +473,7 @@ void syntaxError(int * lookAhead, Stack *S) {
 			break;
 		}
 		if(findinSet(first_set, tok -> id)) {
-			*lookAhead = *lookAhead - 1;
+			// *lookAhead = *lookAhead - 1;
 			printf("\n");
 			return;
 		}
@@ -475,6 +484,7 @@ void syntaxError(int * lookAhead, Stack *S) {
 			}
 			printf(KCYN "'%s' ", terminals[tok -> id]);
 		}
+		tok = getNextToken(fp);
 	}
 	printf("\n");
 	
@@ -506,9 +516,9 @@ void parseInputSourceCode(char *testcaseFile) {
 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
 	FILE * fp = fopen(testcaseFile, "r");
 	lexerinit();
-	while(endofLexer == 0) {
-		fp = getStream(fp);
-	}
+	// while(endofLexer == 0) {
+	// 	fp = getStream(fp);
+	// }
 	Stack S = getStack();
 
 	/* pushing Dollar and <program> onto the stack */
@@ -525,18 +535,21 @@ void parseInputSourceCode(char *testcaseFile) {
 	PT = (treeNode *)getTree(s);
 
 	/* pushing DOLLAR at the end of the token Stream. */
-	if(ntokens >= tokenStream_cap) {
-		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-		tokenStream_cap *= 2;
-	}
-	token * endToken = makeNewToken(57);
-	tokenStream[ntokens] = endToken;
-	ntokens++;
+	// if(ntokens >= tokenStream_cap) {
+	// 	tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
+	// 	tokenStream_cap *= 2;
+	// }
+	// token * endToken = makeNewToken(57);
+	// tokenStream[ntokens] = endToken;
+	// ntokens++;
 
 	/* declaring the lookAhead pointer */
-	int lookAhead = 0;
-	while(lookAhead <= ntokens) {
-		if(numElementsInStack(S) == 0 && syntacticallyCorrect) {
+	// int lookAhead = 0;
+	token * nextToken = getNextToken(fp);
+	while(numElementsInStack(S) > 0) {
+		printf("%d\n", numElementsInStack(S));
+		printStack(S, sdsd);
+		if(numElementsInStack(S) == 1 && syntacticallyCorrect) {
 			printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 			break;
 		}
@@ -546,9 +559,8 @@ void parseInputSourceCode(char *testcaseFile) {
 		// }
 
 		stackElement * Top = top(S);
-		token * nextToken = tokenStream[lookAhead];
 		terminal t = nextToken -> id;
-
+		printf("%s\n", terminals[t]);
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
@@ -567,15 +579,15 @@ void parseInputSourceCode(char *testcaseFile) {
 				else if(Top -> sym.T == 53) {
 					Top -> tn -> value.val_float = nextToken -> val.val_float;
 				}
-				lookAhead++;
+				nextToken = getNextToken(fp);
 				if(numElementsInStack(S) > 0)
 					// printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
 					S = pop(S);
 			}
 			else {
-				syntaxError(&lookAhead, &S);
-				if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
-					// printf("Syntactically incorrect\n");
+				syntaxError(nextToken, &S, fp);
+				if((numElementsInStack(S) == 1) || nextToken -> id == -1) {
+					printf("Syntactically incorrect\n");
 					break;
 				}
 			}
@@ -588,7 +600,7 @@ void parseInputSourceCode(char *testcaseFile) {
 			
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
-				// printf("%s --> ", nonterminals[(Top -> sym).NT]);
+				printf("%s --> ", nonterminals[(Top -> sym).NT]);
 
 				// if(node -> sym.NT == 55) {
 				// 	printf("I got caught\n");
@@ -599,19 +611,19 @@ void parseInputSourceCode(char *testcaseFile) {
 				S = pop(S);
 				while(ch -> next != NULL) {
 					// tmp = push(tmp, node);
-					// if(ch -> tag == T)
-					// 	printf("%s\t", terminals[ch -> sym.T]);
-					// else
-					// 	printf("%s\t", nonterminals[ch -> sym.NT]);
+					if(ch -> tag == T)
+						printf("%s\t", terminals[ch -> sym.T]);
+					else
+						printf("%s\t", nonterminals[ch -> sym.NT]);
 					// node = node -> next;
 					// if(ch -> next != NULL)
 						ch = ch -> next;
 				}
-				// if(ch -> tag == T)
-				// 	printf("%s\t", terminals[ch -> sym.T]);
-				// else
-				// 	printf("%s\t", nonterminals[ch -> sym.NT]);
-				// printf("\n");
+				if(ch -> tag == T)
+					printf("%s\t", terminals[ch -> sym.T]);
+				else
+					printf("%s\t", nonterminals[ch -> sym.NT]);
+				printf("\n");
 				while(ch != NULL) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
 					new -> sym = ch -> sym;
@@ -626,9 +638,9 @@ void parseInputSourceCode(char *testcaseFile) {
 				// 	/** Remember : after popping from stack the memory get deallocated **/
 			}
 			else {
-				syntaxError(&lookAhead, &S);
-				if(numElementsInStack(S) == 0 || lookAhead >= ntokens - 1) {
-					// printf("Syntactically incorrect\n");
+				syntaxError(nextToken, &S, fp);
+				if(numElementsInStack(S) == 0 || nextToken -> id == -1) {
+					printf("Syntactically incorrect\n");
 					break;
 				}
 			}

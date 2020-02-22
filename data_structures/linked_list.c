@@ -145,3 +145,19 @@ void destroyList(List list) {
 	free(list);
 	list = NULL;
 }
+
+void printList(List list, void (*printElement)(void* data)) {
+	if(list == NULL) {
+		fprintf(stderr, "The given list is undefined\n");
+		return;
+	}
+
+	Node* curr = list->head;
+	while(curr != NULL) {
+		printf("{");
+		printElement(curr->data);
+		printf("} --> ");
+		curr = curr->next;
+	}
+	printf("NULL\n");
+}

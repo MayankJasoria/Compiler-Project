@@ -8,7 +8,7 @@
 #include <time.h>
 #include "data_structures/stack.h"
 
-void printList(List ll) {
+void printList1(List ll) {
 	Node* curr = ll->head;
 	while(curr != NULL) {
 		printf("[ %d ] --> ", *((int*)(curr->data)));
@@ -34,7 +34,7 @@ int main() {
 	token * tok;
 	while(1) {
 		tok = getNextToken(fp);
-		if(tok -> id == -1)
+		if(tok -> id == 57)
 			break;
 		else {
 			printf("Token Sequence: %d Token id:%d Token Lexeme: %s %d\n", i + 1, tok -> id, tok -> lex, tok -> line_num);

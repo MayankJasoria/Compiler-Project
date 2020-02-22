@@ -67,4 +67,6 @@ int numElementsInStack(Stack stack);
  */
 boolean isStackEmpty(Stack stack);
 
+void printStack(Stack st, void (*printElement)(void* data));
+
 #endif
