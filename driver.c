@@ -12,7 +12,8 @@ void lexAndParse(char* inputfile, char* outputfile) {
 
 int main(int argc, char* argv[]) {
     if(argc < 3) {
-        fprintf(stderr, KRED "Expected two arguments, found %d. Terminating\n", argc-1);
+        fprintf(stderr, KRED "Expected two arguments, found %d. Terminating\n" KNRM, argc-1);
+        exit(0);
     }
     int option = 0;
     boolean executed = False;
@@ -34,6 +35,15 @@ int main(int argc, char* argv[]) {
 			}
             case 2: {
                 /* Call lexer getNextToken() */
+                lexerinit();
+                FILE * fp = fopen(argv[1], "r");
+                int i = 1;
+                token * tok;
+                printf(KGRN "%-25s%-25s%s\n" KNRM, "line_num", "lexeme", "Token_name");
+                while((tok = getNextToken(fp))->id != -1) {
+                    printf("%-25d%-25s%d\n", tok->line_num, tok->lex, tok->id);
+                    i++;
+                }
                 break;
 			}
             case 3:

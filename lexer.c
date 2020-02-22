@@ -176,7 +176,7 @@ void error() {
 
 
 void idlengthError() {
-	printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(length of the identifier exceeded) on line "  "%d\n" KNRM, lexeme, line_num);
+	printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(max. length of the identifier exceeded) on line " KMAG "%d\n" KNRM, lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
