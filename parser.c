@@ -425,8 +425,11 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 	// 	}
 	// 	return;
 	// }
-	if(st -> tag == T)
+	boolean miss = False;
+	if(st -> tag == T) {
 		printf(KYEL "Missing ");
+		miss = true;
+	}
 	while(st -> tag == T) {
 		if(st -> sym.T == tok -> id) {
 			printf("\n");
@@ -437,6 +440,9 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 		if(numElementsInStack(*S) == 0)
 			return tok;
 		st = top(*S);
+	}
+	if(miss) {
+		printf("\n");
 	}
 
 	// else {
@@ -594,8 +600,9 @@ void parseInputSourceCode(char *testcaseFile) {
 			}
 			else {
 				nextToken = syntaxError(nextToken, &S, fp);
+				printf("\n");
 				if((numElementsInStack(S) == 1) || nextToken -> id == -1) {
-					printf("Syntactically incorrect\n");
+					// printf("Syntactically incorrect\n");
 					break;
 				}
 			}
@@ -608,7 +615,7 @@ void parseInputSourceCode(char *testcaseFile) {
 			
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
-				printf("%s --> ", nonterminals[(Top -> sym).NT]);
+				// printf("%s --> ", nonterminals[(Top -> sym).NT]);
 
 				// if(node -> sym.NT == 55) {
 				// 	printf("I got caught\n");
@@ -619,19 +626,19 @@ void parseInputSourceCode(char *testcaseFile) {
 				S = pop(S);
 				while(ch -> next != NULL) {
 					// tmp = push(tmp, node);
-					if(ch -> tag == T)
-						printf("%s\t", terminals[ch -> sym.T]);
-					else
-						printf("%s\t", nonterminals[ch -> sym.NT]);
+					// if(ch -> tag == T)
+						// printf("%s\t", terminals[ch -> sym.T]);
+					// else
+						// printf("%s\t", nonterminals[ch -> sym.NT]);
 					// node = node -> next;
 					// if(ch -> next != NULL)
 						ch = ch -> next;
 				}
-				if(ch -> tag == T)
-					printf("%s\t", terminals[ch -> sym.T]);
-				else
-					printf("%s\t", nonterminals[ch -> sym.NT]);
-				printf("\n");
+				// if(ch -> tag == T)
+				// 	printf("%s\t", terminals[ch -> sym.T]);
+				// else
+				// 	printf("%s\t", nonterminals[ch -> sym.NT]);
+				// printf("\n");
 				while(ch != NULL) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
 					new -> sym = ch -> sym;
@@ -647,8 +654,9 @@ void parseInputSourceCode(char *testcaseFile) {
 			}
 			else {
 				nextToken = syntaxError(nextToken, &S, fp);
+				printf("\n");
 				if(numElementsInStack(S) == 0 || nextToken -> id == -1) {
-					printf("Syntactically incorrect\n");
+					// printf("Syntactically incorrect\n");
 					break;
 				}
 			}

@@ -20,6 +20,12 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, KRED "Expected two arguments, found %d. Terminating\n" KNRM, argc-1);
         exit(0);
     }
+
+    printf(KCYN "**************** IMPLEMENTATION STATUS ****************\n" KNRM);
+    printf("1: FIRST and FOLLOW set automated\n");
+    printf("2: Both lexical and syntax analyzer modules implemented\n");
+    printf(KCYN "*******************************************************\n" KNRM);
+
     int option = 0;
     boolean executed = False;
     do {
@@ -62,7 +68,7 @@ int main(int argc, char* argv[]) {
                 end_time = clock();
                 total_CPU_time  =  (double) (end_time - start_time);
                 total_CPU_time_in_seconds =   total_CPU_time / CLOCKS_PER_SEC;
-				printf("The total time taken is %f (= %f sec)", total_CPU_time, total_CPU_time_in_seconds);
+				printf("The total time taken is " KBLU "%f usec (= %f sec)\n\n" KNRM, total_CPU_time, total_CPU_time_in_seconds);
                 break;
 			}
             default: printf(KYEL "Option %d is invalid, please try again\n" KNRM, option);
