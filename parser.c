@@ -466,7 +466,7 @@ void syntaxError(token * tok, Stack *S, FILE * fp) {
 			printf(KYEL "Expected one of: ");
 			for(i = 0; i < NUM_TERM; i++) {
 				if(findinSet(first_set, i)) {
-					printf(KCYN "'%s' ", terminals[i]);
+					printf(KCYN "'%s' " KNRM, terminals[i]);
 				}
 			}
 			printf("\n");
@@ -482,7 +482,7 @@ void syntaxError(token * tok, Stack *S, FILE * fp) {
 				printf(KYEL "Unexpected ");
 				unexp = True;
 			}
-			printf(KCYN "'%s' ", terminals[tok -> id]);
+			printf(KCYN "'%s' " KNRM, terminals[tok -> id]);
 		}
 		tok = getNextToken(fp);
 	}
@@ -565,7 +565,7 @@ void parseInputSourceCode(char *testcaseFile) {
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
 				if(Top -> sym.T == DOLLAR) {
-					printf(KGRN "Input source code is syntactically correct.\n");
+					printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 					break;
 				}
 				Top -> tn -> tok = nextToken;

@@ -7,7 +7,11 @@
 #include "parser.h"
 
 void lexAndParse(char* inputfile, char* outputfile) {
-	printf("TODO\n");
+    parserInit("grammar_new.erp");
+    ComputeFirstAndFollowSets();
+    createParseTable();
+	parseInputSourceCode(inputfile);
+    printParseTree(PT, outputfile);
 }
 
 int main(int argc, char* argv[]) {
@@ -40,7 +44,7 @@ int main(int argc, char* argv[]) {
                 int i = 1;
                 token * tok;
                 printf(KGRN "%-25s%-25s%s\n" KNRM, "line_num", "lexeme", "Token_name");
-                while((tok = getNextToken(fp))->id != -1) {
+                while((tok = getNextToken(fp))->id != DOLLAR) {
                     printf("%-25d%-25s%d\n", tok->line_num, tok->lex, tok->id);
                     i++;
                 }
