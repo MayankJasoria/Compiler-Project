@@ -7,6 +7,8 @@
 
 #define HASH_TABLE_SIZE 200
 
+#define chunk_size 255
+
 int num_keywords;
 
 /* type definition of a Token */
@@ -51,17 +53,17 @@ int hash_table[HASH_TABLE_SIZE];
 int line_num;
 
 /* chunk_size is the size of code loaded in the memory bt getStream() */
-int chunk_size;
+// int chunk_size;
 
 /* 
 	size of these arrays hardcoded. Take Care.
 */
 
 /* streamBuffer stores the part of code loaded by getStream() */
-char streamBuffer[100];
+char streamBuffer[2*chunk_size];
 
 /* lexeme maintains the current lexeme whilw the dfa traversal */
-char lexeme[100];
+char lexeme[2*chunk_size];
 
 /* state maintains the current state of the dfa */
 int state;

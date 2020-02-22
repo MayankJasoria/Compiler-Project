@@ -30,25 +30,32 @@ void printListReverse(List ll) {
 int main() {
 	lexerinit();
 	FILE * fp = fopen("prog.eg", "r");
-	if(fp == NULL) {
-		printf("Error opening file\n");
-		return 0;
-	}
-	while(endofLexer == 0) {
-		fp = getStream(fp);
-	}
-	printf("%d\n", hash("driver"));
-	printf("%d\n", hash_table[hash("driver")]);
-	int i;
-	for(i = 0; i < ntokens; i++) {
-		printf("Token Sequence: %d Token id:%d Token Lexeme: %s ", i + 1, tokenStream[i] -> id, tokenStream[i] -> lex);
-		if(tokenStream[i]->id == NUM) {
-			printf("Token Value: %d", tokenStream[i]->val.val_int);
-		} else if(tokenStream[i]->id == RNUM) {
-			printf("Token Value: %f", tokenStream[i]->val.val_float);
+	int i = 1;
+	token * tok;
+	while(1) {
+		tok = getNextToken(fp);
+		if(tok -> id == -1)
+			break;
+		else {
+			printf("Token Sequence: %d Token id:%d Token Lexeme: %s %d\n", i + 1, tok -> id, tok -> lex, tok -> line_num);
+			i++;
 		}
-		printf("\n");
 	}
+
+
+
+
+	// if(fp == NULL) {
+	// 	printf("Error opening file\n");
+	// 	return 0;
+	// }
+	// while(endofLexer == 0) {
+	// 	fp = getStream(fp);
+	// }
+	// int i;
+	// printf("%d\n", line_num);
+	// for(i = 0; i < ntokens; i++)
+	// 	printf("Token Sequence: %d Token id:%d Token Lexeme: %s %d\n", i + 1, tokenStream[i] -> id, tokenStream[i] -> lex, tokenStream[i] -> line_num);
 	printf("Total number of token generated: %d\n", ntokens);
 	// removeComments("prog.eg", "clean.eg");
 

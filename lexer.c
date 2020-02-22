@@ -119,9 +119,10 @@ void lexerinit() {
 	endofLexer = 0;
 	lexeme[0] = '\0';
 	streamBuffer[0] = '\0';
-	chunk_size = 30;
 	tokenStream_cap = 4;
 	line_num = 1;
+	buffer_id = 0;
+	ntokens = 0;
 	tokenStream = (token **)malloc(tokenStream_cap * (sizeof(token *)));
 }
 
@@ -143,8 +144,11 @@ token * makeNewToken(int id) {
 		t -> is_float = 1;
 	}
 	// (t -> val).val_float = -1;
-	if(id != -1)
+	if(id != -1) {
 		lexeme[0] = '\0';
+		ntokens++;
+	}
+	state = 1;
 	return t;
 }
 
@@ -185,12 +189,28 @@ void ctoa(char ch) {
 	strcat(lexeme, tmp);
 }
 
-token * getNextToken() {
+token * getNextToken(FILE * fp) {
 	char ch, nxt;
 	token * newtok;
+	int flag = 0;
 	while(1) {
-		if((buffer_id == strlen(streamBuffer)))
+		// if(streamBuffer[buffer_id] == '!')
+		// 	break;
+		// if(flag == 2)
+		// 	break;
+		if(flag == 1 && state == 1)
 			break;
+		if((buffer_id == strlen(streamBuffer)) && flag == 0) {
+			fp = getStream(fp);
+			if(strlen(lexeme) == strlen(streamBuffer)) {
+				char tmp[3];
+				tmp[2] = '\0';
+				tmp[1] = '#';
+				tmp[0] = '#';
+				strcat(streamBuffer, tmp);
+				flag = 1;
+			}
+		}
 		switch(state) { 
 			/* To Do : DRIVERDEF, DRIVERENDDEF */
 			case 1: 
@@ -271,7 +291,8 @@ token * getNextToken() {
 					state = 42;
 					strcat(lexeme, "*");
 				}
-				else if(ch == 4) {
+				else if(ch == '#') {
+					flag = 1;
 					break;
 				}
 				else {	
@@ -639,8 +660,6 @@ token * getNextToken() {
 				newtok = makeNewToken(56);
 				return newtok;
 		}
-		if(streamBuffer[buffer_id] == 4)
-			break;
 	}
 	token * tok = makeNewToken(-1);
 	return tok;
@@ -649,48 +668,15 @@ token * getNextToken() {
 FILE * getStream(FILE * fp) {
 
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
-	char tmpBuffer[50];
+	char tmpBuffer[2*chunk_size];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
-	// printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);
+	// printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);f
+	streamBuffer[0] = '\0';
 	strcpy(streamBuffer, lexeme);
 	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);
 	if(bytes_read > 0)
 		strcat(streamBuffer, tmpBuffer);
-	else if(bytes_read == 0) {
-		char tmp[3];
-		tmp[2] = '\0';
-		tmp[1] = 4;
-		tmp[0] = 4;
-		strcat(streamBuffer, tmp);
-	}
-	
-	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
-	if(strlen(streamBuffer) <= 2) {
-		endofLexer = 1;
-		return fp;
-	}/* to do: check this */
-	while(1) {
-		token * tok = getNextToken();
-		// printf("%s\n", tok -> lex);
-		if(tok -> id == -1){
-			break;
-		}
-		else {
-			if(ntokens >= tokenStream_cap) {
-				tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-				tokenStream_cap *= 2;
-			}
-			tokenStream[ntokens] = tok;
-			ntokens++;
-		}
-		state = 1;
-		lexeme[0] = '\0';
-		if(streamBuffer[buffer_id] == 4) {
-			endofLexer = 1;
-			break;
-		}
-	}
 	return fp;
 }
 
@@ -737,16 +723,10 @@ void removeComments(char *testcaseFile) {
 			else if(ch != '*' && start1) {
 				putchar('*');
 				putchar(ch);
-				// fputc('*', clean);
-				// fputc(ch, clean);
 				start1 = 0;
-				// fputc('*', clean);
-				// fputc(ch, clean);
-				// start1 = 0;
 			}
 			else {
 				putchar(ch);
-				// fputc(ch, clean);
 				if(ch == '\n') {
 					lineno++;
 					linePrinted = False;
