@@ -11,8 +11,6 @@ FILE * getStream(FILE * fp);
 
 token * getNextToken();
 
-void removeComments(char * testcaseFile, char * cheanFile);
-
 int hash(const char* s);
 
 void hashTableinit();
@@ -33,6 +31,6 @@ void idlengthError();
 
 void ctoa(char ch);
 
-void removeComments(char *testcaseFile, char *cleanFile);
+void removeComments(char *testcaseFile);
 
 #endif

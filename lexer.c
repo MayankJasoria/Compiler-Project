@@ -114,7 +114,7 @@ void lexerinit() {
 	printf("Lexical Analysis is being initialized\n");
 	state = 1;
 	num_keywords = sizeof(keywordList)/sizeof(keywordList[0]) - 1;
-	printf("%d\n", num_keywords);
+	// printf("%d\n", num_keywords);
 	hashTableinit();
 	endofLexer = 0;
 	lexeme[0] = '\0';
@@ -166,14 +166,14 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	/* To do: should we store errors or just print? */
-	printf("Lexical Error: Stray '%s' on line %d\n", lexeme, line_num);
+	printf(KRED "Lexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
 
 
 void idlengthError() {
-	printf("Lexical Error: '%s' (length of the identifier exceeded) on line %d\n", lexeme, line_num);
+	printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(length of the identifier exceeded) on line "  "%d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
@@ -695,18 +695,27 @@ FILE * getStream(FILE * fp) {
 	return fp;
 }
 
-void removeComments(char *testcaseFile, char *cleanFile) {
+void removeComments(char *testcaseFile) {
 	FILE * test = fopen(testcaseFile, "r");
-	FILE * clean = fopen(cleanFile, "w");
+	// FILE * clean = fopen(cleanFile, "w");
 
+	int lineno = 1;
 	char ch;
 	boolean commentOn = False;
 	boolean end1 = False;
 	boolean start1 = False;
+	boolean linePrinted = False;
 	while((ch = fgetc(test)) != EOF) {
+		if(!linePrinted) {
+			printf("%d  ", lineno);
+			linePrinted = true;
+		}
 		if(commentOn) {
-			if(ch == '\n')
-				fputc(ch, clean);
+			if(ch == '\n') {
+				putchar(ch);
+				// putc(ch, clean);
+				linePrinted = False;
+			}
 			else if(ch == '*' && end1) {
 				end1 = False;
 				commentOn = False;
@@ -726,14 +735,21 @@ void removeComments(char *testcaseFile, char *cleanFile) {
 				start1 = True;
 			}
 			else if(ch != '*' && start1) {
-				fputc('*', clean);
-				fputc(ch, clean);
+				putchar('*');
+				putchar(ch);
+				// fputc('*', clean);
+				// fputc(ch, clean);
 				start1 = False;
 			}
-			else
-				fputc(ch, clean);
+			else {
+				putchar(ch);
+				// fputc(ch, clean);
+				if(ch == "\n") {
+					linePrinted = False;
+				}
+			}
 		}
 	}
 	fclose(test);
-	fclose(clean);
+	// fclose(clean);
 }

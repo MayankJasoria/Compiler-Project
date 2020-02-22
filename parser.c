@@ -390,7 +390,7 @@ void syntaxError(int * lookAhead, Stack *S) {
 	syntacticallyCorrect = False;
 	token * tok = tokenStream[*lookAhead];
 	stackElement * st = top(*S);
-	printf("Syntactic Error on line %d:", tok -> line_num);
+	printf(KRED "Syntax Error " KNRM "on line " KMAG "%d" KNRM ": \n", tok -> line_num);
 	int num_delim = sizeof(delim)/sizeof(delim[0]);
 	terminal del;
 	int i;
@@ -417,17 +417,18 @@ void syntaxError(int * lookAhead, Stack *S) {
 	// 	return;
 	// }
 	if(st -> tag == T)
-		printf("Missing: ");
+		printf(KYEL "Missing ");
 	while(st -> tag == T) {
-		if(st -> sym.T == tok -> id)
+		if(st -> sym.T == tok -> id) {
+			printf("\n");
 			return;
-		printf(" '%s'", terminals[st -> sym.T]);
+		}
+		printf(KCYN " '%s'", terminals[st -> sym.T]);
 		*S = pop(*S);
 		if(numElementsInStack(*S) == 0)
 			return;
 		st = top(*S);
 	}
-	printf("\n");
 
 	// else {
 	// 	// printf(" %s ", nonterminals[(st -> sym).NT]);
@@ -445,7 +446,7 @@ void syntaxError(int * lookAhead, Stack *S) {
 	ull follow_set = F[st -> sym.NT].followset;
 	ull first_set = F[st -> sym.NT].firstset;
 
-	printf("Unexpected: ");
+	boolean unexp = False;
 	while(*lookAhead < ntokens) {
 		tok = tokenStream[*lookAhead];
 		*lookAhead = *lookAhead + 1;
@@ -453,10 +454,10 @@ void syntaxError(int * lookAhead, Stack *S) {
 			*lookAhead = *lookAhead - 1;
 			*S = pop(*S);
 			printf("\n");
-			printf("Expected one of: ");
+			printf(KYEL "Expected one of: ");
 			for(i = 0; i < NUM_TERM; i++) {
 				if(findinSet(first_set, i)) {
-					printf("'%s' ", terminals[i]);
+					printf(KCYN "'%s' ", terminals[i]);
 				}
 			}
 			printf("\n");
@@ -467,9 +468,15 @@ void syntaxError(int * lookAhead, Stack *S) {
 			printf("\n");
 			return;
 		}
-		else
-			printf("'%s' ", terminals[tok -> id]);
+		else {
+			if(!unexp) {
+				printf(KYEL "Unexpected ");
+				unexp = True;
+			}
+			printf(KCYN "'%s' ", terminals[tok -> id]);
+		}
 	}
+	printf("\n");
 	
 
 	// *S = pop(*S);
@@ -530,11 +537,11 @@ void parseInputSourceCode(char *testcaseFile) {
 	int lookAhead = 0;
 	while(lookAhead <= ntokens) {
 		if(numElementsInStack(S) == 0 && syntacticallyCorrect) {
-			printf("Input source code is syntactically correct.\n");
+			printf(KGRN "Input source code is syntactically correct.\n");
 			break;
 		}
 		else if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
-			printf("Compilation ended with errors.\n");
+			printf(KBLU "Compilation ended with errors.\n");
 			break;
 		}
 
@@ -553,7 +560,7 @@ void parseInputSourceCode(char *testcaseFile) {
 			else {
 				syntaxError(&lookAhead, &S);
 				if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
-					printf("Syntactically incorrect\n");
+					// printf("Syntactically incorrect\n");
 					break;
 				}
 			}
@@ -606,7 +613,7 @@ void parseInputSourceCode(char *testcaseFile) {
 			else {
 				syntaxError(&lookAhead, &S);
 				if(numElementsInStack(S) == 0 || lookAhead >= ntokens - 1) {
-					printf("Syntactically incorrect\n");
+					// printf("Syntactically incorrect\n");
 					break;
 				}
 			}
