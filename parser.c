@@ -432,7 +432,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 			printf("\n");
 			return tok;
 		}
-		printf(KCYN " '%s'", terminals[st -> sym.T]);
+		printf(KCYN " '%s'" KNRM, terminals[st -> sym.T]);
 		*S = pop(*S);
 		if(numElementsInStack(*S) == 0)
 			return tok;
