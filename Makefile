@@ -16,8 +16,11 @@ driver: $(DEPS_PROG)
 
 parser: parser.c
 	#cls
-	$(CC) -g -o a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c
+	$(CC) -g ${CFLAGS} a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c
 	./a
+
+lexer: lexer.c
+	${CC} -g ${CFLAGS} lex main.c lexer.c
 
 clean:
 	rm -rf *.o

@@ -139,11 +139,10 @@ token * makeNewToken(int id) {
 		t -> val.val_int = val;
 	}
 	else if(id == 53) {
-		val = atof(lexeme);
+		t -> val.val_float = atof(lexeme);
 		t -> is_float = 1;
-		(t -> val).val_float = val;
 	}
-	(t -> val).val_float = -1;
+	// (t -> val).val_float = -1;
 	if(id != -1)
 		lexeme[0] = '\0';
 	return t;

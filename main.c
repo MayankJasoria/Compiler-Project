@@ -40,8 +40,15 @@ int main() {
 	printf("%d\n", hash("driver"));
 	printf("%d\n", hash_table[hash("driver")]);
 	int i;
-	for(i = 0; i < ntokens; i++)
-		printf("Token Sequence: %d Token id:%d Token Lexeme: %s\n", i + 1, tokenStream[i] -> id, tokenStream[i] -> lex);
+	for(i = 0; i < ntokens; i++) {
+		printf("Token Sequence: %d Token id:%d Token Lexeme: %s ", i + 1, tokenStream[i] -> id, tokenStream[i] -> lex);
+		if(tokenStream[i]->id == NUM) {
+			printf("Token Value: %d", tokenStream[i]->val.val_int);
+		} else if(tokenStream[i]->id == RNUM) {
+			printf("Token Value: %f", tokenStream[i]->val.val_float);
+		}
+		printf("\n");
+	}
 	printf("Total number of token generated: %d\n", ntokens);
 	// removeComments("prog.eg", "clean.eg");
 
