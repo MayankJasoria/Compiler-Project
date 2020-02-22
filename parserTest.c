@@ -72,5 +72,5 @@ int main() {
 
 
     parseInputSourceCode("prog.eg");
-    // printParseTree(PT, "ptree.txt");
+    printParseTree(PT, "ptree.txt");
 }

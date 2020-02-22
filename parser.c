@@ -395,7 +395,7 @@ void createParseTable() {
 	}
 }
 
-void syntaxError(token * tok, Stack *S, FILE * fp) {
+token * syntaxError(token * tok, Stack *S, FILE * fp) {
 
 	syntacticallyCorrect = False;
 	stackElement * st = top(*S);
@@ -430,12 +430,12 @@ void syntaxError(token * tok, Stack *S, FILE * fp) {
 	while(st -> tag == T) {
 		if(st -> sym.T == tok -> id) {
 			printf("\n");
-			return;
+			return tok;
 		}
 		printf(KCYN " '%s'", terminals[st -> sym.T]);
 		*S = pop(*S);
 		if(numElementsInStack(*S) == 0)
-			return;
+			return tok;
 		st = top(*S);
 	}
 
@@ -470,12 +470,13 @@ void syntaxError(token * tok, Stack *S, FILE * fp) {
 				}
 			}
 			printf("\n");
+			return tok;
 			break;
 		}
 		if(findinSet(first_set, tok -> id)) {
 			// *lookAhead = *lookAhead - 1;
 			printf("\n");
-			return;
+			return tok;
 		}
 		else {
 			if(!unexp) {
@@ -487,7 +488,7 @@ void syntaxError(token * tok, Stack *S, FILE * fp) {
 		tok = getNextToken(fp);
 	}
 	printf("\n");
-	
+	return tok;
 
 	// *S = pop(*S);
 
@@ -547,8 +548,8 @@ void parseInputSourceCode(char *testcaseFile) {
 	// int lookAhead = 0;
 	token * nextToken = getNextToken(fp);
 	while(numElementsInStack(S) > 0) {
-		printf("%d\n", numElementsInStack(S));
-		printStack(S, sdsd);
+		// printf("%d\n", numElementsInStack(S));
+		// printStack(S, sdsd);
 		if(numElementsInStack(S) == 1 && syntacticallyCorrect) {
 			printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 			break;
@@ -560,7 +561,7 @@ void parseInputSourceCode(char *testcaseFile) {
 
 		stackElement * Top = top(S);
 		terminal t = nextToken -> id;
-		printf("%s\n", terminals[t]);
+		// printf("%s\n", terminals[t]);
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
@@ -585,7 +586,7 @@ void parseInputSourceCode(char *testcaseFile) {
 					S = pop(S);
 			}
 			else {
-				syntaxError(nextToken, &S, fp);
+				nextToken = syntaxError(nextToken, &S, fp);
 				if((numElementsInStack(S) == 1) || nextToken -> id == -1) {
 					printf("Syntactically incorrect\n");
 					break;
@@ -638,7 +639,7 @@ void parseInputSourceCode(char *testcaseFile) {
 				// 	/** Remember : after popping from stack the memory get deallocated **/
 			}
 			else {
-				syntaxError(nextToken, &S, fp);
+				nextToken = syntaxError(nextToken, &S, fp);
 				if(numElementsInStack(S) == 0 || nextToken -> id == -1) {
 					printf("Syntactically incorrect\n");
 					break;
