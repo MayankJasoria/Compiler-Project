@@ -1,7 +1,7 @@
 #ifndef _LEXERDEF
 #define _LEXERDEF
 
-#include "utils/utils.h"
+// #include "utils/utils.h"
 
 #define NUM_KEYWORDS 30
 

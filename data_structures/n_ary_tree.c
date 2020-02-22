@@ -12,9 +12,12 @@ treeNode * getTree(stackElement * s) {
 	root -> child = NULL;
 	root -> prev = NULL;
 	root -> next = NULL;
-	root -> lex[25];
-	root -> depth;
+	strcpy(root -> lex, "----");
+	root -> depth = 0;
 	root -> id = 0;
+	root -> line_num = -1;
+	root -> tok = NULL;
+	root -> depth = 0;
 	numNodes++;
 	root -> isLeaf = True;
 	return root;
@@ -81,8 +84,14 @@ Tree insertChildren(Tree node, rhsNode* children) {
 		}
 		ch -> sym = curr -> sym;
 		ch -> tag = curr -> tag;
+		ch -> line_num = -1;
 		ch -> id = numNodes;
 		numNodes++;
+		ch -> depth = (node -> depth) + 1;
+		strcpy(ch -> lex, "----");
+		if(curr -> tag == T && (curr -> sym.T > 54 || curr -> sym.T < 52))
+			strcpy(ch -> lex, terminals[curr -> sym.T]);
+		// ch -> value = -1;
 		ch -> parent = node;
 		ch -> next = NULL;
 		ch -> prev = prev;

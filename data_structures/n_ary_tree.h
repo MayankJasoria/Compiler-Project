@@ -2,6 +2,8 @@
 #define _N_ARY_TREE
 
 #include "../utils/utils.h"
+#include "../parserDef.h"
+#include "../lexerDef.h"
 
 
 

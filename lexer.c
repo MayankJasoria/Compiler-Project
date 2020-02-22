@@ -701,10 +701,10 @@ void removeComments(char *testcaseFile) {
 
 	int lineno = 1;
 	char ch;
-	boolean commentOn = False;
-	boolean end1 = False;
-	boolean start1 = False;
-	boolean linePrinted = False;
+	int commentOn = 0;
+	int end1 = 0;
+	int start1 = 0;
+	int linePrinted = 0;
 	while((ch = fgetc(test)) != EOF) {
 		if(!linePrinted) {
 			printf("%d  ", lineno);
@@ -717,34 +717,37 @@ void removeComments(char *testcaseFile) {
 				linePrinted = False;
 			}
 			else if(ch == '*' && end1) {
-				end1 = False;
-				commentOn = False;
+				end1 = 0;
+				commentOn = 0;
 			} 
 			else if(ch != '*' && end1) {
-				end1 = False;
+				end1 = 0;
 			}
 			else if(ch == '*')
-				end1 = True;
+				end1 = 1;
 		}
 		else {
 			if(ch == '*' && start1) {
-				start1 = False;
-				commentOn = True;
+				start1 = 0;
+				commentOn = 1;
 			}
 			else if(ch == '*') {
-				start1 = True;
+				start1 = 1;
 			}
 			else if(ch != '*' && start1) {
 				putchar('*');
 				putchar(ch);
 				// fputc('*', clean);
 				// fputc(ch, clean);
-				start1 = False;
+				start1 = 0;
+				// fputc('*', clean);
+				// fputc(ch, clean);
+				// start1 = 0;
 			}
 			else {
 				putchar(ch);
 				// fputc(ch, clean);
-				if(ch == "\n") {
+				if(ch == '\n') {
 					linePrinted = False;
 				}
 			}

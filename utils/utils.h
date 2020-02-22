@@ -1,5 +1,8 @@
 #ifndef _UTILS
 #define _UTILS
+
+#include "../lexerDef.h"
+
 /**
  * This file is a space to declare any utility or helper data types,
  * type definitions, constants etc, which are for general purpose
@@ -157,6 +160,11 @@ typedef union {
 typedef struct treeNode {
 	symbol sym;
 	typeOfSymbol tag;
+	int line_num;
+	union {
+		int val_int;
+		float val_float;
+	} value;
 	char lex[25];
 	int depth;
 	int id;
@@ -164,6 +172,7 @@ typedef struct treeNode {
 	struct treeNode * prev;
 	struct treeNode * next;
 	struct treeNode * child;
+	token * tok;
 	boolean isLeaf;
 } treeNode;
 

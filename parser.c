@@ -540,10 +540,10 @@ void parseInputSourceCode(char *testcaseFile) {
 			printf(KGRN "Input source code is syntactically correct.\n");
 			break;
 		}
-		else if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
-			printf(KBLU "Compilation ended with errors.\n");
-			break;
-		}
+		// else if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
+		// 	printf(KBLU "Compilation ended with errors.\n");
+		// 	break;
+		// }
 
 		stackElement * Top = top(S);
 		token * nextToken = tokenStream[lookAhead];
@@ -552,6 +552,21 @@ void parseInputSourceCode(char *testcaseFile) {
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
+				if(Top -> sym.T == DOLLAR) {
+					printf(KGRN "Input source code is syntactically correct.\n");
+					break;
+				}
+				Top -> tn -> tok = nextToken;
+				Top -> tn -> line_num = nextToken -> line_num;
+				if(Top -> sym.T == 54) {
+					strcpy(Top -> tn -> lex, nextToken -> lex); 
+				}
+				else if(Top -> sym.T == 52) {
+					Top -> tn -> value.val_int = nextToken -> val.val_int;
+				}
+				else if(Top -> sym.T == 53) {
+					Top -> tn -> value.val_float = nextToken -> val.val_float;
+				}
 				lookAhead++;
 				if(numElementsInStack(S) > 0)
 					// printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
@@ -624,7 +639,27 @@ void parseInputSourceCode(char *testcaseFile) {
 void inorder(Tree root, FILE * fp) {
 
 	if(root -> tag == T) {
-		fprintf(fp, "%s %d\n", terminals[root -> sym.T], root -> id);
+		
+		char * tokName;
+		if(root -> sym.T == 0)
+			tokName = "EMPTY";
+		else
+			tokName = terminals[root -> tok -> id];
+		// char * val = (root -> tag == T && root -> sym.T == 52)?itoa(root -> value.val_int):(root -> tag == T && root -> sym.T == 53)?ftoa(root -> value.val_float):"----";
+		char isleaf = (root -> isLeaf)?'y':'n';
+		char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
+		if(root -> tag == T && root -> sym.T == 52) {
+			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10d:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);
+		}
+		else if(root -> tag == T && root -> sym.T == 53) {
+			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10f:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);
+		}
+		else {
+			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10s:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);	
+		}
 		return;
 	}
 	treeNode * t = root -> child;
@@ -632,10 +667,32 @@ void inorder(Tree root, FILE * fp) {
 	while(t != NULL) {
 		inorder(t, fp);
 		if(i == 0) {
-			if(root -> tag == T)
-				fprintf(fp, "%s %d\n", terminals[root -> sym.T], root -> id);
-			else 
-				fprintf(fp, "%s %d\n", nonterminals[root -> sym.NT], root -> id);
+
+			char * tokName = (root -> tag == T)?terminals[root -> tok -> id]:"----";
+			// char * val = (root -> tag == T && root -> sym.T == 52)?itoa(root -> value.val_int):(root -> tag == T && root -> sym.T == 53)?ftoa(root -> value.val_float):"----";
+			char isleaf = (root -> isLeaf)?'y':'n';
+			char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
+			if(root -> tag == T && root -> sym.T == 52) {
+			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10d:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);
+			}
+			else if(root -> tag == T && root -> sym.T == 53) {
+				fprintf(fp,"\n%-15s:%-5d:%-12s:%-10d:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s);
+			}
+			else if(root -> tag == NT && root -> sym.NT == 0) {
+				fprintf(fp,"\n%-15s:%-5d:%-12s:%-10s:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, "----", "[ROOT]"
+						, isleaf, s);	
+			}
+			else {
+				fprintf(fp,"\n%-15s:%-5d:%-12s:%-10s:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+						, isleaf, s);	
+			}
+
+			// if(root -> tag == T)
+			// 	fprintf(fp, "%s %d\n", terminals[root -> sym.T], root -> id);
+			// else 
+			// 	fprintf(fp, "%s %d\n", nonterminals[root -> sym.NT], root -> id);
 		}
 		i++;
 		t = t -> next;
@@ -645,6 +702,9 @@ void inorder(Tree root, FILE * fp) {
 void printParseTree(Tree PT, char *outfile) {
 
 	FILE * fp = fopen(outfile, "w");
+
+	fprintf(fp,"%-15s:%-5s:%-12s:%-10s:%-25s:%-12s:%-20s","Lexeme", "LINENO", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol");
+
 	inorder(PT, fp);
 	fclose(fp);
 }
