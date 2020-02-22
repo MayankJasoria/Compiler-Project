@@ -383,6 +383,7 @@ void createParseTable() {
 
 void syntaxError(int * lookAhead, Stack S) {
 
+	syntacticallyCorrect = False;
 	token * tok = tokenStream[*lookAhead];
 	stackElement * st = top(S);
 	printf("Syntactic Error on line %d:", tok -> line_num);
@@ -457,15 +458,22 @@ void parseInputSourceCode(char *testcaseFile) {
 	/* declaring the lookAhead pointer */
 	int lookAhead = 0;
 	while(lookAhead <= ntokens) {
-		if(numElementsInStack(S) == 0) {
+		if(numElementsInStack(S) == 0 && syntacticallyCorrect) {
 			printf("Input source code is syntactically correct.\n");
 			break;
 		}
+		else if(numElementsInStack(S) == 0) {
+			printf("Had some Syntactic Errors.\n");
+		}
+
 		stackElement * Top = top(S);
 		token * nextToken = tokenStream[lookAhead];
 		terminal t = nextToken -> id;
+		// printf("%s                ", terminals[t]);
+
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
+			// printf("%s                \n", terminals[Top -> sym.T]);
 			if(t == (Top -> sym).T) {
 				lookAhead++;
 				if(numElementsInStack(S) > 0)
@@ -477,11 +485,12 @@ void parseInputSourceCode(char *testcaseFile) {
 			}
 		}
 		else {
-
+			// printf("%s   ", nonterminals[Top -> sym.NT]);
 			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
 			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
 			
 			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
+			// printf("%d\n", parseTableVal);
 			
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
@@ -548,10 +557,6 @@ void inorder(Tree root, FILE * fp) {
 		i++;
 		t = t -> next;
 	}
-	// if(t -> tag == T)
-	// 	fprintf(fp, "%s %d\n", t -> sym.T, t -> id);
-	// else 
-	// 	fprintf(fp, "%s %d\n", t -> sym.NT, t -> id);
 }
 
 void printParseTree(Tree PT, char *outfile) {
@@ -564,6 +569,7 @@ void printParseTree(Tree PT, char *outfile) {
 
 void parserInit(char * filename) {
 	num_rules = 0;
+	syntacticallyCorrect = 1;
 	int i;
 	for(i = 0; i < 100; i++) {
 		first[i] = 0;

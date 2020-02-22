@@ -67,6 +67,8 @@ char * nonterminals[NUM_NONTERM];
 
 Tree PT;
 
+boolean syntacticallyCorrect;
+
 /* POSSIBLE PLACEHOLDERS - AVOIDING COMPILE ERRORS */
 /* Update definitions below when relevant */
 typedef struct tb {

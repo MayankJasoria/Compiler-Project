@@ -26,13 +26,13 @@ idListNew		: COMMA ID idListNew | EMPTY
 expression      : arithOrBoolExpr | u
 arithOrBoolExpr 	: relopExpr arithOrBoolExprNew
 arithOrBoolExprNew 	: logicalOp relopExpr arithOrBoolExprNew | EMPTY
-relopExpr 		: arithmeticExpr relopExprNew
+relopExpr 		: arithmeticExpr relopExprNew | boolConstt
 relopExprNew 		: relationalOp arithmeticExpr | EMPTY 
 arithmeticExpr	: term arithmeticExprNew
 arithmeticExprNew	: pm term arithmeticExprNew | EMPTY 
 term		: factor termNew
 termNew		: md factor termNew | EMPTY
-factor		: BO arithmeticExpr BC | var_id_num
+factor		: BO arithOrBoolExpr BC | var_id_num
 var			: var_id_num | boolConstt
 pm			: PLUS | MINUS
 md			: MUL | DIV
