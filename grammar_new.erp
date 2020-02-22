@@ -32,7 +32,7 @@ arithmeticExpr	: term arithmeticExprNew
 arithmeticExprNew	: pm term arithmeticExprNew | EMPTY 
 term		: factor termNew
 termNew		: md factor termNew | EMPTY
-factor		: BO arithOrBoolExpr BC | var_id_num
+factor		: BO arithmeticExpr BC | var_id_num
 var			: var_id_num | boolConstt
 pm			: PLUS | MINUS
 md			: MUL | DIV
@@ -52,6 +52,6 @@ var_id_num  : ID whichId | NUM | RNUM
 whichStmt       : lvalueIDStmt | lvalueARRStmt
 lvalueIDStmt    : ASSIGNOP expression SEMICOL
 lvalueARRStmt   : SQBO index SQBC ASSIGNOP expression SEMICOL
-u               : unary_op | new_NT 
+u               : unary_op new_NT 
 unary_op        : PLUS | MINUS
 new_NT          : BO arithmeticExpr BC | var_id_num
