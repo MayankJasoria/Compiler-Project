@@ -3,6 +3,8 @@
 
 #include "parserDef.h"
 
+#define PRINT_FORMAT  "%-15s:%-15s:%-25s:%-25s:%-25s:%-25s:%-20s"
+
 void insertElement (int idx, char * str, typeOfSymbol t, int en);
 
 hashNode * hashLookup(int idx, char * str);

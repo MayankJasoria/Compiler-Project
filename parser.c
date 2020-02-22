@@ -649,15 +649,15 @@ void inorder(Tree root, FILE * fp) {
 		char isleaf = (root -> isLeaf)?'y':'n';
 		char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
 		if(root -> tag == T && root -> sym.T == 52) {
-			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10d:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+			fprintf(fp, PRINT_FORMAT_BODY2,root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
 					, isleaf, s);
 		}
 		else if(root -> tag == T && root -> sym.T == 53) {
-			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10f:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+			fprintf(fp, PRINT_FORMAT_BODY3,root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
 					, isleaf, s);
 		}
 		else {
-			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10s:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+			fprintf(fp, PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
 					, isleaf, s);	
 		}
 		return;
@@ -673,19 +673,19 @@ void inorder(Tree root, FILE * fp) {
 			char isleaf = (root -> isLeaf)?'y':'n';
 			char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
 			if(root -> tag == T && root -> sym.T == 52) {
-			fprintf(fp,"\n%-15s:%-5d:%-12s:%-10d:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+			fprintf(fp,PRINT_FORMAT_BODY2, root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
 					, isleaf, s);
 			}
 			else if(root -> tag == T && root -> sym.T == 53) {
-				fprintf(fp,"\n%-15s:%-5d:%-12s:%-10d:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+				fprintf(fp, PRINT_FORMAT_BODY3, root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
 						, isleaf, s);
 			}
 			else if(root -> tag == NT && root -> sym.NT == 0) {
-				fprintf(fp,"\n%-15s:%-5d:%-12s:%-10s:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, "----", "[ROOT]"
+				fprintf(fp,PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", "[ROOT]"
 						, isleaf, s);	
 			}
 			else {
-				fprintf(fp,"\n%-15s:%-5d:%-12s:%-10s:%-25s:%-12c:%-20s",root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+				fprintf(fp,PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
 						, isleaf, s);	
 			}
 
@@ -703,7 +703,7 @@ void printParseTree(Tree PT, char *outfile) {
 
 	FILE * fp = fopen(outfile, "w");
 
-	fprintf(fp,"%-15s:%-5s:%-12s:%-10s:%-25s:%-12s:%-20s","Lexeme", "LINENO", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol");
+	fprintf(fp,PRINT_FORMAT_HEADER, "Lexeme", "LINENO", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol");
 
 	inorder(PT, fp);
 	fclose(fp);
