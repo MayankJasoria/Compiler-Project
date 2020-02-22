@@ -566,8 +566,15 @@ void parseInputSourceCode(char *testcaseFile) {
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
 				if(Top -> sym.T == DOLLAR) {
-					printf(KGRN "Input source code is syntactically correct.\n" KNRM);
-					break;
+					if(syntacticallyCorrect) {
+						printf(KGRN "Input source code is syntactically correct.\n" KNRM);
+						break;
+					} 
+					else {
+						printf(KRED "Compilation ended with errors.\n" KNRM);
+						break;
+						// error
+					}
 				}
 				Top -> tn -> tok = nextToken;
 				Top -> tn -> line_num = nextToken -> line_num;

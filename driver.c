@@ -11,7 +11,8 @@ void lexAndParse(char* inputfile, char* outputfile) {
     ComputeFirstAndFollowSets();
     createParseTable();
 	parseInputSourceCode(inputfile);
-    printParseTree(PT, outputfile);
+    printf("\n");
+    // printParseTree(PT, outputfile);
 }
 
 int main(int argc, char* argv[]) {
