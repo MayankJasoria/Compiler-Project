@@ -1,6 +1,8 @@
 
 #include "parserDef.h"
 
+#define ull unsigned long long int
+
 char * nonterminals[] = { 
 			"program",
 			"moduleDeclarations",
@@ -121,6 +123,8 @@ char * nonterminals[] = {
 			"DRIVERENDDEF",
 			"DOLLAR"
 		};
+
+terminal delim[] = {SEMICOL, END, ENDDEF, DRIVERENDDEF, BC, SQBC, DOLLAR, COMMA, COLON};
 
 void insertElement (int idx, char * str, typeOfSymbol t, int en) {
 	hashNode * prev = NULL, * curr = NULL;
@@ -381,46 +385,113 @@ void createParseTable() {
 	}
 }
 
-void syntaxError(int * lookAhead, Stack S) {
+void syntaxError(int * lookAhead, Stack *S) {
 
 	syntacticallyCorrect = False;
 	token * tok = tokenStream[*lookAhead];
-	stackElement * st = top(S);
+	stackElement * st = top(*S);
 	printf("Syntactic Error on line %d:", tok -> line_num);
-	if(st -> tag == T) {
-		printf("Expecting %s\n", terminals[(st -> sym).T]);
+	int num_delim = sizeof(delim)/sizeof(delim[0]);
+	terminal del;
+	int i;
+	// if(st -> tag == T) {
+	// 	printf(" Expecting %s\n", terminals[(st -> sym).T]);
+	// 	while(*lookAhead < ntokens) {
+	// 		tok = tokenStream[*lookAhead];
+	// 		*lookAhead = *lookAhead + 1;
+	// 		for(i = 0; i < num_delim; i++) {
+	// 			if(tok -> id == delim[i]) {
+	// 				del = delim[i];
+	// 				break;
+	// 			}
+	// 		}
+	// 		// if(tok -> id == SEMICOL || tok -> id == DOLLAR)
+	// 		// 	break;
+	// 	}
+	// 	while(numElementsInStack(S) > 0) {
+	// 		stackElement * tp = top(S);
+	// 		S = pop(S);
+	// 		if(tp -> tag == T && tp -> sym.T == del)
+	// 			break;
+	// 	}
+	// 	return;
+	// }
+	if(st -> tag == T)
+		printf("Missing: ");
+	while(st -> tag == T) {
+		if(st -> sym.T == tok -> id)
+			return;
+		printf(" '%s'", terminals[st -> sym.T]);
+		*S = pop(*S);
+		if(numElementsInStack(*S) == 0)
+			return;
+		st = top(*S);
 	}
-	else {
-		printf("%s\n", nonterminals[(st -> sym).NT]);
-		unsigned long long int fs = F[st -> sym.NT].firstset;
-		int i;
-		printf("Expected ");
-		for(i = 1; i < NUM_TERM; i++) {
-			if(findinSet(fs, i) == 1) {
-				printf("%s ", terminals[i]);
-			}
-		}
-		printf("\n");
-	}
+	printf("\n");
 
-	/* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
+	// else {
+	// 	// printf(" %s ", nonterminals[(st -> sym).NT]);
+	// 	unsigned long long int fs = F[st -> sym.NT].firstset;
+	// 	int i;
+	// 	printf("Extra: ");
+	// 	for(i = 1; i < NUM_TERM; i++) {
+	// 		if(findinSet(fs, i) == 1) {
+	// 			printf("%s ", terminals[i]);
+	// 		}
+	// 	}
+	// 	printf("\n");
+	// }
+
+	ull follow_set = F[st -> sym.NT].followset;
+	ull first_set = F[st -> sym.NT].firstset;
+
+	printf("Unexpected: ");
 	while(*lookAhead < ntokens) {
 		tok = tokenStream[*lookAhead];
 		*lookAhead = *lookAhead + 1;
-		if(tok -> id == SEMICOL || tok -> id == DOLLAR)
+		if((findinSet(follow_set, tok -> id))) {
+			*lookAhead = *lookAhead - 1;
+			*S = pop(*S);
+			printf("\n");
+			printf("Expected one of: ");
+			for(i = 0; i < NUM_TERM; i++) {
+				if(findinSet(first_set, i)) {
+					printf("'%s' ", terminals[i]);
+				}
+			}
+			printf("\n");
 			break;
+		}
+		if(findinSet(first_set, tok -> id)) {
+			*lookAhead = *lookAhead - 1;
+			printf("\n");
+			return;
+		}
+		else
+			printf("'%s' ", terminals[tok -> id]);
 	}
+	
 
-	/* popping the stack until:
-	We pop out 1 SEMICOL/DOLLAR */
-	while(numElementsInStack(S) > 0) {
-		stackElement * tp = top(S);
-		S = pop(S);
-		if(tp -> tag == T && tp -> sym.T == SEMICOL)
-			break;
-		else if(tp -> tag == T && tp -> sym.T == DOLLAR)
-			break;
-	}
+	// *S = pop(*S);
+
+	// /* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
+	// while(*lookAhead < ntokens) {
+	// 	tok = tokenStream[*lookAhead];
+	// 	*lookAhead = *lookAhead + 1;
+	// 	if(tok -> id == SEMICOL || tok -> id == DOLLAR)
+	// 		break;
+	// }
+
+	//  popping the stack until:
+	// We pop out 1 SEMICOL/DOLLAR 
+	// while(numElementsInStack(S) > 0) {
+	// 	stackElement * tp = top(S);
+	// 	S = pop(S);
+	// 	if(tp -> tag == T && tp -> sym.T == SEMICOL)
+	// 		break;
+	// 	else if(tp -> tag == T && tp -> sym.T == DOLLAR)
+	// 		break;
+	// }
 }
 
 void parseInputSourceCode(char *testcaseFile) {
@@ -462,18 +533,17 @@ void parseInputSourceCode(char *testcaseFile) {
 			printf("Input source code is syntactically correct.\n");
 			break;
 		}
-		else if(numElementsInStack(S) == 0) {
-			printf("Had some Syntactic Errors.\n");
+		else if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
+			printf("Compilation ended with errors.\n");
+			break;
 		}
 
 		stackElement * Top = top(S);
 		token * nextToken = tokenStream[lookAhead];
 		terminal t = nextToken -> id;
-		// printf("%s                ", terminals[t]);
 
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
-			// printf("%s                \n", terminals[Top -> sym.T]);
 			if(t == (Top -> sym).T) {
 				lookAhead++;
 				if(numElementsInStack(S) > 0)
@@ -481,20 +551,22 @@ void parseInputSourceCode(char *testcaseFile) {
 					S = pop(S);
 			}
 			else {
-				syntaxError(&lookAhead, S);
+				syntaxError(&lookAhead, &S);
+				if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
+					printf("Syntactically incorrect\n");
+					break;
+				}
 			}
 		}
 		else {
-			// printf("%s   ", nonterminals[Top -> sym.NT]);
 			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
 			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
 			
 			int parseTableVal = parseTable[(Top -> sym).NT][nextToken -> id];
-			// printf("%d\n", parseTableVal);
 			
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
-				printf("%s --> ", nonterminals[(Top -> sym).NT]);
+				// printf("%s --> ", nonterminals[(Top -> sym).NT]);
 
 				// if(node -> sym.NT == 55) {
 				// 	printf("I got caught\n");
@@ -505,19 +577,19 @@ void parseInputSourceCode(char *testcaseFile) {
 				S = pop(S);
 				while(ch -> next != NULL) {
 					// tmp = push(tmp, node);
-					if(ch -> tag == T)
-						printf("%s\t", terminals[ch -> sym.T]);
-					else
-						printf("%s\t", nonterminals[ch -> sym.NT]);
+					// if(ch -> tag == T)
+					// 	printf("%s\t", terminals[ch -> sym.T]);
+					// else
+					// 	printf("%s\t", nonterminals[ch -> sym.NT]);
 					// node = node -> next;
 					// if(ch -> next != NULL)
 						ch = ch -> next;
 				}
-				if(ch -> tag == T)
-					printf("%s\t", terminals[ch -> sym.T]);
-				else
-					printf("%s\t", nonterminals[ch -> sym.NT]);
-				printf("\n");
+				// if(ch -> tag == T)
+				// 	printf("%s\t", terminals[ch -> sym.T]);
+				// else
+				// 	printf("%s\t", nonterminals[ch -> sym.NT]);
+				// printf("\n");
 				while(ch != NULL) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
 					new -> sym = ch -> sym;
@@ -532,7 +604,11 @@ void parseInputSourceCode(char *testcaseFile) {
 				// 	/** Remember : after popping from stack the memory get deallocated **/
 			}
 			else {
-				syntaxError(&lookAhead, S);
+				syntaxError(&lookAhead, &S);
+				if(numElementsInStack(S) == 0 || lookAhead >= ntokens - 1) {
+					printf("Syntactically incorrect\n");
+					break;
+				}
 			}
 		}
 	}

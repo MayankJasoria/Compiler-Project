@@ -24,8 +24,8 @@ char * keywordList[] = {
 		"use",
 		"with",
 		"parameters",
-		"TRUE",
-		"FALSE",
+		"true",
+		"false",
 		"takes",
 		"input",
 		"returns",
@@ -37,7 +37,8 @@ char * keywordList[] = {
 		"case",
 		"break",
 		"default",
-		"while"
+		"while",
+		"\0"
 	};
 
 void insertkey (int idx, char * str, int en) {
@@ -112,7 +113,8 @@ int checkIdentifier(char * str) {
 void lexerinit() {
 	printf("Lexical Analysis is being initialized\n");
 	state = 1;
-	num_keywords = 29;
+	num_keywords = sizeof(keywordList)/sizeof(keywordList[0]) - 1;
+	printf("%d\n", num_keywords);
 	hashTableinit();
 	endofLexer = 0;
 	lexeme[0] = '\0';
@@ -164,7 +166,7 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	/* To do: should we store errors or just print? */
-	printf("Lexical Error: '%s' on line %d\n", lexeme, line_num);
+	printf("Lexical Error: Stray '%s' on line %d\n", lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
@@ -650,7 +652,7 @@ FILE * getStream(FILE * fp) {
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
 	char tmpBuffer[50];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
-	printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);
+	// printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);
 	strcpy(streamBuffer, lexeme);
 	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);
