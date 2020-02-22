@@ -537,7 +537,7 @@ void parseInputSourceCode(char *testcaseFile) {
 	int lookAhead = 0;
 	while(lookAhead <= ntokens) {
 		if(numElementsInStack(S) == 0 && syntacticallyCorrect) {
-			printf(KGRN "Input source code is syntactically correct.\n");
+			printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 			break;
 		}
 		// else if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {

@@ -166,14 +166,14 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	/* To do: should we store errors or just print? */
-	printf(KRED "Lexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n", lexeme, line_num);
+	printf(KRED "Lexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n" KNRM, lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
 
 
 void idlengthError() {
-	printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(length of the identifier exceeded) on line "  "%d\n", lexeme, line_num);
+	printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(length of the identifier exceeded) on line "  "%d\n" KNRM, lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }
@@ -714,6 +714,7 @@ void removeComments(char *testcaseFile) {
 			if(ch == '\n') {
 				putchar(ch);
 				// putc(ch, clean);
+				lineno++;
 				linePrinted = False;
 			}
 			else if(ch == '*' && end1) {
@@ -748,6 +749,7 @@ void removeComments(char *testcaseFile) {
 				putchar(ch);
 				// fputc(ch, clean);
 				if(ch == '\n') {
+					lineno++;
 					linePrinted = False;
 				}
 			}
