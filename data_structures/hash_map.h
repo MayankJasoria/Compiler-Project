@@ -1,3 +1,9 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70497P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #ifndef _HASH_TABLE
 #define _HASH_TABLE
 
@@ -25,7 +31,7 @@ HashTable getHashTable();
  * 
  * @return updated Hash Table
  */
-HashTable insertToTable(HashTable table, void* key, void* data);
+HashTable insertToTable(HashTable table, void* key, void* data, int (*hash)(void*));
 
 /**
  * Informs whether a given entry (by key) is present in the table or not
@@ -33,7 +39,7 @@ HashTable insertToTable(HashTable table, void* key, void* data);
  * 
  * @return TRUE (== 1) if the entry is present, FALSE (== 0) otherwise
  */
-boolean isPresent(HashTable table, void* key);
+boolean isPresent(HashTable table, void* key, int (*hash)(void*));
 
 /**
  * Returns the data associated with the given key from the table
@@ -41,7 +47,7 @@ boolean isPresent(HashTable table, void* key);
  * 
  * @return The requested data, if it is present. Otherwise NULL
  */
-void* getDataFromTable(HashTable table, void* key);
+void* getDataFromTable(HashTable table, void* key, int (*hash)(void*));
 
 /**
  * Removes an entry (by key) from the table, if it exists
@@ -49,7 +55,7 @@ void* getDataFromTable(HashTable table, void* key);
  * 
  * @return updated Hash Table
  */
-HashTable removeFromTable(HashTable table, void* key);
+HashTable removeFromTable(HashTable table, void* key, int (*hash)(void*));
 
 /**
  * Computes a hash value for a given number
