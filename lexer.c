@@ -171,7 +171,7 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	// printf(KRED "\nLexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n" KNRM, lexeme, line_num);
-	printf("Line No. %d: Lexical Error -- Stray %s\n", line_num, lexeme);
+	printf("Line number (%d): lexical error -- stray '%s'\n\n", line_num, lexeme);
 	lexeme[0] = '\0';
 	state = 1;
 }
@@ -179,7 +179,7 @@ void error() {
 
 void idlengthError() {
 	// printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(max. length of the identifier exceeded) on line " KMAG "%d\n\n" KNRM, lexeme, line_num);
-	printf("Line No. %d: Lexical Error -- Max. length of identifier exceeded for %s\n", line_num, lexeme);
+	printf("Line number (%d): lexical error -- maximum length of identifier exceeded for '%s'\n\n", line_num, lexeme);
 	lexeme[0] = '\0';
 	state = 1;
 }

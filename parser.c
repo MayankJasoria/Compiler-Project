@@ -405,13 +405,13 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 	syntacticallyCorrect = False;
 	stackElement * st = top(*S);
 	// printf(KRED "Syntax Error " KNRM "on line " KMAG "%d" KNRM ": \n", tok -> line_num);
-	printf("Line No. %d: Syntax Error -- ", line_num);
+	printf("Line number (%d): syntax error ", line_num);
 	int num_delim = sizeof(delim)/sizeof(delim[0]);
 	terminal del;
 	int i;
 	boolean miss = False;
 	if(st -> tag == T) {
-		printf(KYEL "Missing ");
+		printf(KYEL "-- missing ");
 		miss = true;
 	}
 	while(st -> tag == T) {
@@ -438,7 +438,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 		if((findinSet(follow_set, tok -> id))) {
 			*S = pop(*S);
 			printf(" ");
-			printf(KYEL "Expected one of: ");
+			printf(KYEL "-- expected one of: ");
 			for(i = 0; i < NUM_TERM; i++) {
 				if(findinSet(first_set, i)) {
 					printf(KCYN "'%s' " KNRM, terminals[i]);
@@ -454,7 +454,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 		}
 		else {
 			if(!unexp) {
-				printf(KYEL "Unexpected ");
+				printf(KYEL "-- unexpected ");
 				unexp = True;
 			}
 			printf(KCYN "'%s' " KNRM, tok->lex);
