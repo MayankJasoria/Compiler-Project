@@ -5,10 +5,10 @@ otherModules		: module otherModules | EMPTY
 driverModule		: DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
 module		: DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
 ret			: RETURNS SQBO output_plist SQBC SEMICOL | EMPTY
-input_plist		: ID COLON dataType input_plistNew
-input_plistNew	: COMMA ID COLON dataType input_plistNew | EMPTY
-output_plist		: ID COLON type output_plistNew
-output_plistNew	: COMMA ID COLON type output_plistNew | EMPTY
+input_plist		: ID COLON dataType n1
+n1	: COMMA ID COLON dataType n1 | EMPTY
+output_plist		: ID COLON type n2
+n2	: COMMA ID COLON type n2 | EMPTY
 type			: INTEGER | REAL | BOOLEAN
 dataType		: type | ARRAY SQBO range_arrays SQBC OF type
 moduleDef		: START statements END
@@ -21,30 +21,30 @@ simpleStmt		: assignmentStmt | moduleReuseStmt
 assignmentStmt  : ID whichStmt
 moduleReuseStmt	: optional USE MODULE ID WITH PARAMETERS idList SEMICOL
 optional		: SQBO idList SQBC ASSIGNOP | EMPTY
-idList		: ID idListNew
-idListNew		: COMMA ID idListNew | EMPTY 
-expression      : arithOrBoolExpr | u
-arithOrBoolExpr 	: relopExpr arithOrBoolExprNew
-arithOrBoolExprNew 	: logicalOp relopExpr arithOrBoolExprNew | EMPTY
-relopExpr 		: arithmeticExpr relopExprNew | boolConstt
-relopExprNew 		: relationalOp arithmeticExpr | EMPTY 
-arithmeticExpr	: term arithmeticExprNew
-arithmeticExprNew	: pm term arithmeticExprNew | EMPTY 
-term		: factor termNew
-termNew		: md factor termNew | EMPTY
-factor		: BO arithOrBoolExpr BC | var_id_num
+idList		: ID n3
+n3		: COMMA ID n3 | EMPTY 
+expression      : arithmeticOrBooleanExpr | u
+arithmeticOrBooleanExpr 	: anyTerm n7
+n7 	: logicalOp anyTerm n7 | EMPTY
+anyTerm 		: arithmeticExpr n8 | boolConstt
+n8 		: relationalOp arithmeticExpr | EMPTY 
+arithmeticExpr	: term n4
+n4	: op1 term n4 | EMPTY 
+term		: factor n5
+n5		: op2 factor n5 | EMPTY
+factor		: BO arithmeticOrBooleanExpr BC | var_id_num
 var			: var_id_num | boolConstt
-pm			: PLUS | MINUS
-md			: MUL | DIV
+op1			: PLUS | MINUS
+op2			: MUL | DIV
 logicalOp		: AND | OR
 relationalOp		: LT | LE | GT | GE | EQ | NE
 declareStmt		: DECLARE idList COLON dataType SEMICOL
 condionalStmt		: SWITCH BO ID BC START caseStmts default END 
-caseStmts		: CASE value COLON statements BREAK SEMICOL caseStmtsNew
-caseStmtsNew		: CASE value COLON statements BREAK SEMICOL caseStmtsNew | EMPTY
+caseStmts		: CASE value COLON statements BREAK SEMICOL n9
+n9		: CASE value COLON statements BREAK SEMICOL n9 | EMPTY
 value			: NUM | TRUE | FALSE
 default		: DEFAULT COLON statements BREAK SEMICOL | EMPTY
-iterativeStmt		: FOR BO ID IN range BC START statements END | WHILE BO arithOrBoolExpr BC START statements END
+iterativeStmt		: FOR BO ID IN range BC START statements END | WHILE BO arithmeticOrBooleanExpr BC START statements END
 range			: NUM RANGEOP NUM
 range_arrays    : index RANGEOP index
 boolConstt  : TRUE | FALSE
