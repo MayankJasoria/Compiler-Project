@@ -55,6 +55,7 @@ int main(int argc, char* argv[]) {
                     printf("%-25d%-25s%d\n", tok->line_num, tok->lex, tok->id);
                     i++;
                 }
+                break;
 			}
             case 3:
 				lexAndParse(argv[1], argv[2]);
