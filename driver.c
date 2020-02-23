@@ -1,3 +1,9 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70497P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -6,10 +12,15 @@
 #include "lexer.h"
 #include "parser.h"
 
+/**
+ * Performs lexical analysis and parsing of a given file, and 
+ * prints the inorder traversal of the generated parse tree
+ * to a given output file
+ * @param inputfile     The source code file
+ * @param outputfile    The file into which the inorder traversal
+ *                      of the parse tree is to be written
+ */
 void lexAndParse(char* inputfile, char* outputfile) {
-    parserInit("grammar_new.erp");
-    ComputeFirstAndFollowSets();
-    createParseTable();
 	parseInputSourceCode(inputfile);
     printf("\n");
     printParseTree(PT, outputfile);
@@ -21,9 +32,16 @@ int main(int argc, char* argv[]) {
         exit(0);
     }
 
+    /* initializing lexer and parser */
+    lexerinit();
+    parserInit("grammar_new.erp");
+    ComputeFirstAndFollowSets();
+    createParseTable();
+
     printf(KCYN "**************** IMPLEMENTATION STATUS ****************\n" KNRM);
     printf("1: FIRST and FOLLOW set automated\n");
     printf("2: Both lexical and syntax analyzer modules implemented\n");
+    printf("3: Code works on all given test cases\n");
     printf(KCYN "*******************************************************\n" KNRM);
 
     int option = 0;
@@ -46,7 +64,6 @@ int main(int argc, char* argv[]) {
 			}
             case 2: {
                 /* Call lexer getNextToken() */
-                lexerinit();
                 FILE * fp = fopen(argv[1], "r");
                 int i = 1;
                 token * tok;
@@ -69,7 +86,7 @@ int main(int argc, char* argv[]) {
                 end_time = clock();
                 total_CPU_time  =  (double) (end_time - start_time);
                 total_CPU_time_in_seconds =   total_CPU_time / CLOCKS_PER_SEC;
-				printf("The total time taken is " KBLU "%f usec (= %f sec)\n\n" KNRM, total_CPU_time, total_CPU_time_in_seconds);
+				printf("The total time taken is " KBLU "%f ticks (= %f sec)\n\n" KNRM, total_CPU_time, total_CPU_time_in_seconds);
                 break;
 			}
             default: printf(KYEL "Option %d is invalid, please try again\n" KNRM, option);
