@@ -1,7 +1,7 @@
 **moduledeclarations**
 
 declare module module1;
-declare module module2;
+declare module module3;
 declare module module3;
 
 
@@ -137,14 +137,10 @@ start
 			break;
 
 			default:
-				**insert some statements here*
+				**insert some statements here**
 			break;
 		end
 	**end of conditional statements**
-
-
-
-
 end
 
 

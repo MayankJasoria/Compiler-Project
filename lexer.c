@@ -94,7 +94,6 @@ void hashTableinit() {
 	for(i = 1; i <= num_keywords; i++) {
 		int key = hash(keywordList[i]);
 		insertkey(key, keywordList[i], i);
-		// hash_table[key] = i;
 	}
 }
 
@@ -105,8 +104,6 @@ int checkIdentifier(char * str) {
 	keyNode * k = keyLookup(key, str);
 	if(keyLookup(key, str) == NULL)
 		return 0;
-	// if(strcmp(keywordList[hash_table[key]], str))
-	// 	return 0;
 	return k -> id;
 }
 
@@ -168,7 +165,6 @@ void retract(int num) {
 
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
-	/* To do: should we store errors or just print? */
 	printf(KRED "\nLexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n" KNRM, lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
@@ -190,14 +186,21 @@ void ctoa(char ch) {
 }
 
 token * getNextToken(FILE * fp) {
+
+	/* Check if the fp is valid. Ideally, this check should be performed in parseInputSourceCode(),
+		in parser.c, however due to design of the main program (which sometimes uses this function as the entry 
+		point), this check had to be kept here) */
+	if (!fp) {
+		printf("Error: source file could not be opened, exiting...\n");
+
+		/* Exiting right away, since there is no point returning to the main menu */
+		exit(0); 
+	}
+
 	char ch, nxt;
 	token * newtok;
 	int flag = 0;
 	while(1) {
-		// if(streamBuffer[buffer_id] == '!')
-		// 	break;
-		// if(flag == 2)
-		// 	break;
 		if(flag == 1 && state == 1)
 			break;
 		if((buffer_id == strlen(streamBuffer)) && flag == 0) {
@@ -405,8 +408,6 @@ token * getNextToken(FILE * fp) {
 				}
 				buffer_id++;
 				break;
-				// newtok = makeNewToken(41);
-				// return newtok;
 			case 20:
 				newtok = makeNewToken(36);
 				return newtok;
@@ -442,8 +443,6 @@ token * getNextToken(FILE * fp) {
 				}
 				buffer_id++;
 				break;
-				// newtok = makeNewToken(42);
-				// return newtok;
 			case 24:
 				newtok = makeNewToken(37);
 				return newtok;
@@ -628,7 +627,6 @@ token * getNextToken(FILE * fp) {
 				nxt = streamBuffer[buffer_id];
 				if(nxt != '\n')
 					state = 44; 
-				// To DO: what if we reach end of chunk here.
 				buffer_id++;
 				break;
 			case 46:
@@ -682,7 +680,17 @@ FILE * getStream(FILE * fp) {
 
 void removeComments(char *testcaseFile) {
 	FILE * test = fopen(testcaseFile, "r");
-	// FILE * clean = fopen(cleanFile, "w");
+
+	/* Check if the fp is valid. Ideally, this check should be performed in parseInputSourceCode(),
+		in parser.c, however due to design of the main program (which sometimes uses this function as the entry 
+		point), this check had to be kept here) */
+	if (!test) {
+		printf("Error: source file '%s' could not be opened, exiting...\n", testcaseFile);
+
+		/* Exiting right away, since there is no point returning to the main menu */
+		exit(0); 
+	}
+	
 
 	int lineno = 1;
 	char ch;
@@ -735,5 +743,4 @@ void removeComments(char *testcaseFile) {
 		}
 	}
 	fclose(test);
-	// fclose(clean);
 }

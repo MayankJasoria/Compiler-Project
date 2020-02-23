@@ -380,7 +380,7 @@ void createParseTable() {
 			parseTable[i][j] = -1;
 	for(i = 0; i < num_rules; i++) {
 		nonterminal left = G[i].left;
-		unsigned long long int first_set = firstFollow(G[i].head); //F[left].firstset;
+		unsigned long long int first_set = firstFollow(G[i].head); 
 		unsigned long long int follow_set = F[left].followset;
 		for(j = 1; j < NUM_TERM; j++) {
 			if(findinSet(first_set, j))
@@ -403,28 +403,6 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 	int num_delim = sizeof(delim)/sizeof(delim[0]);
 	terminal del;
 	int i;
-	// if(st -> tag == T) {
-	// 	printf(" Expecting %s\n", terminals[(st -> sym).T]);
-	// 	while(*lookAhead < ntokens) {
-	// 		tok = tokenStream[*lookAhead];
-	// 		*lookAhead = *lookAhead + 1;
-	// 		for(i = 0; i < num_delim; i++) {
-	// 			if(tok -> id == delim[i]) {
-	// 				del = delim[i];
-	// 				break;
-	// 			}
-	// 		}
-	// 		// if(tok -> id == SEMICOL || tok -> id == DOLLAR)
-	// 		// 	break;
-	// 	}
-	// 	while(numElementsInStack(S) > 0) {
-	// 		stackElement * tp = top(S);
-	// 		S = pop(S);
-	// 		if(tp -> tag == T && tp -> sym.T == del)
-	// 			break;
-	// 	}
-	// 	return;
-	// }
 	boolean miss = False;
 	if(st -> tag == T) {
 		printf(KYEL "Missing ");
@@ -446,28 +424,12 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 		printf("\n");
 	}
 
-	// else {
-	// 	// printf(" %s ", nonterminals[(st -> sym).NT]);
-	// 	unsigned long long int fs = F[st -> sym.NT].firstset;
-	// 	int i;
-	// 	printf("Extra: ");
-	// 	for(i = 1; i < NUM_TERM; i++) {
-	// 		if(findinSet(fs, i) == 1) {
-	// 			printf("%s ", terminals[i]);
-	// 		}
-	// 	}
-	// 	printf("\n");
-	// }
-
 	ull follow_set = F[st -> sym.NT].followset;
 	ull first_set = F[st -> sym.NT].firstset;
 
 	boolean unexp = False;
 	while(tok -> id != 57) {
-		// tok = tokenStream[*lookAhead];
-		// *lookAhead = *lookAhead + 1;
 		if((findinSet(follow_set, tok -> id))) {
-			// *lookAhead = *lookAhead - 1;
 			*S = pop(*S);
 			printf("\n");
 			printf(KYEL "Expected one of: ");
@@ -481,7 +443,6 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 			break;
 		}
 		if(findinSet(first_set, tok -> id)) {
-			// *lookAhead = *lookAhead - 1;
 			printf("\n");
 			return tok;
 		}
@@ -490,7 +451,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 				printf(KYEL "Unexpected ");
 				unexp = True;
 			}
-			printf(KCYN "'%s ---- ' " KNRM, terminals[tok -> id]);
+			printf(KCYN "'%s' " KNRM, terminals[tok -> id]);
 		}
 		tok = getNextToken(fp);
 		if(tok -> id == DOLLAR) {
@@ -500,37 +461,22 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 	}
 	printf("\n");
 	return tok;
-
-	// *S = pop(*S);
-
-	// /* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
-	// while(*lookAhead < ntokens) {
-	// 	tok = tokenStream[*lookAhead];
-	// 	*lookAhead = *lookAhead + 1;
-	// 	if(tok -> id == SEMICOL || tok -> id == DOLLAR)
-	// 		break;
-	// }
-
-	//  popping the stack until:
-	// We pop out 1 SEMICOL/DOLLAR 
-	// while(numElementsInStack(S) > 0) {
-	// 	stackElement * tp = top(S);
-	// 	S = pop(S);
-	// 	if(tp -> tag == T && tp -> sym.T == SEMICOL)
-	// 		break;
-	// 	else if(tp -> tag == T && tp -> sym.T == DOLLAR)
-	// 		break;
-	// }
 }
 
 void parseInputSourceCode(char *testcaseFile) {
 	
 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
 	FILE * fp = fopen(testcaseFile, "r");
+
+	/* Check if the fp is valid */
+	if (!fp) {
+		printf("Error: source file '%s' could not be opened, exiting...\n", testcaseFile);
+
+		/* Exiting right away, since there is no point returning to the main menu */
+		exit(0); 
+	}
 	lexerinit();
-	// while(endofLexer == 0) {
-	// 	fp = getStream(fp);
-	// }
+	
 	Stack S = getStack();
 
 	/* pushing Dollar and <program> onto the stack */
@@ -546,17 +492,6 @@ void parseInputSourceCode(char *testcaseFile) {
 	S = push(S, s);
 	PT = (treeNode *)getTree(s);
 
-	/* pushing DOLLAR at the end of the token Stream. */
-	// if(ntokens >= tokenStream_cap) {
-	// 	tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-	// 	tokenStream_cap *= 2;
-	// }
-	// token * endToken = makeNewToken(57);
-	// tokenStream[ntokens] = endToken;
-	// ntokens++;
-
-	/* declaring the lookAhead pointer */
-	// int lookAhead = 0;
 	token * nextToken = getNextToken(fp);
 	while(numElementsInStack(S) > 0) {
 		// printf("%d\n", numElementsInStack(S));
@@ -565,11 +500,7 @@ void parseInputSourceCode(char *testcaseFile) {
 			printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 			break;
 		}
-		// else if((numElementsInStack(S) == 0) || (lookAhead >= ntokens - 1)) {
-		// 	printf(KBLU "Compilation ended with errors.\n");
-		// 	break;
-		// }
-
+	
 		stackElement * Top = top(S);
 		terminal t = nextToken -> id;
 		// printf("%s\n", terminals[t]);
@@ -610,10 +541,6 @@ void parseInputSourceCode(char *testcaseFile) {
 					break;
 				}
 				printf("\n");
-				// if((numElementsInStack(S) == 1) || nextToken -> id == 57) {
-				// 	// printf("Syntactically incorrect\n");
-				// 	break;
-				// }
 			}
 		}
 		else {
@@ -624,23 +551,10 @@ void parseInputSourceCode(char *testcaseFile) {
 			
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
-				// printf("%s --> ", nonterminals[(Top -> sym).NT]);
-
-				// if(node -> sym.NT == 55) {
-				// 	printf("I got caught\n");
-				// }
-
 				insertChildren(Top -> tn, node);
 				treeNode * ch = Top -> tn -> child;
 				S = pop(S);
 				while(ch -> next != NULL) {
-					// tmp = push(tmp, node);
-					// if(ch -> tag == T)
-					// 	printf("%s\t", terminals[ch -> sym.T]);
-					// else
-					// 	printf("%s\t", nonterminals[ch -> sym.NT]);
-					// node = node -> next;
-					// if(ch -> next != NULL)
 						ch = ch -> next;
 				}
 				// if(ch -> tag == T)
@@ -659,7 +573,7 @@ void parseInputSourceCode(char *testcaseFile) {
 					}
 					S = push(S, new);
 				}
-				// 	/** Remember : after popping from stack the memory get deallocated **/
+				/* Remember : after popping from stack the memory get deallocated */
 			}
 			else {
 				nextToken = syntaxError(nextToken, &S, fp);
@@ -668,10 +582,6 @@ void parseInputSourceCode(char *testcaseFile) {
 						break;
 				}
 				printf("\n");
-				// if(numElementsInStack(S) == 0 || nextToken -> id == 57) {
-				// 	// printf("Syntactically incorrect\n");
-				// 	break;
-				// }
 			}
 		}
 	}
@@ -686,7 +596,6 @@ void inorder(Tree root, FILE * fp) {
 			tokName = "EMPTY";
 		else
 			tokName = terminals[root -> tok -> id];
-		// char * val = (root -> tag == T && root -> sym.T == 52)?itoa(root -> value.val_int):(root -> tag == T && root -> sym.T == 53)?ftoa(root -> value.val_float):"----";
 		char isleaf = (root -> isLeaf)?'y':'n';
 		char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
 		if(root -> tag == T && root -> sym.T == 52) {
@@ -708,7 +617,6 @@ void inorder(Tree root, FILE * fp) {
 		char * tokName;
 		
 		tokName = "----";
-		// char * val = (root -> tag == T && root -> sym.T == 52)?itoa(root -> value.val_int):(root -> tag == T && root -> sym.T == 53)?ftoa(root -> value.val_float):"----";
 		char isleaf = (root -> isLeaf)?'y':'n';
 		char * s = nonterminals[root -> sym.NT];
 		if(root -> tag == T && root -> sym.T == 52) {
@@ -731,7 +639,6 @@ void inorder(Tree root, FILE * fp) {
 		if(i == 0) {
 
 			char * tokName = (root -> tag == T)?terminals[root -> tok -> id]:"----";
-			// char * val = (root -> tag == T && root -> sym.T == 52)?itoa(root -> value.val_int):(root -> tag == T && root -> sym.T == 53)?ftoa(root -> value.val_float):"----";
 			char isleaf = (root -> isLeaf)?'y':'n';
 			char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
 			if(root -> tag == T && root -> sym.T == 52) {
@@ -765,7 +672,7 @@ void printParseTree(Tree PT, char *outfile) {
 
 	FILE * fp = fopen(outfile, "w");
 
-	fprintf(fp,PRINT_FORMAT_HEADER, "Lexeme", "LINENO", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol");
+	fprintf(fp,PRINT_FORMAT_HEADER, "Lexeme", "Lineno", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol");
 
 	inorder(PT, fp);
 	fclose(fp);
