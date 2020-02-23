@@ -436,6 +436,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 			return tok;
 		}
 		printf(KCYN " '%s'" KNRM, terminals[st -> sym.T]);
+		st -> tn -> tok = tok;
 		*S = pop(*S);
 		if(numElementsInStack(*S) == 0)
 			return tok;
@@ -691,6 +692,27 @@ void inorder(Tree root, FILE * fp) {
 		return;
 	}
 	treeNode * t = root -> child;
+	if(t == NULL) {
+		char * tokName;
+		
+		tokName = "----";
+		// char * val = (root -> tag == T && root -> sym.T == 52)?itoa(root -> value.val_int):(root -> tag == T && root -> sym.T == 53)?ftoa(root -> value.val_float):"----";
+		char isleaf = (root -> isLeaf)?'y':'n';
+		char * s = nonterminals[root -> sym.NT];
+		if(root -> tag == T && root -> sym.T == 52) {
+			fprintf(fp, PRINT_FORMAT_BODY2,root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);
+		}
+		else if(root -> tag == T && root -> sym.T == 53) {
+			fprintf(fp, PRINT_FORMAT_BODY3,root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);
+		}
+		else {
+			fprintf(fp, PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+					, isleaf, s);	
+		}
+		return;
+	}
 	int i = 0;
 	while(t != NULL) {
 		inorder(t, fp);

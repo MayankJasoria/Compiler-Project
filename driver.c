@@ -12,7 +12,7 @@ void lexAndParse(char* inputfile, char* outputfile) {
     createParseTable();
 	parseInputSourceCode(inputfile);
     printf("\n");
-    // printParseTree(PT, outputfile);
+    printParseTree(PT, outputfile);
 }
 
 int main(int argc, char* argv[]) {
