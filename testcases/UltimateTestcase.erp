@@ -1,0 +1,164 @@
+**moduledeclarations**
+
+declare module module1;
+declare module module3;
+declare module module3;
+
+
+
+**othermodules**
+
+<<module module1>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
+
+start
+**insert some statements here**
+end
+
+
+<<module module2>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
+
+start
+**insert some statements here**
+end
+
+
+
+
+
+**drivermodule**
+
+<<<driver program>>>
+start
+
+
+	**io statements**
+		
+		get_value(id1);
+		print(arr1[34]);
+		print(arr1[arr2]);
+		print(34);
+		print(34.23);
+		print(arr1);
+		print(true);
+		print(false);
+
+	**end of io statements**
+
+
+
+	**iterative statements**
+		
+		for(id1 in 3..5)
+			start
+
+			end
+
+		while(a+b <(b-c) AND c/d > (d*e) OR (true) AND ((c-d)*23.46e-10)+arr[10])
+
+		**the statement enclosed in brackets in while is a valid arithorboolexpr**
+
+			start
+
+			end
+
+		while((true))
+		start 
+		end
+
+	**end of iterative statements**
+
+
+	**simple statements: assignment & modulereuse**
+
+	**assignment statements**
+
+		arithorboolvar :=a+b <(b-c) AND c/d > (d*e) OR (true) AND ((c-d)*23.46e-10)+arr[10];
+		
+		arithvar:=+((a+b));
+		arithvar:=(false);
+		arithvar:=false; **should be syntax error**
+		arithvar:=a+b;
+		arithvar:=(a+b);
+		arithvar:=(a/b);
+		arithvar:=a/b;
+		arithvar:=arr1[arr2];
+		arithvar:=arr1[35];
+		arithvar:=arr1;
+		arithvar:=37;
+		arithvar:=232.23223;
+
+
+		id3:=arr4[arr5];
+		id4:=arr5;
+		id5:=arr4[35];
+		id6:=34.543;
+		id7:=44;
+
+		arr1[id1]:=a+b <(b-c) AND c/d > (d*e) OR (true) AND ((c-d)*23.46e-10)+arr[10];
+		arr2[id2]:=+((a+b));
+		arr1[id3]:=arr4[arr5];
+		arr1[id4]:=arr5;
+		arr2[id5]:=arr4[35];
+		arr1[id6]:=34.543;
+		arr2[id7]:=44;
+
+	**end of assignment statements**
+
+	**module reuse statements**
+		[id1,id2,id3] := use module module1 with parameters id4,id5,id6;
+	**end of module reuse statements**
+
+
+
+	**declare statements**
+		declare id1,id2,id3: integer;
+		declare id3,id4,id5: array[arr1..arr2] of real;
+		declare id6,id7,id8: array[arr1..7] of integer;
+		declare id6,id7,id8: array[9..arr2] of integer;
+		declare id6,id7,id8: array[9..7] of integer;
+
+	**end of declare statements**
+
+
+
+	**conditional statements**
+		switch(id1)
+		start
+			case 35:
+				**insert some statements here**
+			break;
+
+			case true:
+				**insert some statements here**
+			break;
+
+			default:
+				**insert some statements here**
+			break;
+		end
+	**end of conditional statements**
+end
+
+
+**othermodules**
+
+<<module module1>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
+
+start
+**insert some statements here**
+end
+
+<<module module2>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
+
+start
+**insert some statements here**
+end
+
