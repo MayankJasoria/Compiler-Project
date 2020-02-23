@@ -24,6 +24,10 @@
 #define PRINT_FORMAT_BODY2	"\n%-15s%-15d%-25s%-25d%-25s%-25c%-20s"
 #define PRINT_FORMAT_BODY3	"\n%-15s%-15d%-25s%-25f%-25s%-25c%-20s"
 
+#define PRINT_FORMAT_BODY1_LINE_STR	"\n%-15s%-15s%-25s%-25s%-25s%-25c%-20s"
+#define PRINT_FORMAT_BODY2_LINE_STR	"\n%-15s%-15s%-25s%-25d%-25s%-25c%-20s"
+#define PRINT_FORMAT_BODY3_LINE_STR	"\n%-15s%-15s%-25s%-25f%-25s%-25c%-20s"
+
 /* structure for maintaining the first and follow sets of the Non Terminals */
 
 unsigned long long int first[NUM_NONTERM + 2];
@@ -44,14 +48,6 @@ typedef struct {
 } grammar[NUM_RULES];
 
 grammar G;
-
-// typedef struct {
-// 	char str[25];
-// 	symbol sym;
-// 	typeOfSymbol tag;
-// } hashTable[HASH_TABLE_SIZE];
-
-// hashTable HT;
 
 /* changed the declaration of hashNode and hashTable */
 
