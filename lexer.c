@@ -169,7 +169,7 @@ void retract(int num) {
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
 	/* To do: should we store errors or just print? */
-	printf(KRED "Lexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n\n" KNRM, lexeme, line_num);
+	printf(KRED "\nLexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n" KNRM, lexeme, line_num);
 	lexeme[0] = '\0';
 	state = 1;
 }

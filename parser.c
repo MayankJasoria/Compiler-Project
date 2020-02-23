@@ -463,7 +463,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 	ull first_set = F[st -> sym.NT].firstset;
 
 	boolean unexp = False;
-	while(tok -> id != -1) {
+	while(tok -> id != 57) {
 		// tok = tokenStream[*lookAhead];
 		// *lookAhead = *lookAhead + 1;
 		if((findinSet(follow_set, tok -> id))) {
@@ -490,9 +490,13 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 				printf(KYEL "Unexpected ");
 				unexp = True;
 			}
-			printf(KCYN "'%s' " KNRM, terminals[tok -> id]);
+			printf(KCYN "'%s ---- ' " KNRM, terminals[tok -> id]);
 		}
 		tok = getNextToken(fp);
+		if(tok -> id == DOLLAR) {
+			*S = pop(*S);
+			break;
+		}
 	}
 	printf("\n");
 	return tok;
@@ -601,11 +605,15 @@ void parseInputSourceCode(char *testcaseFile) {
 			}
 			else {
 				nextToken = syntaxError(nextToken, &S, fp);
-				printf("\n");
-				if((numElementsInStack(S) == 1) || nextToken -> id == -1) {
-					// printf("Syntactically incorrect\n");
+				if(nextToken -> id == DOLLAR && numElementsInStack(S) > 1) {
+					printf(KRED "Compilation ended with errors.\n" KNRM);
 					break;
 				}
+				printf("\n");
+				// if((numElementsInStack(S) == 1) || nextToken -> id == 57) {
+				// 	// printf("Syntactically incorrect\n");
+				// 	break;
+				// }
 			}
 		}
 		else {
@@ -655,11 +663,15 @@ void parseInputSourceCode(char *testcaseFile) {
 			}
 			else {
 				nextToken = syntaxError(nextToken, &S, fp);
-				printf("\n");
-				if(numElementsInStack(S) == 0 || nextToken -> id == -1) {
-					// printf("Syntactically incorrect\n");
-					break;
+				if(nextToken -> id == DOLLAR && numElementsInStack(S) > 1) {
+					printf(KRED "Compilation ended with errors.\n" KNRM);
+						break;
 				}
+				printf("\n");
+				// if(numElementsInStack(S) == 0 || nextToken -> id == 57) {
+				// 	// printf("Syntactically incorrect\n");
+				// 	break;
+				// }
 			}
 		}
 	}
