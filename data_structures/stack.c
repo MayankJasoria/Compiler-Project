@@ -19,7 +19,8 @@ Stack getStack() {
 
 Stack push(Stack stack, void* element) {
     if(stack == NULL) {
-        printf("The given stack was undefined. Created a new stack\n");
+        // printf("The given stack was undefined. Created a new stack\n");
+        stack = getStack();
     }
     if(stack->st == NULL) {
         /* create a new stack */
@@ -41,7 +42,7 @@ Stack push(Stack stack, void* element) {
 
 Stack pop(Stack stack) {
     if(stack->st == NULL) {
-        fprintf(stderr, "The stack is empty\n");
+        // fprintf(stderr, "The stack is empty\n");
         return stack;
     }
     stack->st = deleteByNode(stack->st, stack->st->head);
@@ -59,12 +60,12 @@ Stack pop(Stack stack) {
 
 Stack popMany(Stack stack, int num) {
     if(stack->elemCount < num) {
-        fprintf(
-            stderr, 
-            "More elements [%d] requested for deletion than [%d] present in stack. Stack has not been modified\n", 
-            num, 
-            stack->elemCount
-        );
+        // fprintf(
+        //     stderr, 
+        //     "More elements [%d] requested for deletion than [%d] present in stack. Stack has not been modified\n", 
+        //     num, 
+        //     stack->elemCount
+        // );
         return stack;
     }
     while(num > 0) {
@@ -78,7 +79,7 @@ void* top(Stack stack) {
     if(stack != NULL && stack->st != NULL) {
         return stack->st->head->data;
     } else {
-        fprintf(stderr, "The stack is empty\n");
+        // fprintf(stderr, "The stack is empty\n");
         return NULL;
     }
 }

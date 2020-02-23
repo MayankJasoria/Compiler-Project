@@ -404,7 +404,8 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 
 	syntacticallyCorrect = False;
 	stackElement * st = top(*S);
-	printf(KRED "Syntax Error " KNRM "on line " KMAG "%d" KNRM ": \n", tok -> line_num);
+	// printf(KRED "Syntax Error " KNRM "on line " KMAG "%d" KNRM ": \n", tok -> line_num);
+	printf("Line No. %d: Syntax Error -- ", line_num);
 	int num_delim = sizeof(delim)/sizeof(delim[0]);
 	terminal del;
 	int i;
@@ -426,7 +427,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 		st = top(*S);
 	}
 	if(miss) {
-		printf("\n");
+		printf(" ");
 	}
 
 	ull follow_set = F[st -> sym.NT].followset;
@@ -436,7 +437,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 	while(tok -> id != 57) {
 		if((findinSet(follow_set, tok -> id))) {
 			*S = pop(*S);
-			printf("\n");
+			printf(" ");
 			printf(KYEL "Expected one of: ");
 			for(i = 0; i < NUM_TERM; i++) {
 				if(findinSet(first_set, i)) {
@@ -456,7 +457,7 @@ token * syntaxError(token * tok, Stack *S, FILE * fp) {
 				printf(KYEL "Unexpected ");
 				unexp = True;
 			}
-			printf(KCYN "'%s' " KNRM, terminals[tok -> id]);
+			printf(KCYN "'%s' " KNRM, tok->lex);
 		}
 		tok = getNextToken(fp);
 		if(tok -> id == DOLLAR) {

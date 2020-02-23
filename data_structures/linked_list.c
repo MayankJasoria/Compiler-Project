@@ -17,7 +17,7 @@ List getList() {
 
 List insertToList(List list, void* data, position dir) {
 	if(list == NULL) {
-		printf("The given list was undefined. Created a new list\n");
+		// printf("The given list was undefined. Created a new list\n");
 		list = getList();
 	}
 	/* Defining new node to be inserted */
@@ -45,7 +45,7 @@ List insertToList(List list, void* data, position dir) {
 		list->end = newNode;
 	} else {
 		/* Some unknown type of position has been entered */
-		fprintf(stderr,"Error: Unknown Direction\n");
+		// fprintf(stderr,"Error: Unknown Direction\n");
 	}
 	return list;
 }
@@ -95,11 +95,11 @@ List insertToList(List list, void* data, position dir) {
 
 List deleteByNode(List list, Node* element) {
 	if(element == NULL) {
-		fprintf(stderr,"Element does not exist\n");
+		// fprintf(stderr,"Element does not exist\n");
 		return list;
 	}
 	if(list->head == NULL) {
-		fprintf(stderr,"List is empty\n");
+		// fprintf(stderr,"List is empty\n");
 		return list;
 	}
 	if(element->prev == NULL) {
