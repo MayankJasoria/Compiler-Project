@@ -1,95 +1,95 @@
-**moduleDeclarations**
+**moduledeclarations**
 
-DECLARE MODULE module1;
-DECLARE MODULE module2;
-DECLARE MODULE module3;
+declare module module1;
+declare module module2;
+declare module module3;
 
 
 
-**otherModules**
+**othermodules**
 
-<<MODULE module1>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
+<<module module1>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
 
-START
+start
 **insert some statements here**
-END
+end
 
 
-<<MODULE module2>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
+<<module module2>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
 
-START
+start
 **insert some statements here**
-END
+end
 
 
 
 
 
-**driverModule**
+**drivermodule**
 
-<<<DRIVER PROGRAM>>>
-START
+<<<driver program>>>
+start
 
 
-	**IO Statements**
+	**io statements**
 		
-		GET_VALUE(id1);
-		PRINT(arr1[34]);
-		PRINT(arr1[arr2]);
-		PRINT(34);
-		PRINT(34.23);
-		PRINT(arr1);
-		PRINT(TRUE);
-		PRINT(FALSE);
+		get_value(id1);
+		print(arr1[34]);
+		print(arr1[arr2]);
+		print(34);
+		print(34.23);
+		print(arr1);
+		print(true);
+		print(false);
 
-	**END OF IO Statements**
+	**end of io statements**
 
 
 
-	**Iterative Statements**
+	**iterative statements**
 		
-		FOR(id1 in 3..5)
-			START
+		for(id1 in 3..5)
+			start
 
-			END
+			end
 
-		WHILE(a+b <(b-c) AND c/d > (d*e) OR (TRUE) AND ((c-d)*23.46e-10)+arr[10])
+		while(a+b <(b-c) AND c/d > (d*e) OR (true) AND ((c-d)*23.46e-10)+arr[10])
 
-		**The statement enclosed in brackets in WHILE is a valid arithOrBoolExpr**
+		**the statement enclosed in brackets in while is a valid arithorboolexpr**
 
-			START
+			start
 
-			END
+			end
 
-		WHILE((TRUE))
-		START 
-		END
+		while((true))
+		start 
+		end
 
-	**END OF Iterative Statements**
+	**end of iterative statements**
 
 
-	**Simple Statements: Assignment & moduleReuse**
+	**simple statements: assignment & modulereuse**
 
-	**Assignment Statements**
+	**assignment statements**
 
-		arithOrBoolVar :=a+b <(b-c) AND c/d > (d*e) OR (TRUE) AND ((c-d)*23.46e-10)+arr[10];
+		arithorboolvar :=a+b <(b-c) AND c/d > (d*e) OR (true) AND ((c-d)*23.46e-10)+arr[10];
 		
-		arithVar:=+((a+b));
-		arithVar:=+(FALSE);
-		arithVar:=FALSE; **should be syntax error**
-		arithVar:=a+b;
-		arithVar:=(a+b);
-		arithVar:=(a/b);
-		arithVar:=a/b;
-		arithVar:=arr1[arr2];
-		arithVar:=arr1[35];
-		arithVar:=arr1;
-		arithVar:=37;
-		arithVar:=232.23223;
+		arithvar:=+((a+b));
+		arithvar:=(false);
+		arithvar:=false; **should be syntax error**
+		arithvar:=a+b;
+		arithvar:=(a+b);
+		arithvar:=(a/b);
+		arithvar:=a/b;
+		arithvar:=arr1[arr2];
+		arithvar:=arr1[35];
+		arithvar:=arr1;
+		arithvar:=37;
+		arithvar:=232.23223;
 
 
 		id3:=arr4[arr5];
@@ -98,7 +98,7 @@ START
 		id6:=34.543;
 		id7:=44;
 
-		arr1[id1]:=a+b <(b-c) AND c/d > (d*e) OR (TRUE) AND ((c-d)*23.46e-10)+arr[10];
+		arr1[id1]:=a+b <(b-c) AND c/d > (d*e) OR (true) AND ((c-d)*23.46e-10)+arr[10];
 		arr2[id2]:=+((a+b));
 		arr1[id3]:=arr4[arr5];
 		arr1[id4]:=arr5;
@@ -106,63 +106,63 @@ START
 		arr1[id6]:=34.543;
 		arr2[id7]:=44;
 
-	**END OF Assignment Statements**
+	**end of assignment statements**
 
-	**Module Reuse Statements**
-		[id1,id2,id3] USE MODULE module1 WITH PARAMETERS [id4,id5,id6];
-	**END OF Module Reuse Statements**
-
-
-
-	**Declare Statements**
-		DECLARE id1,id2,id3: INTEGER;
-		DECLARE id3,id4,id5: ARRAY[arr1..arr2] OF REAL;
-		DECLARE id6,id7,id8: ARRAy[arr1..7] OF INTEGER;
-		DECLARE id6,id7,id8: ARRAy[9..arr2] OF INTEGER;
-		DECLARE id6,id7,id8: ARRAy[9..7] OF INTEGER;
-
-	**END OF Declare Statements**
+	**module reuse statements**
+		[id1,id2,id3] := use module module1 with parameters id4,id5,id6;
+	**end of module reuse statements**
 
 
 
-	**Conditional Statements**
-		SWITCH(id1)
-		START
-			CASE(35):
-				**insert some statements here*
-			BREAK;
+	**declare statements**
+		declare id1,id2,id3: integer;
+		declare id3,id4,id5: array[arr1..arr2] of real;
+		declare id6,id7,id8: array[arr1..7] of integer;
+		declare id6,id7,id8: array[9..arr2] of integer;
+		declare id6,id7,id8: array[9..7] of integer;
 
-			CASE(TRUE):
+	**end of declare statements**
+
+
+
+	**conditional statements**
+		switch(id1)
+		start
+			case 35:
 				**insert some statements here**
-			BREAK;
+			break;
 
-			DEFAULT:
+			case true:
+				**insert some statements here**
+			break;
+
+			default:
 				**insert some statements here*
-			BREAK;
-		END
-	**END OF Conditional Statements**
+			break;
+		end
+	**end of conditional statements**
 
 
 
 
-END
+end
 
 
-**otherModules**
+**othermodules**
 
-<<MODULE module1>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
+<<module module1>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
 
-START
+start
 **insert some statements here**
-END
+end
 
-<<MODULE module2>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
+<<module module2>>
+takes input[ip1:integer, ip2:real, ip3:array[0..9999] of integer, ip4:boolean, ip768:array[id1..7] of real, ip689:array[7..id9] of real];
+returns [ip4:real, ip2:integer, ip1001: boolean];
 
-START
+start
 **insert some statements here**
-END
+end
 

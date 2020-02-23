@@ -1,168 +1,78 @@
-**moduleDeclarations**
+declare module readArr;
+declare module d;
+declare module arrRead;
 
-DECLARE MODULE module1;
-DECLARE MODULE module2;
-DECLARE MODULE module3;
-
-
-
-**otherModules**
-
-<<MODULE module1>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
-
-START
-**insert some statements here**
-END
-
-
-<<MODULE module2>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
-
-START
-**insert some statements here**
-END
-
-
-
-
-
-**driverModule**
-
-<<<DRIVER PROGRAM>>>
-START
-
-
-	**IO Statements**
+<<module arraySum>>
+takes input[list:array[1..15] of    real, n:integer];
+returns  [sum:real];
+start
+	declare index:integer;
+	declare t:boolean;
+	sum:=0.0;
+	[sum] := use module arraySum with parameters index, i;  ** recursive call**
+	[t] := use module readArr with parameters index;
+	for(index in  1..15)
+	start
+		t:= index<=n;
 		
-		GET_VALUE(id1);
-		PRINT(arr1[34]);
-		PRINT(arr1[arr2]);
-		PRINT(34);
-		PRINT(34.23);
-		PRINT(arr1);
-		PRINT(TRUE);
-		PRINT(FALSE);
-
-	**END OF IO Statements**
-
-
-
-	**Iterative Statements**
+		index:=index+8;
 		
-		FOR(id1 in 3..5)
-			START
-
-			END
-
-		WHILE(a+b <(b-c) AND c/d > (d*e) OR (TRUE) AND ((c-d)*23.46e-10)+arr[10])
-
-		**The statement enclosed in brackets in WHILE is a valid arithOrBoolExpr**
-
-			START
-
-			END
-
-		WHILE((TRUE))
-		START 
-		END
-
-	**END OF Iterative Statements**
-
-
-	**Simple Statements: Assignment & moduleReuse**
-
-	**Assignment Statements**
-
-		arithOrBoolVar :=a+b <(b-c) AND c/d > (d*e) OR (TRUE) AND ((c-d)*23.46e-10)+arr[10];
+		declare index: boolean;
+		switch(index)
+		start
+		case true: print(list[index]);
+			   sum:=sum+list[index];
+			   break;
+		case false: print(sum);
+			    print(index);
+			    **prints the values of sum and index  15-n times**
+			    break;
+		end
 		
-		arithVar:=+((a+b));
-		arithVar:=+(FALSE);
-		arithVar:=FALSE; **should be syntax error**
-		arithVar:=a+b;
-		arithVar:=(a+b);
-		arithVar:=(a/b);
-		arithVar:=a/b;
-		arithVar:=arr1[arr2];
-		arithVar:=arr1[35];
-		arithVar:=arr1;
-		arithVar:=37;
-		arithVar:=232.23223;
+		index:= 5;
+	end
+	print(sum);
+end
+
+<<<driver program>>>
+start
+	declare A:array[1..15] of real;
+	declare k:integer;
+	declare s:real;
+	get_value(k);
+	use module readArr with parameters A,k;
+	[s]:= use module arraySum with parameters A,k;
+	print(s);
+end
 
 
-		id3:=arr4[arr5];
-		id4:=arr5;
-		id5:=arr4[35];
-		id6:=34.543;
-		id7:=44;
+<<module readArr>>
+takes input [arr1:array[1..15] of real,k:integer];
+start
+	declare tempvar:real;
+	declare i:integer;
+	i:=1;
+	while(i<=k)
+	start
+		get_value(tempvar);
+		arr1[i]:=tempvar;
+		i:=i+1;
+		** the semantics of while needs an increment and will be taken care of at the second phase**
+	end
+end
 
-		arr1[id1]:=a+b <(b-c) AND c/d > (d*e) OR (TRUE) AND ((c-d)*23.46e-10)+arr[10];
-		arr2[id2]:=+((a+b));
-		arr1[id3]:=arr4[arr5];
-		arr1[id4]:=arr5;
-		arr2[id5]:=arr4[35];
-		arr1[id6]:=34.543;
-		arr2[id7]:=44;
+<<module d>> takes input [i: real, v: integer];
+start
+	declare s:real;
+	declare dv:integer;
+	declare aaa: array[34..50] of integer;
+	declare mn:array[87..99] of real;
 
-	**END OF Assignment Statements**
+	while(aaa)
+	start
+		declare rr:real;
+		aaa:= s - 20;
+		dv := -6;
 
-	**Module Reuse Statements**
-		[id1,id2,id3] USE MODULE module1 WITH PARAMETERS [id4,id5,id6];
-	**END OF Module Reuse Statements**
-
-
-
-	**Declare Statements**
-		DECLARE id1,id2,id3: INTEGER;
-		DECLARE id3,id4,id5: ARRAY[arr1..arr2] OF REAL;
-		DECLARE id6,id7,id8: ARRAy[arr1..7] OF INTEGER;
-		DECLARE id6,id7,id8: ARRAy[9..arr2] OF INTEGER;
-		DECLARE id6,id7,id8: ARRAy[9..7] OF INTEGER;
-
-	**END OF Declare Statements**
-
-
-
-	**Conditional Statements**
-		SWITCH(id1)
-		START
-			CASE(35):
-				**insert some statements here*
-			BREAK;
-
-			CASE(TRUE):
-				**insert some statements here**
-			BREAK;
-
-			DEFAULT:
-				**insert some statements here*
-			BREAK;
-		END
-	**END OF Conditional Statements**
-
-
-
-
-END
-
-
-**otherModules**
-
-<<MODULE module1>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
-
-START
-**insert some statements here**
-END
-
-<<MODULE module2>>
-TAKES INPUT[ip1:INTEGER, ip2:REAL, ip3:ARRAY[0..9999] OF INTEGER, ip4:BOOLEAN, ip768:ARRAY[id1..7] OF REAL, ip689:ARRAY[7..id9] OF REAL];
-RETURNS [ip4:REAL, ip2:INTEGER, ip1001: BOOLEAN];
-
-START
-**insert some statements here**
-END
-
+	end	
+end

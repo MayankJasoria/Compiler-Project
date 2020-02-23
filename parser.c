@@ -628,9 +628,9 @@ void parseInputSourceCode(char *testcaseFile) {
 				while(ch -> next != NULL) {
 					// tmp = push(tmp, node);
 					// if(ch -> tag == T)
-						// printf("%s\t", terminals[ch -> sym.T]);
+					// 	printf("%s\t", terminals[ch -> sym.T]);
 					// else
-						// printf("%s\t", nonterminals[ch -> sym.NT]);
+					// 	printf("%s\t", nonterminals[ch -> sym.NT]);
 					// node = node -> next;
 					// if(ch -> next != NULL)
 						ch = ch -> next;
