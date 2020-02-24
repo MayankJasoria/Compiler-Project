@@ -1,5 +1,5 @@
 /*  GROUP 48:
-    PUNEET ANAND    2016B4A70497P
+    PUNEET ANAND    2016B4A70487P
     MAYANK JASORIA  2016B1A70703P
     SHUBHAM TIWARI  2016B4A70935P
     VIBHAV OSWAL    2016B4A70594P */
@@ -222,14 +222,14 @@ void populateGrammar(char * filename) {
 	int lhs = 1;
 	int grammar_id = 0;
 	while(fgets(str, 200, fp) != NULL) {
-		char * tok = strtok(str, " \t\n");
+		char * tok = strtok(str, " \t\n\r");
 		int idx = hash(tok);
 		hashNode * lookup = hashLookup(idx, tok);
 		G[grammar_id].left = (lookup -> sym).NT;
 		rhsNode * prev = (rhsNode *)malloc(sizeof(rhsNode));
 		prev = NULL;
 		while(tok != NULL) {
-			tok = strtok(NULL, " \t\n");
+			tok = strtok(NULL, " \t\n\r");
 			if(tok == NULL)
 				break;
 			if(strcmp(tok, "|") == 0) {
