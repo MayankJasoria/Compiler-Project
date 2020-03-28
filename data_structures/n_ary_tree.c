@@ -22,6 +22,7 @@ treeNode * getTree(stackElement * s) {
 	root -> depth = 0;
 	root -> id = 0;
 	root -> line_num = -1;
+	root -> rule_num = -1;
 	root -> tok = NULL;
 	root -> depth = 0;
 	numNodes++;
@@ -91,6 +92,7 @@ Tree insertChildren(Tree node, rhsNode* children) {
 		ch -> sym = curr -> sym;
 		ch -> tag = curr -> tag;
 		ch -> line_num = -1;
+		ch -> rule_num = -1;
 		ch -> id = numNodes;
 		numNodes++;
 		ch -> depth = (node -> depth) + 1;

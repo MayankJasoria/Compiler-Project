@@ -166,6 +166,7 @@ typedef union {
 typedef struct treeNode {
 	symbol sym;
 	typeOfSymbol tag;
+	int rule_num;
 	int line_num;
 	union {
 		int val_int;

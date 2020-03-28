@@ -559,6 +559,7 @@ void parseInputSourceCode(char *testcaseFile) {
 				rhsNode * node = G[parseTableVal].head;
 				insertChildren(Top -> tn, node);
 				treeNode * ch = Top -> tn -> child;
+				Top -> tn -> rule_num = parseTableVal;
 				S = pop(S);
 				while(ch -> next != NULL) {
 						ch = ch -> next;

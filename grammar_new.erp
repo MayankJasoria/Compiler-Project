@@ -22,14 +22,14 @@ assignmentStmt  : ID whichStmt
 moduleReuseStmt	: optional USE MODULE ID WITH PARAMETERS idList SEMICOL
 optional		: SQBO idList SQBC ASSIGNOP | EMPTY
 idList		: ID n3
-n3		: COMMA ID n3 | EMPTY 
+n3		: COMMA ID n3 | EMPTY
 expression      : arithmeticOrBooleanExpr | u
 arithmeticOrBooleanExpr 	: anyTerm n7
 n7 	: logicalOp anyTerm n7 | EMPTY
 anyTerm 		: arithmeticExpr n8 | boolConstt
-n8 		: relationalOp arithmeticExpr | EMPTY 
+n8 		: relationalOp arithmeticExpr | EMPTY
 arithmeticExpr	: term n4
-n4	: op1 term n4 | EMPTY 
+n4	: op1 term n4 | EMPTY
 term		: factor n5
 n5		: op2 factor n5 | EMPTY
 factor		: BO arithmeticOrBooleanExpr BC | var_id_num
@@ -39,7 +39,7 @@ op2			: MUL | DIV
 logicalOp		: AND | OR
 relationalOp		: LT | LE | GT | GE | EQ | NE
 declareStmt		: DECLARE idList COLON dataType SEMICOL
-condionalStmt		: SWITCH BO ID BC START caseStmts default END 
+condionalStmt		: SWITCH BO ID BC START caseStmts default END
 caseStmts		: CASE value COLON statements BREAK SEMICOL n9
 n9		: CASE value COLON statements BREAK SEMICOL n9 | EMPTY
 value			: NUM | TRUE | FALSE
@@ -52,6 +52,6 @@ var_id_num  : ID whichId | NUM | RNUM
 whichStmt       : lvalueIDStmt | lvalueARRStmt
 lvalueIDStmt    : ASSIGNOP expression SEMICOL
 lvalueARRStmt   : SQBO index SQBC ASSIGNOP expression SEMICOL
-u               : unary_op new_NT 
+u               : unary_op new_NT
 unary_op        : PLUS | MINUS
 new_NT          : BO arithmeticExpr BC | var_id_num
