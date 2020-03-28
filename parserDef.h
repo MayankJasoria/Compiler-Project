@@ -76,14 +76,4 @@ Tree PT;
 
 boolean syntacticallyCorrect;
 
-/* POSSIBLE PLACEHOLDERS - AVOIDING COMPILE ERRORS */
-/* Update definitions below when relevant */
-typedef struct tb {
-	int adf;
-} table;
-
-typedef struct pt {
-	int asd;
-} parseTree;
-
 #endif

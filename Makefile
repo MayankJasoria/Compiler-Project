@@ -23,8 +23,8 @@ driver: $(DEPS_PROG)
 parser: parser.c
 	#cls
 
-	$(CC) ${CFLAGS} a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c
-	./a
+	$(CC) ${CFLAGS} a parser.c parserTest.c lexer.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c
+	a
 	
 lexer: lexer.c
 	${CC} ${CFLAGS} lex main.c lexer.c
