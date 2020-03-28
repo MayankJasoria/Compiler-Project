@@ -20,7 +20,7 @@ int main() {
     int i, j;
     // printf("%d %d\n", hash("MINUS"), hash("iterativeStmt"));
     for(i = 0; i < num_rules; i++) {
-        printf("%d %s :", i, nonterminals[G[i].left]);
+        printf("%d %s : ", i, nonterminals[G[i].left]);
         rhsNode* curr = G[i].head;
         while(curr != NULL) {
             // printf("{tag: %d, ", curr->tag);

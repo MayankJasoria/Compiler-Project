@@ -25,6 +25,9 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
  * @see ast.h
  */
 ASTNode* addChild(ASTNode* parent, ASTNode* child) {
+
+	if(child == NULL)
+		return parent;
 	if(parent->child == NULL) {
 		/* no children yet, add first child to parent */
 		parent -> child = child;
@@ -95,35 +98,79 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
             ASTNode* curr = getASTNode(nodeData, AST_NODE_PROGRAM);
     
             /* Call siblings one by one */
-                        ASTNode* md = constructAST(curr, NULL, ch);
+            ASTNode* md = constructAST(curr, NULL, ch);
             ASTNode* om1 = constructAST(curr, md, ch -> next);
             ASTNode* dm = constructAST(om1, md, ch -> next -> next);
             ASTNode* om2 = constructAST(dm, md, ch -> next -> next -> next);
             
+			/* add siblings in reverse order, to regenerate correct order */
             addChild(curr, om2);
             addChild(curr, dm);
             addChild(curr, om1);
             addChild(curr, md); 
             return curr;
-            
             break;
+			
         case 1: // moduleDeclarations : moduleDeclaration moduleDeclarations1
-            moduleDeclationNode * mdNode = (moduleDeclaration *) malloc(sizeof(moduleDecarationNode));
+            moduleDeclarationNode * mdNode = (moduleDeclarationNode *) malloc(sizeof(moduleDeclarationNode));
             astNodeData nodeData;
             nodeData.moduleDeclaration = mdNode;
             ASTNode * curr = getASTNode(mdNode, AST_NODE_MODULEDECLARATION);
             
+            ASTNode * md = constructAST(curr, NULL, ch);
+            ASTNode * mds = constructAST(curr, md, ch -> next);
+
+			addChild(curr, mds);
+			addChild(curr, md);
+			return curr;
 			break;
+			
 		case 2: // moduleDeclarations : EMPTY
+			return NULL;
 			break;
+            
 		case 3: // moduleDeclaration : DECLARE MODULE ID SEMICOL
+			/* syn leaf to top */
+			return constructAST(parent, NULL, ch);
 			break;
+            
 		case 4: // otherModules : module otherModules1
+            
+			moduleListNode* omNode = = (moduleListNode *) malloc(sizeof(moduleListNode));
+			omNode -> tag = AST_MODULE_OTHER;
+            astNodeData nodeData;
+            nodeData.moduleList = omNode;
+            ASTNode * curr = getASTNode(omNode, AST_NODE_MODULELIST);
+			
+			ASTNode * mod = constructAST(curr, NULL, ch);
+			ASTNode * om1 = constructAST(curr, mod, ch -> next);
+			
+			addChild(curr, om1);
+			addChild(curr, mod);
+			return curr;
 			break;
+
 		case 5: // otherModules : EMPTY
+            return NULL;
 			break;
+            
 		case 6: // driverModule : DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
+            
+            /* TODO: Have to be rechecked */
+
+			moduleListNode * driverNode = (moduleListNode *) malloc(sizeof(moduleListNode));
+			omNode -> tag = AST_MODULE_DRIVER;
+            astNodeData nodeData;
+            nodeData.moduleList = driverNode;
+            ASTNode * curr = getASTNode(driverNode, AST_NODE_MODULELIST); 
+
+            ASTNode * modDef = constructAST(curr, NULL, ch);
+
+            addChild(curr, modDef);
+
+            return curr;
 			break;
+
 		case 7: // module : DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
 			break;
 		case 8: // ret : RETURNS SQBO output_plist SQBC SEMICOL
@@ -223,6 +270,98 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 		case 55: // n4 : EMPTY
 			break;
 		case 56: // term : factor n5
+			break;
+		case 57: // n5 : op2 factor n5
+			break;
+		case 58: // n5 : EMPTY
+			break;
+		case 59: // factor : BO arithmeticOrBooleanExpr BC
+			break;
+		case 60: // factor : var_id_num
+			break;
+		case 61: // var : var_id_num
+			break;
+		case 62: // var : boolConstt
+			break;
+		case 63: // op1 : PLUS
+			break;
+		case 64: // op1 : MINUS
+			break;
+		case 65: // op2 : MUL
+			break;
+		case 66: // op2 : DIV
+			break;
+		case 67: // logicalOp : AND
+			break;
+		case 68: // logicalOp : OR
+			break;
+		case 69: // relationalOp : LT
+			break;
+		case 70: // relationalOp : LE
+			break;
+		case 71: // relationalOp : GT
+			break;
+		case 72: // relationalOp : GE
+			break;
+		case 73: // relationalOp : EQ
+			break;
+		case 74: // relationalOp : NE
+			break;
+		case 75: // declareStmt : DECLARE idList COLON dataType SEMICOL
+			break;
+		case 76: // condionalStmt : SWITCH BO ID BC START caseStmts default END
+			break;
+		case 77: // caseStmts : CASE value COLON statements BREAK SEMICOL n9
+			break;
+		case 78: // n9 : CASE value COLON statements BREAK SEMICOL n9
+			break;
+		case 79: // n9 : EMPTY
+			break;
+		case 80: // value : NUM
+			break;
+		case 81: // value : TRUE
+			break;
+		case 82: // value : FALSE
+			break;
+		case 83: // default : DEFAULT COLON statements BREAK SEMICOL
+			break;
+		case 84: // default : EMPTY
+			break;
+		case 85: // iterativeStmt : FOR BO ID IN range BC START statements END
+			break;
+		case 86: // iterativeStmt : WHILE BO arithmeticOrBooleanExpr BC START statements END
+			break;
+		case 87: // range : NUM RANGEOP NUM
+			break;
+		case 88: // range_arrays : index RANGEOP index
+			break;
+		case 89: // boolConstt : TRUE
+			break;
+		case 90: // boolConstt : FALSE
+			break;
+		case 91: // var_id_num : ID whichId
+			break;
+		case 92: // var_id_num : NUM
+			break;
+		case 93: // var_id_num : RNUM
+			break;
+		case 94: // whichStmt : lvalueIDStmt
+			break;
+		case 95: // whichStmt : lvalueARRStmt
+			break;
+		case 96: // lvalueIDStmt : ASSIGNOP expression SEMICOL
+			break;
+		case 97: // lvalueARRStmt : SQBO index SQBC ASSIGNOP expression SEMICOL
+			break;
+		case 98: // u : unary_op new_NT
+			break;
+		case 99: // unary_op : PLUS
+			break;
+		case 100: // unary_op : MINUS
+			break;
+		case 101: // new_NT : BO arithmeticExpr BC
+			break;
+		case 102: // new_NT : var_id_num
 			break;
 		default:
 	}

@@ -84,6 +84,11 @@ typedef enum {
     AST_ITER_WHILE
 } iter_type;
 
+typedef enum {
+    AST_MODULE_DRIVER,
+    AST_MODULE_OTHER
+} module_type;
+
 
 typedef struct programNode {
 
@@ -105,10 +110,7 @@ typedef struct moduleDeclarationNode {
 /* NOTE: These two structures have been collapsed into moduleListNode defined below */
 
 // struct moduleListNode {
-//     struct leafNode* id_ptr;
-//     struct inputListNode* input_plist_head;
-//     struct outputListNode* output_plist_head;
-//     struct statementNode* moduleDef_head;
+//     struct moduleNode* data;
 //     struct ASTNode* next;
 // };
 
@@ -121,6 +123,8 @@ typedef struct moduleDeclarationNode {
 
 
 typedef struct moduleListNode {
+
+    module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
     /* check note above */
     struct ASTNode* next; /* Points to next element of type moduleListNode */
 };
@@ -136,7 +140,7 @@ typedef struct inputListNode {
 typedef struct outputListNode {
     // struct leafNode* id_ptr;
     // struct leafNode* type_ptr;
-    // struct outputListNode* next;
+    // struclt outputListNode* next;
 
     struct ASTNode* next; /* Points to next element of type outputListNode */
 
@@ -288,7 +292,7 @@ typedef union {
     struct programNode* program;
     struct moduleDeclarationNode* moduleDeclaration;
     struct moduleListNode* moduleList;
-    struct moduleNode* module;
+    // struct moduleNode* module;
     struct inputListNode* inputList;
     struct outputListNode* outputList;
     struct dataTypeNode* dataType;

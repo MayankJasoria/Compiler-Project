@@ -39,13 +39,13 @@ moduleDeclaration    : DECLARE MODULE ID SEMICOL
     moduleDeclaration.tag = ID
 
 otherModules        : module otherModules1
-    otherModules.syn = new ModuleNode(module.syn, otherModules1.syn) /* value of current node results from those synthesized by both child subtrees */
+    otherModules.syn = new ModuleListNode(module.syn, otherModules1.syn) /* value of current node results from those synthesized by both child subtrees */
 
 otherModules        : EMPTY
     otherModules.syn = NULL /* return NULL, to mark the end of subtree. No tag needed as we can just check isNull */
 
 driverModule        : DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
-    driverModule.syn = new ModuleNode(makeLeaf(“DRIVER”), NULL, NULL, moduleDef.syn);  /* No new information added by the rule, simply pass the address. Driver module is a special module having the name DRIVER, and having no input and output parameters, just a block of statements. So, we will use ModuleNode with the above parameters to represent a driver module. */
+    driverModule.syn = new ModuleListNode(makeLeaf(“DRIVER”), NULL, NULL, moduleDef.syn);  /* No new information added by the rule, simply pass the address. Driver module is a special module having the name DRIVER, and having no input and output parameters, just a block of statements. So, we will use ModuleNode with the above parameters to represent a driver module. */
 
 module        : DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
     module.syn = new ModuleNode(makeLeaf(ID.addr), input_plist.syn, ret.syn, moduleDef.syn); 
@@ -100,7 +100,7 @@ dataType        : ARRAY SQBO range_arrays SQBC OF type
 moduleDef        : START statements END 
     moduleDef.syn = statements.syn /* statements is the only subtree with a value. Directly propagate it upwards */
 
-statements        : statement statements1
+statements        : statement statements1C
     statements.syn = new StatementNode(statement.syn, statements1.syn) /* value of current node results from those synthesized by both child subtrees due to absence of interdependence for computation */
     statements.tag = statement.tag /* TAG to identify the type of statement */
 
@@ -241,7 +241,7 @@ term        : factor n5
     term.syn = n5.syn
     term.val = n5.val
 
-n5        : op2 factor n51
+n5        : op2 factor n5
     n51.inh = new AOBExprNode(op2.syn, n5.inh, factor.syn)
     n5.syn = n51.syn
     if(op2.val == MUL) {
