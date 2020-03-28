@@ -10,7 +10,7 @@
  * Naming convention: Construct name in all uppercase letters
  */
 
-enum {
+typedef enum {
     AST_NODE_PROGRAM,
     AST_NODE_MODULEDECLARATION,
     AST_NODE_MODULELIST,
@@ -38,19 +38,19 @@ enum {
     AST_NODE_LEAF
 } astNodeType;
 
-enum {
-    AST_TYPE_CAT_PRIM;
-    AST_TYPE_CAT_ARRAY;
+typedef enum {
+    AST_TYPE_CAT_PRIM,
+    AST_TYPE_CAT_ARRAY,
 } astDataTypeCat;
 
-enum {
+typedef enum {
     AST_TYPE_INT,
     AST_TYPE_REAL,
     AST_TYPE_BOOLEAN,
     AST_TYPE_ARRAY
 } astDataType;
 
-enum {
+typedef enum {
     AST_STMT_IO,
     AST_STMT_SIMPLE,
     AST_STMT_DECLARATION,
@@ -119,7 +119,7 @@ struct statementNode {
         struct condStmtNode* condStmt;
         struct caseStmtNode* caseStmt;
         struct iterStmtNode* iterStmt;
-    } 
+    } stmtData;
 
     stmt_type type;
     struct statementNode* next;
@@ -232,7 +232,7 @@ struct ASTNode {
         struct iterStmtNode* iterStmt;
         struct forNode* for_n;
         struct whileNode* while_n;
-    }; 
+    } astNodeData;
 
     astNodeType type; /* Type of node represented by this AST node */
 
