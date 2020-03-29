@@ -382,7 +382,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			addChild(curr, stmtsNode);
 			addChild(curr, stmtNode);
 
-			curr -> type = AST_NODE_STATEMENT
+			curr -> type = AST_NODE_STATEMENT;
 		
 		
 			break;
