@@ -49,10 +49,12 @@ driverModule        : DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
 
 module        : DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
     module.syn = new ModuleNode(makeLeaf(ID.addr), input_plist.syn, ret.syn, moduleDef.syn); 
+
 /* input_plist will be a linked list of input parameters to the modules
    ret will also be a linked list of return values from the module
    moduleDef will be a linked list of statements
  */
+
 ret            : RETURNS SQBO output_plist SQBC SEMICOL
     ret.syn = output_plist.syn /* output_plist is the only subtree with a value. Directly propagate it upwards */
 

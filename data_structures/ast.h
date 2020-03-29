@@ -5,7 +5,7 @@
  * @param type	The type fo a given AST node
  * 
  * @return a new AST node of specified type
- *//
+ */
 ASTNode* getASTNode(astNodeType type); 
 
 /**

@@ -17,7 +17,7 @@ typedef enum {
     AST_NODE_MODULE,
     AST_NODE_INPUTLIST,
     AST_NODE_OUTPUTLIST,
-    AST_NODE_DATATYPE,
+    AST_NODE_ARRAY,
     AST_NODE_RANGEARRAYS,
     AST_NODE_STATEMENT,
     AST_NODE_SIMPLESTMT,
@@ -89,23 +89,30 @@ typedef enum {
     AST_MODULE_OTHER
 } module_type;
 
+typedef enum {
+    AST_LEAF_INT,
+    AST_LEAF_RNUM,
+    AST_LEAF_NUM,
+    AST_LEAF_BOOL
+} leaf_type;
 
-typedef struct programNode {
+
+typedef struct {
 
     // struct moduleDeclarationNode* dec_head; /* Linkedlist of moduleDeclarationNode */
     // struct moduleListNode* other_mod1_head; /* Linkedlist of moduleListNode */
     // struct moduleListNode* driver_mod;      /* Linkedlist of moduleListNode */
     // struct moduleListNode* other_mod2_head; /* Linkedlist of moduleListNode */
-};
+} programNode;
 
-typedef struct moduleDeclarationNode {
+typedef struct {
     // struct leafNode* id_ptr;
     // struct moduleDeclarationNode* next;
 
     // struct leafNode* id_ptr; access
     struct ASTNode* next; /* Points to next element of type moduleDeclarations */
 
-}; //This is a linked list (C++ equivalent: a vector of pointers)
+} moduleDeclarationNode; //This is a linked list (C++ equivalent: a vector of pointers)
 
 /* NOTE: These two structures have been collapsed into moduleListNode defined below */
 
@@ -122,45 +129,45 @@ typedef struct moduleDeclarationNode {
 // };
 
 
-typedef struct moduleListNode {
+typedef struct {
 
     module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
     /* check note above */
     struct ASTNode* next; /* Points to next element of type moduleListNode */
-};
+} moduleListNode;
 
 
-typedef struct inputListNode {
+typedef struct {
     // struct leafNode* id_ptr;
     // struct leafNode* type_ptr;
     // struct inputListNode* next; /* Points to next element of type inputListNode */
     struct ASTNode* next; /* Points to next element of type inputListNode */
-};
+} inputListNode;
 
-typedef struct outputListNode {
+typedef struct {
     // struct leafNode* id_ptr;
     // struct leafNode* type_ptr;
     // struclt outputListNode* next;
 
     struct ASTNode* next; /* Points to next element of type outputListNode */
 
-};
+} outputListNode;
 
-typedef struct dataTypeNode {
+typedef struct {
     // struct rangeArraysNode* range_arrays_ptr;
     // struct leafNode* type_ptr;
     // access via ASTNode
     astDataTypeCat type_cat;
-};
+} dataTypeNode;
 
-typedef struct rangeArraysNode {
+typedef struct {
     // struct leafNode* index1;
     // struct leafNode* index2;
     // access via ASTNode
-};
+} rangeArraysNode;
 
 /* TODO: Need to fix statement node */
-typedef struct statementNode {
+typedef struct {
     // union {
     //     struct simpleStmtNode* simpleStmt;
     //     struct whichStmtNode* whichStmt;
@@ -172,21 +179,21 @@ typedef struct statementNode {
     // access via ASTNode
     stmt_type type;
     struct ASTNode* next; /* Points to next element of type statementNode */
-};
+} statementNode;
 
 /* TODO */
-typedef struct simpleStmtNode {
+typedef struct {
 
-};
+} simpleStmtNode;
 
-typedef struct assignNode {
+typedef struct {
     // struct LeafNode* lhs_ptr;
     // struct whichStmtNode* whichstmt_ptr;
 
     /* Access of above will be through ASTNode */
-};
+} assignNode;
 
-typedef struct whichStmtNode {
+typedef struct {
 
     /* Either we get an lvalARR statement or 
         lvalIDStmt. In the latter case, synthesize 
@@ -204,22 +211,22 @@ typedef struct whichStmtNode {
     whichType type; /* tag: AST_WHICH_TYPE_LVALID,
                             AST_WHICH_TYPE_LVALARR*/
 
-};
+} whichStmtNode;
 
 /* -- All nodes below were defined after having a discussion, so they 
         do not have any older definition  -- */ 
 
-typedef struct moduleReuseNode {
+typedef struct {
     /* TODO: Add data fields later */
     
-};
+} moduleReuseNode;
 
-typedef struct idListNode {
+typedef struct {
     /* TODO: add data fields later */
     struct ASTNode* next;
-};
+} idListNode;
 
-typedef struct exprNode {
+typedef struct {
     union {
         int val_int;
         float val_float;
@@ -229,9 +236,9 @@ typedef struct exprNode {
         AST_EXPR_AOB or AST_EXPR_UNARY */
     expr_type type;
     
-};
+} exprNode;
 
-typedef struct AOBExprNode {
+typedef struct {
     /*
      * Three children.
      * TODO: Define Data fields later
@@ -239,49 +246,62 @@ typedef struct AOBExprNode {
     
     /* tag */
     aob_type type;
-};
+} AOBExprNode;
 
-typedef struct declareStmtNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+} declareStmtNode;
 
-typedef struct condStmtNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+} condStmtNode;
 
 
-typedef struct caseStmtNode {
+typedef struct {
     /* TODO: add data fields later */
     struct ASTNode* next; /* Points to next element of type caseStmtNode */
-};
+} caseStmtNode;
 
-typedef struct unaryNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+} unaryNode;
 
-typedef struct lvalueARRStmtNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+} lvalueARRStmtNode;
 
-typedef struct iterStmtNode {
+typedef struct {
     /* TODO: add data fields later */
     iter_type type; /* tag for iterative statement */
-};
+} iterStmtNode;
 
 /* Temporary Node */
-typedef struct forNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+} forNode;
 
 /* Temporary Node */
-typedef struct whileNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+} whileNode ;
+    
+/* remember: leaf nodes not to be freed */
+typedef union {
+    struct typeNode type;
+} leafData;
 
-typedef struct leafNode {
+typedef struct {
     /* TODO: add data fields later */
-};
+    leafData ld;
 
+    /* Tags:
+    AST_LEAF_INT,
+    AST_LEAF_RNUM,
+    AST_LEAF_NUM,
+    AST_LEAF_BOOL */
+    struct treeNode* tn; /* from leaf of parse tree */
+    leaf_type tag; 
+} leafNode;
 
 
 /**
@@ -289,30 +309,31 @@ typedef struct leafNode {
  */ 
 
 typedef union {
-    struct programNode* program;
-    struct moduleDeclarationNode* moduleDeclaration;
-    struct moduleListNode* moduleList;
+    programNode* program;
+    moduleDeclarationNode* moduleDeclaration;
+    moduleListNode* moduleList;
     // struct moduleNode* module;
-    struct inputListNode* inputList;
-    struct outputListNode* outputList;
-    struct dataTypeNode* dataType;
-    struct rangeArraysNode* rangeArrays;
-    struct statementNode* statement;
-    struct simpleStmtNode* simpleStmt;
-    struct assignNode* assign;
-    struct whichStmtNode* whichStmt;
-    struct moduleReuseNode* moduleReuse;
-    struct idListNode* idList;
-    struct exprNode* expr;
-    struct AOBExprNode* AOBExpr;
-    struct declareStmtNode* declareStmt;
-    struct condStmtNode* condStmt;
-    struct caseStmtNode* caseStmt;
-    struct unaryNode* unary;
-    struct lvalueARRStmtNode* lvalueARRStmt;
-    struct iterStmtNode* iterStmt;
-    struct forNode* for_n;
-    struct whileNode* while_n;
+    inputListNode* inputList;
+    outputListNode* outputList;
+    dataTypeNode* dataType;
+    rangeArraysNode* rangeArrays;
+    statementNode* statement;
+    simpleStmtNode* simpleStmt;
+    assignNode* assign;
+    whichStmtNode* whichStmt;
+    moduleReuseNode* moduleReuse;
+    idListNode* idList;
+    exprNode* expr;
+    AOBExprNode* AOBExpr;
+    declareStmtNode* declareStmt;
+    condStmtNode* condStmt;
+    caseStmtNode* caseStmt;
+    unaryNode* unary;
+    lvalueARRStmtNode* lvalueARRStmt;
+    iterStmtNode* iterStmt;
+    forNode* for_n;
+    whileNode* while_n;
+    leafNode* leaf;
 } astNodeData;
 
 typedef struct ASTNode {
@@ -323,7 +344,7 @@ typedef struct ASTNode {
         2. If the construct name is a keyword in C then append '_n' at the end in (1)
         3. Typedefs not used as they abstract out the record type representing the node and reduce code readability   
     */ 
-    union astNodeData nodeData;
+    astNodeData nodeData;
 
     astNodeType type; /* Type of node represented by this AST node */
 
@@ -331,8 +352,9 @@ typedef struct ASTNode {
     /* TODO: add data fields later */
 
     /* n-ary tree pointers */
-    struct ASTNode* parent;
-    struct ASTNode* prev;
-    struct ASTNode* next;
-    struct ASTNode* child; 
+    ASTNode* parent;
+    ASTNode* prev;
+    ASTNode* next;
+    ASTNode* child; 
 } ASTNode;
+
