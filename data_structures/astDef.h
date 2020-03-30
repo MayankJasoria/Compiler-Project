@@ -36,6 +36,7 @@ typedef enum {
     AST_NODE_ITERSTMT,
     AST_NODE_FOR,
     AST_NODE_WHILE,
+    AST_NODE_VARIDNUM,
     AST_NODE_LEAF
 } astNodeType;
 
@@ -338,6 +339,7 @@ typedef union {
     iterStmtNode* iterStmt;
     forNode* for_n;
     whileNode* while_n;
+    varidnumNode* var;
     leafNode* leaf;
 } astNodeData;
 
