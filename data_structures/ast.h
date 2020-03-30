@@ -22,27 +22,27 @@ ASTNode* addChild(ASTNode* parent, ASTNode* child);
  * @param parent		The parent node, for which the AST is being constructed
  * @param prev_sibling	The previous sibling of the current node
  */
-ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling);
+ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* pt);
 
 // write after this line
 
-Grammar rule:
-r: stmts -> stmt stmts1
+// Grammar rule:
+// r: stmts -> stmt stmts1
 
-ASTNode* ast(treeNode * curr, ASTNode* parent, ASTNode* prev_sibling) {
+// ASTNode* ast(treeNode * curr, ASTNode* parent, ASTNode* prev_sibling) {
 
-    ASTNode* ret ;
+//     ASTNode* ret ;
 
-	/* first ever call: NULL */
-	subsequent calls:
-	ASTNode* ret = malloc();
-	/* assign whatever needed for inheritance */
+// 	/* first ever call: NULL */
+// 	subsequent calls:
+// 	ASTNode* ret = malloc();
+// 	/* assign whatever needed for inheritance */
 
-    ASTNode * p1 = ast(curr->child, ret, NULL)
-    ASTNode * p2 = ast(curr->child->next, ret, stmt)
+//     ASTNode * p1 = ast(curr->child, ret, NULL)
+//     ASTNode * p2 = ast(curr->child->next, ret, stmt)
 
-    addChild (ret, p1, p2);
-	/* assign whatever needed for synthesis */
+//     addChild (ret, p1, p2);
+// 	/* assign whatever needed for synthesis */
 
-    return p1;
-}
+//     return p1;
+// }

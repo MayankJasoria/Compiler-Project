@@ -369,7 +369,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		/* CHECK @ everything is ASTNode type, so we don't need a separate type for the AST_NODE_STATEMENT */
 		case 22: {// statements : statement statements
 				statementNode* sn = (statementNode *) malloc(sizeof(statementNode));
-				nodeData.dataType = sn;
+				nodeData.statement = sn;
 				curr = getASTNode(nodeData, AST_NODE_STATEMENT);
 				ASTNode* stmtNode = constructAST(curr, NULL, ch);
 				ASTNode* stmtsNode = constructAST(curr, NULL, ch -> next);
@@ -866,7 +866,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		
 		case 75: {// declareStmt : DECLARE idList COLON dataType SEMICOL
 				declareStmtNode* dsn = (declareStmtNode *) malloc(sizeof(declareStmtNode));
-				nodeData.condStmt = dsn;
+				nodeData.declareStmt = dsn;
 				curr = getASTNode(nodeData, AST_NODE_DECLARESTMT);
 				ch = findinPT(ch, idlist);
 				ASTNode* list = constructAST(curr, NULL, ch);
@@ -1181,6 +1181,19 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		
 		case 102: {// new_NT : var_id_num
 				return constructAST(parent, NULL, ch);
+			}
+			break;
+		case -1:  {
+			/**
+			 * TODO: Check if all case -1 actually produce ID
+			 */ 
+			lf = (leafNode *) malloc(sizeof(leafNode));
+				nodeData.leaf = lf;
+				curr = getASTNode(nodeData, AST_NODE_LEAF);
+				lf -> tn = ch;
+				lf -> type = AST_LEAF_ID;
+				// TODO: add data for leaf
+				return curr;
 			}
 			break;
 		default:{

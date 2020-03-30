@@ -1,3 +1,5 @@
+#ifndef _AST_DEF
+#define _AST_DEF
 /**
  *  astDef.h: Contains definitions for constructing abstract syntax tree 
  *  Note: 'declarationNode' in our semantic rules documentation has been changed to
@@ -425,3 +427,4 @@ typedef struct ASTNode {
     struct ASTNode* child; 
 } ASTNode;
 
+#endif
