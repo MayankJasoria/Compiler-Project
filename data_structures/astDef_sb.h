@@ -20,7 +20,7 @@ typedef enum {
     AST_NODE_ARRAY,
     AST_NODE_RANGEARRAYS,
     AST_NODE_STATEMENT,
-    AST_NODE_IO,
+    //AST_NODE_IO,
     AST_NODE_SIMPLESTMT,
     AST_NODE_ASSIGN,
     AST_NODE_WHICHSTMT,
@@ -36,7 +36,10 @@ typedef enum {
     AST_NODE_ITERSTMT,
     AST_NODE_FOR,
     AST_NODE_WHILE,
-    AST_NODE_VARIDNUM,
+    /* Added later */
+    AST_NODE_IO_GETVAL,
+    AST_NODE_IO_PRINTVAL,
+    /* ------------- */
     AST_NODE_LEAF
 } astNodeType;
 
@@ -65,11 +68,6 @@ typedef enum {
     AST_STMT_SIMPLE_MODULEREUSE,
     AST_STMT_SIMPLE_ASSIGN
 } stmt_type;
-
-typedef enum {
-    AST_IO_GETVAL,
-    AST_IO_PRINT
-} io_type;
 
 typedef enum {
     AST_WHICH_TYPE_LVALID,
@@ -104,8 +102,8 @@ typedef enum {
     AST_LEAF_NUM,
     AST_LEAF_BOOL,
     AST_LEAF_ID,
-    AST_LEAF_IDXNUM,
-    AST_LEAF_IDXID,
+    //AST_LEAF_IDXNUM,
+    //AST_LEAF_IDXID
     AST_LEAF_PLUS,
     AST_LEAF_MINUS,
     AST_LEAF_MUL,
@@ -119,18 +117,9 @@ typedef enum {
     AST_LEAF_EQ,
     AST_LEAF_NE,
     AST_LEAF_TRUE,
-    AST_LEAF_FALSE,
-    AST_LEAF_VALNUM,
-    AST_LEAF_VALTRUE,
-    AST_LEAF_VALFALSE,
-    AST_LEAF_VARIDNUM_NUM,
-    AST_LEAF_VARIDNUM_ID,
-    AST_LEAF_VARIDNUM_RNUM,
-    AST_LEAF_BOOLTRUE,
-    AST_LEAF_BOOLFALSE,
-    AST_LEAF_UOPPLUS,
-    AST_LEAF_UOPMINUS
+    AST_LEAF_FALSE
 } leaf_type;
+
 
 typedef struct {
 
@@ -324,22 +313,12 @@ typedef struct {
 /* Temporary Node */
 typedef struct {
     /* TODO: add data fields later */
-} whileNode;
-
-typedef struct {
-    /* TODO: add data fields later */
-    io_type type;
-} ioNode;
-
-typedef struct {
-
-
-} varidnumNode;
+} whileNode ;
     
 /* remember: leaf nodes not to be freed */
 typedef union {
-    typeNode type;
-    indexNode idx;
+    struct typeNode type;
+    struct indexNode idx;
 } leafData;
 
 typedef struct {
@@ -370,7 +349,7 @@ typedef union {
     dataTypeNode* dataType;
     rangeArraysNode* rangeArrays;
     statementNode* statement;
-    ioNode* io;
+    //ioNode* io;
     simpleStmtNode* simpleStmt;
     assignNode* assign;
     whichStmtNode* whichStmt;
@@ -386,7 +365,6 @@ typedef union {
     iterStmtNode* iterStmt;
     forNode* for_n;
     whileNode* while_n;
-    varidnumNode* var;
     leafNode* leaf;
 } astNodeData;
 
@@ -411,4 +389,3 @@ typedef struct ASTNode {
     ASTNode* next;
     ASTNode* child; 
 } ASTNode;
-
