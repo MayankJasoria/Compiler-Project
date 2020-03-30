@@ -132,8 +132,12 @@ typedef enum {
     AST_LEAF_UOPMINUS
 } leaf_type;
 
-typedef struct {
+/**
+ * NOTE: All occurrences of 'int a' are only placeholders
+ */
 
+typedef struct pn {
+    int a;
     // struct moduleDeclarationNode* dec_head; /* Linkedlist of moduleDeclarationNode */
     // struct moduleListNode* other_mod1_head; /* Linkedlist of moduleListNode */
     // struct moduleListNode* driver_mod;      /* Linkedlist of moduleListNode */
@@ -141,6 +145,7 @@ typedef struct {
 } programNode;
 
 typedef struct {
+    int a;
     // struct leafNode* id_ptr;
     // struct moduleDeclarationNode* next;
 
@@ -165,7 +170,6 @@ typedef struct {
 
 
 typedef struct {
-
     module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
     /* check note above */
     struct ASTNode* next; /* Points to next element of type moduleListNode */
@@ -196,6 +200,7 @@ typedef struct {
 } dataTypeNode;
 
 typedef struct {
+    int a;
     // struct leafNode* index1;
     // struct leafNode* index2;
     // access via ASTNode
@@ -223,6 +228,7 @@ typedef struct {
 } simpleStmtNode;
 
 typedef struct {
+    int a;
     // struct LeafNode* lhs_ptr;
     // struct whichStmtNode* whichstmt_ptr;
 
@@ -253,6 +259,7 @@ typedef struct {
         do not have any older definition  -- */ 
 
 typedef struct {
+    int a;
     /* TODO: Add data fields later */
     
 } moduleReuseNode;
@@ -285,10 +292,12 @@ typedef struct {
 } AOBExprNode;
 
 typedef struct {
+    int a;
     /* TODO: add data fields later */
 } declareStmtNode;
 
 typedef struct {
+    int a;
     /* TODO: add data fields later */
 } condStmtNode;
 
@@ -304,10 +313,12 @@ typedef struct {
 } caseStmtNode;
 
 typedef struct {
+    int a;
     /* TODO: add data fields later */
 } unaryNode;
 
 typedef struct {
+    int a;
     /* TODO: add data fields later */
 } lvalueARRStmtNode;
 
@@ -318,11 +329,13 @@ typedef struct {
 
 /* Temporary Node */
 typedef struct {
+    int a;
     /* TODO: add data fields later */
 } forNode;
 
 /* Temporary Node */
 typedef struct {
+    int a;
     /* TODO: add data fields later */
 } whileNode;
 
@@ -333,18 +346,18 @@ typedef struct {
 
 typedef struct {
 
-
+    int a;
 } varidnumNode;
     
 /* remember: leaf nodes not to be freed */
-typedef union {
-    typeNode type;
-    indexNode idx;
-} leafData;
+// typedef union {
+//     // typeNode type;
+//     // indexNode idx;
+// } leafData;
 
 typedef struct {
     /* TODO: add data fields later */
-    leafData ld;
+    // leafData ld;
 
     /* Tags:
     AST_LEAF_INT,
@@ -406,9 +419,9 @@ typedef struct ASTNode {
     /* TODO: add data fields later */
 
     /* n-ary tree pointers */
-    ASTNode* parent;
-    ASTNode* prev;
-    ASTNode* next;
-    ASTNode* child; 
+    struct ASTNode* parent;
+    struct ASTNode* prev;
+    struct ASTNode* next;
+    struct ASTNode* child; 
 } ASTNode;
 
