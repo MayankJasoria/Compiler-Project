@@ -5,7 +5,7 @@
  * @see ast.h
  */
 ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
-	ASNode* node = (ASTNode*) malloc(sizeof(ASTNode));
+	ASTNode* node = (ASTNode*) malloc(sizeof(ASTNode));
 
 	/* define all pointers as NULL */
 	node -> parent = NULL;
