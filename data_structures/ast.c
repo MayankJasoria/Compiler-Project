@@ -5,7 +5,7 @@
  * @see ast.h
  */
 ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
-	ASNode* node = (ASTNode*) malloc(sizeof(ASTNode));
+	ASTNode* node = (ASTNode*) malloc(sizeof(ASTNode));
 
 	/* define all pointers as NULL */
 	node -> parent = NULL;
@@ -53,11 +53,30 @@ ASTNode* addChild(ASTNode* parent, ASTNode* child) {
  * 
  * @return The node corresponding to the required non terminal
  */
-treeNode * findinPT(treeNode * curr, nonterminal nt) {
+treeNode * findNTinPT(treeNode * curr, nonterminal nt) {
 
 	treeNode * tmp = curr;
 	while(tmp != NULL) {
-		if(tmp -> sym.NT == nt)
+		if(tmp -> tag == NT && tmp -> sym.NT == nt)
+			return tmp;
+		tmp = tmp -> next;
+	}
+	return NULL;
+}
+
+/** 
+ * TODO: call free() to release memory for undesired nodes
+ * (NOTE: not defined in header file, as this function need not be externally visible)
+ * Finds the node for the corresponding terminal among a set of siblings in the parse tree
+ * @param curr	The current node among siblings of the parse tree
+ * @param t		The required terminal
+ * 
+ * @return The node corresponding to the required terminal
+ */
+treeNode* findTinPT(treeNode* curr, terminal t) {
+	treeNode * tmp = curr;
+	while(tmp != NULL) {
+		if(tmp -> tag == T && tmp -> sym.T == t)
 			return tmp;
 		tmp = tmp -> next;
 	}
@@ -184,7 +203,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
             nodeData.moduleList = driverNode;
             ASTNode * curr = getASTNode(nodeData, AST_NODE_MODULELIST); 
 
-            ASTNode * modDef = constructAST(curr, NULL, findinPT(ch, moduledef));
+            ASTNode * modDef = constructAST(curr, NULL, findNTinPT(ch, moduledef));
 
             addChild(curr, modDef);
 			curr -> type = AST_NODE_MODULELIST;
@@ -199,11 +218,11 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
             nodeData.moduleList = modNode;
             ASTNode * curr = getASTNode(nodeData, AST_NODE_MODULELIST);
 			ASTNode * idNode = constructAST(curr, NULL, ch -> next -> next);
-			ch = findinPT(ch, input_plist);
+			ch = findNTinPT(ch, input_plist);
 			ASTNode * inplist = constructAST(curr, idNode, ch);
-			ch = findinPT(ch, ret);
+			ch = findNTinPT(ch, ret);
 			ASTNode * retNode = constructAST(curr, inplist, ch);
-			ch = findinPT(ch, moduledef);
+			ch = findNTinPT(ch, moduledef);
 			ASTNode * defNode = constructAST(curr, retNode, ch);
 			
 			addChild(curr, defNode);
@@ -216,7 +235,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			break;
 			
 		case 8: // ret : RETURNS SQBO output_plist SQBC SEMICOL
-			ch = findinPT(ch, output_plist);
+			ch = findNTinPT(ch, output_plist);
 			return constructAST(parent, NULL, ch);
 			break;
 			
@@ -230,9 +249,9 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			nodeData.inputList = inNode;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_INPUTLIST);
 			ASTNode * idNode = constructAST(curr, NULL, ch);
-			ch = findinPT(ch, datatype);
+			ch = findNTinPT(ch, datatype);
 			ASTNode * typeNode = constructAST(curr, idNode, ch);
-			ch = findinPT(ch, input_plistnew);
+			ch = findNTinPT(ch, input_plistnew);
 			ASTNode * inList = constructAST(curr, typeNode, ch);
 			/* remember: during the constructAST we have not created the previous links from siblings */ 
 			
@@ -249,9 +268,9 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			nodeData.inputList = inNode;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_INPUTLIST);
 			ASTNode * idNode = constructAST(curr, NULL, ch -> next);
-			ch = findinPT(ch, datatype);
+			ch = findNTinPT(ch, datatype);
 			ASTNode* typeNode = constructAST(curr, idNode, ch);
-			ch = findinPT(ch, input_plistnew);
+			ch = findNTinPT(ch, input_plistnew);
 			ASTNode* n11 = constructAST(curr, typeNode, ch);
 			
 			addChild(curr, n11);
@@ -272,10 +291,10 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_OUTPUTLIST);
 			ASTNode * idNode = constructAST(curr, NULL, ch);
 
-			ch = findinPT(ch, type);
+			ch = findNTinPT(ch, type);
 			ASTNode * typeNode = constructAST(curr, idNode, ch);
 
-			ch = findinPT(ch, output_plistnew);
+			ch = findNTinPT(ch, output_plistnew);
 			ASTNode * outList = constructAST(curr, typeNode, ch);
 
 			/* remember: during the constructAST we have not created the previous links from siblings */ 
@@ -293,10 +312,10 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_OUTPUTLIST);
 			ASTNode * idNode = constructAST(curr, NULL, ch -> next);
 			
-			ch = findinPT(ch, type);
+			ch = findNTinPT(ch, type);
 			ASTNode* typeNode = constructAST(curr, idNode, ch);
 			
-			ch = findinPT(ch->next, output_plistnew);
+			ch = findNTinPT(ch->next, output_plistnew);
 			ASTNode* n21 = constructAST(curr, typeNode, ch);
 
 			addChild(curr, n21);
@@ -355,9 +374,9 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			astNodeData nodeData;
 			nodeData.dataType = dtn;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_ARRAY);
-			ch = findinPT(ch, range_arrays);
+			ch = findNTinPT(ch, range_arrays);
 			ASTNode * rangeNode = constructAST(curr, NULL, ch);
-			ch = findinPT(ch, type);
+			ch = findNTinPT(ch, type);
 			ASTNode * typeNode = constructAST(curr, rangeNode, ch);
 
 			addChild(curr, typeNode);
@@ -411,33 +430,50 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			break;
 		
 		case 29: // ioStmt : GET_VALUE BO ID BC SEMICOL
-			ioNode * tmp = (ioNode *)malloc(sizeof(ioNode));
-			astNodeData nodeData;
-			nodeData.io = tmp;
-			ASTNode * curr = getASTNode(nodeData, AST_NODE_IO);
-			tmp -> tag = AST_IO_GETVAL;
-			ASTNode * idNode = constructAST(curr, NULL, ch -> next -> next);
+			// ioNode * tmp = (ioNode *)malloc(sizeof(ioNode));
+			// astNodeData nodeData;
+			// nodeData.io = tmp;
+			// ASTNode * curr = getASTNode(nodeData, AST_NODE_IO);
+			// tmp -> tag = AST_IO_GETVAL;
+			// ASTNode * idNode = constructAST(curr, NULL, ch -> next -> next);
 
-			addChild(curr, idNode);
-			curr -> type = AST_NODE_IO;
-			return curr;
-			break;
+			// addChild(curr, idNode);
+			// curr -> type = AST_NODE_IO;
+			// return curr;
+			// break;
+
+			/* NOTE: Since idNode did not exist while the above code was written, 
+				we simply added AST_NODE_IO_GETVAL and AST_NODE_IO_PRINTVAL to the enum
+				in ASTNode, and assigned the type here. Helps in directly syn the ID node
+				upwards with type, instead of defining and creating a new node here. */
+
+			ch = findTinPT(ch, ID);
+			ASTNode* idNode = constructAST(parent, NULL, ch);
+			idNode->type = AST_NODE_IO_GETVAL;
+			return idNode;
 
 		case 30: //ioStmt  : PRINT BO var BC SEMICOL
-			ioNode * tmp = (ioNode *)malloc(sizeof(ioNode));
-			astNodeData nodeData;
-			nodeData.io = tmp;
-			ASTNode * curr = getASTNode(nodeData, AST_NODE_IO);
-			tmp -> tag = AST_IO_PRINT;
-			ASTNode * vNode = constructAST(curr, NULL, ch -> next -> next);
+				// ioStmt.syn = var.syn  /* var is the only subtree. Directly propagate it upwards */
+    			// ioStmt.tag = PRINT /* tag to denote type of operation performed by this IO statement */
+			// ioNode * tmp = (ioNode *)malloc(sizeof(ioNode));
+			// astNodeData nodeData;
+			// nodeData.io = tmp;
+			// ASTNode * curr = getASTNode(nodeData, AST_NODE_IO);
+			// tmp -> tag = AST_IO_PRINT;
+			// ASTNode * vNode = constructAST(curr, NULL, ch -> next -> next);
 
-			addChild(curr, vNode);
-			curr -> type = AST_NODE_IO;
-			return curr;
+			// addChild(curr, vNode);
+			// curr -> type = AST_NODE_IO;
+			// return curr;
+
+			ch = findNTinPT(ch, var);
+			ASTNode* vNode = constructAST(parent, NULL, ch);
+			vNode->type = AST_NODE_IO_PRINTVAL;
+			return vNode;
 			break;
 		
 		case 31: // whichId : SQBO index SQBC
-			return constructAST(curr, NULL, ch -> next);
+			return constructAST(parent, NULL, ch -> next);
 			break;
 		
 		case 32: // whichId : EMPTY
@@ -450,9 +486,9 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			nodeData.leaf = lf;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_LEAF);
 			lf -> tn = ch;
-			lf -> tag = AST_LEAF_IDXNUM;
+			//lf -> tag = AST_LEAF_IDXNUM;
+			lf -> tag = AST_LEAF_NUM;
 			// TODO: add data for leaf
-			curr -> type = AST_NODE_LEAF;
 			return curr;
 			break;
 		
@@ -462,9 +498,9 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			nodeData.leaf = lf;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_LEAF);
 			lf -> tn = ch;
-			lf -> tag = AST_LEAF_IDXID;
+			//lf -> tag = AST_LEAF_IDXID;
+			lf -> tag = AST_LEAF_ID;
 			// TODO: add data for leaf
-			curr -> type = AST_NODE_LEAF;
 			return curr;
 			break;
 		
@@ -473,11 +509,10 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			astNodeData nodeData;
 			nodeData.simpleStmt = simple;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_SIMPLESTMT);
-			simple -> tag = AST_SIMPLE_ASSIGN;
+			simple ->type = AST_STMT_SIMPLE_ASSIGN;
 
 			ASTNode * stmt = constructAST(curr, NULL, ch);
 			addChild(curr, stmt);
-			curr -> type = AST_NODE_SIMPLESTMT;
 			return curr;
 			break;
 		
@@ -486,11 +521,10 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			astNodeData nodeData;
 			nodeData.simpleStmt = simple;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_SIMPLESTMT);
-			simple -> tag = AST_SIMPLE_MODULEREUSE;
+			simple -> type = AST_STMT_SIMPLE_MODULEREUSE;
 
 			ASTNode * stmt = constructAST(curr, NULL, ch);
 			addChild(curr, stmt);
-			curr -> type = AST_NODE_SIMPLESTMT;
 			return curr;
 			break;
 		
@@ -505,7 +539,6 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 
 			addChild(curr, wNode);
 			addChild(curr, idNode);
-			curr -> type = AST_NODE_ASSIGN;
 			return curr;
 			break;
 		
@@ -518,13 +551,12 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			ASTNode * opt = constructAST(curr, NULL, ch);
 			ch = ch -> next -> next -> next;
 			ASTNode * idNode = constructAST(curr, opt, ch);
-			ch = findinPT(ch, idlist);
+			ch = findNTinPT(ch, idlist);
 			ASTNode * list = constructAST(curr, idNode, ch);
 
 			addChild(curr, list);
 			addChild(curr, idNode);
 			addChild(curr, opt);
-			curr -> type = AST_NODE_MODULEREUSE;
 			return curr;
 			break;
 		
@@ -536,7 +568,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			return NULL;
 			break;
 		
-		case 41: // idList : ID n3 
+		case 41: // idList : ID n3 (idlistnew)
 			idListNode * iln = (idListNode *)malloc(sizeof(idListNode));
 			astNodeData nodeData;
 			nodeData.idList = iln;
@@ -547,23 +579,21 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 
 			addChild(curr, n3);
 			addChild(curr, idNode);
-			curr -> type = AST_NODE_IDLIST;
 			return curr;
 			break;
 		
-		case 42: // n3 : COMMA ID n3
+		case 42: // n3 : COMMA ID n3 (idlistnew)
 			idListNode * iln = (idListNode *)malloc(sizeof(idListNode));
 			astNodeData nodeData;
 			nodeData.idList = iln;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_IDLIST);
 
 			ASTNode * idNode = constructAST(curr, NULL, ch -> next);
-			ch = findinPT(ch -> next, idlistnew);
+			ch = findNTinPT(ch -> next, idlistnew);
 			ASTNode * n3 = constructAST(curr, idNode, ch);
 
 			addChild(curr, n3);
 			addChild(curr, idNode);
-			curr -> type = AST_NODE_IDLIST;
 			return curr;
 			break;
 		
@@ -576,12 +606,11 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			astNodeData nodeData;
 			nodeData.expr = en;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_EXPR);
-			en -> tag = AST_EXPR_AOB;
+			en -> type = AST_EXPR_AOB;
 
 			ASTNode * aob = constructAST(curr, NULL, ch);
 
 			addChild(curr, aob);
-			curr -> type = AST_NODE_EXPR;
 			return curr;
 			break;
 		
@@ -590,26 +619,34 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			astNodeData nodeData;
 			nodeData.expr = en;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_EXPR);
-			en -> tag = AST_EXPR_UNARY;
+			en -> type = AST_EXPR_UNARY;
 
 			ASTNode * u = constructAST(curr, NULL, ch);
 
 			addChild(curr, u);
-			curr -> type = AST_NODE_EXPR;
 			return curr;
 			break;
 		
-		/* TODO: CHECK @ In expressions, the adress of anyTerm node is passed in the call of 'n7'(inherited)
-		 * and it maybe stored in the ASTNode corresponding to n7 
-		 * ALso verify the left recursion part */
+		
 
 		case 46: // arithmeticOrBooleanExpr : anyTerm n7
+
+			/**
+			 *  TODO: CHECK @ In expressions, the adress of anyTerm node
+			 * is passed in the call of 'n7'(inherited)
+			 * and it maybe stored in the ASTNode corresponding to n7 
+			 * ALso verify the left recursion part
+			 */
+
 			ASTNode * at = constructAST(parent, NULL, ch);
 			return constructAST(parent, at, ch -> next);
 			break;
 		
-		case 47: // n7 : logicalOp anyTerm n7
-			AOBExprNode * aob = (AOBExprNode *)malloc(sizeof(AOBExprNode));
+		case 47: // n7 : logicalOp anyTerm n71
+			/** 
+			 * NOTE: Needs verification.
+			 */ 
+			AOBExprNode * aob = (AOBExprNode *) malloc(sizeof(AOBExprNode));
 			astNodeData nodeData;
 			nodeData.AOBExpr = aob;
 			ASTNode * curr = getASTNode(nodeData, AST_NODE_AOBEXPR);
@@ -676,7 +713,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			addChild(curr, op1);
 			addChild(curr, prev_sibling);
 
-			ch = findinPT(ch, arithmeticexprnew);
+			ch = findNTinPT(ch, arithmeticexprnew);
 			curr -> type = AST_NODE_AOBEXPR;
 			return constructAST(parent, curr, ch);
 			break;
@@ -702,7 +739,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			addChild(curr, op2);
 			addChild(curr, prev_sibling);
 
-			ch = findinPT(ch, termnew);
+			ch = findNTinPT(ch, termnew);
 			curr -> type = AST_NODE_AOBEXPR;
 			return constructAST(parent, curr, ch);
 			break;
@@ -875,6 +912,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode * tn) {
 			break;
 		
 		case 75: // declareStmt : DECLARE idList COLON dataType SEMICOL
+			
 			break;
 		
 		case 76: // condionalStmt : SWITCH BO ID BC START caseStmts default END

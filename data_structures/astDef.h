@@ -20,7 +20,7 @@ typedef enum {
     AST_NODE_ARRAY,
     AST_NODE_RANGEARRAYS,
     AST_NODE_STATEMENT,
-    AST_NODE_IO,
+    //AST_NODE_IO,
     AST_NODE_SIMPLESTMT,
     AST_NODE_ASSIGN,
     AST_NODE_WHICHSTMT,
@@ -36,6 +36,10 @@ typedef enum {
     AST_NODE_ITERSTMT,
     AST_NODE_FOR,
     AST_NODE_WHILE,
+    /* Added later */
+    AST_NODE_IO_GETVAL,
+    AST_NODE_IO_PRINTVAL,
+    /* ------------- */
     AST_NODE_LEAF
 } astNodeType;
 
@@ -60,7 +64,9 @@ typedef enum {
     AST_STMT_ASSIGNMENT,
     AST_STMT_MODULEREUSE,
     AST_STMT_LVALUEID,
-    AST_STMT_LVALUEARR
+    AST_STMT_LVALUEARR,
+    AST_STMT_SIMPLE_MODULEREUSE,
+    AST_STMT_SIMPLE_ASSIGN
 } stmt_type;
 
 typedef enum {
@@ -95,8 +101,9 @@ typedef enum {
     AST_LEAF_RNUM,
     AST_LEAF_NUM,
     AST_LEAF_BOOL,
-    AST_LEAF_IDXNUM,
-    AST_LEAF_IDXID
+    AST_LEAF_ID
+    //AST_LEAF_IDXNUM,
+    //AST_LEAF_IDXID
 } leaf_type;
 
 
@@ -186,6 +193,7 @@ typedef struct {
 
 /* TODO */
 typedef struct {
+    stmt_type type;
 
 } simpleStmtNode;
 
