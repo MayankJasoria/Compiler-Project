@@ -608,30 +608,30 @@ void inorder(Tree root, FILE * fp) {
 		if (root->line_num != -1) {
 			if(root -> tag == T && root -> sym.T == 52) {
 				fprintf(fp, PRINT_FORMAT_BODY2,root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else if(root -> tag == T && root -> sym.T == 53) {
 				fprintf(fp, PRINT_FORMAT_BODY3,root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else {
 				fprintf(fp, PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);	
+						, isleaf, s, root->rule_num);	
 			}
 		} else {
 
 			char *line_num = "----";
 			if(root -> tag == T && root -> sym.T == 52) {
 				fprintf(fp, PRINT_FORMAT_BODY2_LINE_STR, root -> lex, line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else if(root -> tag == T && root -> sym.T == 53) {
 				fprintf(fp, PRINT_FORMAT_BODY3_LINE_STR, root -> lex, line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else {
 				fprintf(fp, PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);	
+						, isleaf, s, root->rule_num);	
 			}
 
 		}
@@ -647,15 +647,15 @@ void inorder(Tree root, FILE * fp) {
 		if (root->line_num != -1) {
 			if(root -> tag == T && root -> sym.T == 52) {
 				fprintf(fp, PRINT_FORMAT_BODY2,root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else if(root -> tag == T && root -> sym.T == 53) {
 				fprintf(fp, PRINT_FORMAT_BODY3,root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else {
 				fprintf(fp, PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);	
+						, isleaf, s, root->rule_num);	
 			}
 		} else {
 
@@ -663,15 +663,15 @@ void inorder(Tree root, FILE * fp) {
 
 			if(root -> tag == T && root -> sym.T == 52) {
 				fprintf(fp, PRINT_FORMAT_BODY2_LINE_STR,root -> lex, line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else if(root -> tag == T && root -> sym.T == 53) {
 				fprintf(fp, PRINT_FORMAT_BODY3_LINE_STR,root -> lex, line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 			}
 			else {
 				fprintf(fp, PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);	
+						, isleaf, s, root->rule_num);	
 			}
 		}
 		return;
@@ -687,38 +687,38 @@ void inorder(Tree root, FILE * fp) {
 			if (root->line_num != -1) {
 				if(root -> tag == T && root -> sym.T == 52) {
 				fprintf(fp,PRINT_FORMAT_BODY2, root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 				}
 				else if(root -> tag == T && root -> sym.T == 53) {
 					fprintf(fp, PRINT_FORMAT_BODY3, root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
-							, isleaf, s);
+							, isleaf, s, root->rule_num);
 				}
 				else if(root -> tag == NT && root -> sym.NT == 0) {
 					fprintf(fp,PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", "[ROOT]"
-							, isleaf, s);	
+							, isleaf, s, root->rule_num);	
 				}
 				else {
 					fprintf(fp,PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
-							, isleaf, s);	
+							, isleaf, s, root->rule_num);	
 				}
 			} else {
 				char *line_num = "----";
 
 				if(root -> tag == T && root -> sym.T == 52) {
 				fprintf(fp,PRINT_FORMAT_BODY2_LINE_STR, root -> lex, line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
-						, isleaf, s);
+						, isleaf, s, root->rule_num);
 				}
 				else if(root -> tag == T && root -> sym.T == 53) {
 					fprintf(fp, PRINT_FORMAT_BODY3_LINE_STR, root -> lex, line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
-							, isleaf, s);
+							, isleaf, s, root->rule_num);
 				}
 				else if(root -> tag == NT && root -> sym.NT == 0) {
 					fprintf(fp,PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", "[ROOT]"
-							, isleaf, s);	
+							, isleaf, s, root->rule_num);	
 				}
 				else {
 					fprintf(fp,PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
-							, isleaf, s);	
+							, isleaf, s, root->rule_num);	
 				}
 			}
 
@@ -736,7 +736,7 @@ void printParseTree(Tree PT, char *outfile) {
 
 	FILE * fp = fopen(outfile, "w");
 
-	fprintf(fp,PRINT_FORMAT_HEADER, "Lexeme", "Lineno", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol");
+	fprintf(fp,PRINT_FORMAT_HEADER, "Lexeme", "Lineno", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol", "RuleNum");
 
 	inorder(PT, fp);
 	fclose(fp);

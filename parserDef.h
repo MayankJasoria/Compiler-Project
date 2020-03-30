@@ -19,14 +19,14 @@
 #define NUM_NONTERM 57
 #define NUM_RULES 200
 
-#define PRINT_FORMAT_HEADER "\n%-15s%-15s%-25s%-25s%-25s%-25s%-20s"
-#define PRINT_FORMAT_BODY1  "\n%-15s%-15d%-25s%-25s%-25s%-25c%-20s"
-#define PRINT_FORMAT_BODY2	"\n%-15s%-15d%-25s%-25d%-25s%-25c%-20s"
-#define PRINT_FORMAT_BODY3	"\n%-15s%-15d%-25s%-25f%-25s%-25c%-20s"
+#define PRINT_FORMAT_HEADER "\n%-15s%-15s%-25s%-25s%-25s%-25s%-30s%-20s"
+#define PRINT_FORMAT_BODY1  "\n%-15s%-15d%-25s%-25s%-25s%-25c%-30s%-20d"
+#define PRINT_FORMAT_BODY2	"\n%-15s%-15d%-25s%-25d%-25s%-25c%-30s%-20d"
+#define PRINT_FORMAT_BODY3	"\n%-15s%-15d%-25s%-25f%-25s%-25c%-30s%-20d"
 
-#define PRINT_FORMAT_BODY1_LINE_STR	"\n%-15s%-15s%-25s%-25s%-25s%-25c%-20s"
-#define PRINT_FORMAT_BODY2_LINE_STR	"\n%-15s%-15s%-25s%-25d%-25s%-25c%-20s"
-#define PRINT_FORMAT_BODY3_LINE_STR	"\n%-15s%-15s%-25s%-25f%-25s%-25c%-20s"
+#define PRINT_FORMAT_BODY1_LINE_STR	"\n%-15s%-15s%-25s%-25s%-25s%-25c%-30s%-20d"
+#define PRINT_FORMAT_BODY2_LINE_STR	"\n%-15s%-15s%-25s%-25d%-25s%-25c%-30s%-20d"
+#define PRINT_FORMAT_BODY3_LINE_STR	"\n%-15s%-15s%-25s%-25f%-25s%-25c%-30s%-20d"
 
 /* structure for maintaining the first and follow sets of the Non Terminals */
 

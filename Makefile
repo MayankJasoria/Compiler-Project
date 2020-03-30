@@ -21,18 +21,12 @@ driver: $(DEPS_PROG)
 	$(CC) $(CFLAGS) $(OUT_NAME) $(DEPS_PROG)
 
 ast: ast_test.c
-	# Windows
 	cls
 	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c 
 	ast
-	# Linux
-	# clear
-	# $(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structure/sn_ary_tree.c data_structures/ast.c 
-	# ./ast.out
 
-parser: parser.c
-	#cls
-
+parser: parserTest.c
+	cls
 	$(CC) $(CFLAGS) a parser.c parserTest.c lexer.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c
 	a
 

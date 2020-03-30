@@ -55,8 +55,8 @@ int main() {
     //     printf("\n"); 
     // }
 
-    // ComputeFirstAndFollowSets();
-    // createParseTable();
+    ComputeFirstAndFollowSets();
+    createParseTable();
     // printf("\n ****** Parse Table ******\n");
     // for(i = -1; i < NUM_NONTERM; i++) {
     //     printf("%s,", nonterminals[i]);
@@ -69,8 +69,6 @@ int main() {
     //     printf("\n");
     // }
 
-
-
-    // parseInputSourceCode("prog.eg");
-    // printParseTree(PT, "ptree.txt");
+    parseInputSourceCode("t4.txt");
+    printParseTree(PT, "ptree.txt");
 }

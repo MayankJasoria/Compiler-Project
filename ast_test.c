@@ -23,6 +23,6 @@ int main(int argc, char* argv[]) {
     /* printParseTree(PT, outputfile); */
     /* Use PT to construct AST */
 
-    ASTNode* root = constructAST(NULL, NULL, PT);  
+    ASTNode* root = constructAST(NULL, NULL, PT); 
     printf("Hooray!!");
 }
