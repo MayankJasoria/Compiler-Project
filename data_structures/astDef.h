@@ -20,6 +20,7 @@ typedef enum {
     AST_NODE_ARRAY,
     AST_NODE_RANGEARRAYS,
     AST_NODE_STATEMENT,
+    AST_NODE_IO,
     AST_NODE_SIMPLESTMT,
     AST_NODE_ASSIGN,
     AST_NODE_WHICHSTMT,
@@ -93,7 +94,9 @@ typedef enum {
     AST_LEAF_INT,
     AST_LEAF_RNUM,
     AST_LEAF_NUM,
-    AST_LEAF_BOOL
+    AST_LEAF_BOOL,
+    AST_LEAF_IDXNUM,
+    AST_LEAF_IDXID
 } leaf_type;
 
 
@@ -288,6 +291,7 @@ typedef struct {
 /* remember: leaf nodes not to be freed */
 typedef union {
     struct typeNode type;
+    struct indexNode idx;
 } leafData;
 
 typedef struct {
@@ -318,6 +322,7 @@ typedef union {
     dataTypeNode* dataType;
     rangeArraysNode* rangeArrays;
     statementNode* statement;
+    ioNode* io;
     simpleStmtNode* simpleStmt;
     assignNode* assign;
     whichStmtNode* whichStmt;
