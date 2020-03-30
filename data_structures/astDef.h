@@ -20,7 +20,7 @@ typedef enum {
     AST_NODE_ARRAY,
     AST_NODE_RANGEARRAYS,
     AST_NODE_STATEMENT,
-    AST_NODE_IO,
+    //AST_NODE_IO,
     AST_NODE_SIMPLESTMT,
     AST_NODE_ASSIGN,
     AST_NODE_WHICHSTMT,
@@ -36,7 +36,14 @@ typedef enum {
     AST_NODE_ITERSTMT,
     AST_NODE_FOR,
     AST_NODE_WHILE,
+<<<<<<< HEAD
     AST_NODE_VARIDNUM,
+=======
+    /* Added later */
+    AST_NODE_IO_GETVAL,
+    AST_NODE_IO_PRINTVAL,
+    /* ------------- */
+>>>>>>> 66d4c1fade4d138cc4e5825ebee3ddb3a85323cf
     AST_NODE_LEAF
 } astNodeType;
 
@@ -61,7 +68,9 @@ typedef enum {
     AST_STMT_ASSIGNMENT,
     AST_STMT_MODULEREUSE,
     AST_STMT_LVALUEID,
-    AST_STMT_LVALUEARR
+    AST_STMT_LVALUEARR,
+    AST_STMT_SIMPLE_MODULEREUSE,
+    AST_STMT_SIMPLE_ASSIGN
 } stmt_type;
 
 typedef enum {
@@ -96,8 +105,23 @@ typedef enum {
     AST_LEAF_RNUM,
     AST_LEAF_NUM,
     AST_LEAF_BOOL,
-    AST_LEAF_IDXNUM,
-    AST_LEAF_IDXID
+    AST_LEAF_ID,
+    //AST_LEAF_IDXNUM,
+    //AST_LEAF_IDXID
+    AST_LEAF_PLUS,
+    AST_LEAF_MINUS,
+    AST_LEAF_MUL,
+    AST_LEAF_DIV,
+    AST_LEAF_OR,
+    AST_LEAF_AND,
+    AST_LEAF_LT,
+    AST_LEAF_LE,
+    AST_LEAF_GT,
+    AST_LEAF_GE,
+    AST_LEAF_EQ,
+    AST_LEAF_NE,
+    AST_LEAF_TRUE,
+    AST_LEAF_FALSE
 } leaf_type;
 
 
@@ -187,6 +211,7 @@ typedef struct {
 
 /* TODO */
 typedef struct {
+    stmt_type type;
 
 } simpleStmtNode;
 
@@ -260,10 +285,15 @@ typedef struct {
     /* TODO: add data fields later */
 } condStmtNode;
 
+typedef enum {
+    AST_CASE_STD,
+    AST_CASE_DEFAULT
+} case_stmt_type;
 
 typedef struct {
     /* TODO: add data fields later */
     struct ASTNode* next; /* Points to next element of type caseStmtNode */
+    case_stmt_type type;
 } caseStmtNode;
 
 typedef struct {
@@ -305,7 +335,7 @@ typedef struct {
     AST_LEAF_NUM,
     AST_LEAF_BOOL */
     struct treeNode* tn; /* from leaf of parse tree */
-    leaf_type tag; 
+    leaf_type type; 
 } leafNode;
 
 
@@ -323,7 +353,7 @@ typedef union {
     dataTypeNode* dataType;
     rangeArraysNode* rangeArrays;
     statementNode* statement;
-    ioNode* io;
+    //ioNode* io;
     simpleStmtNode* simpleStmt;
     assignNode* assign;
     whichStmtNode* whichStmt;
