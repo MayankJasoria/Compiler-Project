@@ -1,22 +1,31 @@
 import gdb
-import Queue
+import queue
+import os
 
 class SimpleCommand(gdb.Command):
 
 	def __init__(self):
 		# This registers our class as "simple_command"
 		super(SimpleCommand, self).__init__("ast", gdb.COMMAND_DATA)
-		self.q = Queue.Queue(-1)
+		self.q = queue.Queue(-1)
+		self.first = True
 
-		self.f = open(r"c:\Users\Mayank\Documents\BITS\Compiler Construction\Compiler-Project\graph.py", "w")
-		print >> self.f, "import networkx as nx\n"
-		print >> self.f, "import matplotlib.pyplot as plt"
-		print >> self.f, "G = nx.DiGraph()\n"
+		self.f = open("ast_graph.py", "w")
+		
+		#print >> self.f, "from pyvis.network import Network\n"
+		#print >> self.f, "net = Network(height=\"70%\", width=\"100%\", directed=True, layout=True)\n"
+		#print >> self.f, "net.add_node(\"h1\", hidden=True, physics=False)"
+		#print >> self.f, "net.add_node(\"h2\", hidden=True, physics=False)"
+
+		self.ptfile("from pyvis.network import Network\n")
+		self.ptfile("net = Network(height=\"70%\", width=\"100%\", directed=True, layout=True)\n")
+		self.ptfile("net.add_node(\"h1\", hidden=True, physics=False)")
+		self.ptfile("net.add_node(\"h2\", hidden=True, physics=False)")
 		
 	def invoke(self, arg, from_tty):
 		# When we call "simple_command" from gdb, this is the method
 		# that will be called.
-		print("Hello from AST Debug! arg: ", arg)
+		print("AST Debug! args: ", arg)
 
 		"""
 		1. convert arg to ASTNode* root
@@ -33,10 +42,15 @@ class SimpleCommand(gdb.Command):
 		self.q.put(gdb.parse_and_eval(arg))
 		self.bfs()
 
-		print >> self.f, "nx.draw(G, with_labels = True)"
-		print >> self.f, "plt.show()"
+		#print >> self.f, "\nnet.show_buttons(filter_=['physics'])"
+		#print >> self.f, "net.show(\"ast.html\")"
+		self.ptfile("\nnet.show_buttons(filter_=['physics'])")
+		self.ptfile("net.show(\"ast.html\")")
 
 		self.f.close()
+
+		print("Please wait while the AST graph is being created. It should open up in your browser automatically!\nIn case it does not show up, open ast_graph.html in the working directory.")
+		os.system('python ast_graph.py')
 		
 
 		# json.dumps(ast_root, indent=4)
@@ -56,13 +70,22 @@ class SimpleCommand(gdb.Command):
 		node = self.q.get()
 		
 		# node_name = node['type'],"_",node
-
-		print >> self.f, "G.add_node(\"{}_{}\")".format(node['type'], node)
 		
-
+		title = "{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)
+		#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
+		self.ptfile("net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title))
+		
+		# if this is the first node, force it to be root
+		if self.first is True:
+			#print >> self.f, "\nnet.add_edge(\"{}_{}\", \"h1\", hidden=True, physics=False)".format(node['type'], node)
+			#print >> self.f, "net.add_edge(\"{}_{}\", \"h2\", hidden=True, physics=False)\n".format(node['type'], node)
+			self.ptfile("\nnet.add_edge(\"{}_{}\", \"h1\", hidden=True, physics=False)".format(node['type'], node))
+			self.ptfile("net.add_edge(\"{}_{}\", \"h2\", hidden=True, physics=False)\n".format(node['type'], node))
+			self.first = False
+		
 		# define this node in the graph
 		
-		print(node['type'])
+		#print(node['type'])
 		# add all children to queue
 
 		child = node['child']
@@ -71,19 +94,29 @@ class SimpleCommand(gdb.Command):
 			self.q.put(child)
 
 			# child_name = child['type'],"_",child
+			
+			title = "{}_{} {{<br \>&emsp;No information here!<br \>}}".format(child['type'], child)
 
-			print >> self.f, "G.add_node(\"{}_{}\")".format(child['type'], child)
-			print >> self.f, "G.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child)
+			#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
+			#print >> self.f, "net.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child)
+
+			self.ptfile("net.add_node(\"{}_{}\", title=\"{}\")".format(child['type'], child, title))
+			self.ptfile("net.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child))
 			#self.G.add_node(child_name)
 			#self.G.add_edge(node_name, child_name)
 
 			child = child['next']
 
-		# print details
-		print("[\n\tParent: {},\n\tPrev: {},\n\tNext: {},\n\tChild: {},\n\tType: {}\n]"
-			.format(node['parent'], node['prev'], node['next'], node['child'], node['type']))
+		# print details: comment out to avoid printing on console and waiting for while write
+		#print("[\n\tParent: {},\n\tPrev: {},\n\tNext: {},\n\tChild: {},\n\tType: {}\n]"
+		#	.format(node['parent'], node['prev'], node['next'], node['child'], node['type']))
 
 		self.bfs()
+
+	def ptfile(self, text):
+		# use one of these, depending on the python version
+		#print >> self.f, text
+		print(text ,file = self.f)
 
 # This registers our class to the gdb runtime at "source" time.
 SimpleCommand()
