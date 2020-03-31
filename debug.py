@@ -1,5 +1,9 @@
 import gdb
-import queue
+
+# use one of these depending on python version
+# import queue
+import Queue
+
 import os
 
 class SimpleCommand(gdb.Command):
@@ -7,7 +11,11 @@ class SimpleCommand(gdb.Command):
 	def __init__(self):
 		# This registers our class as "simple_command"
 		super(SimpleCommand, self).__init__("ast", gdb.COMMAND_DATA)
-		self.q = queue.Queue(-1)
+
+		# use one of these lines depending on python version
+		# self.q = queue.Queue(-1)
+		self.q = Queue.Queue(-1)
+		
 		self.first = True
 
 		self.f = open("ast_graph.py", "w")
@@ -71,9 +79,9 @@ class SimpleCommand(gdb.Command):
 		
 		# node_name = node['type'],"_",node
 		
-		title = "{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)
+		title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)
 		#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
-		self.ptfile("net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title))
+		self.ptfile("net.add_node(\"{}_{}\", title=r\"{}\")".format(node['type'], node, title))
 		
 		# if this is the first node, force it to be root
 		if self.first is True:
@@ -95,12 +103,12 @@ class SimpleCommand(gdb.Command):
 
 			# child_name = child['type'],"_",child
 			
-			title = "{}_{} {{<br \>&emsp;No information here!<br \>}}".format(child['type'], child)
+			title = r"{}_{} {{<br \>&emsp;No information here!<br \>}}".format(child['type'], child)
 
 			#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
 			#print >> self.f, "net.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child)
 
-			self.ptfile("net.add_node(\"{}_{}\", title=\"{}\")".format(child['type'], child, title))
+			self.ptfile("net.add_node(\"{}_{}\", title=r\"{}\")".format(child['type'], child, title))
 			self.ptfile("net.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child))
 			#self.G.add_node(child_name)
 			#self.G.add_edge(node_name, child_name)
@@ -115,8 +123,8 @@ class SimpleCommand(gdb.Command):
 
 	def ptfile(self, text):
 		# use one of these, depending on the python version
-		#print >> self.f, text
-		print(text ,file = self.f)
+		print >> self.f, text
+		# print(text ,file = self.f)
 
 # This registers our class to the gdb runtime at "source" time.
 SimpleCommand()

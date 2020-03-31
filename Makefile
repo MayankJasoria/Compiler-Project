@@ -33,18 +33,10 @@ driver: $(DEPS_PROG)
 	$(CC) $(CFLAGS) $(OUT_NAME) $(DEPS_PROG)
 
 ast: ast_test.c
-	#cls
-	#$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
-	#ast
-	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS) 
-	#gdb --batch --command=debug.gdb --args ./ast 
+	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS)  
 
 ast_debug: ast_test.c
-	#cls
-	#$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
-	#ast
-	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS) 
-	#gdb --batch --command=debug.gdb --args ./ast 
+	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS)  
 	$(GDB_AUTO)
 
 
