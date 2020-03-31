@@ -1,8 +1,14 @@
 import gdb
 
 # use one of these depending on python version
-# import queue
-import Queue
+import sys
+
+if sys.version_info[0] < 3:
+	# python 2
+	import Queue
+else:
+	#python 3
+	import queue as Queue	
 
 import os
 
@@ -123,8 +129,14 @@ class SimpleCommand(gdb.Command):
 
 	def ptfile(self, text):
 		# use one of these, depending on the python version
-		print >> self.f, text
+		#print >> self.f, text
 		# print(text ,file = self.f)
+		if sys.version_info[0] < 3:
+			# python 2
+			print >> self.f, text
+		else:
+			#python 3
+			print(text ,file = self.f)
 
 # This registers our class to the gdb runtime at "source" time.
 SimpleCommand()
