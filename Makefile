@@ -4,6 +4,18 @@
 # SHUBHAM TIWARI	2016B4A70945P
 # VIBHAV OSWAL		2016B4A70594P
 
+# -- Detect OS for AST compilation --
+ifeq ($(OS),Windows_NT)
+	# Windows 
+	DS=data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c 
+	GDB_AUTO=gdb --batch --command=debug.gdb --args ast
+else
+	# Linux
+	DS=data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
+	GDB_AUTO=gdb --batch --command=debug.gdb --args ./ast
+endif
+#-----------------------------------
+
 # set the compiler
 CC=gcc
 
@@ -22,9 +34,19 @@ driver: $(DEPS_PROG)
 
 ast: ast_test.c
 	#cls
-	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
+	#$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
 	#ast
-	gdb --batch --command=debug.gdb --args ./ast 
+	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS) 
+	#gdb --batch --command=debug.gdb --args ./ast 
+
+ast_debug: ast_test.c
+	#cls
+	#$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
+	#ast
+	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS) 
+	#gdb --batch --command=debug.gdb --args ./ast 
+	$(GDB_AUTO)
+
 
 parser: parserTest.c
 	cls
