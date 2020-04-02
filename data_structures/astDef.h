@@ -428,7 +428,10 @@ typedef struct ASTNode {
 	astNodeType type; /* Type of node represented by this AST node */
 
 	/* TODO: Include pointer to symbol table */
+	SymbolTable varST;
+	
 	/* TODO: add data fields later */
+
 
 	/* n-ary tree pointers */
 	struct ASTNode* parent;

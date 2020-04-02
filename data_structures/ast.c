@@ -192,10 +192,9 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		}
 
 		case 7: {// module : DEF MODULE ID ENDDEF TAKES INPUT SQBO input_plist SQBC SEMICOL ret moduleDef
-			moduleListNode* modNode = (moduleListNode *) malloc(sizeof(moduleListNode));
-			modNode -> type = AST_MODULE_OTHER;
-			nodeData.moduleList = modNode;
-			curr = getASTNode(nodeData, AST_NODE_MODULELIST);
+			moduleNode* modNode = (moduleNode *) malloc(sizeof(moduleNode));
+			nodeData.module = modNode;
+			curr = getASTNode(nodeData, AST_NODE_MODULE);
 			ASTNode* idNode = constructAST(curr, NULL, ch -> next -> next);
 			ch = findinPT(ch, input_plist);
 			ASTNode* inplist = constructAST(curr, idNode, ch);
