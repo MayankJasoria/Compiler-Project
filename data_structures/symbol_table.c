@@ -118,6 +118,12 @@ SymbolTable insertFuncRecord(SymbolTable st, char* name) {
 	strcpy(data->name, name);
 	data->type = SYM_FUNCTION;
 
+	/* initialize input parameters list */
+	data->input_plist = getList();
+
+	/* initialize output parameters list */
+	data->output_plist = getList();
+
 	/* 
 	 * will be updated dynamically, for every variable added to 
 	 * this function's symbol table
@@ -134,11 +140,48 @@ SymbolTable insertFuncRecord(SymbolTable st, char* name) {
 	return insertToTable(st, name, data, stringHash);
 }
 
-SymbolTable addParamToFunction(SymbolTable st, char* funcName, int paramType, char* varName, int varWidth, astDataType varDataType) {
+/**
+ * Assumption: The function record (name) is already hashed to the symbol table
+ * The size of the activation record is computed dynamically everytime this
+ * function is called for a new variable. For other details, 
+ * @see symbol_table.h
+ */
+SymbolTable addParamToFunction(SymbolTable st, char* funcName, 
+	int paramType, char* varName, int varWidth, astDataType varDataType) {
+	/* find the record for the function */
+	SymTableFunc* funcData = fetchFuncData(st, funcName);
+
+	if(funcData == NULL) {
+		fprintf(stderr, "The data for the required function could not be fetched.\n");
+		return st;
+	}
+
+	/* compute offset */
+	int offset = funcData->actRecSize;
+
+	/* Create a record for the variable */
+	SymTableVar* varData = (SymTableVar*) malloc(sizeof(SymTableVar));
+	varData->type = SYM_VARIABLE;
+	varData->name = varName;
+	varData->offset = offset;
+	varData->width = varWidth;
+	varData->dataType = varDataType;
 	
+	/* populate correct list */
+	if(paramType == 0) {
+		funcData->input_plist = insertToList(funcData->input_plist, varData, BACK);
+
+		/* update activation record size */
+		funcData->actRecSize += varWidth;
+	} else {
+		funcData->output_plist = insertToList(funcData->output_plist, varData, BACK);
+	}
+
+	return st;
 }
 
 /**
+ * Assumption: The function record (name) is already hashed to the symbol table
  * The size of the activation record is computed dynamically everytime this
  * function is called for a new variable. For other details, 
  * @see symbol_table.h
