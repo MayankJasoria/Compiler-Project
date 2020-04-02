@@ -213,3 +213,22 @@ SymbolTable addDataToFunction(SymbolTable st, char* funcName, char* varName, int
 		return st;
 	}
 }
+
+/**
+ * Assumption: THe function is already hashed to the symbol table,
+ * and variable is added to a nested block
+ * @see symbol_table.h
+ */
+SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth) {
+	/* find the record for the function */
+	SymTableFunc* funcData = fetchFuncData(st, funcName);
+
+	if(funcData == NULL) {
+		fprintf(stderr, "The data for the required function could not be fetched.\n");
+		return st;
+	}
+
+	funcData->actRecSize += varWidth;
+
+	return st;
+}

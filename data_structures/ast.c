@@ -18,6 +18,7 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	node -> child = NULL;
 	node -> next = NULL;
 	node -> prev = NULL;
+	node -> varST = NULL;
     
     node -> type = t;
 	node -> nodeData = nodeData;

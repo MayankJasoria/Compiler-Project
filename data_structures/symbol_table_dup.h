@@ -69,16 +69,27 @@ SymTableFunc* fetchFuncData(SymbolTable st, char* name);
 SymbolTable addDataToFunction(SymbolTable st, char* funcName, char* varName, int varWidth, astDataType varDataType);
 
 /**
-* Inserts a given variable to the input list of a function
-* @param st			The symbol table from which the function is to be fetched
-* @param funcName		The name of the function
-* @param paramType		0 -> input, 1 -> output
-* @param varName		Name of the variable
-* @param varWidth		The total memory size required for storing the variable data
-* @param varDataType	The dataType of the variable
-* 
-* @return updated Symbol Table
-*/
+ * Inserts a given variable to the input list of a function
+ * @param st			The symbol table from which the function is to be fetched
+ * @param funcName		The name of the function
+ * @param paramType		0 -> input, 1 -> output
+ * @param varName		Name of the variable
+ * @param varWidth		The total memory size required for storing the variable data
+ * @param varDataType	The dataType of the variable
+ * 
+ * @return updated Symbol Table
+ */
 SymbolTable addParamToFunction(SymbolTable st, char* funcName, int paramType, char* varName, int varWidth, astDataType varDataType);
+
+/**
+ * Given a width, updates the activation record size of a function
+ * (to be used when adding a variable to a child scope of a function)
+ * @param st		The Symbol Table
+ * @param funcName	The name of the function
+ * @param varWidth	The width of the variable
+ * 
+ * @return updated symbol table
+ */
+SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
 
 #endif

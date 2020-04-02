@@ -14,13 +14,28 @@
 /* defining a symbol table */
 typedef HashTable SymbolTable;
 
-SymbolTable funcST;
+SymbolTable globalST;
 
 typedef enum {
 	SYM_VARIABLE,
 	SYM_FUNCTION,
 	SYM_OTHER
 } SymTableType;
+
+typedef struct arrayInfo {
+	astDataType dataType; 
+	int low;
+	int high;
+	char* lowId;
+	char* highId;
+} arrayInfo;
+
+typedef union {
+	arrayInfo r;	
+	int intVal;
+	float floatVal;
+	int boolVal:1;
+} SymDataType;
 
 typedef struct SymTableFunc {
 	SymTableType type;
@@ -54,11 +69,18 @@ typedef struct symTableVar {
 	/* total memory space to be allocated */
 	int width;
 	
+	/* Stores the offset of the variable from base */
 	int offset;
+
+	/**
+	 * flag to store if the variable was assigned a value or not 
+	 * 0 -> not yet assigned, 1 -> assigned
+	 */
+	unsigned int isAssigned:1;
 
 	/* datatype of variable -> INT, RNUM, BOOL (optionally define a new enum) */
 	astDataType dataType;
-	
+	SymDataType sdt;
 } SymTableVar;
 
 #endif

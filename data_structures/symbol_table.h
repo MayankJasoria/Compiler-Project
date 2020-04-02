@@ -9,6 +9,8 @@
 
 #include "symbol_TableDef.h"
 
+SymbolTable funcST;
+
 /**
  * Creates and returns an instance of a new symbol table
  * @return an instance of a new symbol table
@@ -81,4 +83,14 @@ SymbolTable addDataToFunction(SymbolTable st, char* funcName, char* varName, int
  */
 SymbolTable addParamToFunction(SymbolTable st, char* funcName, int paramType, char* varName, int varWidth, astDataType varDataType);
 
+/**
+ * Given a width, updates the activation record size of a function
+ * (to be used when adding a variable to a child scope of a function)
+ * @param st		The Symbol Table
+ * @param funcName	The name of the function
+ * @param varWidth	The width of the variable
+ * 
+ * @return updated symbol table
+ */
+SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
 #endif

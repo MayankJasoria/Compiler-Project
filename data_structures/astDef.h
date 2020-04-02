@@ -6,6 +6,9 @@
 
 #ifndef _AST_DEF
 #define _AST_DEF
+
+#include "symbol_table.h"
+
 /**
  *  astDef.h: Contains definitions for constructing abstract syntax tree 
  *  Note: 'declarationNode' in our semantic rules documentation has been changed to
@@ -208,6 +211,7 @@ typedef struct {
 	// struct rangeArraysNode* range_arrays_ptr;
 	// struct leafNode* type_ptr;
 	// access via ASTNode
+	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */ 
 	astDataTypeCat type_cat;
 } dataTypeNode;
 
@@ -216,6 +220,7 @@ typedef struct {
 	// struct leafNode* index1;
 	// struct leafNode* index2;
 	// access via ASTNode
+	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */
 } rangeArraysNode;
 
 /* TODO: Need to fix statement node */
@@ -427,8 +432,11 @@ typedef struct ASTNode {
 
 	astNodeType type; /* Type of node represented by this AST node */
 
-	/* TODO: Include pointer to symbol table */
-	SymbolTable varST;
+	/**
+	 * Include pointer to Symbol Table Entry of nested constructs [if, while etc.].
+	 * (This contains pointer to variable symbol table)
+	 */
+	SymTableFunc* localST;
 	
 	/* TODO: add data fields later */
 

@@ -1,97 +1,172 @@
-/* Mayank's Task
-Include the files
-*/
+#include <stdio.h>
+#include <stdlib.h>
 
+#include "ast.h"
+#include "symbol_table.h"
 
-void* traverseChildren(ASTNode* head) {
-    ASTNode* ch = head;
-    while(ch != NULL) {
-        traverseAST(ch);
-        ch = ch -> next;
-    }
+void traverseChildren(ASTNode* head) {
+	ASTNode* ch = head;
+	while(ch != NULL) {
+		ch -> localST = curr -> localST;
+		traverseAST(ch);
+		ch = ch -> next;
+	}
 }
 
-void * traverseAST(ASTNode * curr) {
+void traverseAST(ASTNode * curr) {
 
-    switch(curr -> type) {
+	switch(curr -> type) {
 
-        case AST_NODE_PROGRAM: {
-            
-            ASTNode * ch = curr -> child;
-            /* Replace loop by traverseChildren(ch) ? */
+		case AST_NODE_PROGRAM: {
+			
+			ASTNode * ch = curr -> child;
+			/* Replace loop by traverseChildren(ch) ? */
+			traverseChildren(ch);
+		}
+		break;
 
-            while(ch != NULL) {
-                traverseAST(ch);
-                ch = ch -> next;
-            }
-        }
+		case AST_NODE_MODULEDECLARATION: {
 
-        case AST_NODE_MODULEDECLARATION: {
+			ASTNode * ch = curr -> child;
 
-            ASTNode * ch = curr -> child;
+			/* Use traverseChildren(ch)? */
+			traverseChildren(ch);
+		}
+		break;
 
-            /* Use traverseChildren(ch)? */
-            while(ch != NULL) {
-                
-                traverseAST(ch);
-                ch = ch -> next;
-            }
-        }
+		case AST_NODE_MODULELIST: {
+			
+			ASTNode * ch = curr -> child;
 
-        case AST_NODE_MODULELIST: {
-            
-            ASTNode * ch = curr -> child;
+			/* Use traverseChildren(ch)? */
+			traverseChildren(ch);
+		}
+		break;
 
-            /* Use traverseChildren(ch)? */
-            while(ch != NULL) {
-                
-                traverseAST(ch);
-                ch = ch -> next;
-            }
-        }
+		case AST_NODE_MODULE: {
+			 
+			ASTNode * ch = curr -> child;
+			SymTableFunc * tmp;
+			/* Use traverseChildren(ch)? */
+			while(ch != NULL) {
+				if(ch -> prev == NULL) {
+					traverseAST(ch);
+					tmp = ch -> varST;
+				}
+				else {
+					ch -> varST = tmp;
+					traverseAST(ch);
+				}                
+				ch = ch -> next;
+			}
+		}
+		break;
 
-        case AST_NODE_MODULE: {
-             
-            ASTNode * ch = curr -> child;
+		case AST_NODE_INPUTLIST: {
+			
+			/**
+			 *  TODO: leaf
+			 *  1. Access ID of each node while (ch->next->child!=NULL)
+			 *  2. call addParamToFunction(SymbolTable st, char* funcName, int paramType, char* varName, int varWidth, astDataType varDataType);
+			 */
+			ASTNode * ch = curr -> child;
 
-            /* Use traverseChildren(ch)? */
-            while(ch != NULL) {
-                
-                traverseAST(ch);
-                ch = ch -> next;
-            }
-        }
+			/* Use traverseChildren(ch)? */
+			traverseChildren(ch);
+		}
+		break;
 
+		case AST_NODE_OUTPUTLIST: {
 
-        case AST_NODE_INPUTLIST:
-        case AST_NODE_OUTPUTLIST:
-        case AST_NODE_ARRAY:
-        case AST_NODE_RANGEARRAYS:
-        case AST_NODE_STATEMENT:
-        case AST_NODE_IO:
-        case AST_NODE_SIMPLESTMT:
-        case AST_NODE_ASSIGN:
-        case AST_NODE_WHICHSTMT:
-        case AST_NODE_MODULEREUSE:
-        case AST_NODE_IDLIST:
-        case AST_NODE_EXPR:
-        case AST_NODE_AOBEXPR:
-        case AST_NODE_DECLARESTMT:
-        case AST_NODE_CONDSTMT:
-        case AST_NODE_CASESTMT:
-        case AST_NODE_UNARY:
-        case AST_NODE_LVALARRSTMT:
-        case AST_NODE_ITERSTMT:
-        case AST_NODE_FOR:
-        case AST_NODE_WHILE:
-        case AST_NODE_VARIDNUM:
-        case AST_NODE_LEAF: {
-            /* 
-                For ID: (As in ast.c)
-                CASE: 3,7, 
-            */
-        }
-    }
+			/** 
+			 * TODO: Check correctness
+			 */
 
+			ASTNode * ch = curr -> child;
+			
+			/* Use traverseChildren(ch)? */
+			traverseChildren(ch);
+		}
+		break;
 
+		case AST_NODE_ARRAY: {
+		/* 
+			Every element of the linked list looks like this:
+
+			typedef struct node {
+				void* data;
+				struct node* next;
+				struct node* prev;
+			} Node;
+		*/
+			
+			ASTNode * ch = curr -> child;
+			
+			traverseAST(ch);
+			curr -> dataType->is_static = ch -> rangeArrays->is_static;
+			ch = ch -> next;
+			//insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType)
+			traverseAST(ch);
+
+		}
+		break;
+
+		case AST_NODE_RANGEARRAYS:
+		break;
+
+		case AST_NODE_STATEMENT:
+		break;
+
+		case AST_NODE_IO:
+		break;
+
+		case AST_NODE_SIMPLESTMT:
+		break;
+
+		case AST_NODE_ASSIGN:
+		break;
+		case AST_NODE_WHICHSTMT:
+		break;
+		case AST_NODE_MODULEREUSE:
+		break;
+		case AST_NODE_IDLIST:
+		break;
+		case AST_NODE_EXPR:
+		break;
+		case AST_NODE_AOBEXPR:
+		break;
+		case AST_NODE_DECLARESTMT:
+		break;
+		case AST_NODE_CONDSTMT:
+		break;
+		case AST_NODE_CASESTMT:
+		break;
+		case AST_NODE_UNARY:
+		break;
+		case AST_NODE_LVALARRSTMT:
+		break;
+		case AST_NODE_ITERSTMT:
+		break;
+		case AST_NODE_FOR:
+		break;
+		case AST_NODE_WHILE:
+		break;
+		case AST_NODE_VARIDNUM:
+		break;
+		case AST_NODE_LEAF: {
+			/* 
+				For ID: (As in ast.c)
+				CASE: 3, 7, 10, 13 
+			*/
+		}
+		break;
+		default:
+
+		/*
+			1. Add function name
+			2. Add variables
+			3. Add Input Params
+			4. Add Output Params
+		*/
+	}
 }
