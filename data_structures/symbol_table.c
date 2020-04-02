@@ -1,8 +1,8 @@
 /*  GROUP 48:
-    PUNEET ANAND    2016B4A70487P
-    MAYANK JASORIA  2016B1A70703P
-    SHUBHAM TIWARI  2016B4A70935P
-    VIBHAV OSWAL    2016B4A70594P */
+	PUNEET ANAND    2016B4A70487P
+	MAYANK JASORIA  2016B1A70703P
+	SHUBHAM TIWARI  2016B4A70935P
+	VIBHAV OSWAL    2016B4A70594P */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +28,7 @@ SymTableVar* fetchVarData(SymbolTable st, char* name) {
 	}
 
 	/* Retrieve the record form the table */
-	SymTableVar* data = getDataFromTable(st, name, stringHash);
+	SymTableVar* data = (SymTableVar*) getDataFromTable(st, name, stringHash);
 	if(data->type == SYM_VARIABLE) {
 		/* the retrieved record is a variable */
 		return data;
@@ -63,7 +63,7 @@ SymTableFunc* fetchFuncData(SymbolTable st, char* name) {
 /**
  * @see symbol_table.h
  */
-SymbolTable insertVarRecord(SymbolTable st, char* name, int width, astDataType dataType) {
+SymbolTable insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType) {
 	if(st == NULL) {
 		fprintf(stderr, "The provided symbol table was not defined\n.No changes have been made\n");
 		return st;
@@ -83,6 +83,7 @@ SymbolTable insertVarRecord(SymbolTable st, char* name, int width, astDataType d
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data->name, name);
 	data->width = width;
+	data->offset = offset;
 	data->dataType = dataType;
 	data->type = SYM_VARIABLE;
 
@@ -96,7 +97,7 @@ SymbolTable insertVarRecord(SymbolTable st, char* name, int width, astDataType d
 /**
  * @see symbol_table.h
  */
-SymbolTable inserFuncRecord(SymbolTable st, char* name) {
+SymbolTable insertFuncRecord(SymbolTable st, char* name) {
 	if(st == NULL) {
 		fprintf(stderr, "The provided symbol table was not defined\n.No changes have been made\n");
 		return st;
@@ -133,6 +134,10 @@ SymbolTable inserFuncRecord(SymbolTable st, char* name) {
 	return insertToTable(st, name, data, stringHash);
 }
 
+SymbolTable addParamToFunction(SymbolTable st, char* funcName, int paramType, char* varName, int varWidth, astDataType varDataType) {
+	
+}
+
 /**
  * The size of the activation record is computed dynamically everytime this
  * function is called for a new variable. For other details, 
@@ -150,7 +155,9 @@ SymbolTable addDataToFunction(SymbolTable st, char* funcName, char* varName, int
 	/* check if the supplied variable is unique for this function's table */
 	if(fetchVarData(funcData->dataTable, varName) == NULL) {
 		/* supplied variable is unique */
-		st = insertVarRecord(st, varName, varWidth, varDataType);
+		int offset = funcData->actRecSize;
+
+		st = insertVarRecord(st, varName, varWidth, offset, varDataType);
 
 		/* update the size of activation record */
 		funcData->actRecSize += varWidth;
