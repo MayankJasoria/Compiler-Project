@@ -14,6 +14,8 @@
 /* defining a symbol table */
 typedef HashTable SymbolTable;
 
+SymbolTable funcST;
+
 typedef enum {
 	SYM_VARIABLE,
 	SYM_FUNCTION,

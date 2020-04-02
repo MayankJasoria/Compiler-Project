@@ -188,7 +188,9 @@ typedef struct {
 	// struct leafNode* id_ptr;
 	// struct leafNode* type_ptr;
 	// struct inputListNode* next; /* Points to next element of type inputListNode */
-	struct ASTNode* next; /* Points to next element of type inputListNode */
+
+	/* Check: it is not needed */
+	//struct ASTNode* next; /* Points to next element of type inputListNode */
 } inputListNode;
 
 typedef struct {
@@ -196,7 +198,9 @@ typedef struct {
 	// struct leafNode* type_ptr;
 	// struclt outputListNode* next;
 
-	struct ASTNode* next; /* Points to next element of type outputListNode */
+	int isAssigned;
+	/* Check: it is not needed */
+	// struct ASTNode* next; /* Points to next element of type outputListNode */
 
 } outputListNode;
 
