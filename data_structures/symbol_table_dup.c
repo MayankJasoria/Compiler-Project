@@ -9,28 +9,23 @@
 #include <string.h>
 #include "symbol_tableDef.h"
 
+/* Doubts regarding the hash table implementation:
+	1. if item not there in table, does getDataFromTable return NULL.
+*/ 
+
 SymbolTable getSymbolTable() {
 	return getHashTable();
 }
 
 SymTableVar* fetchVarData(SymbolTable st, char* name) {
 	SymTableVar* data = (SymTableVar*) getDataFromTable(st, name, stringHash);
-	if(data->type == SYM_VARIABLE) {
-		return data;
-	} else {
-		return NULL;
-	}
+	return data;
 }
 
 SymTableFunc* fetchFuncData(SymbolTable st, char* name) {
 	SymTableFunc* data = (SymTableFunc*) getDataFromTable(st, name, stringHash);
-	if(data->type == SYM_FUNCTION) {
-		return data;
-	} else {
-		return NULL;
-	}
+	return data;
 }
-
 
 SymbolTable insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType) {
 
@@ -64,10 +59,10 @@ SymbolTable addDataToFunction(SymTableFunc funcData, char* varName, int varWidth
 	}
 }
 
-SymbolTable addArrToFunction(SymTableFunc funcData, char* varName, int varWidth, astDataType varDataType) {
+SymbolTable addArrToFunction(SymTableFunc funcData, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
 	
-	if(fetchVarData(funcData->dataTable, varName) == NULL) {
-		int offset = funcData->actRecSize;
+	if(fetchVarData(funcData -> dataTable, varName) == NULL) {
+		int offset = funcData -> actRecSize;
 		st = insertVarRecord(st, varName, varWidth, offset, varDataType);
 		funcData->actRecSize += varWidth;
 		return st;

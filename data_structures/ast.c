@@ -530,27 +530,29 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		}
 	
 		case 44: {// expression : arithmeticOrBooleanExpr 
-			exprNode* en = (exprNode *) malloc(sizeof(exprNode));
-			nodeData.expr = en;
-			curr = getASTNode(nodeData, AST_NODE_EXPR);
-			en -> type = AST_EXPR_AOB;
+			// exprNode* en = (exprNode *) malloc(sizeof(exprNode));
+			// nodeData.expr = en;
+			// curr = getASTNode(nodeData, AST_NODE_EXPR);
+			// en -> type = AST_EXPR_AOB;
 
-			ASTNode* aob = constructAST(curr, NULL, ch);
+			// ASTNode* aob = constructAST(curr, NULL, ch);
 
-			addChild(curr, aob);
-			return curr;
+			// addChild(curr, aob);
+			// return curr;
+			return constructAST(parent, NULL, ch);
 		}	
 		
 		case 45: {// expression : u
-			exprNode* en = (exprNode *) malloc(sizeof(exprNode));
-			nodeData.expr = en;
-			curr = getASTNode(nodeData, AST_NODE_EXPR);
-			en -> type = AST_EXPR_UNARY;
+			// exprNode* en = (exprNode *) malloc(sizeof(exprNode));
+			// nodeData.expr = en;
+			// curr = getASTNode(nodeData, AST_NODE_EXPR);
+			// en -> type = AST_EXPR_UNARY;
 
-			ASTNode* u = constructAST(curr, NULL, ch);
+			// ASTNode* u = constructAST(curr, NULL, ch);
 
-			addChild(curr, u);
-			return curr;
+			// addChild(curr, u);
+			// return curr;
+			return constructAST(parent, NULL, ch);
 		}
 		
 		/* TODO: CHECK @ In expressions, the adress of anyTerm node is passed in the call of 'n7'(inherited)

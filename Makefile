@@ -8,7 +8,7 @@
 ifeq ($(OS),Windows_NT)
 	# Windows 
 	DS=data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c 
-	GDB_AUTO=gdb --batch --command=debug.gdb --args ast
+	GDB_AUTO=gdb --batch --command=debug.gdb --args ast.exe
 else
 	# Linux
 	DS=data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
@@ -42,7 +42,7 @@ ast_debug: ast_test.c
 
 parser: parserTest.c
 	cls
-	$(CC) $(CFLAGS) a parser.c parserTest.c lexer.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c
+	$(CC) $(CFLAGS) a parser.c parserTest.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c
 	a
 
 lexer: lexer.c

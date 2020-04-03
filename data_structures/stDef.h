@@ -26,8 +26,8 @@ typedef struct arrayInfo {
 	astDataType dataType; 
 	int low;
 	int high;
-	char* lowId;
-	char* highId;
+	char * lowId;
+	char * highId;
 } arrayInfo;
 
 typedef union {
@@ -43,7 +43,7 @@ typedef struct SymTableFunc {
 	int isDeclared;
 	struct SymTableFunc * parent; /* For the pointer to the static parent of the scope. */
 	int baseAdd; /* base address of the fuction activation record. */
-	char* name; /* name of the function */
+	char * name; /* name of the function */
 	List input_plist; /* List of input parameter variables */
 	List output_plist; /* List of output parameter variables */
 	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */

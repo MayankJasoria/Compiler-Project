@@ -22,6 +22,12 @@
  */
 
 typedef enum {
+	BOUND_RUNTIME,
+	BOUND_ERROR,
+	BOUND_CORRECT
+} boundCheck;
+
+typedef enum {
 	AST_NODE_PROGRAM,
 	AST_NODE_MODULEDECLARATION,
 	AST_NODE_MODULELIST,
@@ -60,7 +66,8 @@ typedef enum {
 	AST_TYPE_INT,
 	AST_TYPE_REAL,
 	AST_TYPE_BOOLEAN,
-	AST_TYPE_ARRAY
+	AST_TYPE_ARRAY,
+	AST_TYPE_POINTER
 } astDataType;
 
 typedef enum {
@@ -142,6 +149,12 @@ typedef enum {
 	AST_LEAF_UOPPLUS,
 	AST_LEAF_UOPMINUS
 } leaf_type;
+
+typedef enum {
+	AST_LOP,
+	AST_RELOP,
+	AST_AOP
+} optype;
 
 /**
  * NOTE: All occurrences of 'int a' are only placeholders
@@ -305,6 +318,7 @@ typedef struct {
 	 */
 	
 	/* tag */
+	astDataType dataType;
 	aob_type type;
 } AOBExprNode;
 
@@ -327,6 +341,8 @@ typedef struct {
 	/* TODO: add data fields later */
 	struct ASTNode* next; /* Points to next element of type caseStmtNode */
 	case_stmt_type type;
+	char * switchVar;
+	astDataType dataType; /* for checking bool int etc */
 } caseStmtNode;
 
 typedef struct {
@@ -363,6 +379,7 @@ typedef struct {
 
 typedef struct {
 
+	boundCheck b;
 	int a;
 } varidnumNode;
 	
@@ -382,6 +399,8 @@ typedef struct {
 	AST_LEAF_NUM,
 	AST_LEAF_BOOL */
 	struct treeNode* tn; /* from leaf of parse tree */
+	astDataType dataType;
+	optype op;
 	leaf_type type; 
 } leafNode;
 
