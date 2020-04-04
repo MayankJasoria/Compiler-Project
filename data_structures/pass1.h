@@ -1,4 +1,8 @@
+#ifndef _PASS1_
+#define _PASS1_
 #include "astDef.h"
+
+void traverseAST(ASTNode* curr, char* fname);
 
 void insertplist(ASTNode * curr, char * str);
 
@@ -8,4 +12,4 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr);
 
 int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST);
 
-void traverseAST(ASTNode* curr, char* fname);
+#endif

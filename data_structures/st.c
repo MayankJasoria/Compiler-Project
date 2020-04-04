@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "astDef.h"
+#include "hash_map.h"
 
-typeSize[] = {16, 16, 16, -1, 2};
+int typeSize[] = {16, 16, 16, -1, 2};
 
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.
@@ -40,7 +41,7 @@ SymTableFunc * fetchFuncData(char* name) {
 	return data;
 }
 
-void insertVarRecord(SymbolTable* st, char* name, int width, int offset, astDataType dataType, SymDataType s) {
+void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType, SymDataType s) {
 
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data -> name, name);
@@ -110,7 +111,7 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 
 SymTableFunc* insertFuncRecord(char* name) {
 
-	if(fetchFuncData(globalST, name) != NULL) {
+	if(fetchFuncData(name) != NULL) {
 		fprintf(stderr, "A record with the given already exists within the symbol table.");
 		return NULL;
 	}
@@ -153,7 +154,7 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	/* Create a record for the variable */
 	SymTableVar* varData = (SymTableVar*) malloc(sizeof(SymTableVar));
 	varData -> type = SYM_VARIABLE;
-	varData -> name = varName;
+	strcpy(varData -> name, varName);
 	varData -> offset = offset;
 	varData -> width = typeSize[varDataType];
 	varData -> dataType = varDataType;

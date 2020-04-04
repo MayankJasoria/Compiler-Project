@@ -35,7 +35,7 @@ void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataT
 * 
 * @return updated symbol table
 */
-SymbolTable insertFuncRecord(char* name);
+SymTableFunc * insertFuncRecord(char* name);
 
 /**
 * Returns the record for a variable from the symbol table,
@@ -45,7 +45,7 @@ SymbolTable insertFuncRecord(char* name);
 * 
 * @return pointer to the record if it is found, otherwise NULL
 */
-SymTableVar* fetchVarData(SymbolTable st, char* name);
+SymTableVar * fetchVarData(SymTableFunc * func, char* name);
 
 /**
 * Returns the record for a function from the symbol table,
@@ -57,12 +57,12 @@ SymTableVar* fetchVarData(SymbolTable st, char* name);
 SymTableFunc* fetchFuncData(char* name);
 
 /**
- * Creates a record for an inner score, along with a new symbol table
- * @param fname Name of the function
- * 
- * @return pointer to the newly created record
- */
-SymTableFunc * getFuncTable(char * fname);
+* Creates a record for an inner score, along with a new symbol table
+* @param fname Name of the function
+* 
+* @return pointer to the newly created record
+*/
+SymTableFunc * getFuncTable(char * fname, SymTableFunc * par);
 
 /**
 * Adds a new variable into the symbol table of variables associated with a function
@@ -77,27 +77,27 @@ void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, ast
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
 /**
- * Inserts a given variable to the input list of a function
- * @param funcData		The record of a function
- * @param paramType		0 -> input, 1 -> output
- * @param varName		Name of the variable
- * @param varDataType	The dataType of the variable
- * 
- * @return updated Symbol Table
- */
+* Inserts a given variable to the input list of a function
+* @param funcData		The record of a function
+* @param paramType		0 -> input, 1 -> output
+* @param varName		Name of the variable
+* @param varDataType	The dataType of the variable
+* 
+* @return updated Symbol Table
+*/
 void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType);
 
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
 /**
- * Given a width, updates the activation record size of a function
- * (to be used when adding a variable to a child scope of a function)
- * @param st		The Symbol Table
- * @param funcName	The name of the function
- * @param varWidth	The width of the variable
- * 
- * @return updated symbol table
- */
+* Given a width, updates the activation record size of a function
+* (to be used when adding a variable to a child scope of a function)
+* @param st		The Symbol Table
+* @param funcName	The name of the function
+* @param varWidth	The width of the variable
+* 
+* @return updated symbol table
+*/
 SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
 
 #endif

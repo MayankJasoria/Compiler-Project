@@ -63,7 +63,7 @@ HashTable removeFromTable(HashTable table, void* key, int (*hash)(void*));
  * 
  * @return hash value for the given string
  */
-int numberHash(long long int val);
+int numberHash(void* y);
 
 /**
  * Computes a hash value for a given string
@@ -71,7 +71,7 @@ int numberHash(long long int val);
  * 
  * @return hash value for the given string
  */
-int stringHash(const char *str);
+int stringHash(void* y);
 
 
 

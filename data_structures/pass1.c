@@ -4,6 +4,7 @@
 
 #include "st.h"
 #include "ast.h"
+#include "pass1.h"
 
 /*
 void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType)
@@ -56,7 +57,7 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(tmp -> sdt.r -> highId, "") == 0) {
 		if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 			if((ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
-				 (ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+				(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
 				fprintf(stderr, 
 				"Static bound checking failed\n");	
 				if(t == AST_NODE_IO)
@@ -81,9 +82,9 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 
 /*
 typedef struct node {
-    void* data;
-    struct node* next;
-    struct node* prev;
+	void* data;
+	struct node* next;
+	struct node* prev;
 } Node;
 */
 //head: plist Node, node: AST
@@ -260,7 +261,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						"The variable taken as input is not being declared.\n");
 					}
 					else if(ch -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {   //int a; a[4];  --> error
-  						fprintf(stderr, 
+						fprintf(stderr, 
 						"A non array type variable access using whichId\n");	
 					}
 					else if(ch -> next != NULL) {
@@ -315,9 +316,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 				ch = ch -> next;
 
 				typedef struct node {
-    void* data;
-    struct node* next;
-    struct node* prev;
+	void* data;
+	struct node* next;
+	struct node* prev;
 } Node;
 			
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
@@ -344,9 +345,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch, fname);
 			traverseAST(ch -> next -> next, fname);
 			astDataType tl, tr;
-			ASTNode* ch = curr -> child;
-			tl = ch -> nodeData.dataType;
-			tr = (ch -> next -> next) -> nodeData.dataType;
+			ch = curr -> child;
+			tl = ch -> nodeData.AOBExpr -> dataType;
+			tr = (ch -> next -> next) -> nodeData.AOBExpr -> dataType;
 			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
@@ -376,7 +377,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					fprintf(stderr, 
 					"Bool type variables in relational operation.\n");	
 				}
-				curr -> nodeData.dataType = AST_TYPE_BOOLEAN;
+				curr -> nodeData.AOBExpr -> dataType = AST_TYPE_BOOLEAN;
 			}
 			else if((ch -> next) -> nodeData.leaf -> op == AST_LOP) {
 				if(tl != AST_TYPE_BOOLEAN) {
@@ -387,7 +388,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					fprintf(stderr, 
 					"Right operator of LOP is not boolean type.\n");	
 				}
-				curr -> nodeData.dataType -> type_cat = AST_TYPE_BOOLEAN;
+				curr -> nodeData.AOBExpr -> dataType = AST_TYPE_BOOLEAN;
 			}
 		}
 		break;
@@ -433,20 +434,20 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch1, fname);
 
 			ASTNode* ch2 = ch1 -> next;
-			if(ch -> nodeData.dataType == AST_TYPE_BOOLEAN) {
+			if(ch -> nodeData.leaf -> dataType == AST_TYPE_BOOLEAN) {
 				if(ch2 != NULL) {
 					fprintf(stderr, 
 					"Default case in bool type.\n");
 				}
 			}
-			else if(ch -> nodeData.dataType == AST_TYPE_INT) {
+			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
 				if(ch2 == NULL) {
 					fprintf(stderr, 
 					"Default case not present in int type.\n");
 				}
 				else {
 					ch2 -> localST = newST;
-					ch2 -> nodeData.dataType = ch -> nodeData.dataType;
+					// ch2 -> nodeData.statement -> type = ch -> nodeData.leaf -> dataType;
 					traverseAST(ch2, fname);
 				}
 			}
@@ -513,7 +514,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				return;
 			}
 
-			SymTableFunc* newST = getFuncTable(fname);
+			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
 			ASTNode* ch1 = ch -> next;
 			ch1 -> localST = newST;
 			traverseAST(ch1, fname);
@@ -547,15 +548,15 @@ void traverseAST(ASTNode* curr, char* fname) {
 			*/
 			switch(curr -> nodeData.leaf -> type) {
 				case AST_LEAF_INT: {
-					curr -> nodeData.dataType = AST_TYPE_INT;
+					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
 					return;
 				}
 				case AST_LEAF_RNUM: {
-					curr -> nodeData.dataType = AST_TYPE_REAL;
+					curr -> nodeData.leaf -> dataType = AST_TYPE_REAL;
 					return;	
 				}
 				case AST_LEAF_BOOL: {
-					curr -> nodeData.dataType = AST_TYPE_BOOLEAN;
+					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
 					return;	
 				}
 				case AST_LEAF_ID: {
@@ -637,7 +638,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 							}
 						}
 						case AST_NODE_MODULEREUSE: {
-							SymTableFunc* func = fetchFuncData(globalST, str);
+							SymTableFunc* func = fetchFuncData(str);
 							if(func == NULL) {
 								fprintf(stderr, 
 								"The function used is not declared and defined.\n");
@@ -807,6 +808,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 		}
 		break;
-		default:
+		default: {
+			fprintf(stderr, "Default error!\n");
+		}
 	}
 }

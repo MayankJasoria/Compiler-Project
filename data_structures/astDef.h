@@ -348,7 +348,7 @@ typedef struct {
 	/* TODO: add data fields later */
 	struct ASTNode* next; /* Points to next element of type caseStmtNode */
 	case_stmt_type type;
-	char * switchVar;
+	char switchVar[30];
 	astDataType dataType; /* for checking bool int etc */
 } caseStmtNode;
 
@@ -498,8 +498,8 @@ typedef struct arrayInfo {
 	astDataType dataType; /* can only be int, real, boolean? */
 	int low; /*low..high */
 	int high;
-	char* lowId; /*lowID..highId*/
-	char* highId;
+	char lowId[30]; /*lowID..highId*/
+	char highId[30];
 } arrayInfo;
 
 typedef union {
@@ -515,7 +515,7 @@ typedef struct SymTableFunc {
 	int isDeclared;			/*to check if the function is declared*/
 	struct SymTableFunc * parent; /* pointer to the static parent of the scope. */
 	int baseAdd; /* base address of the fuction activation record. */
-	char * name; /* name of the function */
+	char name[30]; /* name of the function */
 	List input_plist; /* List of input parameter variables */
 	List output_plist; /* List of output parameter variables */
 	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */
@@ -524,7 +524,7 @@ typedef struct SymTableFunc {
 
 typedef struct symTableVar {	
 	SymTableType type;
-	char* name;
+	char name[30];
 	int isAssigned;
 	int width; /* total memory space to be allocated */
 	int offset;
