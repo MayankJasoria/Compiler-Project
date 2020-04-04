@@ -146,7 +146,11 @@ void traverseAST(ASTNode * curr, char * fname) {
 
 		case AST_NODE_RANGEARRAYS: {
 			ASTNode * ch1 = curr -> child;
+			ch1 -> localST = curr -> localST;
+			traverseAST(ch1, fname);
 			ASTNode * ch2 = ch -> next;
+			ch2 -> localST = curr -> localST;
+			traverseAST(ch2, fname);
 			
 			if(ch1 -> leaf -> type == AST_LEAF_IDXNUM && ch2 -> leaf -> type == AST_LEAF_IDXNUM)
 				curr -> rangeArrays -> is_static = 1;
@@ -213,12 +217,18 @@ void traverseAST(ASTNode * curr, char * fname) {
 		
 		case AST_NODE_MODULEREUSE: {
 			ASTNode * ch = curr -> child;
-			SymTableFunc * tmp = fetchFuncData(globalST, ch -> next -> tn -> lex);
+			traverseChildren(ch, fname);
+			ch = curr -> child;
+
+			if(ch -> type == AST_NODE_IDLIST)
+				ch = ch -> next;
+
+			SymTableFunc * tmp = fetchFuncData(globalST, ch -> tn -> lex);
 			if(strcmp(fname, tmp -> name) == 0) {
 				fprintf(stderr, 
 				"Recursion is not supported.\n");
 			}
-			if(!listTypeMatch(tmp -> output_plist, ch, localST)) {
+			if(!listTypeMatch(tmp -> output_plist, ch -> prev, localST)) {
 				fprintf(stderr, 
 				"Output list type mismatch.\n");	
 			}
@@ -392,16 +402,17 @@ void traverseAST(ASTNode * curr, char * fname) {
 		case AST_NODE_LVALARRSTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar* tmp = fetchVarData(localST, ch -> tn -> lex);
+			SymTableVar* par = fetchVarData(localST, curr -> parent -> child -> tn -> lex);
 			if(tmp == NULL) {
 				fprintf(stderr, 
 				"The variable taken as input is not being declared.\n");
 			}
-			else if(ch -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {
+			else if(par -> dataType != AST_TYPE_ARRAY) {
 				fprintf(stderr, 
 				"A non array type variable access using whichId\n");	
 			}
 			else if(ch -> next != NULL) {
-				boundChecking(tmp, curr);
+				boundChecking(par, curr -> parent);
 			}
 			ch = ch -> next;
 			ch -> localST = curr -> localST;
@@ -468,12 +479,101 @@ void traverseAST(ASTNode * curr, char * fname) {
 								fprintf(stderr, 
 								"Redundant declaretion of the finction.\n");
 							}
-							if(tmp == NULL)
+							if(tmp == NULL) {
 								tmp = insertFuncRecord(str);
+								tmp -> isDeclared = 0;
+								tmp -> isDefined = 1;
+							}
 							insertinputplist();
 							insertoutputplist();
 						}
-						
+						case AST_NODE_INPUTLIST: {
+							/* handled in insertinputplist(); */
+						}
+						case AST_NODE_OUTPUTLIST: {
+							/* handled in insertoutputplist(); */
+						}
+						case AST_NODE_IO: {
+							/* handles above */
+						}
+						case AST_NODE_VARIDNUM: {
+							if(curr -> prev != NULL) {
+								SymTableVar * idx = fetchVarData(localST, str);
+								if(idx == NULL) {
+									fprintf(stderr, 
+									"Index variable is not defined.\n");
+									return;
+								}
+								if(idx -> dataType != AST_TYPE_INT) {
+									fprintf(stderr, 
+									"Index variable is not Integer.\n");
+								}
+							}
+						}
+						case AST_NODE_RANGEARRAYS: {
+							SymTableVar * idx = fetchVarData(localST, str);
+							if(idx == NULL) {
+								fprintf(stderr, 
+								"Index variable is not defined.\n");
+								return;
+							}
+							if(idx -> dataType != AST_TYPE_INT) {
+								fprintf(stderr, 
+								"Index variable in range arrays is not Integer.\n");
+							}
+						}
+						case AST_NODE_LVALARRSTMT: {
+							SymTableVar * idx = fetchVarData(localST, str);
+							if(idx == NULL) {
+								fprintf(stderr, 
+								"Index variable is not defined.\n");
+								return;
+							}
+							if(idx -> dataType != AST_TYPE_INT) {
+								fprintf(stderr, 
+								"Index variable in range arrays is not Integer.\n");
+							}	
+						}
+						case AST_NODE_ASSIGN: {
+							SymTableVar * idx = fetchVarData(localST, str);
+							if(idx == NULL) {
+								fprintf(stderr, 
+								"The variable to be assigned is not declared.\n");
+								return;
+							}
+						}
+						case AST_NODE_MODULEREUSE: {
+							SymTableFunc * func = fetchFuncData(str);
+							if(func == NULL) {
+								fprintf(stderr, 
+								"The function used is not declared and defined.\n");
+								return;
+							}
+							if(func -> isDefined == 0) {
+								func -> isDeclared++;
+							}
+						}
+						case AST_NODE_IDLIST: {
+							/* handled above in typelistmatch() */
+						}
+						case AST_NODE_CONDSTMT: {
+							SymTableVar * idx = fetchVarData(localST, str);
+							if(idx == NULL) {
+								fprintf(stderr, 
+								"Switch variable is not defined.\n");
+								return;
+							}
+						}
+						case AST_NODE_ITERSTMT: {
+							SymTableVar * idx = fetchVarData(localST, str);
+							if(idx == NULL) {
+								fprintf(stderr, 
+								"Switch variable is not defined.\n");
+								/* not declared, still giving it a type */
+								curr -> nodeData -> dataType = AST_TYPE_INT;
+								return;
+							}	
+						}
 					}
 				}
 				case AST_LEAF_IDXNUM: {

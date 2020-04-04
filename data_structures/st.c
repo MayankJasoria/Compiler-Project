@@ -15,6 +15,7 @@
 	3. The st taken in the I/P of fetchVarData is same as localST
 	4. The list Type match.
 	5. Check the ast.c alone.
+	6. insertinputplist()
 */ 
 
 SymbolTable getSymbolTable() {

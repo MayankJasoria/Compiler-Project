@@ -259,6 +259,7 @@ typedef struct {
 
 typedef struct {
 	int a;
+	boundCheck b;
 	// struct LeafNode* lhs_ptr;
 	// struct whichStmtNode* whichstmt_ptr;
 
