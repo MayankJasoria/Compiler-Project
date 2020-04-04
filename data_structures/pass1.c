@@ -403,10 +403,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 					ASTNode* lft = (ch -> next) -> child -> child;
 					ASTNode* right = lft -> next; 
 					astDataType t = (ch -> next) -> child -> next -> nodeData.leaf -> dataType;
-					addArrToFunction(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, lft, right, t);
+					addArrToFunction(curr -> localST, fname, idNode -> nodeData.leaf -> tn -> lex, lft, right, t);
 				}
 				else {
-					addDataToFunction(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, ch -> next -> nodeData.leaf -> dataType);
+					addDataToFunction(curr -> localST, fname, idNode -> nodeData.leaf -> tn -> lex, ch -> next -> nodeData.leaf -> dataType);
 				}
 				tmp = tmp -> child;
 				tmp = tmp -> next;
