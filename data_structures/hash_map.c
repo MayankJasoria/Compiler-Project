@@ -73,7 +73,7 @@ void* getDataFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	int idx = hash(key);
 	// int idx = computeHash((char*) key);
 	if(table[idx] == NULL) {
-		return False;
+		return NULL;
 	}
 	
 	/* Find the node containing the {key, data} */

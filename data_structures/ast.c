@@ -63,7 +63,7 @@ treeNode* findinPT(treeNode* curr, nonterminal nt) {
 
 	treeNode* tmp = curr;
 	while(tmp != NULL) {
-		if(tmp -> sym.NT == nt)
+		if(tmp -> tag == NT && tmp -> sym.NT == nt)
 			return tmp;
 		tmp = tmp -> next;
 	}
