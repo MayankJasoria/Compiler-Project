@@ -64,7 +64,7 @@ typedef enum {
 
 typedef enum {
 	AST_TYPE_INT,
-	AST_TYPE_REAL,
+AST_TYPE_REAL,
 	AST_TYPE_BOOLEAN,
 	AST_TYPE_ARRAY,
 	AST_TYPE_POINTER

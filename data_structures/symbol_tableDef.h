@@ -39,7 +39,7 @@ typedef union {
 
 typedef struct SymTableFunc {
 	SymTableType type;
-	
+
 	/* For the pointer to the static parent of the scope. */
 	struct SymTableFunc * par;
 	
