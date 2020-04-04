@@ -7,7 +7,7 @@
 #ifndef _AST_DEF
 #define _AST_DEF
 
-#include "symbol_table.h"
+#include "st.h"
 
 /**
  *  astDef.h: Contains definitions for constructing abstract syntax tree 
@@ -64,7 +64,7 @@ typedef enum {
 
 typedef enum {
 	AST_TYPE_INT,
-AST_TYPE_REAL,
+	AST_TYPE_REAL,
 	AST_TYPE_BOOLEAN,
 	AST_TYPE_ARRAY,
 	AST_TYPE_POINTER
@@ -153,8 +153,11 @@ typedef enum {
 typedef enum {
 	AST_LOP,
 	AST_RELOP,
-	AST_AOP
+	AST_AOP,
+	AST_
 } optype;
+
+int typeSize[] = {16, 16, 16, -1, 2};
 
 /**
  * NOTE: All occurrences of 'int a' are only placeholders
@@ -185,18 +188,18 @@ typedef struct {
 //     struct ASTNode* next;
 // };
 
-// struct moduleNode {
-//     struct leafNode* id_ptr;
-//     struct inputListNode* input_plist_head;
-//     struct outputListNode* output_plist_head;
-//     struct statementNode* moduleDef_head;
-// };
+typedef struct moduleNode {
+    // struct leafNode* id_ptr;
+    // struct inputListNode* input_plist_head;
+    // struct outputListNode* output_plist_head;
+    // struct statementNode* moduleDef_head;
+} moduleNode;
 
 
 typedef struct {
 	module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
 	/* check note above */
-	struct ASTNode* next; /* Points to next element of type moduleListNode */
+	// struct ASTNode* next; /* Points to next element of type moduleListNode */
 } moduleListNode;
 
 
@@ -225,6 +228,7 @@ typedef struct {
 	// struct leafNode* type_ptr;
 	// access via ASTNode
 	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */ 
+	astDataType dataType;
 	astDataTypeCat type_cat;
 } dataTypeNode;
 
@@ -375,6 +379,7 @@ typedef struct {
 
 typedef struct {
 	/* TODO: add data fields later */
+	boundCheck b;
 	io_type type;
 } ioNode;
 
@@ -414,7 +419,7 @@ typedef union {
 	programNode* program;
 	moduleDeclarationNode* moduleDeclaration;
 	moduleListNode* moduleList;
-	// struct moduleNode* module;
+	moduleNode* module;
 	inputListNode* inputList;
 	outputListNode* outputList;
 	dataTypeNode* dataType;

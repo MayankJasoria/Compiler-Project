@@ -25,7 +25,7 @@ SymbolTable getSymbolTable();
 * 
 * @return updated symbol table
 */
-SymbolTable insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType);
+void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType);
 
 /**
 * Inserts a record for a function into the symbol table
@@ -34,7 +34,7 @@ SymbolTable insertVarRecord(SymbolTable st, char* name, int width, int offset, a
 * 
 * @return updated symbol table
 */
-SymbolTable insertFuncRecord(SymbolTable st, char* name);
+SymbolTable insertFuncRecord(char* name);
 
 /**
 * Returns the record for a variable from the symbol table,
@@ -54,7 +54,15 @@ SymTableVar* fetchVarData(SymbolTable st, char* name);
 * 
 * @return pointer to the record if it is found, otherwise NULL
 */
-SymTableFunc* fetchFuncData(SymbolTable st, char* name);
+SymTableFunc* fetchFuncData(char* name);
+
+/**
+ * Creates a record for an inner score, along with a new symbol table
+ * @param fname Name of the function
+ * 
+ * @return pointer to the newly created record
+ */
+SymTableFunc * getFuncTable(char * fname);
 
 /**
 * Adds a new variable into the symbol table of variables associated with a function
@@ -66,7 +74,7 @@ SymTableFunc* fetchFuncData(SymbolTable st, char* name);
 * 
 * @return updated Symbol Table
 */
-SymbolTable addDataToFunction(SymbolTable st, char* funcName, char* varName, int varWidth, astDataType varDataType);
+SymbolTable addDataToFunction(SymTableFunc * funcData, char* varName, astDataType varDataType);
 
 /**
  * Inserts a given variable to the input list of a function
@@ -79,7 +87,9 @@ SymbolTable addDataToFunction(SymbolTable st, char* funcName, char* varName, int
  * 
  * @return updated Symbol Table
  */
-SymbolTable addParamToFunction(SymbolTable st, char* funcName, int paramType, char* varName, int varWidth, astDataType varDataType);
+void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType);
+
+void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
 /**
  * Given a width, updates the activation record size of a function

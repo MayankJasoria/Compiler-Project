@@ -64,6 +64,8 @@ class SimpleCommand(gdb.Command):
 		self.f.close()
 
 		print("Please wait while the AST graph is being created. It should open up in your browser automatically!\nIn case it does not show up, open ast_graph.html in the working directory.")
+		print("CWD: ")
+		print(os.getcwd())
 		os.system('python ast_graph.py')
 		
 
@@ -85,7 +87,13 @@ class SimpleCommand(gdb.Command):
 		
 		# node_name = node['type'],"_",node
 		
-		title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)
+		if node['type'] == 'AST_NODE_LEAF':
+			leaf = node['nodeData']['leaf'].referenced_value()
+			#tn = leaf['tn'].dereference()
+			leaf_type = leaf['type']
+			title = r"{}_{} {{<br \> &emsp;type: {}<br \>&emsp;lex: {}<br \>}}".format(node['type'], node, leaf_type, 'tn')
+		else:
+			title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)	
 		#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
 		self.ptfile("net.add_node(\"{}_{}\", title=r\"{}\")".format(node['type'], node, title))
 		
@@ -109,7 +117,13 @@ class SimpleCommand(gdb.Command):
 
 			# child_name = child['type'],"_",child
 			
-			title = r"{}_{} {{<br \>&emsp;No information here!<br \>}}".format(child['type'], child)
+			if node['type'] == 'AST_NODE_LEAF':
+				leaf = node['nodeData']['leaf'].referenced_value()
+				#tn = leaf['tn'].dereference()
+				leaf_type = leaf['type']
+				title = r"{}_{} {{<br \> &emsp;type: {}<br \>&emsp;lex: {}<br \>}}".format(node['type'], node, leaf_type, 'tn')
+			else:
+				title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)	
 
 			#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
 			#print >> self.f, "net.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child)
@@ -131,12 +145,12 @@ class SimpleCommand(gdb.Command):
 		# use one of these, depending on the python version
 		#print >> self.f, text
 		# print(text ,file = self.f)
-		if sys.version_info[0] < 3:
+		#if sys.version_info[0] < 3:
 			# python 2
-			print >> self.f, text
-		else:
+		print >> self.f, text
+		#else:
 			#python 3
-			print(text ,file = self.f)
+		#	print(text ,file = self.f)
 
 # This registers our class to the gdb runtime at "source" time.
 SimpleCommand()

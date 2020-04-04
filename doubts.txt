@@ -16,6 +16,6 @@ Take care:
 6. always call traverse whenever need info.
 7*. Id node handling: defined before or not, modulereuse,......
 8. Driver Program
-9. char * memory allocation
-10. inputplist and outputplist in the funcdata
-11.
+9. char * memory allocation (done)
+10. inputplist and outputplist in the funcdata (done)
+11. the arrayInfo null while decl. (done)

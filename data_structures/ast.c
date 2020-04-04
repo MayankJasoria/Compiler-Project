@@ -18,9 +18,8 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	node -> child = NULL;
 	node -> next = NULL;
 	node -> prev = NULL;
-	node -> varST = NULL;
-    
-    node -> type = t;
+	node -> localST = NULL;
+  node -> type = t;
 	node -> nodeData = nodeData;
 
 	return node;
@@ -308,7 +307,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			// TODO: add data for leaf
 			return curr;
 		}
-			
+		
 		case 17: {// type : REAL
 			lf = (leafNode *) malloc(sizeof(leafNode));
 			nodeData.leaf = lf;
@@ -947,12 +946,27 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			rangeArraysNode* ran = (rangeArraysNode *) malloc(sizeof(rangeArraysNode));
 			nodeData.rangeArrays = ran;
 			curr = getASTNode(nodeData, AST_NODE_RANGEARRAYS);
+			
+			astNodeData nd1, nd2;
 
-			ASTNode* n1 = constructAST(curr, NULL, ch);
-			ASTNode* n2 = constructAST(curr, n1, ch -> next -> next);
+			// left child of range
+			leafNode* lf1 = (leafNode *) malloc(sizeof(leafNode));
+			nd1.leaf = lf1;
+			ASTNode * n1 = getASTNode(nd1, AST_NODE_LEAF);
+			lf1 -> tn = ch; 
+			lf1 -> type = AST_LEAF_NUM;
+			// TODO: add data for leaf
 
-			addChild(curr, n2);
+			// right child of range
+			leafNode* lf2 = (leafNode *) malloc(sizeof(leafNode));
+			nd2.leaf = lf2;
+			ASTNode * n2 = getASTNode(nd2, AST_NODE_LEAF);
+			lf2 -> tn = ch -> next;
+			lf2 -> type = AST_LEAF_NUM;
+			// TODO: add data for leaf
+
 			addChild(curr, n1);
+			addChild(curr, n2);
 			return curr;
 		}
 		
@@ -986,7 +1000,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			lf -> tn = ch;
 			lf -> type = AST_LEAF_BOOLFALSE;
 			// TODO: add data for leaf
-			return curr;
+			return curr; 
 		}
 	
 		case 91: {// var_id_num : ID whichId

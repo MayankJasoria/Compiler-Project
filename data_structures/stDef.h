@@ -23,15 +23,15 @@ typedef enum {
 } SymTableType;
 
 typedef struct arrayInfo {
-	astDataType dataType; 
+	astDataType dataType; /* can only be int, real, boolean? */
 	int low;
 	int high;
-	char * lowId;
-	char * highId;
+	char* lowId;
+	char* highId;
 } arrayInfo;
 
 typedef union {
-	arrayInfo r;	
+	arrayInfo* r;	
 	int intVal;
 	float floatVal;
 	int boolVal:1;
@@ -57,9 +57,9 @@ typedef struct symTableVar {
 	int isAssigned;
 	int width; /* total memory space to be allocated */
 	int offset;
-	/**
-	 * datatype of variable -> INT, RNUM, BOOL, ARRAY
-	 */
+	/*
+	* datatype of variable -> INT, RNUM, BOOL, ARRAY
+	*/
 	astDataType dataType;
 	SymDataType sdt;
 } SymTableVar;
