@@ -62,7 +62,7 @@ typedef enum {
 	AST_TYPE_CAT_ARRAY,
 } astDataTypeCat;
 
-typedef enum {
+typedef enum astDataType {
 	AST_TYPE_INT,
 	AST_TYPE_REAL,
 	AST_TYPE_BOOLEAN,

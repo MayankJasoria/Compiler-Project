@@ -7,12 +7,12 @@
 #ifndef _SYMBOL_TABLE_DEF
 #define _SYMBOL_TABLE_DEF
 
+/* Super forward declaration */
+typedef enum astDataType astDataType;
+
 #include "hash_map.h"
 #include "linked_list.h"
 #include "astDef.h"
-
-/* Forward declarations */
-enum astDataType;
 
 /* defining a symbol table */
 typedef HashTable SymbolTable;
