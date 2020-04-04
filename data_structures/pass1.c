@@ -532,7 +532,7 @@ void traverseAST(ASTNode * curr, char * fname) {
 							if(idx -> dataType != AST_TYPE_INT) {
 								fprintf(stderr, 
 								"Index variable in range arrays is not Integer.\n");
-							}	
+							}
 						}
 						case AST_NODE_ASSIGN: {
 							SymTableVar * idx = fetchVarData(localST, str);
@@ -578,6 +578,10 @@ void traverseAST(ASTNode * curr, char * fname) {
 				}
 				case AST_LEAF_IDXNUM: {
 					curr -> nodeData -> type = AST_TYPE_INT;
+					if(curr -> parent -> type == AST_NODE_VARIDNUM) {
+						SymTableVar * arr = fetchVarData(localST, curr -> parent -> child -> nodeData -> tn -> lex);
+						boundChecking(arr, curr -> parent);
+					}
 					return;
 				}
 				case AST_LEAF_IDXID: {
