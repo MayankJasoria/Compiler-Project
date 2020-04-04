@@ -7,11 +7,11 @@
 # -- Detect OS for AST compilation --
 ifeq ($(OS),Windows_NT)
 	# Windows 
-	DS=data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c 
+	DS=data_structures\pass1.c data_structures\st.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c 
 	GDB_AUTO=gdb --batch --command=debug.gdb --args ast.exe
 else
 	# Linux
-	DS=data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
+	DS=data_structures/pass1.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c 
 	GDB_AUTO=gdb --batch --command=debug.gdb --args ./ast
 endif
 #-----------------------------------
@@ -31,6 +31,12 @@ OUT_NAME=stage1exe
 # TODO: Complete the compilation dependencies etc..
 driver: $(DEPS_PROG)
 	$(CC) $(CFLAGS) $(OUT_NAME) $(DEPS_PROG)
+
+pass1Pun: pass1_test.c
+	gcc -g -o ghot pass1_test.c parser.c lexer.c data_structures\pass1.c data_structures\st.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c 
+
+pass1: pass1_test.c
+	$(CC) $(CFLAGS) pass1 pass1_test.c parser.c lexer.c $(DS)
 
 ast: ast_test.c
 	$(CC) $(CFLAGS) ast ast_test.c parser.c lexer.c $(DS)  

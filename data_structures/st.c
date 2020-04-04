@@ -7,7 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "stDef.h"
+#include "astDef.h"
+
+typeSize[] = {16, 16, 16, -1, 2};
 
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.

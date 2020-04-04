@@ -7,7 +7,7 @@
 #ifndef _AST_DEF
 #define _AST_DEF
 
-#include "st.h"
+#include "hash_map.h"
 
 /**
  *  astDef.h: Contains definitions for constructing abstract syntax tree 
@@ -156,8 +156,7 @@ typedef enum {
 	AST_AOP
 } optype;
 
-int typeSize[] = {16, 16, 16, -1, 2};
-
+int typeSize[5];
 /**
  * NOTE: All occurrences of 'int a' are only placeholders
  */
@@ -188,6 +187,8 @@ typedef struct {
 // };
 
 typedef struct moduleNode {
+	// placeholder
+	int a;
     // struct leafNode* id_ptr;
     // struct inputListNode* input_plist_head;
     // struct outputListNode* output_plist_head;
@@ -203,6 +204,8 @@ typedef struct {
 
 
 typedef struct {
+	// placeholder
+	int a;
 	// struct leafNode* id_ptr;
 	// struct leafNode* type_ptr;
 	// struct inputListNode* next; /* Points to next element of type inputListNode */
@@ -444,6 +447,8 @@ typedef union {
 	leafNode* leaf;
 } astNodeData;
 
+struct SymTableFunc;
+
 typedef struct ASTNode {
 
 	/* Attributes specific to the AST node 
@@ -460,7 +465,7 @@ typedef struct ASTNode {
 	 * Include pointer to Symbol Table Entry of nested constructs [if, while etc.].
 	 * (This contains pointer to variable symbol table)
 	 */
-	SymTableFunc* localST;
+	struct SymTableFunc* localST;
 	
 	/* TODO: add data fields later */
 
@@ -471,5 +476,63 @@ typedef struct ASTNode {
 	struct ASTNode* next;
 	struct ASTNode* child; 
 } ASTNode;
+
+/**
+ * -------------------------------------------------------------------------------- 
+ * 	START OF stDef.h Code here copied from stDef.h to avoid circulardependenncies
+ * --------------------------------------------------------------------------------
+ */
+
+/* defining a symbol table */
+typedef HashTable SymbolTable;
+
+SymbolTable globalST;
+
+typedef enum {
+	SYM_VARIABLE,
+	SYM_FUNCTION,
+	SYM_OTHER   /* Ex: If Else Construct */
+} SymTableType;
+
+typedef struct arrayInfo {
+	astDataType dataType; /* can only be int, real, boolean? */
+	int low; /*low..high */
+	int high;
+	char* lowId; /*lowID..highId*/
+	char* highId;
+} arrayInfo;
+
+typedef union {
+	arrayInfo* r;	
+	int intVal;
+	float floatVal;
+	int boolVal:1;
+} SymDataType;
+
+typedef struct SymTableFunc {
+	SymTableType type;  /*to cross check if it is a function (type==SYM_FUNCTION) */
+	int isDefined;			/*to check if the function is defined*/
+	int isDeclared;			/*to check if the function is declared*/
+	struct SymTableFunc * parent; /* pointer to the static parent of the scope. */
+	int baseAdd; /* base address of the fuction activation record. */
+	char * name; /* name of the function */
+	List input_plist; /* List of input parameter variables */
+	List output_plist; /* List of output parameter variables */
+	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */
+	int actRecSize; /* field for storing activation record size */
+} SymTableFunc;
+
+typedef struct symTableVar {	
+	SymTableType type;
+	char* name;
+	int isAssigned;
+	int width; /* total memory space to be allocated */
+	int offset;
+	/*
+	* datatype of variable -> INT, RNUM, BOOL, ARRAY
+	*/
+	astDataType dataType;
+	SymDataType sdt;
+} SymTableVar;
 
 #endif

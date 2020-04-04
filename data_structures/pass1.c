@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "st.h"
 #include "ast.h"
@@ -807,6 +808,5 @@ void traverseAST(ASTNode* curr, char* fname) {
 		}
 		break;
 		default:
-		
 	}
 }

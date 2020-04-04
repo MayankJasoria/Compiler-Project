@@ -7,7 +7,8 @@
 #ifndef _SYMBOL_TABLE
 #define _SYMBOL_TABLE
 
-#include "stDef.h"
+#include "astDef.h"
+
 
 /**
 * Creates and returns an instance of a new symbol table

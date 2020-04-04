@@ -7,11 +7,10 @@
 #ifndef _SYMBOL_TABLE_DEF
 #define _SYMBOL_TABLE_DEF
 
-/* Super forward declaration */
-typedef enum astDataType astDataType;
 
 #include "hash_map.h"
 #include "linked_list.h"
+#include "astUtil.h"
 #include "astDef.h"
 
 /* defining a symbol table */
@@ -53,7 +52,6 @@ typedef struct SymTableFunc {
 	int actRecSize; /* field for storing activation record size */
 } SymTableFunc;
 
-
 typedef struct symTableVar {	
 	SymTableType type;
 	char* name;
@@ -67,4 +65,4 @@ typedef struct symTableVar {
 	SymDataType sdt;
 } SymTableVar;
 
-#endif
+#endif 

@@ -5,9 +5,9 @@
 #include "data_structures/ast.h"
 #include "data_structures/astDef.h"
 
-
 #include "lexer.h"
 #include "parser.h"
+#include "data_structures/pass1.h"
 
 int main(int argc, char* argv[]) {
 
@@ -25,5 +25,7 @@ int main(int argc, char* argv[]) {
     /* Use PT to construct AST */
 
     ASTNode* root = constructAST(NULL, NULL, PT); 
+
+    traverseAST(root, "");
     printf("Hooray!!");
 }
