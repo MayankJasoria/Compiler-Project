@@ -118,12 +118,12 @@ SymTableFunc* insertFuncRecord(char* name) {
 }
 
 /* Small error in it , parent */
-SymTableFunc * getFuncTable(char * fname) {
+SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 
 	SymTableFunc * parentFunc = fetchFuncData(fname);
 	SymTableFunc * data = (SymTableFunc*) malloc(sizeof(SymTableFunc));
 	data -> actRecSize = parentFunc -> actRecSize;
-	data -> parent = parentFunc;
+	data -> parent = par;
 	data -> type = SYM_FUNCTION;
 	data -> dataTable = getSymbolTable();
 	return data;

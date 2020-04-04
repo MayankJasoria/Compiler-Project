@@ -9,7 +9,7 @@
 
 #include "linked_list.h"
 #include "../utils/utils.h"
-#define HASH_TABLE_SIZE 293
+#define HASH_MAP_SIZE 293
 
 typedef struct {
 	void* key;

@@ -17,10 +17,10 @@ SymbolTable getSymbolTable();
 
 /**
 * Inserts a record for a variable into the symbol table
-* @param st		The symbol table into which the variable record should be added
+* @param st			The symbol table into which the variable record should be added
 * @param name		Name of the variable
 * @param width		The total memory size required for storing the variable data
-* @param offset	The offset of a variable from the base address of a function
+* @param offset		The offset of a variable from the base address of a function
 * @param dataType	The dataType of the variable
 * 
 * @return updated symbol table
@@ -29,7 +29,7 @@ void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataT
 
 /**
 * Inserts a record for a function into the symbol table
-* @param st	The symbol table in which the function record should be added
+* @param st		The symbol table in which the function record should be added
 * @param name	The name of the function
 * 
 * @return updated symbol table
@@ -49,7 +49,6 @@ SymTableVar* fetchVarData(SymbolTable st, char* name);
 /**
 * Returns the record for a function from the symbol table,
 * if it exists. Otherwise returns NULL
-* @param st	The symbol table from which the function is to be fetched
 * @param name	The name of the function
 * 
 * @return pointer to the record if it is found, otherwise NULL
@@ -66,10 +65,8 @@ SymTableFunc * getFuncTable(char * fname);
 
 /**
 * Adds a new variable into the symbol table of variables associated with a function
-* @param st			The symbol table from which the function is to be fetched
-* @param funcName		The name of the function
+* @param funcData		The record of a function
 * @param varName		Name of the variable
-* @param varWidth		The total memory size required for storing the variable data
 * @param varDataType	The dataType of the variable
 * 
 * @return updated Symbol Table
@@ -78,11 +75,9 @@ SymbolTable addDataToFunction(SymTableFunc * funcData, char* varName, astDataTyp
 
 /**
  * Inserts a given variable to the input list of a function
- * @param st			The symbol table from which the function is to be fetched
- * @param funcName		The name of the function
+ * @param funcData		The record of a function
  * @param paramType		0 -> input, 1 -> output
  * @param varName		Name of the variable
- * @param varWidth		The total memory size required for storing the variable data
  * @param varDataType	The dataType of the variable
  * 
  * @return updated Symbol Table

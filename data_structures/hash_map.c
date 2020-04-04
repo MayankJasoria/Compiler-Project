@@ -14,8 +14,8 @@ boolean initialized = False;
 
 HashTable getHashTable() {
 	/* Creating a Hash Table */
-	HashTable table = (HashTable) malloc(sizeof(List)*HASH_TABLE_SIZE);
-	for(int i = 0; i < HASH_TABLE_SIZE; i++) {
+	HashTable table = (HashTable) malloc(sizeof(List)*HASH_MAP_SIZE);
+	for(int i = 0; i < HASH_MAP_SIZE; i++) {
 		/* Initializing all hash cells to NULL */
 		table[i] = NULL;
 	}
@@ -115,7 +115,7 @@ int stringHash(const char *str) {
 	while (c = *str++)
 		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-	return hash % HASH_TABLE_SIZE;
+	return hash % HASH_MAP_SIZE;
 }
 
 /**

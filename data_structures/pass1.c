@@ -78,36 +78,49 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	}
 }
 
-int listTypeMatch(SymTableVar* tmp, ASTNode* node, SymTableFunc* localST) {
+/*
+typedef struct node {
+    void* data;
+    struct node* next;
+    struct node* prev;
+} Node;
+*/
+//head: plist Node, node: AST
+int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 
+	SymTableVar * tmp = (SymTableVar*) head -> data;
 	if(node -> type == AST_NODE_LEAF)
 		node = NULL;
-	while(tmp != NULL && node != NULL) {
-		SymTableVar* curr = fetchVarData(localST, node -> ch -> tn -> lex);
+	while(head != NULL && node != NULL) {
+		tmp = (SymTableVar*) head -> data;
+		SymTableVar* curr = fetchVarData(localST, node -> child -> nodeData.leaf -> tn -> lex);
 		if(curr == NULL) {
 			fprintf(stderr, 
-			"The parameter %s is not declared.\n", node -> ch -> tn -> lex);
+			"The parameter %s is not declared.\n", node -> child -> nodeData.leaf -> tn -> lex);
 			return 0;
 		}
 		if(tmp -> dataType != curr -> dataType)
 			return 0;
 		if(tmp -> dataType == AST_TYPE_ARRAY) {
 
-			if(tmp -> dataType != curr -> dataType)
+			if(tmp -> sdt.r -> dataType != curr -> sdt.r -> dataType)
 				return 0;
-			if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(tmp -> sdt.r -> highId, "") == 0)
+			if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(tmp -> sdt.r -> highId, "") == 0) {
 				if(strcmp(curr -> sdt.r -> lowId, "") == 0 && strcmp(curr -> sdt.r -> highId, "") == 0) {
 					if(tmp -> sdt.r -> low != curr -> sdt.r -> low)
 						return 0;
 					if(tmp -> sdt.r -> high != curr -> sdt.r -> high)
 						return 0;	
 				}
+			}
 		}
 		node = node -> child -> next;
-		tmp = next(linkedlist); /* Pseudocode*/
+		head = head -> next;
 	}
 	if(tmp == NULL && node == NULL)
 		return 1;
+	fprintf(stderr, 
+	"Different number of parameters.\n", node -> child -> nodeData.leaf -> tn -> lex);
 	return 0;
 }
 
@@ -129,10 +142,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 		case AST_NODE_MODULELIST: {
 			ASTNode* ch = curr -> child;
 			if(curr -> nodeData.moduleList -> type == AST_MODULE_DRIVER) {
-				
+				SymTableFunc * tmp = insertFuncRecord("driver");
+				ch -> localST = tmp;
+				traverseAST(ch, "driver");
 			}
-			/* introduce driver part here*/
-			traverseChildren(ch, fname);
+			else
+				traverseChildren(ch, fname);
 		}
 		break;
 
@@ -282,12 +297,13 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(ch -> type == AST_NODE_IDLIST)
 				ch = ch -> next;
 
-			SymTableFunc* tmp = fetchFuncData(globalST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableFunc* tmp = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
 			if(strcmp(fname, tmp -> name) == 0) {
 				fprintf(stderr, 
 				"Recursion is not supported.\n");
+				return;
 			}
-			if(!listTypeMatch(tmp -> output_plist, ch -> prev, curr -> localST)) {
+			if(!listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
 				fprintf(stderr, 
 				"Output list type mismatch.\n");	
 			}
@@ -296,8 +312,14 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch = ch -> next;
 			while(ch -> type != AST_NODE_IDLIST)
 				ch = ch -> next;
+
+				typedef struct node {
+    void* data;
+    struct node* next;
+    struct node* prev;
+} Node;
 			
-			if(!listTypeMatch(tmp -> input_plist, ch, curr -> localST)) {
+			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
 				"Input list type mismatch.\n");	
 			}
@@ -402,7 +424,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				return;
 			}
 
-			SymTableFunc* newST = getFuncTable(fname);
+			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
 			ASTNode* ch1 = ch -> next;
 			ch1 -> localST = newST;
 			ch1 -> nodeData.dataType = ch -> nodeData.dataType;
@@ -544,7 +566,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 							return;
 						}
 						case AST_NODE_MODULE: {
-							SymTableFunc* tmp = fetchFuncData(globalST, str);
+							SymTableFunc* tmp = fetchFuncData(str);
 							if(tmp != NULL && tmp -> isDeclared == 1) {
 								fprintf(stderr, 
 								"Redundant declaration of the function.\n");

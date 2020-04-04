@@ -1,8 +1,8 @@
 /*  GROUP 48:
-    PUNEET ANAND    2016B4A70487P
-    MAYANK JASORIA  2016B1A70703P
-    SHUBHAM TIWARI  2016B4A70935P
-    VIBHAV OSWAL    2016B4A70594P */
+	PUNEET ANAND    2016B4A70487P
+	MAYANK JASORIA  2016B1A70703P
+	SHUBHAM TIWARI  2016B4A70935P
+	VIBHAV OSWAL    2016B4A70594P */
 
 #include "astDef.h"
 #include "n_ary_tree.h"
@@ -19,7 +19,7 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	node -> next = NULL;
 	node -> prev = NULL;
 	node -> localST = NULL;
-  node -> type = t;
+	node -> type = t;
 	node -> nodeData = nodeData;
 
 	return node;
@@ -72,7 +72,7 @@ treeNode* findinPT(treeNode* curr, nonterminal nt) {
 
 
 /* Parse tree node: PT (global) */
-    /* High level logic */
+	/* High level logic */
 
 //  typedef struct treeNode {
 // 	symbol sym;
@@ -95,30 +95,30 @@ treeNode* findinPT(treeNode* curr, nonterminal nt) {
 // } treeNode;
 
 /* -- Template for writing logic -- 
-    ASTNode* ast(treeNode * curr, ASTNode* parent, ASTNode* prev_sibling) {
+	ASTNode* ast(treeNode * curr, ASTNode* parent, ASTNode* prev_sibling) {
 
-    ASTNode* ret ;
+	ASTNode* ret ;
 
-    // first ever call: NULL 
-    // subsequent calls:
-    ASTNode* ret = malloc();
-    // assign whatever needed for inheritance 
+	// first ever call: NULL 
+	// subsequent calls:
+	ASTNode* ret = malloc();
+	// assign whatever needed for inheritance 
 
-    ASTNode * p1 = ast(curr->child, ret, NULL);
-    ASTNode * p2 = ast(curr->child->next, ret, stmt);
+	ASTNode * p1 = ast(curr->child, ret, NULL);
+	ASTNode * p2 = ast(curr->child->next, ret, stmt);
 
-    addChild (ret, p1, p2);
-    // assign whatever needed for synthesis 
-    
-    return p1;
+	addChild (ret, p1, p2);
+	// assign whatever needed for synthesis 
+	
+	return p1;
 }
 */
 ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 	
-    treeNode* ch = tn -> child;
-    ASTNode* curr;
-    astNodeData nodeData;
-    leafNode* lf;
+	treeNode* ch = tn -> child;
+	ASTNode* curr;
+	astNodeData nodeData;
+	leafNode* lf;
 	switch (tn -> rule_num) {
 		case 0: {// program : moduleDeclarations otherModules driverModule otherModules
 				programNode* progNode = (programNode*) malloc(sizeof(programNode));	
@@ -139,8 +139,8 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 				curr -> type = AST_NODE_PROGRAM;	
 				return curr;
 			}
-            
-        case 1: {// moduleDeclarations : moduleDeclaration moduleDeclarations1
+			
+		case 1: {// moduleDeclarations : moduleDeclaration moduleDeclarations1
 			moduleDeclarationNode* mdNode = (moduleDeclarationNode *) malloc(sizeof(moduleDeclarationNode));
 			nodeData.moduleDeclaration = mdNode;
 			curr = getASTNode(nodeData, AST_NODE_MODULEDECLARATION);
@@ -156,7 +156,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		case 2: {// moduleDeclarations : EMPTY
 			return NULL;
 		}
-            
+			
 		case 3: {// moduleDeclaration : DECLARE MODULE ID SEMICOL
 			/* syn leaf to top */
 			return constructAST(parent, NULL, ch -> next -> next);
@@ -178,7 +178,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		case 5: {// otherModules : EMPTY
 			return NULL;
 		}
-            
+			
 		case 6: {// driverModule : DRIVERDEF DRIVER PROGRAM DRIVERENDDEF moduleDef
 			moduleListNode* driverNode = (moduleListNode *) malloc(sizeof(moduleListNode));
 			driverNode -> type = AST_MODULE_DRIVER;

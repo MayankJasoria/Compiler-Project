@@ -1,7 +1,10 @@
 import gdb
+import re
 
 # use one of these depending on python version
 import sys
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 
 if sys.version_info[0] < 3:
 	# python 2
@@ -64,8 +67,6 @@ class SimpleCommand(gdb.Command):
 		self.f.close()
 
 		print("Please wait while the AST graph is being created. It should open up in your browser automatically!\nIn case it does not show up, open ast_graph.html in the working directory.")
-		print("CWD: ")
-		print(os.getcwd())
 		os.system('python ast_graph.py')
 		
 
@@ -87,16 +88,28 @@ class SimpleCommand(gdb.Command):
 		
 		# node_name = node['type'],"_",node
 		
-		if node['type'] == 'AST_NODE_LEAF':
+		#title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)
+		
+		#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
+		
+		#print(node['type'])
+		if str(node['type']) == 'AST_NODE_LEAF':
+			#print('..True..')
 			leaf = node['nodeData']['leaf'].referenced_value()
-			#tn = leaf['tn'].dereference()
+			tn = leaf['tn']
+			#print(tn)
 			leaf_type = leaf['type']
-			title = r"{}_{} {{<br \> &emsp;type: {}<br \>&emsp;lex: {}<br \>}}".format(node['type'], node, leaf_type, 'tn')
+			if tn == 0x0:
+				lex = 'NULL'
+			else:
+				#print(tn['lex'])
+				lex = tn['lex'].string(length=25)
+				lex = re.sub(r'[\00-\7f]',r'', lex) 
+			title = r"{}_{} {{<br \> &emsp;type: {}<br \>&emsp;lex: {}<br \>}}".format(node['type'], node, leaf_type, lex)
 		else:
 			title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)	
-		#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
+
 		self.ptfile("net.add_node(\"{}_{}\", title=r\"{}\")".format(node['type'], node, title))
-		
 		# if this is the first node, force it to be root
 		if self.first is True:
 			#print >> self.f, "\nnet.add_edge(\"{}_{}\", \"h1\", hidden=True, physics=False)".format(node['type'], node)
@@ -117,13 +130,21 @@ class SimpleCommand(gdb.Command):
 
 			# child_name = child['type'],"_",child
 			
-			if node['type'] == 'AST_NODE_LEAF':
-				leaf = node['nodeData']['leaf'].referenced_value()
-				#tn = leaf['tn'].dereference()
+			#title = r"{}_{} {{<br \>&emsp;No information here!<br \>}}".format(child['type'], child)
+			if str(child['type']) == 'AST_NODE_LEAF':
+				#print('..True..')
+				leaf = child['nodeData']['leaf'].referenced_value()
+				tn = leaf['tn']
 				leaf_type = leaf['type']
-				title = r"{}_{} {{<br \> &emsp;type: {}<br \>&emsp;lex: {}<br \>}}".format(node['type'], node, leaf_type, 'tn')
+				if tn == 0x0:
+					lex = 'NULL'
+				else:
+					#print(tn['lex'])
+					lex = tn['lex'].string(length=25)
+					lex = re.sub(r'[\00-\7f]',r'', lex) 
+				title = r"{}_{} {{<br \> &emsp;type: {}<br \>&emsp;lex: {}<br \>}}".format(child['type'], child, leaf_type, lex)
 			else:
-				title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(node['type'], node)	
+				title = r"{}_{} {{<br \> &emsp;No information here!<br \>}}".format(child['type'], child)	
 
 			#print >> self.f, "net.add_node(\"{}_{}\", title=\"{}\")".format(node['type'], node, title)
 			#print >> self.f, "net.add_edge(\"{}_{}\", \"{}_{}\")".format(node['type'], node, child['type'], child)
@@ -150,7 +171,7 @@ class SimpleCommand(gdb.Command):
 		print >> self.f, text
 		#else:
 			#python 3
-		#	print(text ,file = self.f)
+			#print(text ,file = self.f)
 
 # This registers our class to the gdb runtime at "source" time.
 SimpleCommand()
