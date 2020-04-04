@@ -1111,7 +1111,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			lf = (leafNode *) malloc(sizeof(leafNode));
 			nodeData.leaf = lf;
 			curr = getASTNode(nodeData, AST_NODE_LEAF);
-			lf -> tn = ch;
+			lf -> tn = tn;
 			lf -> type = AST_LEAF_ID;
 			// TODO: add data for leaf
 			return curr;
