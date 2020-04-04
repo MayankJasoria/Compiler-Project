@@ -11,6 +11,9 @@
 #include "linked_list.h"
 #include "astDef.h"
 
+/* Forward declarations */
+enum astDataType;
+
 /* defining a symbol table */
 typedef HashTable SymbolTable;
 
@@ -19,14 +22,14 @@ SymbolTable globalST;
 typedef enum {
 	SYM_VARIABLE,
 	SYM_FUNCTION,
-	SYM_OTHER
+	SYM_OTHER   /* Ex: If Else Construct */
 } SymTableType;
 
 typedef struct arrayInfo {
 	astDataType dataType; /* can only be int, real, boolean? */
-	int low;
+	int low; /*low..high */
 	int high;
-	char* lowId;
+	char* lowId; /*lowID..highId*/
 	char* highId;
 } arrayInfo;
 
@@ -38,10 +41,10 @@ typedef union {
 } SymDataType;
 
 typedef struct SymTableFunc {
-	SymTableType type;
-	int isDefined;
-	int isDeclared;
-	struct SymTableFunc * parent; /* For the pointer to the static parent of the scope. */
+	SymTableType type;  /*to cross check if it is a function (type==SYM_FUNCTION) */
+	int isDefined;			/*to check if the function is defined*/
+	int isDeclared;			/*to check if the function is declared*/
+	struct SymTableFunc * parent; /* pointer to the static parent of the scope. */
 	int baseAdd; /* base address of the fuction activation record. */
 	char * name; /* name of the function */
 	List input_plist; /* List of input parameter variables */

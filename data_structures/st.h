@@ -71,7 +71,9 @@ SymTableFunc * getFuncTable(char * fname);
 * 
 * @return updated Symbol Table
 */
-SymbolTable addDataToFunction(SymTableFunc * funcData, char* varName, astDataType varDataType);
+void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType);
+
+void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
 /**
  * Inserts a given variable to the input list of a function

@@ -7,7 +7,7 @@
 #ifndef _AST_DEF
 #define _AST_DEF
 
-#include "stDef.h"
+#include "st.h"
 
 /**
  *  astDef.h: Contains definitions for constructing abstract syntax tree 
@@ -155,6 +155,7 @@ typedef enum {
 	AST_RELOP,
 	AST_AOP
 } optype;
+
 int typeSize[] = {16, 16, 16, -1, 2};
 
 /**
@@ -177,24 +178,24 @@ typedef struct {
 	// struct leafNode* id_ptr; access
 	struct ASTNode* next; /* Points to next element of type moduleDeclarations */
 
+} moduleDeclarationNode; //This is a linked list (C++ equivalent: a vector of pointers)
+
+/* NOTE: These two structures have been collapsed into moduleListNode defined below */
+
+// struct moduleListNode {
+//     struct moduleNode* data;
+//     struct ASTNode* next;
+// };
+
 typedef struct moduleNode {
     // struct leafNode* id_ptr;
     // struct inputListNode* input_plist_head;
     // struct outputListNode* output_plist_head;
     // struct statementNode* moduleDef_head;
 } moduleNode;
-    // struct outputListNode* output_plist_head;
-    // struct statementNode* moduleDef_head;
-} moduleNode;
-    // struct outputListNode* output_plist_head;
-    // struct statementNode* moduleDef_head;
-	// struct ASTNode* next; /* Points to next element of type moduleListNode */
-} moduleDeclarationNode; //This is a linked list (C++ equivalent: a vector of pointers)
-//     struct moduleNode* data;
-	// struct ASTNode* next; /* Points to next element of type moduleListNode */
 
 
-	// struct ASTNode* next; /* Points to next element of type moduleListNode */
+typedef struct {
 	module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
 	/* check note above */
 	// struct ASTNode* next; /* Points to next element of type moduleListNode */
@@ -217,15 +218,12 @@ typedef struct {
 
 	int isAssigned;
 	/* Check: it is not needed */
-	astDataType dataType;
 	// struct ASTNode* next; /* Points to next element of type outputListNode */
 
 } outputListNode;
-	astDataType dataType;
 
 typedef struct {
 	// struct rangeArraysNode* range_arrays_ptr;
-	astDataType dataType;
 	// struct leafNode* type_ptr;
 	// access via ASTNode
 	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */ 
@@ -368,17 +366,14 @@ typedef struct {
 
 /* Temporary Node */
 typedef struct {
-	boundCheck b;
 	int a;
 	/* TODO: add data fields later */
 } forNode;
 
-	boundCheck b;
 /* Temporary Node */
 typedef struct {
 	int a;
 	/* TODO: add data fields later */
-	boundCheck b;
 } whileNode;
 
 typedef struct {
@@ -408,17 +403,17 @@ typedef struct {
 	AST_LEAF_RNUM,
 	AST_LEAF_NUM,
 	AST_LEAF_BOOL */
-	moduleNode* module;
+	struct treeNode* tn; /* from leaf of parse tree */
 	astDataType dataType;
 	optype op;
 	leaf_type type; 
 } leafNode;
-	moduleNode* module;
+
 
 /**
  * Represents a node in the abstract syntax tree (AST)
  */ 
-	moduleNode* module;
+
 typedef union {
 	programNode* program;
 	moduleDeclarationNode* moduleDeclaration;

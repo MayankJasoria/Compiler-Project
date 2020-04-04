@@ -11,7 +11,7 @@
 
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.
-	2. make an array typeSize, after seeing the MASM doc.
+	2. make an array typeSize, after seeing the MASM doc. (done)
 	3. The st taken in the I/P of fetchVarData is same as localST
 	4. The list Type match.
 	5. Check the ast.c alone.
@@ -22,17 +22,23 @@ SymbolTable getSymbolTable() {
 	return getHashTable();
 }
 
-SymTableVar * fetchVarData(SymbolTable st, char* name) {
-	SymTableVar* data = (SymTableVar*) getDataFromTable(st, name, stringHash);
+SymTableVar * fetchVarData(SymTableFunc * func, char* name) {
+	SymTableVar* data = NULL;
+	while(func != NULL) {
+		data = (SymTableVar*) getDataFromTable(func -> dataTable, name, stringHash);
+		if(data != NULL)
+			break;
+		func = func -> parent;
+	}
 	return data;
 }
 
 SymTableFunc * fetchFuncData(char* name) {
-	SymTableFunc* data = (SymTableFunc*) getDataFromTable(globalST, name, stringHash);
+	SymTableFunc* data = (SymTableFunc*) getDataFromTable(globalST, name, stringHash); //functions can only be declared in globalST unlike variables
 	return data;
 }
 
-void insertVarRecord(SymbolTable * st, char* name, int width, int offset, astDataType dataType, SymDataType s) {
+void insertVarRecord(SymbolTable* st, char* name, int width, int offset, astDataType dataType, SymDataType s) {
 
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data -> name, name);
@@ -45,15 +51,16 @@ void insertVarRecord(SymbolTable * st, char* name, int width, int offset, astDat
 	st = insertToTable(st, name, data, stringHash);
 }
 
-void addDataToFunction(SymTableFunc * funcData, char* varName, astDataType varDataType) {
+void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType) {
 	
-	if(fetchVarData(funcData -> dataTable, varName) == NULL) {
-		int offset = funcData -> actRecSize;
+	SymTableFunc * fun = fetchFuncData(fname);
+	if(fetchVarData(funcData, varName) == NULL) {
+		int offset = fun -> actRecSize;
 		int width = typeSize[varDataType];
 		SymDataType s;
 		insertVarRecord(funcData -> dataTable, varName, width, offset, varDataType, s);
 		// st = insertVarRecord(st, varName, varWidth, offset, varDataType);
-		funcData -> actRecSize += width;
+		fun -> actRecSize += width;
 	} 
 	else {
 		fprintf(stderr, 
@@ -61,10 +68,11 @@ void addDataToFunction(SymTableFunc * funcData, char* varName, astDataType varDa
 	}
 }
 
-void addArrToFunction(SymTableFunc * funcData, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
+void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
 	
-	if(fetchVarData(funcData -> dataTable, varName) == NULL) {
-		int offset = funcData -> actRecSize;
+	SymTableFunc * fun = fetchFuncData(fname);
+	if(fetchVarData(funcData, varName) == NULL) {
+		int offset = fun -> actRecSize;
 		arrayInfo* a = (arrayInfo*) malloc(sizeof(arrayInfo));
 		a -> dataType = varDataType;
 		if(lft -> type == AST_LEAF_IDXNUM) {
@@ -90,7 +98,7 @@ void addArrToFunction(SymTableFunc * funcData, char* varName, ASTNode * lft, AST
 		else
 			varWidth = typeSize[AST_TYPE_POINTER];
 		insertVarRecord(funcData -> dataTable, varName, varWidth, offset, AST_TYPE_ARRAY, s);
-		funcData->actRecSize += varWidth;
+		fun->actRecSize += varWidth;
 	} 
 	else {
 		fprintf(stderr, 
