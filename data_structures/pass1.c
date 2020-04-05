@@ -461,10 +461,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 		
 		case AST_NODE_CASESTMT: {
 			ASTNode* ch = curr -> child;
-			ch -> localST = curr -> localST;
+			ch -> localST = curr -> localST; // value
 			traverseAST(ch, fname);
 
-			ch = ch -> next;
+			ch = ch -> next; // statements
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
 
