@@ -62,14 +62,14 @@ List insertToList(List list, void* data, position dir);
  */
 List deleteByNode(List list, Node* element);
 
-// /**
-//  * Returns the address of an element in list
-//  * @param list  The list to be searched
-//  * @param data  The data to be found in the list
-//  * 
-//  * @return Node address of the data; NULL if not found
-//  */
-// Node* findInList(List list, void* data);
+/**
+ * Returns the address of an element in list
+ * @param list  The list to be searched
+ * @param data  The data to be found in the list
+ * 
+ * @return Node address of the data; NULL if not found
+ */
+void* findInList(List list, void* data, int (*comp)(void *, void *));
 
 /**
  * Completely destroys a list, freeing all associated memory

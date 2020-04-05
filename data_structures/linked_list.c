@@ -125,16 +125,16 @@ List deleteByNode(List list, Node* element) {
 	return list;
 }
 
-// Node* findInList(List list, void* data) {
-// 	Node* curr = list->head;
-// 	while(curr != NULL) {
-// 		if(curr->data == data) {
-// 			break;
-// 		}
-// 		curr = curr->next;
-// 	}
-// 	return curr;
-// }
+void* findInList(List list, void* data, int (*comp)(void *, void *)) {
+	Node* curr = list->head;
+	while(curr != NULL) {
+		if(comp(data, curr->data) == 0) {
+			break;
+		}
+		curr = curr->next;
+	}
+	return (curr != NULL) ? curr->data : NULL;
+}
 
 void destroyList(List list) {
 	/* traverse from end of list */

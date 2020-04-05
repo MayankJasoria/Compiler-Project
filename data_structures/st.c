@@ -21,6 +21,8 @@ int typeSize[] = {16, 16, 16, -1, 2};
 	6. insertinputplist()
 */ 
 
+int string_comp_id(void* data, void* list_ele);
+
 SymbolTable getSymbolTable() {
 	return getHashTable();
 }
@@ -29,8 +31,13 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {
 		data = (SymTableVar*) getDataFromTable(func -> dataTable, name, stringHash);
-		if(data != NULL)
+		if(data == NULL) {
+			/* scan input_plist */
+			data = (SymTableVar*) findInList(func->input_plist, name, string_comp_id);
+		}
+		if(data != NULL) {
 			break;
+		}
 		func = func -> parent;
 	}
 	return data;
@@ -54,7 +61,7 @@ void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataT
 	st = insertToTable(st, name, data, stringHash);
 }
 
-void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType) {
+void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType) {
 	
 	SymTableFunc * fun = fetchFuncData(fname);
 	if(fetchVarData(funcData, varName) == NULL) {
@@ -223,4 +230,13 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	funcData -> actRecSize += varData -> width;
 	
 	funcData->actRecSize += varWidth;
+}
+
+/* Utility functions */
+
+/**
+ * Comparator for SymTableVar type of data withing linked list
+ */
+int string_comp_id(void* data, void* list_ele) {
+	return strcmp((char *)data, ((SymTableVar *)list_ele)->name) == 0;
 }

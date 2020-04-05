@@ -46,7 +46,8 @@ HashTable insertToTable(HashTable table, void* key, void* data, int (*hash)(void
 
 	/* Create a new entry for hash table */
 	hashElement* elem = (hashElement*) malloc(sizeof(hashElement));
-	elem->key = key;
+	elem->key = malloc(sizeof(char) * 40);
+	strcpy((char*)elem->key, (char*) key);
 	elem->data = data;
 
 	/* Insert the entry to the table */
