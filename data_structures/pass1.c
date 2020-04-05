@@ -319,7 +319,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch = ch -> next;
 			while(ch -> type != AST_NODE_IDLIST)
 				ch = ch -> next;
-			
+
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
 				"Input list type mismatch.\n");	
@@ -400,7 +400,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 			while(tmp != NULL) {
 
 				ASTNode* idNode = tmp -> child;
+
 				if(ch -> next -> type == AST_NODE_ARRAY) {
+
 					ASTNode* lft = (ch -> next) -> child -> child;
 					ASTNode* right = lft -> next; 
 					astDataType t = (ch -> next) -> child -> next -> nodeData.leaf -> dataType;
