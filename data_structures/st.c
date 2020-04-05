@@ -146,6 +146,8 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> parent = par;
 	data -> type = SYM_FUNCTION;
 	data -> dataTable = getSymbolTable();
+	data -> input_plist = getList();
+	data -> output_plist = getList();
 	return data;
 }
 
