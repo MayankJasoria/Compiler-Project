@@ -573,11 +573,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 				"VarIdNum id not declared before\n");
 			}
 			curr -> nodeData.var -> dataType = idNode -> dataType;
-			if(ch -> nodeData.leaf -> dataType == AST_TYPE_ARRAY && ch-> next == NULL) {
+			if(curr -> nodeData.var -> dataType == AST_TYPE_ARRAY && ch-> next == NULL) {
 				fprintf(stderr, 
 				"Array variable used without index.\n");
 			}
-			if(ch -> nodeData.leaf -> dataType != AST_TYPE_ARRAY && ch-> next != NULL) {
+			if(curr -> nodeData.var -> dataType != AST_TYPE_ARRAY && ch-> next != NULL) {
 				fprintf(stderr, 
 				"Non Array variable used with index line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 			}
