@@ -1,13 +1,12 @@
-<<module readArr>>
-takes input [arr1:array[1..15] of real,k:integer];
+declare module readArr;
+**the following function computes the sum of first n elements of the array**
+<<module arraySum>>
+takes input[list:array[1..15] of    real, n:integer];
+returns  [sum:real];
 start
-	
+	sum:=sum+list[index];
 end
-
 <<<driver program>>>
 start
-	declare A:array[1..15] of real;
-	declare k:integer;
-	use module readArr with parameters A,k;
-end
 
+end
