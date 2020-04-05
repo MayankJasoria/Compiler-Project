@@ -30,11 +30,11 @@ void insertplist(ASTNode * curr, char * str) {
 		if(typeNode -> type == AST_NODE_ARRAY) {
 			addArrParamToFunction(func, paramType, varName, 
 				typeNode -> child -> child, typeNode -> child -> child -> next, 
-				typeNode -> nodeData.leaf -> dataType);
+				(typeNode -> child -> next) -> nodeData.leaf -> dataType);
 		}
 		else {
 			addParamToFunction(func, paramType, varName, 
-				(typeNode -> child -> next) -> nodeData.leaf -> dataType);
+				typeNode -> nodeData.leaf -> dataType);
 		}
 		curr = curr -> child -> next -> next;
 	}
