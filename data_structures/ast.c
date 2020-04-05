@@ -814,6 +814,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		
 		case 76: {// condionalStmt : SWITCH BO ID BC START caseStmts default END
 			condStmtNode* csn = (condStmtNode *) malloc(sizeof(condStmtNode));
+			csn -> def = 0;
 			nodeData.condStmt = csn;
 			curr = getASTNode(nodeData, AST_NODE_CONDSTMT);
 			
@@ -901,6 +902,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		
 		case 83: {// default : DEFAULT COLON statements BREAK SEMICOL
 			ch = findinPT(ch, statements);
+			parent -> nodeData.condStmt -> def = 1;
 			return constructAST(parent, NULL, ch);
 		}
 		

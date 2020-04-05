@@ -335,7 +335,7 @@ typedef struct {
 } declareStmtNode;
 
 typedef struct {
-	int a;
+	int def;
 	/* TODO: add data fields later */
 } condStmtNode;
 

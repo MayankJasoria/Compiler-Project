@@ -389,32 +389,16 @@ void traverseAST(ASTNode* curr, char* fname) {
 					"Array type variables in arithmetic operation.\n");
 					return;
 				}
-				if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
-					tl = var -> sdt.r -> dataType;
-				}
-				else {
-					fprintf(stderr, 
-					"Array type variables in arithmetic operation.\n");
-				}
 			}
 			if(tr == AST_TYPE_ARRAY) {
-				if(ch -> type == AST_NODE_VARIDNUM) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+				if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
 					tr = var -> sdt.r -> dataType;
 				}
 				else {
 					fprintf(stderr, 
 					"Array type variables in arithmetic operation.\n");
 					return;
-				}
-				if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
-					tr = var -> sdt.r -> dataType;
-				}
-				else {
-					fprintf(stderr, 
-					"Array type variables in arithmetic operation.\n");
 				}
 			}
 			// tr = (ch -> next -> next) -> nodeData.AOBExpr -> dataType;
@@ -500,17 +484,20 @@ void traverseAST(ASTNode* curr, char* fname) {
 
 			ASTNode* ch2 = ch1 -> next;
 			if(ch -> nodeData.leaf -> dataType == AST_TYPE_BOOLEAN) {
-				if(ch2 != NULL) {
+				if(curr -> nodeData.condStmt -> def == 1) {
 					fprintf(stderr, 
 					"Default case in bool type.\n");
 				}
 			}
 			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
-				if(ch2 == NULL) {
+				if(curr -> nodeData.condStmt -> def == 0) {
 					fprintf(stderr, 
 					"Default case not present in int type line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 				}
 				else {
+					if(ch2 == NULL) {
+						return;
+					}
 					ch2 -> localST = newST;
 					// ch2 -> nodeData.statement -> type = ch -> nodeData.leaf -> dataType;
 					traverseAST(ch2, fname);
