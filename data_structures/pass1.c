@@ -550,14 +550,17 @@ void traverseAST(ASTNode* curr, char* fname) {
 					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
 					return;
 				}
+				break;
 				case AST_LEAF_RNUM: {
 					curr -> nodeData.leaf -> dataType = AST_TYPE_REAL;
 					return;	
 				}
+				break;
 				case AST_LEAF_BOOL: {
 					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
 					return;	
 				}
+				break;
 				case AST_LEAF_ID: {
 					char str[30];
 					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
@@ -566,6 +569,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 							insertFuncRecord(str);
 							return;
 						}
+						break;
 						case AST_NODE_MODULE: {
 							SymTableFunc* tmp = fetchFuncData(str);
 							if(tmp != NULL && tmp -> isDeclared == 1) {
@@ -636,6 +640,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 								return;
 							}
 						}
+						break;
 						case AST_NODE_MODULEREUSE: {
 							SymTableFunc* func = fetchFuncData(str);
 							if(func == NULL) {
@@ -647,6 +652,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 								func -> isDeclared++;
 							}
 						}
+						break;
 						case AST_NODE_IDLIST: {
 							/* handled above in typelistmatch()*/
 						}
@@ -659,16 +665,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 								return;
 							}
 						}
+						break;
 						case AST_NODE_ITERSTMT: {
 							SymTableVar* idx = fetchVarData(curr -> localST, str);
 							if(idx == NULL) {
 								fprintf(stderr, 
-								"Switch variable is not defined.\n");
+								"Loop variable is not defined.\n");
 								/* not declared, still giving it a type*/
 								curr -> nodeData.dataType = AST_TYPE_INT;
 								return;
 							}	
 						}
+						break;
 					}
 				}
 				break;
@@ -685,6 +693,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					}
 					return;
 				}
+				break;
 				case AST_LEAF_IDXID: {
 					char str[30];
 					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
