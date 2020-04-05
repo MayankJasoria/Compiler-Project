@@ -150,6 +150,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			if(curr -> nodeData.moduleList -> type == AST_MODULE_DRIVER) {
 				SymTableFunc * tmp = insertFuncRecord("driver");
+				if(ch == NULL)
+					return;
 				ch -> localST = tmp;
 				traverseAST(ch, "driver");
 			}
@@ -288,7 +290,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 			SymTableVar* tmp = fetchVarData(curr->localST, ch -> nodeData.leaf -> tn -> lex);
 			if(tmp == NULL) {
 				fprintf(stderr, 
-				"The lhs of the Assignment statement is not defined.\n");
+				"The lhs of the Assignment statement %s on line %d is not defined.\n",
+				ch -> nodeData.leaf -> tn -> lex,
+				ch -> nodeData.leaf -> tn -> line_num);
 			}
 			ch = ch -> next;
 			ch -> localST = curr -> localST;

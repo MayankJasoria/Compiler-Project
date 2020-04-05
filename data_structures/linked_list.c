@@ -128,7 +128,7 @@ List deleteByNode(List list, Node* element) {
 void* findInList(List list, void* data, int (*comp)(void *, void *)) {
 	Node* curr = list->head;
 	while(curr != NULL) {
-		if(comp(data, curr->data) == 0) {
+		if(comp(data, curr->data)) {
 			break;
 		}
 		curr = curr->next;

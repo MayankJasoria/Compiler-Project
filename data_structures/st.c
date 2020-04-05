@@ -74,7 +74,7 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 	} 
 	else {
 		fprintf(stderr, 
-		"A record for the given data item already exists within the scope of this function.\nNo changes have been made.\n");
+		"A record for the given data item %s already exists within the scope of this function.\nNo changes have been made.\n", varName);
 	}
 }
 
@@ -179,11 +179,11 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	/* populate correct list */
 	if(paramType == 0) {
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
-	} else {
+	} 
+	else {
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);
 
-		insertVarRecord(funcData->dataTable, funcData->name, 
-			varData->width, varData->offset, varData->dataType, new);
+		insertVarRecord(funcData->dataTable, varName, varData->width, varData->offset, varData->dataType, new);
 	}
 }
 
