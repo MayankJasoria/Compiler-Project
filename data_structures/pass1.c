@@ -14,6 +14,8 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 void insertplist(ASTNode * curr, char * str) {
 	
 	int paramType;
+	if(curr == NULL)
+		return;
 	if(curr -> type == AST_NODE_INPUTLIST)
 		paramType = 0;
 	else if(curr -> type == AST_NODE_OUTPUTLIST)
@@ -326,7 +328,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
-				"Input list type mismatch.\n");	
+				"Input list type mismatch name : %s.\n", tmp -> name);	
 			}
 		}
 		break;
@@ -345,7 +347,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			ch -> localST = curr -> localST;
 			ch -> next -> next -> localST = curr -> localST;
+			ch -> next -> localST = curr -> localST;
 			traverseAST(ch, fname);
+			traverseAST(ch -> next, fname);
 			traverseAST(ch -> next -> next, fname);
 			astDataType tl, tr;
 			ch = curr -> child;
@@ -402,7 +406,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if((ch -> next) -> nodeData.leaf -> op == AST_LOP) {
 				if(tl != AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
-					"Left operator of LOP is not boolean type.\n");		
+					"Left operator of LOP is not boolean type line %d.\n",
+					(ch -> next) -> nodeData.leaf -> tn -> line_num);		
 				}
 				if(tr != AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
@@ -465,7 +470,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
 				if(ch2 == NULL) {
 					fprintf(stderr, 
-					"Default case not present in int type.\n");
+					"Default case not present in int type line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 				}
 				else {
 					ch2 -> localST = newST;
@@ -566,7 +571,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			if(ch -> nodeData.leaf -> dataType != AST_TYPE_ARRAY && ch-> next != NULL) {
 				fprintf(stderr, 
-				"Non Array variable used with index.\n");
+				"Non Array variable used with index line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 			}
 			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			if(idNode == NULL) {
@@ -654,15 +659,6 @@ void traverseAST(ASTNode* curr, char* fname) {
 									"Index variable is not Integer.\n");
 								}
 							}
-							else {
-								SymTableVar* idx = fetchVarData(curr -> localST, str);
-								if(idx == NULL) {
-									fprintf(stderr, 
-									"Not declared error.\n");
-								}
-								else
-								
-							}
 						}
 						break;
 						case AST_NODE_LVALARRSTMT: {
@@ -709,6 +705,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 								fprintf(stderr, 
 								"Switch variable is not defined.\n");
 								return;
+							}
+							else {
+								curr -> nodeData.leaf -> dataType = idx -> dataType;
 							}
 						}
 						break;
