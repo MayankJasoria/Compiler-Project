@@ -66,6 +66,7 @@ List deleteByNode(List list, Node* element);
  * Returns the address of an element in list
  * @param list  The list to be searched
  * @param data  The data to be found in the list
+ * @param comp  Comparator for comparing required data with data in list
  * 
  * @return Node address of the data; NULL if not found
  */

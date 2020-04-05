@@ -89,6 +89,11 @@ typedef struct node {
 */
 //head: plist Node, node: AST
 int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
+	/* check if head or node is NULL */
+	if (head == NULL) {
+		fprintf(stderr, "Assigning a value from a function which does not return a value\n");
+		return 0;
+	}
 
 	SymTableVar * tmp = (SymTableVar*) head -> data;
 	if(node -> type == AST_NODE_LEAF)
@@ -305,7 +310,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				"Recursion is not supported.\n");
 				return;
 			}
-			if(!listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
+			if(ch -> prev != NULL && !listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
 				fprintf(stderr, 
 				"Output list type mismatch.\n");	
 			}
@@ -314,12 +319,6 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch = ch -> next;
 			while(ch -> type != AST_NODE_IDLIST)
 				ch = ch -> next;
-
-				typedef struct node {
-	void* data;
-	struct node* next;
-	struct node* prev;
-} Node;
 			
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
@@ -508,7 +507,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
-			if(ch -> nodeData.dataType != AST_TYPE_INT) {
+			if(ch -> nodeData.leaf -> dataType != AST_TYPE_INT) {
 				fprintf(stderr, 
 				"For loop variable is not of int type.\n");
 				return;
