@@ -124,6 +124,8 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> isDefined = 0;
 	data -> isDeclared = 1;
 	data -> parent = NULL;
+	data -> input_plist = getList();
+	data -> output_plist = getList();
 	insertToTable(globalST, name, data, stringHash);
 	return data;
 }
