@@ -366,23 +366,57 @@ void traverseAST(ASTNode* curr, char* fname) {
 				tl = ch -> nodeData.var -> dataType;
 			}
 			if(ch -> next -> next -> type == AST_NODE_LEAF) {
-				tr = ch -> nodeData.leaf -> dataType;
+				tr = ch -> next -> next -> nodeData.leaf -> dataType;
 			}
 			else if(ch -> next -> next -> type == AST_NODE_AOBEXPR) {
-				tr = ch -> nodeData.AOBExpr -> dataType;
+				tr = ch -> next -> next -> nodeData.AOBExpr -> dataType;
 			}
 			else if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
-				tr = ch -> nodeData.var -> dataType;
+				tr = ch -> next -> next -> nodeData.var -> dataType;
+			}
+			if(tl == AST_TYPE_ARRAY) {
+				if(ch -> type == AST_NODE_VARIDNUM) {
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+					tl = var -> sdt.r -> dataType;
+				}
+				else {
+					fprintf(stderr, 
+					"Array type variables in arithmetic operation.\n");
+					return;
+				}
+				if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
+					tl = var -> sdt.r -> dataType;
+				}
+				else {
+					fprintf(stderr, 
+					"Array type variables in arithmetic operation.\n");
+				}
+			}
+			if(tr == AST_TYPE_ARRAY) {
+				if(ch -> type == AST_NODE_VARIDNUM) {
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+					tr = var -> sdt.r -> dataType;
+				}
+				else {
+					fprintf(stderr, 
+					"Array type variables in arithmetic operation.\n");
+					return;
+				}
+				if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
+					tr = var -> sdt.r -> dataType;
+				}
+				else {
+					fprintf(stderr, 
+					"Array type variables in arithmetic operation.\n");
+				}
 			}
 			// tr = (ch -> next -> next) -> nodeData.AOBExpr -> dataType;
 			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
 					"Type mismatch in the expression line %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
-				}
-				else if(tl == AST_TYPE_ARRAY) {
-					fprintf(stderr, 
-					"Array type variables in arithmetic operation.\n");		
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
@@ -395,10 +429,6 @@ void traverseAST(ASTNode* curr, char* fname) {
 				if(tl != tr) {
 					fprintf(stderr, 
 					"Type mismatch in the expression.\n");	
-				}
-				else if(tl == AST_TYPE_ARRAY) {
-					fprintf(stderr, 
-					"Array type variables in relational operation.\n");		
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
