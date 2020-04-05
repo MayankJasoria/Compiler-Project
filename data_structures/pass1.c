@@ -752,7 +752,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 								fprintf(stderr, 
 								"Loop variable is not defined.\n");
 								/* not declared, still giving it a type*/
-								curr -> nodeData.dataType = AST_TYPE_INT;
+								curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
 								return;
 							}
 							else {
