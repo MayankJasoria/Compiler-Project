@@ -94,7 +94,7 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 		
 		if(right -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 			strcpy(a -> highId, "");
-			a -> high = (lft -> nodeData.leaf -> tn -> value.val_int);
+			a -> high = (right -> nodeData.leaf -> tn -> value.val_int);
 		}
 		else 
 			strcpy(a -> highId, lft -> nodeData.leaf -> tn -> lex);

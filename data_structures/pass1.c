@@ -97,11 +97,11 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 		return 0;
 	}
 
-	SymTableVar * tmp = (SymTableVar*) head -> data;
+	SymTableVar * tmp = (SymTableVar*) (head -> data);
 	if(node -> type == AST_NODE_LEAF)
 		node = NULL;
 	while(head != NULL && node != NULL) {
-		tmp = (SymTableVar*) head -> data;
+		tmp = (SymTableVar*) (head -> data);
 		SymTableVar* curr = fetchVarData(localST, node -> child -> nodeData.leaf -> tn -> lex);
 		if(curr == NULL) {
 			fprintf(stderr, 
@@ -126,7 +126,7 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 		node = node -> child -> next;
 		head = head -> next;
 	}
-	if(tmp == NULL && node == NULL)
+	if(head == NULL && node == NULL)
 		return 1;
 	fprintf(stderr, 
 	"Different number of parameters.\n");
@@ -316,6 +316,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 				"Recursion is not supported.\n");
 				return;
 			}
+			/* To be done in pass2 if the function is not defined. */
+			if(tmp -> isDefined == 0)
+				return;
 			if(ch -> prev != NULL && !listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
 				fprintf(stderr, 
 				"Output list type mismatch.\n");	
@@ -564,7 +567,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			traverseChildren(ch, fname);
 			ch = curr -> child;
-			
+			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			if(idNode == NULL) {
+				fprintf(stderr, 
+				"VarIdNum id not declared before\n");
+			}
+			curr -> nodeData.var -> dataType = idNode -> dataType;
 			if(ch -> nodeData.leaf -> dataType == AST_TYPE_ARRAY && ch-> next == NULL) {
 				fprintf(stderr, 
 				"Array variable used without index.\n");
@@ -573,12 +581,6 @@ void traverseAST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Non Array variable used with index line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 			}
-			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
-			if(idNode == NULL) {
-				fprintf(stderr, 
-				"VarIdNum id not declared before\n");
-			}
-			curr -> nodeData.var -> dataType = idNode -> dataType;
 		}
 		break;
 
