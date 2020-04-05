@@ -256,7 +256,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
 				if(tmp == NULL) {
 					fprintf(stderr, 
-					"The variable taken as input is not being declared.\n");
+					"The variable taken as input is not being declared line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 				}
 				else {
 					tmp -> isAssigned = 1;
@@ -522,9 +522,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			SymTableVar* par = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex);
-			if(tmp == NULL) {
+			if(par == NULL) {
 				fprintf(stderr, 
-				"The variable taken as input is not being declared.\n");
+				"Lvalue The variable taken as input is not being declared.\n");
 			}
 			else if(par -> dataType != AST_TYPE_ARRAY) {
 				fprintf(stderr, 
