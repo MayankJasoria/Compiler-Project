@@ -349,8 +349,25 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch -> next -> next, fname);
 			astDataType tl, tr;
 			ch = curr -> child;
-			tl = ch -> nodeData.AOBExpr -> dataType;
-			tr = (ch -> next -> next) -> nodeData.AOBExpr -> dataType;
+			if(ch -> type == AST_NODE_LEAF) {
+				tl = ch -> nodeData.leaf -> dataType;
+			}
+			else if(ch -> type == AST_NODE_AOBEXPR) {
+				tl = ch -> nodeData.AOBExpr -> dataType;
+			}
+			else if(ch -> type == AST_NODE_VARIDNUM) {
+				tl = ch -> nodeData.var -> dataType;
+			}
+			if(ch -> next -> next -> type == AST_NODE_LEAF) {
+				tr = ch -> nodeData.leaf -> dataType;
+			}
+			else if(ch -> next -> next -> type == AST_NODE_AOBEXPR) {
+				tr = ch -> nodeData.AOBExpr -> dataType;
+			}
+			else if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
+				tr = ch -> nodeData.var -> dataType;
+			}
+			// tr = (ch -> next -> next) -> nodeData.AOBExpr -> dataType;
 			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
@@ -551,6 +568,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Non Array variable used with index.\n");
 			}
+			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			if(idNode == NULL) {
+				fprintf(stderr, 
+				"VarIdNum id not declared before\n");
+			}
+			curr -> nodeData.var -> dataType = idNode -> dataType;
 		}
 		break;
 
