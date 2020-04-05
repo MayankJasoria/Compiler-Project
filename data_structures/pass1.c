@@ -543,6 +543,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
+			ch = curr -> child;
 			if(ch -> nodeData.leaf -> dataType != AST_TYPE_INT) {
 				fprintf(stderr, 
 				"For loop variable is not of int type.\n");
@@ -721,7 +722,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 								/* not declared, still giving it a type*/
 								curr -> nodeData.dataType = AST_TYPE_INT;
 								return;
-							}	
+							}
+							else {
+								curr -> nodeData.leaf -> dataType = idx -> dataType;
+							}
 						}
 						break;
 					}

@@ -64,7 +64,8 @@ void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataT
 void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType) {
 	
 	SymTableFunc * fun = fetchFuncData(fname);
-	if(fetchVarData(funcData, varName) == NULL) {
+
+	if(getDataFromTable(funcData -> dataTable, varName, stringHash) == NULL) {
 		int offset = fun -> actRecSize;
 		int width = typeSize[varDataType];
 		SymDataType s;
@@ -81,7 +82,7 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
 	
 	SymTableFunc * fun = fetchFuncData(fname);
-	if(fetchVarData(funcData, varName) == NULL) {
+	if(getDataFromTable(funcData -> dataTable, varName, stringHash) == NULL) {
 		int offset = fun -> actRecSize;
 		arrayInfo* a = (arrayInfo*) malloc(sizeof(arrayInfo));
 		a -> dataType = varDataType;
