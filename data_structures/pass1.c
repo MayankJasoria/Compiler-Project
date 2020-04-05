@@ -428,7 +428,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if((ch -> next) -> nodeData.leaf -> op == AST_RELOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
-					"Type mismatch in the expression.\n");	
+					"Type mismatch in the expression %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
