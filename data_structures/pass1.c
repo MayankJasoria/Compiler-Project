@@ -311,6 +311,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 				ch = ch -> next;
 
 			SymTableFunc* tmp = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
+			if(tmp == NULL) {
+				fprintf(stderr, 
+				"Function called (reused)'%s' is   not defined.\n", ch -> nodeData.leaf -> tn -> lex);
+				return;
+			}
 			if(strcmp(fname, tmp -> name) == 0) {
 				fprintf(stderr, 
 				"Recursion is not supported.\n");
