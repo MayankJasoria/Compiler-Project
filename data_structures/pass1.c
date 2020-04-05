@@ -401,7 +401,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			while(tmp != NULL) {
 
 				ASTNode* idNode = tmp -> child;
-				if(ch -> next -> type = AST_TYPE_ARRAY) {
+				if(ch -> next -> type == AST_TYPE_ARRAY) {
 					ASTNode* lft = (ch -> next) -> child -> child;
 					ASTNode* right = lft -> next; 
 					astDataType t = (ch -> next) -> child -> next -> nodeData.leaf -> dataType;
