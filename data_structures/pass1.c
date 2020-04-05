@@ -156,7 +156,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 		case AST_NODE_MODULE: {
 			ASTNode* ch = curr -> child;
 			SymTableFunc* tmp;
-			char* name;
+			char name[30];
 			while(ch != NULL) {
 				if(ch -> prev == NULL) {
 					ch -> localST = curr -> localST;
