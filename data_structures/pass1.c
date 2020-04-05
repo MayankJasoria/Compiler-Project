@@ -588,6 +588,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
 			ASTNode* ch1 = ch -> next;
+			if(ch1 == NULL) {
+				return;
+			}
 			ch1 -> localST = newST;
 			traverseAST(ch1, fname);
 
@@ -777,6 +780,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
 					if(curr -> parent -> type == AST_NODE_VARIDNUM) {
 						SymTableVar* arr = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex);
+						if(arr == NULL) {
+							fprintf(stderr, 
+							"The array variable is not defined.\n");
+							return;
+						}
 						boundChecking(arr, curr -> parent);
 					}
 					return;
