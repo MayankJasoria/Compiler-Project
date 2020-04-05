@@ -78,14 +78,14 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 		int offset = fun -> actRecSize;
 		arrayInfo* a = (arrayInfo*) malloc(sizeof(arrayInfo));
 		a -> dataType = varDataType;
-		if(lft -> type == AST_LEAF_IDXNUM) {
+		if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 			strcpy(a -> lowId, "");
 			a -> low = ((lft -> nodeData.leaf -> tn) -> value).val_int;
 		}
 		else 
 			strcpy(a -> lowId, lft -> nodeData.leaf -> tn -> lex);
 		
-		if(right -> type == AST_LEAF_IDXNUM) {
+		if(right -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 			strcpy(a -> highId, "");
 			a -> high = (lft -> nodeData.leaf -> tn -> value.val_int);
 		}
@@ -96,7 +96,7 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 		s.r = a;
 
 		int varWidth;
-		if(lft -> type == AST_LEAF_IDXNUM && right -> type == AST_LEAF_IDXNUM)
+		if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM && right -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
 			varWidth = typeSize[varDataType]*(a -> high - a -> low + 1);
 		else
 			varWidth = typeSize[AST_TYPE_POINTER];
@@ -181,25 +181,25 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	int offset = funcData -> actRecSize;
 	arrayInfo* a = (arrayInfo*) malloc(sizeof(arrayInfo));
 	a -> dataType = varDataType;
-	if(lft -> type == AST_LEAF_IDXNUM) {
+	if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 		strcpy(a -> lowId, "");
 		a -> low = ((lft -> nodeData.leaf -> tn) -> value).val_int;
 	}
 	else 
 		strcpy(a -> lowId, lft -> nodeData.leaf -> tn -> lex);
 		
-	if(right -> type == AST_LEAF_IDXNUM) {
+	if(right -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 		strcpy(a -> highId, "");
-		a -> high = (lft -> nodeData.leaf -> tn -> value.val_int);
+		a -> high = (right -> nodeData.leaf -> tn -> value.val_int);
 	}
 	else 
-		strcpy(a -> highId, lft -> nodeData.leaf -> tn -> lex);
+		strcpy(a -> highId, right -> nodeData.leaf -> tn -> lex);
 
 	SymDataType s;
 	s.r = a;
 
 	int varWidth;
-	if(lft -> type == AST_LEAF_IDXNUM && right -> type == AST_LEAF_IDXNUM)
+	if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM && right -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
 		varWidth = typeSize[varDataType]*(a -> high - a -> low + 1);
 	else
 		varWidth = typeSize[AST_TYPE_POINTER];

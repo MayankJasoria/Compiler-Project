@@ -122,7 +122,7 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 	if(tmp == NULL && node == NULL)
 		return 1;
 	fprintf(stderr, 
-	"Different number of parameters.\n", node -> child -> nodeData.leaf -> tn -> lex);
+	"Different number of parameters.\n");
 	return 0;
 }
 

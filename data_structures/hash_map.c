@@ -80,7 +80,7 @@ void* getDataFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	Node* hashNode = checkKeyInList(table, key, idx);
 
 	if(hashNode != NULL) {
-		return hashNode->data;
+		return ((hashElement *)hashNode->data)->data;
 	}
 
 	/* key not found */
