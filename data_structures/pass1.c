@@ -524,11 +524,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch, fname);
 
 			ch = ch -> next;
+			if(ch == NULL)
+				return;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
 
 			ch = ch -> next;
-
 			if(ch == NULL) {
 				return;
 			}
@@ -601,7 +602,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			if(idNode == NULL) {
 				fprintf(stderr, 
-				"VarIdNum id not declared before\n");
+				"VarIdNum id not declared before %s %d\n", ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
+				return;
 			}
 			curr -> nodeData.var -> dataType = idNode -> dataType;
 			if(curr -> nodeData.var -> dataType == AST_TYPE_ARRAY && ch-> next == NULL) {
