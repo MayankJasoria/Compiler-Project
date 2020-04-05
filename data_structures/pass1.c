@@ -378,7 +378,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
-					"Type mismatch in the expression.\n");
+					"Type mismatch in the expression line %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
 				}
 				else if(tl == AST_TYPE_ARRAY) {
 					fprintf(stderr, 
@@ -389,7 +389,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					"Bool type variables in arithmetic operation.\n");	
 				}
 				else 
-					curr -> type = tl;
+					curr -> nodeData.AOBExpr -> dataType = tl;
 			}
 			else if((ch -> next) -> nodeData.leaf -> op == AST_RELOP) {
 				if(tl != tr) {
@@ -836,6 +836,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						fprintf(stderr, 
 						"The identifier not declared.\n");
 					}
+					curr -> nodeData.leaf -> dataType = tmp -> dataType;
 				}
 				break;
 				case AST_LEAF_VARIDNUM_RNUM: {
