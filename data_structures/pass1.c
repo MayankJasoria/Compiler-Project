@@ -469,6 +469,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch, fname);
 
 			ch = ch -> next;
+
+			if(ch == NULL) {
+				return;
+			}
+
 			ch -> localST = curr -> localST;
 			ch -> nodeData.dataType = curr -> nodeData.dataType;
 			strcpy(ch -> nodeData.caseStmt -> switchVar, curr -> nodeData.caseStmt -> switchVar);
@@ -521,6 +526,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch1, fname);
 
 			ASTNode* ch2 = ch1 -> next;
+			if(ch2 == NULL) {
+				return;
+			}
 			ch2 -> localST = newST;
 			traverseAST(ch2, fname);
 		}
