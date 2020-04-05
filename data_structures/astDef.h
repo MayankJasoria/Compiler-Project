@@ -388,6 +388,7 @@ typedef struct {
 typedef struct {
 
 	boundCheck b;
+	astDataType dataType;
 	int a;
 } varidnumNode;
 	
