@@ -69,11 +69,44 @@ traverseAST(): {
             /* Helps only in construction of symbol table */
         }
         AST_NODE_ARRAY: {
-            
+            /* fetch SymbolTableARRVar for this
         }
         AST_NODE_RANGEARRAYS:
-        AST_NODE_STATEMENT:
-        AST_NODE_IO:
+        AST_NODE_STATEMENT: {
+            /* Simply traverse */
+        }
+        AST_NODE_IO: {
+            /* Fetch the variable from the symbol table on which the I/O is called */
+
+            if get_val:
+                /* Get value is on ID. That means we cant get value into an array type. 
+                   Get the variable from symbol table. It must have an offset. */
+                mov     edx, ID.width           ; number of bytes to read
+                mov     ecx, [ebp + offset]     ; reserved space to store the input
+                mov     ebx, 0                  ; write to stdin
+                mov     eax, 3                  ; invoke SYS_READ (kernel opcode 3)
+                int     80h   
+
+            else if put_val:
+                /* Put value is on var
+                    var -> var_id_num
+                    var_id_num -> ID, ID[index], NUM, RNUM */
+                if ID:
+                    /* Get the symbol table entry for ID and its offset */
+                    mov	edx, ID.width   ;number of bytes to write
+                    mov ecx, [ebp + offset]       ;move memory address of the value
+                else if ID[index]:
+                    mov edx, ID.width
+                    mov ecx, [ebp + offset + index]
+                else:
+                    /* not sure what to do here */
+                    mov edx, NUM.width | RNUM.width
+                    mov ecx, NUM | RNUM
+
+                mov ebx, 1	        ;write to stdout
+                mov eax, 4	        ;marshal system write system call opcode into eax
+                int 80h		        ;generate interrupt      
+        }
         AST_NODE_SIMPLESTMT:
         AST_NODE_ASSIGN:
         AST_NODE_MODULEREUSE:
