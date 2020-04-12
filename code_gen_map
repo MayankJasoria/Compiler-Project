@@ -126,9 +126,59 @@ traverseAST(): {
                 mov eax, 4	        ;marshal system write system call opcode into eax
                 int 80h		        ;generate interrupt      
         }
-        AST_NODE_SIMPLESTMT:
-        AST_NODE_ASSIGN:
-        AST_NODE_MODULEREUSE:
+        AST_NODE_SIMPLESTMT: {
+            /* Just traverse */
+        }
+        AST_NODE_ASSIGN: {
+
+        }
+        AST_NODE_MODULEREUSE: {
+            /* Setting the stack frame. */
+
+            /* Get symbolTableFunc for the called module. */
+
+            ;Save the current stack frame pointer
+            push    ebp          
+            ;Move the current pointer to stack as the base of the called function.
+            ;This makes sure that we are free to stack pointer now 
+            mov     ebp,esp 
+                
+            
+            /* Iterate through output_plist, and reserve that much space at 
+                the base of the stack frame */
+            
+            width = 0;
+            for each <output_param> in the output_plist:
+                width += <output_param>.width;
+
+            add esp, width
+
+            /* Iterate in reverse through args list, and push them */
+            for each <arg> in modulereuse.args.reverse:
+                mov ax, <arg>.value;
+                push ax
+
+            /* Reserve space in stack for local variables */
+            mov esp, %size_of_local_vars
+                
+
+            /* call the function */
+            call %name_of_module
+
+            /* removing the stack frame */
+            mov     esp, ebp
+            pop     ebp
+
+            /* Store the output.
+                We can do this by iterating through the output_plist */
+            
+            for each <output_param> in the output_plist:
+                mov ax, [esp + <output_param>.offset]
+                mov [ebp + <left_arg>.offset], ax    
+
+                <left_Arg> = <left_arg>.next;
+
+        }
         AST_NODE_IDLIST:
         AST_NODE_EXPR:
         AST_NODE_AOBEXPR:
@@ -155,56 +205,14 @@ traverseAST(): {
                         AST_NODE_LVALARRSTMT:
                         AST_NODE_ASSIGN:
                         AST_NODE_MODULEREUSE: {
-                            /* Setting the stack frame. */
-
-                            /* Get symbolTableFunc for the called module. */
-
-                            ;Save the current stack frame pointer
-                            push    ebp          
-                            ;Move the current pointer to stack as the base of the called function.
-                            ;This makes sure that we are free to stack pointer now 
-                            mov     ebp,esp 
-                               
                             
-                            /* Iterate through output_plist, and reserve that much space at 
-                               the base of the stack frame */
-                            
-                            width = 0;
-                            for each <output_param> in the output_plist:
-                                width += <output_param>.width;
-
-                            add esp, width
-
-                            /* Iterate in reverse through args list, and push them */
-                            for each <arg> in modulereuse.args.reverse:
-                                mov ax, <arg>.value;
-                                push ax
-
-                            /* Reserve space in stack for local variables */
-                            mov esp, %size_of_local_vars
-                               
-
-                            /* call the function */
-                            call %name_of_module
-
-                            /* removing the stack frame */
-                            mov     esp, ebp
-                            pop     ebp
-
-                            /* Store the output.
-                               We can do this by iterating through the output_plist */
-                            
-                            for each <output_param> in the output_plist:
-                                mov ax, [esp + <output_param>.offset]
-                                mov [ebp + <left_arg>.offset], ax    
-
-                                <left_Arg> = <left_arg>.next;
-
                         }
                         AST_NODE_IDLIST: {
                             /* Only for AST iteration */
                         }
-                        AST_NODE_CONDSTMT:
+                        AST_NODE_CONDSTMT: {
+
+                        }
                         AST_NODE_ITERSTMT:
                     }
                 }
