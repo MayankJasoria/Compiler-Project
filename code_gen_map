@@ -1,3 +1,9 @@
+/**
+ * This is a blueprint pseudo code representation of how the AST will
+ * be traversed for code generation. After the blueprint is ready, the 
+ * pseudo code can be translated into C code. 
+ */
+
 This might be helpful: https://www.cs.uaf.edu/2005/fall/cs301/support/x86/nasm.html
 
 To compile nasm programs:
@@ -44,7 +50,7 @@ traverseAST(): {
             /* Helps only in construction of symbol table */
         }
         AST_NODE_ARRAY: {
-
+            
         }
         AST_NODE_RANGEARRAYS:
         AST_NODE_STATEMENT:
