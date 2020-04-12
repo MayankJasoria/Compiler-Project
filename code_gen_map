@@ -98,7 +98,13 @@ traverseAST(): {
         }
         AST_NODE_RANGEARRAYS:
         AST_NODE_STATEMENT: {
-            /* Simply traverse */
+            
+            if child is NULL
+                if these block of statements belong to a moduleDef:
+                    ---
+                    ret
+                    ---
+
         }
         AST_NODE_IO: {
             /* Fetch the variable from the symbol table on which the I/O is called */
@@ -166,7 +172,7 @@ traverseAST(): {
             ;Move the current pointer to stack as the base of the called function.
             ;This makes sure that we are free to stack pointer now 
             mov     ebp,esp 
-           ----     
+            ----     
             
             /* Iterate through output_plist, and reserve that much space at 
                 the base of the stack frame */
