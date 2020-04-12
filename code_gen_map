@@ -1,5 +1,19 @@
 This might be helpful: https://www.cs.uaf.edu/2005/fall/cs301/support/x86/nasm.html
 
+To compile nasm programs:
+    nasm -f elf <file_name>.asm
+To link files using gcc (on 64 bits systems) (Requires global main):
+    gcc -m32 <file_name>.o -o <file_name>
+
+To link files using gcc (on 32 bits systems) (Requires global main):
+    gcc <file_name>.o -o <file_name>    
+
+To link files using ld (Requires global _start):
+    ld -m elf_i386 <file_name>.o -o <out_file_name>
+
+To run the compiled program:    
+./<out_file_name>
+
 traverseAST(): {
     switch on type pf AST node: {
         AST_NODE_PROGRAM:  {
