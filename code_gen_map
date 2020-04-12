@@ -62,10 +62,12 @@ traverseAST(): {
     switch on type pf AST node: {
         AST_NODE_PROGRAM:  {
             /* init text and data section here */
+            ----
             section .data
             ;define all the variables here 
             section .text
             global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
+            ----
         }
         AST_NODE_MODULEDECLARATION: {
             /* Helps only in construction of symbol table */
@@ -77,9 +79,13 @@ traverseAST(): {
             /* start module definition. Get SymbolTableFunc for this module 
                 It is assumed that the caller has pushed the relevant arguments into the stack, and has pushed 
                 the address of the arguments at the end. Also, ebp points to the start of the stack frame */
+            ----
             %module_name:
-                /* Everything can be accessed in the stack frame */
-                ;Do stuff    
+            ----
+            /* Everything can be accessed in the stack frame */
+                ----
+                ;Do stuff
+                ----    
         }
         AST_NODE_INPUTLIST: {
             /* Helps only in construction of symbol table */
@@ -88,7 +94,7 @@ traverseAST(): {
             /* Helps only in construction of symbol table */
         }
         AST_NODE_ARRAY: {
-            /* fetch SymbolTableARRVar for this
+            /* TODO */
         }
         AST_NODE_RANGEARRAYS:
         AST_NODE_STATEMENT: {
@@ -100,11 +106,13 @@ traverseAST(): {
             if get_val:
                 /* Get value is on ID. That means we cant get value into an array type. 
                    Get the variable from symbol table. It must have an offset. */
+                ----
                 mov     edx, ID.width           ; number of bytes to read
                 mov     ecx, [ebp + offset]     ; reserved space to store the input
                 mov     ebx, 0                  ; write to stdin
                 mov     eax, 3                  ; invoke SYS_READ (kernel opcode 3)
-                int     80h   
+                int     80h                     ; interrupt, switch context to kernel
+                ----
 
             else if put_val:
                 /* Put value is on var
@@ -112,37 +120,53 @@ traverseAST(): {
                     var_id_num -> ID, ID[index], NUM, RNUM */
                 if ID:
                     /* Get the symbol table entry for ID and its offset */
+                    ----
                     mov	edx, ID.width   ;number of bytes to write
                     mov ecx, [ebp + offset]       ;move memory address of the value
+                    ----
                 else if ID[index]:
+                    ----
                     mov edx, ID.width
                     mov ecx, [ebp + offset + index]
+                    ----
                 else:
                     /* not sure what to do here */
+                    ----
                     mov edx, NUM.width | RNUM.width
                     mov ecx, NUM | RNUM
+                    ----
 
+                ----
                 mov ebx, 1	        ;write to stdout
                 mov eax, 4	        ;marshal system write system call opcode into eax
-                int 80h		        ;generate interrupt      
+                int 80h		        ;generate interrupt    
+                ----  
         }
         AST_NODE_SIMPLESTMT: {
             /* Just traverse */
         }
         AST_NODE_ASSIGN: {
-
+            /* Traverse first. This will assume that rhs will have values stored in stack */
+            ch = curr->child
+            ch = ch->next;
+            traverseAST(ch, fname);
+            ----
+            pop ax
+            mov [ebp + <lhs>.offset], ax
+            ----
         }
         AST_NODE_MODULEREUSE: {
             /* Setting the stack frame. */
 
             /* Get symbolTableFunc for the called module. */
 
+            ----
             ;Save the current stack frame pointer
             push    ebp          
             ;Move the current pointer to stack as the base of the called function.
             ;This makes sure that we are free to stack pointer now 
             mov     ebp,esp 
-                
+           ----     
             
             /* Iterate through output_plist, and reserve that much space at 
                 the base of the stack frame */
@@ -151,30 +175,42 @@ traverseAST(): {
             for each <output_param> in the output_plist:
                 width += <output_param>.width;
 
+            ----
             add esp, width
+            ----
 
             /* Iterate in reverse through args list, and push them */
             for each <arg> in modulereuse.args.reverse:
+                ----
                 mov ax, <arg>.value;
                 push ax
+                ----
 
             /* Reserve space in stack for local variables */
+            ----
             mov esp, %size_of_local_vars
+            ----
                 
 
             /* call the function */
+            ----
             call %name_of_module
+            ----
 
             /* removing the stack frame */
+            ----
             mov     esp, ebp
             pop     ebp
+            ----
 
             /* Store the output.
                 We can do this by iterating through the output_plist */
             
             for each <output_param> in the output_plist:
+                ----
                 mov ax, [esp + <output_param>.offset]
                 mov [ebp + <left_arg>.offset], ax    
+                ----
 
                 <left_Arg> = <left_arg>.next;
 
