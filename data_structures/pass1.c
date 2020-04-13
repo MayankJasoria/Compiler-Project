@@ -325,7 +325,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(ch -> type == AST_NODE_LVALARRSTMT) {
 				if(tmp -> dataType == AST_TYPE_ARRAY){
 					if(ch -> child -> next -> type == AST_NODE_VARIDNUM) {
-						if(tmp -> sdt.r -> dataType != ch -> child -> nodeData.var -> dataType) {
+						if(tmp -> sdt.r -> dataType != ch -> child -> next -> nodeData.var -> dataType) {
 							fprintf(stderr, 
 							"Type mismatch1 in assignment statement on line %d.\n",
 							ch -> child -> next -> child -> nodeData.leaf -> tn -> line_num);
@@ -754,7 +754,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableFunc* tmp = fetchFuncData(str);
 							if(tmp != NULL && tmp -> isDeclared == 1) {
 								fprintf(stderr, 
-								"Redundant declaration of the function '%s'.\n", str);
+								"Redundant declaration of the function '%s' on line %d.\n", str, curr -> nodeData.leaf -> tn -> line_num);
 								return;
 							}
 							if(tmp != NULL && tmp -> isDefined == 1) {
