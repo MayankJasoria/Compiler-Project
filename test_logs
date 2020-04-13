@@ -36,7 +36,10 @@ testcase7.txt (errors detected correctly):
 	The lhs of the Assignment statement i on line 8 is not defined.
 
 testcase8.txt (error detected correctly):
-	Loop variable is not defined.
+	Loop variable('i') is not defined line 3.
+
+testcase11.txt:
+	Type mismatch3 in assignment statement on line 13.
 
 v1.txt:
 	The lhs of the Assignment statement x_1 on line 8 is not defined.
@@ -215,11 +218,49 @@ test4.txt (errors reported correctly):
 	Input list type mismatch name : readArr on line 13.
 
 testcase1.txt (errors reported correctly):
-	Array variable used without index.
-	Type mismatch in the expression line 12.
+	Array variable('aaa') used without index on line 9.
+	Type mismatch in the expression line 12, tl = Real, tr = Integer.
+	Type mismatch3 in assignment statement on line 12.
+
+testcase2.txt (garbage):
+	Line number (36): syntax error -- unexpected 'start'
+
+	Line number (38): syntax error -- missing  'SEMICOL' -- unexpected 'start'
+
+	Line number (40): syntax error -- missing  'SEMICOL'  -- expected one of: 'EMPTY' 'DECLARE' 'GET_VALUE' 'PRINT' 'USE' 'FOR' 'SWITCH' 'WHILE' 'SQBO' 'ID'
+
+	Line number (43): syntax error -- unexpected 'end' 'print' '(' 'sum' ')' ';' 'end' 
+
+	Compilation ended with errors.
+
+	Type mismatch in the expression line 19, tl = Integer, tr = Boolean.
+	Type mismatch3 in assignment statement on line 20.
+	Type mismatch in the expression line 21, tl = Integer, tr = Boolean.
+	Type mismatch in the expression line 22, tl = Integer, tr = Boolean.
+	The parameter var_34 is not declared.
+	Input list type mismatch name : compute on line 11.
+	The parameter var_34 is not declared.
 
 testcase3.txt (errors reported correctly):
-	Redundant declaration of the function.
+	Redundant declaration of the function 'compute' on line 7.
+	The variable to be output is not declared line 14.
+
+testcase4.txt: (garbage)
+	Line number (17): syntax error -- unexpected 'declare' 'index' ':' 'boolean' ';'
+
+	Compilation ended with errors.
+
+testcase6.txt: (garbage)
+	Line number (3): syntax error -- unexpected 'start' 
+
+	Line number (4): syntax error -- missing  'MODULE'
+
+	Line number (4): syntax error -- missing  'SEMICOL' -- unexpected ',' 'n' ',' 'k' ':' 'integer' ';'
+
+	Line number (5): syntax error -- missing  'MODULE'
+
+	Line number (5): syntax error -- missing  'SEMICOL' -- unexpected ':' 'integer' ';' 'sum' ':=' '0' ';' 'n' ':=' '12' ';' 'i' ':=' '0' ';' 'while' '(' 'i' '<=' '10' ')' 'start' 'k' ':=' '10' ';' 'while' '(' 'k' '>=' '8' ')' 'start' 'sum' ':=' 'sum' '+' 'k' '*' '(' 'i' '-' 'n' ')' ';' 'k' ':=' 'k' '-' '1' ';' 'end' 'print' '(' 'sum' ')' ';' 'i' ':=' 'i' '+' '2' ';' 'end' 'print' '(' 'sum' ')' ';' 'end'
+	Compilation ended with errors.
 
 UltimateTestcase.erp:
 Line number (143): syntax error -- missing  'BREAK' 'SEMICOL'
