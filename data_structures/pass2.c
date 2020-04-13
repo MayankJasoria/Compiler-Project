@@ -144,13 +144,18 @@ void pass2AST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode* ch = curr -> child;
+			SymTableVar* idx = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			if(idx == NULL) {
+				return;
+			}
+			
 			if((ch -> nodeData).leaf -> dataType == AST_TYPE_REAL) {
 				return;
 			}
 			ASTNode* ch1 = ch -> next;
 			ASTNode* ch2 = ch1 -> next;
-			pass2AST(ch1, fname);
 			strcpy(ch1 -> localST -> dependentVar, (ch -> nodeData).leaf -> tn -> lex);
+			pass2AST(ch1, fname);
 			if(ch2 == NULL) {
 				return;
 			}

@@ -8,6 +8,7 @@ This might be helpful: https://www.cs.uaf.edu/2005/fall/cs301/support/x86/nasm.h
 
 To compile nasm programs:
     nasm -f elf <file_name>.asm
+
 To link files using gcc (on 64 bits systems) (Requires global main):
     gcc -m32 <file_name>.o -o <file_name>
 
@@ -24,7 +25,7 @@ To run the compiled program:
 section .data
 msg	db	'Hello world!',0Ah;
 section .text
-global main:     ; _start when linking with ld
+global main     ; _start when linking with ld
 
 main:
 	mov	edx, 13  ;number of bytes to write
@@ -44,8 +45,11 @@ https://stackoverflow.com/questions/17239781/x86-assembly-why-do-i-need-stack-fr
 /* Saves the pointer to the base of current stack frame, and moves stack pointer to 
     ebx. Thus we are free to use stack inside the called function */
 
+  
+    |  # bp |   |   |   |   |   |   | $ sp (new)  |  |   |   |   |   | | 
+
     /*setting the stack frame*/
-        push    ebp     
+        push    ebp    
         mov     ebp,esp
 
         ...

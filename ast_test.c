@@ -11,7 +11,7 @@
 
 int main(int argc, char* argv[]) {
 
-    char* inputfile = "t5.txt";
+    char* inputfile = "testcases/test3.txt";
 
     /* initializing lexer and parser */
     lexerinit();
