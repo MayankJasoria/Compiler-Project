@@ -282,18 +282,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 				}
 			}
 			else { // AST_IO_PRINT
-				if(ch -> type == AST_LEAF_ID) {
-					SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
+				if(ch -> type == AST_NODE_VARIDNUM) {
+					SymTableVar* tmp = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
 					if(tmp == NULL) {
 						fprintf(stderr, 
-						"The variable to be output is not declared line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
+						"The variable to be output is not declared line %d.\n", ch -> child -> nodeData.leaf -> tn -> line_num);
 					}
-					else if(ch -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {   //int a; a[4];  --> error
+					else if(ch -> child -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {   //int a; a[4];  --> error
 						fprintf(stderr, 
-						"A non array type variable access using whichId on line %d\n", ch -> nodeData.leaf -> tn -> line_num);
+						"A non array type variable access using whichId on line %d\n", ch -> child -> nodeData.leaf -> tn -> line_num);
 					}
-					else if(ch -> next != NULL) {
-						boundChecking(tmp, curr);
+					else if(ch -> child ->next != NULL) {
+						boundChecking(tmp, curr -> child);
 					}
 				} 
 			}
