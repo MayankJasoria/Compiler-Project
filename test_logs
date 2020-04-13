@@ -441,7 +441,7 @@ Line number (143): syntax error -- missing  'BREAK' 'SEMICOL'
 	Redundant declaration of the function 'module2'.
 
 Testcases_stage2 [Shubham]:
-    t1.txt:
+    t1.txt **[RESOLVED]**[EXCEPT: output_plist assignments]:
         VarIdNum id('v') not declared before 17 <-- correct
         Right operator of LOP is not boolean type line 17. <-- wierd, this shouldn't be there, probably side effect of previous error?
         No changes have been made. Redeclaration on line 22 <-- correct, but should be shown as an error
@@ -457,14 +457,14 @@ Testcases_stage2 [Shubham]:
         Output list type mismatch on line 56. <-- this seems to be a side effect of the error above, and shouldn't be there
         Input list type mismatch name : compute on line 56. <-- there is a mismatch in the number of params, but where is 'name' comming from?
 
-    t2.txt:
+    t2.txt **[RESOLVED]**[EXCEPT: output_plist assignments]:
         VarIdNum id('E') not declared before 40 <-- correct
         Type mismatch in the expression line 40, tl = Integer, tr = Real. <-- this seems to be more than just side effect of the error above
 
         The parameter k is not declared. <-- correct
         Output list type mismatch on line 56. <-- side-effect of above, clearly
 
-    t3.txt:
+    t3.txt **[RESOLVED]**[EXCEPT: output_plist assignments]:
        | A record for the given data item m already exists within the scope of this function. No changes have been made. Redeclaration on line 13
        | A record for the given data item n already exists within the scope of this function. No changes have been made. Redeclaration on line 13
        ^--- m,n are defined in the output_plist, and they cannot be shadowed. So this should be correct. But there is no such
@@ -500,7 +500,7 @@ Testcases_stage2 [Shubham]:
 			 Third one should be "Number of parameters mis-match".
 			 Surprisingly third error is not listed as an error in the testcase file.
 
-	t4.txt:
+	t4.txt **[RESOLVED]**[EXCEPT: output_plist assignments]:
 		  VarIdNum id('p') not declared before 51 <-- correct
 		| Type mismatch in the expression line 51, tl = Real, tr = Integer.
 		| Type mismatch in the expression line 51, tl = Real, tr = Integer.
@@ -512,7 +512,7 @@ Testcases_stage2 [Shubham]:
 		| Output list type mismatch on line 95.
 		^-- Side-effect
 
-	t5.txt:
+	t5.txt **[RESOLVED]** [EXCEPT: output_plist assignments]:
 		| Type mismatch in the expression line 48, tl = Integer, tr = Real.
 		| Type mismatch in the expression line 48, tl = Real, tr = Integer.
 		| Type mismatch3 in assignment statement on line 48.
@@ -522,7 +522,7 @@ Testcases_stage2 [Shubham]:
 
 		** Ignored all side-effect errors already specified **
 
-	t6.txt:
+	t6.txt **[RESOLVED]** [EXCEPT: output_plist assignments]:
 		| Type mismatch in the expression line 85, tl = Integer, tr = Real.
 		| Type mismatch in the expression line 85, tl = Real, tr = Integer.
 		| Type mismatch3 in assignment statement on line 85.
@@ -533,7 +533,7 @@ Testcases_stage2 [Shubham]:
 		| Type mismatch3 in assignment statement on line 138.
 		^--- correct, but there should be only one error for each line
 
-	t7.txt:
+	t7.txt **[RESOLVED]** [EXCEPT: output_plist assignments]:
 		 Array variable('m') used without index on line 27.
 		 Array variable('p') used without index on line 27.
 		| Array type variable 'm' in arithmetic operation on line 27.
@@ -587,7 +587,7 @@ Testcases_stage2 [Shubham]:
 		|
 		| No error reported on this line
 
-	t8.txt:
+	t8.txt [NOT RESOLVED: output_plist assignments, Function overloading not detected]:
 
 	Errors on following line numbers were not reported:
 		Line 43: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
