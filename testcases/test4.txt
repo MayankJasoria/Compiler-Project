@@ -14,7 +14,7 @@ start
 	for(index in  1..15)
 	start
 		t:= index<=n;
-		
+		get_value(index);
 		index:=index+8;
 		
 		declare index: boolean;
