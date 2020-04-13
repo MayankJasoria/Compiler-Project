@@ -76,6 +76,15 @@ void pass2AST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_IO: {
 			/* do nothing */
+			if(curr -> nodeData.io -> type == AST_IO_GETVAL) {
+				ASTNode * ch = curr -> child;
+				if(lookupDependentVar(curr -> localST, ch -> nodeData.leaf -> tn -> lex)) {
+					fprintf(stderr, 
+					"For loop variable '%s' re-assigned using get_value on line %d.\n", 
+					ch -> nodeData.leaf -> tn -> lex,
+					ch -> nodeData.leaf -> tn -> line_num);
+				}
+			}
 		}
 		break;
 
