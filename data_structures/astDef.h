@@ -361,6 +361,7 @@ typedef struct {
 
 typedef struct {
 	int a;
+	astDataType dataType;
 	/* TODO: add data fields later */
 } lvalueARRStmtNode;
 
