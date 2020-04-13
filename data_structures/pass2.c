@@ -77,34 +77,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_IO: {
-			ASTNode* ch = curr -> child;	
-			ch -> localST = curr -> localST;		
-			if(curr -> nodeData.io -> type == AST_IO_GETVAL) {
-				SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
-				if(tmp == NULL) {
-					fprintf(stderr, 
-					"The variable taken as input is not being declared line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
-				}
-				else {
-					tmp -> isAssigned = 1;
-				}
-			}
-			else { // AST_IO_PRINT
-				if(ch -> type == AST_LEAF_ID) {
-					SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
-					if(tmp == NULL) {
-						fprintf(stderr, 
-						"The variable to be output is not declared line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
-					}
-					else if(ch -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {   //int a; a[4];  --> error
-						fprintf(stderr, 
-						"A non array type variable access using whichId on line %d\n", ch -> nodeData.leaf -> tn -> line_num);
-					}
-					else if(ch -> next != NULL) {
-						boundChecking(tmp, curr);
-					}
-				} 
-			}
+			/* do nothing */
 		}
 		break;
 
