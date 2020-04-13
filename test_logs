@@ -206,7 +206,7 @@ test3.txt:
 
 test4.txt (errors reported correctly):
 	Recursion is not supported on line 12.
-	Index variable in range arrays is not Integer.
+	Index variable in range arrays is not Integer on line 24.
 	Type mismatch3 in assignment statement on line 32.
 	Redundant declaration of the function 'd' on line 64.
 	Array variable('aaa') used without index on line 71.
@@ -216,6 +216,7 @@ test4.txt (errors reported correctly):
 	Output list type mismatch on line 13.
 	Assigning a value from a function which does not return a value
 	Input list type mismatch name : readArr on line 13.
+	Dependent variable 'index' declared on line 20.
 
 testcase1.txt (errors reported correctly):
 	Array variable('aaa') used without index on line 9.
@@ -447,7 +448,7 @@ Testcases_stage2 [Shubham]:
 
         | Type mismatch in the expression line 38, tl = Integer, tr = Real.
         | Type mismatch3 in assignment statement on line 38.
-        | Type mismatch in the expression line 40, tl = Integer, tr = Real.
+        | Type mismatch in the expression line 40, tl = Integer, tr = Real. =[**UPDATE: RESOLVED**]=
         | Type mismatch in the expression line 42, tl = Integer, tr = Real.
         ^--- All these error shouldnt be there
         VarIdNum id('res_2_b') not declared before 42   <-- this is clearly an error from Ma'ams side, so can ignore
@@ -472,7 +473,7 @@ Testcases_stage2 [Shubham]:
         VarIdNum id('v') not declared before 32 <-- correct
         Right operator of LOP is not boolean type line 32. <-- Side-effect
 
-        Type mismatch3 in assignment statement on line 51. <-- ERROR
+        Type mismatch3 in assignment statement on line 51. <--  =[**FIXED WITHOUT REPORTING**]=
 
         VarIdNum id('res_2_b') not declared before 54 <-- testcase file error, extra _ missing
 
