@@ -30,5 +30,6 @@ int main(int argc, char* argv[]) {
     globalST = getSymbolTable();
 
     traverseAST(root, "");
+    pass2AST(root, "");
     printf("Hooray!!");
 }

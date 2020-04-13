@@ -476,6 +476,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			moduleReuseNode* mrn = (moduleReuseNode *) malloc(sizeof(moduleReuseNode));
 			nodeData.moduleReuse = mrn;
 			curr = getASTNode(nodeData, AST_NODE_MODULEREUSE);
+			curr -> nodeData.moduleReuse -> listCheck = 1;
 
 			ASTNode* opt = constructAST(curr, NULL, ch);
 			ch = ch -> next -> next -> next;

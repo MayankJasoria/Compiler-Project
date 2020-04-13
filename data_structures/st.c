@@ -134,6 +134,7 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> parent = NULL;
 	data -> input_plist = getList();
 	data -> output_plist = getList();
+	strcpy(data -> dependentVar, "");
 	insertToTable(globalST, name, data, stringHash);
 	return data;
 }
@@ -149,6 +150,7 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> dataTable = getSymbolTable();
 	data -> input_plist = getList();
 	data -> output_plist = getList();
+	strcpy(data -> dependentVar, "");
 	return data;
 }
 
