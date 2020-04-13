@@ -754,7 +754,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableFunc* tmp = fetchFuncData(str);
 							if(tmp != NULL && tmp -> isDeclared == 1) {
 								fprintf(stderr, 
-								"Redundant declaration of the function '%s'.\n", str);
+								"Redundant declaration of the function '%s' on line %d.\n", str, curr -> nodeData.leaf -> tn -> line_num);
 								return;
 							}
 							if(tmp != NULL && tmp -> isDefined == 1) {
