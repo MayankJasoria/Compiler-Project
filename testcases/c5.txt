@@ -17,10 +17,3 @@ start
 	end	
 	print(sum);
 end
-
-
-$
-$
-$
-
-$

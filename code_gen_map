@@ -64,7 +64,7 @@ traverseAST(): {
             /* init text and data section here */
             ----
             section .data
-            ;define all the variables here 
+            ;define all the global variables here 
             section .text
             global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
             ----
@@ -168,7 +168,7 @@ traverseAST(): {
 
             ----
             ;Save the current stack frame pointer
-            push    ebp          
+            pusha   ;ebp          
             ;Move the current pointer to stack as the base of the called function.
             ;This makes sure that we are free to stack pointer now 
             mov     ebp,esp 
@@ -177,28 +177,22 @@ traverseAST(): {
             /* Iterate through output_plist, and reserve that much space at 
                 the base of the stack frame */
             
-            width = 0;
-            for each <output_param> in the output_plist:
-                width += <output_param>.width;
+            actRecSize = sum of width of output_plist + input_plist + local variables + temporary variables
 
             ----
-            add esp, width
+            add esp, actRecSize
             ----
 
-            /* Iterate in reverse through args list, and push them */
-            for each <arg> in modulereuse.args.reverse:
+
+            /* Iterate in through args list, and assign them values at their offsets in the frame */
+            for each <arg> in modulereuse.args and corresponsing <input_param> in input_plist:
                 ----
-                mov ax, <arg>.value;
-                push ax
+                mov ax, <arg>.value
+                mov [ebp + <input_param>.offset], ax 
                 ----
-
-            /* Reserve space in stack for local variables */
-            ----
-            mov esp, %size_of_local_vars
-            ----
-                
 
             /* call the function */
+
             ----
             call %name_of_module
             ----
@@ -206,7 +200,7 @@ traverseAST(): {
             /* removing the stack frame */
             ----
             mov     esp, ebp
-            pop     ebp
+            popa    ; ebp
             ----
 
             /* Store the output.
@@ -214,7 +208,7 @@ traverseAST(): {
             
             for each <output_param> in the output_plist:
                 ----
-                mov ax, [esp + <output_param>.offset]
+                mov ax, [esp + (memory_organisation)*8 + <output_param>.offset] ; take care of byte org/word org
                 mov [ebp + <left_arg>.offset], ax    
                 ----
 
@@ -223,7 +217,26 @@ traverseAST(): {
         }
         AST_NODE_IDLIST:
         AST_NODE_EXPR:
-        AST_NODE_AOBEXPR:
+        AST_NODE_AOBEXPR: {
+            x = a + c - d / e;
+            
+
+            a + AOB (t2)
+                c - AOB (t1) <--
+                    d / num
+        when leaf:
+            mov EAX, [d]
+            mov EBX, NUM
+            DIV EAX, EBX
+            MOV [t1], EAX
+            /// repeat
+        when non-leaf:
+            get t1
+            mov ax, [t1]
+            mov bx, [c] 
+            sub ax, bx
+            mov [t2], ax   
+        }
         AST_NODE_DECLARESTMT:
         AST_NODE_CONDSTMT:
         AST_NODE_CASESTMT:
