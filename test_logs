@@ -1,13 +1,3 @@
-test3.txt:
-	Redundant declaration of the function.
-	Default case not present in int type line 27.
-	Default case not present in int type line 34.
-	[ERROR NOT REPORTED: case 0 for boolean switch at line 50!]
-	[ERROR NOT REPORTED: multiple 'case true' for boolena switch at line 58]
-	switch variable is of real type.
-	Redundant declaration of the function.
-	[ERROR NOT REPORTED: switch variable is name of a module!]
-
 t2.erp (errors detected correctly):
 	Type mismatch in the expression line 19, tl = Integer, tr = Boolean.
 	Type mismatch in the expression line 20, tl = Integer, tr = Real.
@@ -121,7 +111,7 @@ t7.erp: (all reported errors are correct)
 t7.txt: (errors reported correctly)
 	Type mismatch3 in assignment statement on line 14.
 
-t8.erp:
+t8.erp: (All reported errors are correct)
 	Left operator of LOP is not boolean type line 18.
 	Array variable('p') used without index on line 22.
 	Array type variable 'p' in arithmetic operation on line 22.
@@ -150,6 +140,62 @@ t8.erp:
 		1. Line number 64: undeclared variable u1
 		NOTE: Line no. 42 is logged as error in comments, but is not an error.
 	]
+
+t9.erp: (All reported errors are correct)
+	The function used('mod1') is not declared and defined on line 20.
+	Function called (reused)'mod1' is not defined on line 20.
+	Type mismatch3 in assignment statement on line 39. [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	Assigning a value from a function which does not return a value
+	Output list type mismatch on line 40.
+	Type mismatch3 in assignment statement on line 41. [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	Type mismatch in the expression line 43, tl = Real, tr = Integer.
+	Type mismatch in the expression line 43, tl = Integer, tr = Real.
+	Type mismatch in the expression line 43, tl = Integer, tr = Real.
+	The lhs of the Assignment statement value on line 53 is not defined.
+	VarIdNum id('a') not declared before 53 [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	VarIdNum id('b') not declared before 53 [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	VarIdNum id('c') not declared before 55 [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	Type mismatch in the expression line 55, tl = Integer, tr = Real. [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	Type mismatch in the expression line 55, tl = Integer, tr = Real. [NOTE: this is not mentioned as error in testcase, but is reported correct]
+	[
+		KEPT FOR PASS 2:
+		1. Input parameters types mismatch (line 18)
+		2. Input parameters numbers mismatch (line 30)
+		3. Output parameters numbers mismatch (line 42)
+		4. Output parameters types mismatch (line 44)
+	]
+	[
+		MISSED ERROR: The output parameter new does not get assigned a value (line 56)
+	]
+
+test1.txt (reported errors are correct):
+	A record with the given already exists within the symbol table on line 2.
+	Redundant declaration of the function 'c' on line 7.
+	Redundant declaration of the function 'a' on line 34.
+	The lhs of the Assignment statement ere on line 53 is not defined.
+	VarIdNum id('i') not declared before 54
+	The variable to be output is not declared line 56.
+	The lhs of the Assignment statement i on line 57 is not defined.
+	VarIdNum id('i') not declared before 57
+	[
+		KEPT FOR PASS 2:
+		1. module b is declared but not defined (line 3)
+		2. module xyz is declared but not defined (line 5)
+	]
+	[
+		MISSED ERRORS:
+		1. Line 27: switch statement on integer having case true
+	]
+
+test2.txt:
+	Default case in bool type switch statement on line 14. <-- partially correct. The case statements (case 1, case 2, are also invalid)
+	[ALSO, variable 'boo' has not been assigned any value]
+
+test3.txt:
+	Redundant declaration of the function 'c' on line 4.
+	Default case not present in int type switch statement line 27.
+	Switch variable('akki') is of real type on line 42.
+	Redundant declaration of the function 'd' on line 74.
 
 test4.txt (errors reported correctly):
 	Recursion is not supported.
@@ -489,9 +535,35 @@ Testcases_stage2 [Shubham]:
 
 	t8.txt:
 
+	Errors on following line numbers were not reported:
+		Line 43: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
+		Line 48: [v1, a, k, h]:=use module function1 with parameters b7, v2, p, b7, b;	**ERROR: input parameter type mismatch **			
+		Line 50: end						 ** ERROR: Output parameter n is not assigned any value **
+		Line 91: [x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, int1; **ERROR: Input parameter type of Var4 does not match with formal parameter type**		
+		Line 119: end							      ** ERROR: Output parameter n is not assigned any value **
+		Line 192: end								** ERROR: Output parameter R3 is not assigned any value **
+		Line 194: <<module function1>>			    **ERROR: function1 cannot be overloaded**
 
+		| Array variable('b') used without index on line 199.
+		| Array type variable 'b' in arithmetic operation on line 199.
+		| Type mismatch3 in assignment statement on line 199.
+		^--- These seem to be because of Error on Line 194, which shouldn't be there
 
+	t9.txt:
+		
+		  Switch variable('p') is of real type on line 54. <-- correct
+		| Default case in bool type switch statement on line 62.
+		^--This one shouldn't be there. It seems to be connected to error on Line 54.line
 
-
+Line 70: case 20: A:= 12.90 + p;       **ERROR: Case value is incorrect as condiiton variable type is boolean**
+Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
+Line 96: k:= k+2;                            **ERROR: for loop variable k cannot be assigned a value** 
+Line 126: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
+Line 131: [v1, a, k, h]:=use module function1 with parameters b7, v2, p, b7, b;	**ERROR: input parameter type mismatch **			
+Line 133: end						 ** ERROR: Output parameter n is not assigned any value **
+Line 174: [x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**	
+Line 190:  default: E[9]:= B[15]+Q;	      **not an error**	
+Line 191: [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**       
+Line 1
 
 
