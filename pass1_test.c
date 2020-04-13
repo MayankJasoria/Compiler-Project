@@ -12,7 +12,7 @@
 
 int main(int argc, char* argv[]) {
 
-    char* inputfile = "Testcases_stage2/t3.txt";
+    char* inputfile = "testcases/t7.erp";
 
     /* initializing lexer and parser */
     lexerinit();
