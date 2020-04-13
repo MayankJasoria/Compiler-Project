@@ -587,7 +587,7 @@ Testcases_stage2 [Shubham]:
 		|
 		| No error reported on this line
 
-	t8.txt [NOT RESOLVED: output_plist assignments, Function overloading not detected]:
+	t8.txt [NOT RESOLVED: output_plist assignments]:
 
 	Errors on following line numbers were not reported:
 		Line 43: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
@@ -611,7 +611,7 @@ Testcases_stage2 [Shubham]:
 
 		These errors were not reported:
 		Line 70: case 20: A:= 12.90 + p;       **ERROR: Case value is incorrect as condiiton variable type is boolean**
-		--Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
+		Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
 		Line 96: k:= k+2;                            **ERROR: for loop variable k cannot be assigned a value** 
 		Line 126: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
 		Line 131: [v1, a, k, h]:=use module function1 with parameters b7, v2, p, b7, b;	**ERROR: input parameter type mismatch **			
@@ -628,7 +628,7 @@ Testcases_stage2 [Shubham]:
 		^--- These errors are reported due to entering overloaded function1 body. Entering
 			it should be avoided in pass2.
 
-	t10.txt:
+	t10.txt =[**FULLY RESOLVED**]=:
 
 	Following errors were not reported:
 	Line 33: case true: m:=m-n;			**ERROR: Case value is incorrect as condiiton variable type is integer**
