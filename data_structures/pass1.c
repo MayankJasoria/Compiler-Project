@@ -337,6 +337,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 							t = ch -> child -> next -> nodeData.leaf -> dataType;
 						if(ch -> child -> next -> type == AST_NODE_AOBEXPR)
 							t = ch -> child -> next -> nodeData.AOBExpr -> dataType;
+						if(ch -> child -> next -> type == AST_NODE_UNARY)
+							t = ch -> child -> next -> nodeData.unary -> dataType;	
 						if(tmp -> sdt.r -> dataType != t) { 
 							fprintf(stderr, 
 							"Type mismatch2 in assignment statement on line %d.\n",
@@ -358,6 +360,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 					t = ch -> nodeData.leaf -> dataType;
 				else if(ch -> type == AST_NODE_AOBEXPR)
 					t = ch -> nodeData.AOBExpr -> dataType;
+				else if(ch -> type == AST_NODE_UNARY)
+					t = ch -> nodeData.unary -> dataType;
 				if(tmp -> dataType != t) {
 					fprintf(stderr, 
 					"Type mismatch3 in assignment statement on line %d.\n",
@@ -620,6 +624,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch = ch -> next;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
+			if(ch -> type == AST_NODE_LEAF)
+				curr -> nodeData.unary -> dataType = ch -> nodeData.leaf ->dataType;
+			if(ch -> type == AST_NODE_AOBEXPR)
+				curr -> nodeData.unary -> dataType = ch -> nodeData.AOBExpr ->dataType;
+			if(ch -> type == AST_NODE_VARIDNUM)
+				curr -> nodeData.unary -> dataType = ch -> nodeData.var ->dataType;
 		}
 		break;
 		
