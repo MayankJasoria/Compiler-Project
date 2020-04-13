@@ -603,7 +603,7 @@ Testcases_stage2 [Shubham]:
 		| Type mismatch3 in assignment statement on line 199.
 		^--- These seem to be because of Error on Line 194, which shouldn't be there
 
-	t9.txt:
+	t9.txt [NOT RESOLVED: output_plist assignments]:
 		
 		  Switch variable('p') is of real type on line 54. <-- correct
 		| Default case in bool type switch statement on line 62.
@@ -611,7 +611,7 @@ Testcases_stage2 [Shubham]:
 
 		These errors were not reported:
 		Line 70: case 20: A:= 12.90 + p;       **ERROR: Case value is incorrect as condiiton variable type is boolean**
-		Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
+		--Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
 		Line 96: k:= k+2;                            **ERROR: for loop variable k cannot be assigned a value** 
 		Line 126: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
 		Line 131: [v1, a, k, h]:=use module function1 with parameters b7, v2, p, b7, b;	**ERROR: input parameter type mismatch **			
