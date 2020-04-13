@@ -9,11 +9,28 @@ test3.txt:
 	[ERROR NOT REPORTED: switch variable is name of a module!]
 
 t2.erp (errors detected correctly):
-	Type mismatch in the expression line 19.
-	Type mismatch in the expression line 20.
-	Type mismatch in the expression 21.
-	Type mismatch in the expression 22.
+	Type mismatch in the expression line 19, tl = Integer, tr = Boolean.
+	Type mismatch in the expression line 20, tl = Integer, tr = Real.
+	Type mismatch in the expression line 21, tl = Integer, tr = Boolean.
+	Type mismatch in the expression line 22, tl = Integer, tr = Boolean.
 	[ERROR LEFT FOR PASS 2: UNDECLARED VARIABLE var_34]
+
+t3_revised.txt (detected errors are correct):
+	The function used('mod1') is not declared and defined on line 20.
+	Function called (reused)'mod1' is not defined on line 20.
+	Assigning a value from a function which does not return a value
+	Output list type mismatch on line 40.
+	Type mismatch in the expression line 55, tl = Real, tr = Integer.
+	Type mismatch in the expression line 55, tl = Integer, tr = Real.
+	Type mismatch3 in assignment statement on line 55.
+	[
+		LEFT FOR PASS 2: Input parameter type, number mismatch, output_pparameter
+		parameter type, number mispatch, output param not assigned a value
+	]
+
+t3.txt (correctly detected error):
+	The function used('square') is not declared and defined on line 6.
+	Function called (reused)'square' is not defined on line 6.
 
 testcase2.txt:
 	DO the correction: Dont continue semantic check if there 
@@ -77,6 +94,16 @@ v1.txt:
 t3.erp (errors detected correctly):
 	The function used is not declared and defined.
 	Function called (reused)'square' is   not defined.
+
+t4.erp:
+	Type mismatch1 in assignment statement on line 52. <-- should not be reported
+
+t5.erp: (errors detected correctly)
+	Multiple definitions for the function 'f1' on line 7.
+
+t6.erp: (errors detected correctly)
+	The function used('f1') is not declared and defined on line 5.
+	Function called (reused)'f1' is not defined on line 5.
 
 test4.txt (errors reported correctly):
 	Recursion is not supported.
@@ -315,6 +342,31 @@ Testcases_stage2 [Shubham]:
         | Type mismatch in the expression line 73, tl = Real, tr = Integer.
         | Type mismatch3 in assignment statement on line 73.
         ^--- first error is ok, last 2 are side-effects
+
+		VarIdNum id('res_2') not declared before 82 <-- this seems to be correct. This is a typo in the testcase. Should be res_2_a
+
+		VarIdNum id('p') not declared before 83 <-- Seems to be correct but no comment in testcase
+
+		 The parameter k is not declared.
+		| Output list type mismatch on line 96.
+		| Input list type mismatch name : compute on line 96.
+		^--- First error is right. Second error is a side-effect. 
+			 Third one should be "Number of parameters mis-match".
+			 Surprisingly third error is not listed as an error in the testcase file.
+
+	t4.txt:
+		  VarIdNum id('p') not declared before 51 <-- correct
+		| Type mismatch in the expression line 51, tl = Real, tr = Integer.
+		| Type mismatch in the expression line 51, tl = Real, tr = Integer.
+		| Type mismatch in the expression line 51, tl = Integer, tr = Real.
+		| Type mismatch3 in assignment statement on line 51.
+		^--- So many side-effects of the first error
+
+		 The parameter k is not declared.
+		| Output list type mismatch on line 95.
+
+
+
         
          
 
