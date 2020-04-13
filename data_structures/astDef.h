@@ -515,6 +515,13 @@ typedef union {
 	int boolVal:1;
 } SymDataType;
 
+typedef enum {
+	SCOPE_FOR,
+	SCOPE_COND,
+	SCOPE_WHILE,
+	SCOPE_DEFAULT
+} scopeType;
+
 typedef struct SymTableFunc {
 	SymTableType type;  /*to cross check if it is a function (type==SYM_FUNCTION) */
 	int isDefined;			/*to check if the function is defined*/
@@ -527,6 +534,7 @@ typedef struct SymTableFunc {
 	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */
 	int actRecSize; /* field for storing activation record size */
 	char dependentVar[30];
+	scopeType scope;
 } SymTableFunc;
 
 typedef struct symTableVar {	

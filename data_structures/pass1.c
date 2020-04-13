@@ -495,7 +495,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
-					"Type mismatch in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
+					"Type mismatch1 in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
 						typeName[tl], typeName[tr]);
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
@@ -508,7 +508,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if((ch -> next) -> nodeData.leaf -> op == AST_RELOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
-					"Type mismatch in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
+					"Type mismatch2 in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
 						typeName[tl], typeName[tr]);
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
