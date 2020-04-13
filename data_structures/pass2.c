@@ -118,6 +118,22 @@ void pass2AST(ASTNode* curr, char* fname) {
 			if(strcmp(fname, tmp -> name) == 0) {
 				return;
 			}
+
+			ASTNode * ch2 = curr -> child;
+			if(ch2 -> type == AST_NODE_IDLIST) {
+				while(ch2 != NULL) {
+					char str[30];
+					strcpy(str, ch2 -> child -> nodeData.leaf -> tn -> lex);
+					if(lookupDependentVar(curr -> localST, str)) {
+						fprintf(stderr, 
+						"For loop variable '%s' re-assigned using moduleReuse on line %d.\n", 
+						str,
+						ch2 -> nodeData.leaf -> tn -> line_num);
+					}
+					ch2 = ch2 -> child -> next;
+				}
+			}
+
 			/* To be done in pass2 if the function is not defined. */
 			if(curr -> nodeData.moduleReuse -> listCheck)
 				return;
@@ -143,6 +159,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Number of input parameters mismatch name : %s on line %d.\n", tmp -> name, line_num);
 			}
+
 		}
 		break;
 
