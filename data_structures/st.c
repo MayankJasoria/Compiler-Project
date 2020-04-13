@@ -27,6 +27,16 @@ SymbolTable getSymbolTable() {
 	return getHashTable();
 }
 
+int lookupDependentVar(SymTableFunc * func, char* name) {
+	SymTableVar* data = NULL;
+	while(func != NULL) {
+		if(strcmp(name, func -> dependentVar) == 0)
+			return 1;
+		func = func -> parent;
+	}
+	return 0;
+}
+
 SymTableVar * fetchVarData(SymTableFunc * func, char* name) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {

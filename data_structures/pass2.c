@@ -147,6 +147,19 @@ void pass2AST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_DECLARESTMT: {
 			/* no need */
+			ASTNode* ch = curr -> child;
+			ASTNode* tmp = ch;
+			while(tmp != NULL) {
+				ASTNode* idNode = tmp -> child;
+				if(lookupDependentVar(curr -> localST, idNode -> nodeData.leaf -> tn -> lex)) {
+					fprintf(stderr, 
+					"Dependent variable '%s' declared on line %d.\n",
+					idNode -> nodeData.leaf -> tn -> lex,
+					idNode -> nodeData.leaf -> tn -> line_num);
+				}
+				tmp = tmp -> child;
+				tmp = tmp -> next;
+			}
 		}
 		break;
 
@@ -213,7 +226,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 			}
 
 			ASTNode* ch1 = ch -> next;
-			if(curr -> nodeData.iterStmt == AST_ITER_FOR)
+			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR)
 				strcpy(ch1 -> localST -> dependentVar, (ch -> nodeData).leaf -> tn -> lex);
 			if(ch1 == NULL) {
 				return;

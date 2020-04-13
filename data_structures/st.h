@@ -47,6 +47,7 @@ SymTableFunc * insertFuncRecord(char* name);
 */
 SymTableVar * fetchVarData(SymTableFunc * func, char* name);
 
+int lookupDependentVar(SymTableFunc * func, char* name);
 /**
 * Returns the record for a function from the symbol table,
 * if it exists. Otherwise returns NULL
