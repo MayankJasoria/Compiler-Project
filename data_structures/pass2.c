@@ -6,8 +6,6 @@
 #include "ast.h"
 #include "pass1.h"
 
-char typeName[][20] = {"Integer", "Real", "Boolean", "Array", "Pointer"};
-
 void pass2Children(ASTNode * head, char * fname) {
 	
 	ASTNode* ch = head;
@@ -208,7 +206,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 				return;
 			}
 			pass2AST(ch1, fname);
-			
+
 			ASTNode * ch2 = ch1 -> next;
 			if(ch2 == NULL) {
 				return;
