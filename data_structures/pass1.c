@@ -404,8 +404,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 				return;
 			}
 			/* To be done in pass2 if the function is not defined. */
-			if(tmp -> isDefined == 0)
+			if(tmp -> isDefined == 0) {
+				curr -> nodeData.moduleReuse -> listCheck = 0;
 				return;
+			}
 			if(ch -> prev != NULL && !listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
 				fprintf(stderr, 
 				"Output list type mismatch on line %d.\n", line_num);

@@ -299,6 +299,7 @@ typedef struct {
 
 typedef struct {
 	int a;
+	int listCheck;
 	/* TODO: Add data fields later */
 	
 } moduleReuseNode;
@@ -525,6 +526,7 @@ typedef struct SymTableFunc {
 	List output_plist; /* List of output parameter variables */
 	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */
 	int actRecSize; /* field for storing activation record size */
+	char dependentVar[30];
 } SymTableFunc;
 
 typedef struct symTableVar {	
