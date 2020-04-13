@@ -4,6 +4,10 @@
 
 void traverseAST(ASTNode* curr, char* fname);
 
+void pass2Children(ASTNode * head, char * fname);
+
+void pass2AST(ASTNode* curr, char* fname);
+
 void insertplist(ASTNode * curr, char * str);
 
 void traverseChildren(ASTNode * head, char * fname);

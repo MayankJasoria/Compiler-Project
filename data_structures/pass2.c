@@ -151,25 +151,19 @@ void pass2AST(ASTNode* curr, char* fname) {
 			}
 			ASTNode* ch1 = ch -> next;
 			ASTNode* ch2 = ch1 -> next;
+			pass2AST(ch1, fname);
 			strcpy(ch1 -> localST -> dependentVar, (ch -> nodeData).leaf -> tn -> lex);
-			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
-				if(curr -> nodeData.condStmt -> def == 0) {
-					break;
-				}
-				else {
-					if(ch2 == NULL) {
-						return;
-					}
-					pass2AST(ch2, fname);
-				}
+			if(ch2 == NULL) {
+				return;
 			}
+			pass2AST(ch2, fname);
 		}
 		break;
 		
 		case AST_NODE_CASESTMT: {
 			ASTNode* ch = curr -> child;
 			astDataType t = ch -> nodeData.leaf -> dataType;
-			SymTableVar * v = fetchVarData(curr -> localST, curr -> dependentVar);
+			SymTableVar * v = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
 			if(t != v -> dataType) {
 				fprintf(stderr, 
 				"Case value doen't match the switch variable type on line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
@@ -214,7 +208,8 @@ void pass2AST(ASTNode* curr, char* fname) {
 				return;
 			}
 			pass2AST(ch1, fname);
-
+			
+			ASTNode * ch2 = ch1 -> next;
 			if(ch2 == NULL) {
 				return;
 			}
