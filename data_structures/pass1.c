@@ -60,35 +60,51 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	astNodeType t = curr -> type;
 	ASTNode* ch = curr -> child;
 	if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(tmp -> sdt.r -> highId, "") == 0) {
-		if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
-			if((ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
-				(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
-				fprintf(stderr, 
-				"Static bound checking failed on line number %d\n", ch -> next -> nodeData.leaf -> tn -> line_num);	
-				if(t == AST_NODE_IO)
-					curr -> nodeData.io -> b = BOUND_ERROR;
-				if(t == AST_NODE_ASSIGN) 
-					curr -> nodeData.assign -> b = BOUND_ERROR;
-			}
-			else {
-				if(t == AST_NODE_IO)
+
+		if(t == AST_NODE_IO) {
+			if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
+				if((ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
+					(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+					fprintf(stderr, 
+					"Static bound checking failed on line number %d\n", ch -> next -> nodeData.leaf -> tn -> line_num);	
+						curr -> nodeData.io -> b = BOUND_ERROR;
+				}
+				else 
 					curr -> nodeData.io -> b = BOUND_CORRECT;
-				if(t == AST_NODE_ASSIGN) 
+			}
+			else 
+				curr -> nodeData.io -> b = BOUND_RUNTIME;
+		}
+
+		if(t == AST_NODE_VARIDNUM) {
+			if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
+				if((ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
+					(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+					fprintf(stderr, 
+					"Static bound checking failed on line number %d\n", ch -> next -> nodeData.leaf -> tn -> line_num);	
+						curr -> nodeData.var -> b = BOUND_ERROR;
+				}
+				else 
+					curr -> nodeData.var -> b = BOUND_CORRECT;
+			}
+			else 
+				curr -> nodeData.var -> b = BOUND_RUNTIME;
+		}
+
+		if(t == AST_NODE_ASSIGN) {
+			if(ch -> next -> child -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
+				if((ch -> next -> child -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
+					(ch -> next -> child -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+					fprintf(stderr, 
+					"Static bound checking failed on line number %d\n", ch -> next -> child -> nodeData.leaf -> tn -> line_num);	
+						curr -> nodeData.assign -> b = BOUND_ERROR;
+				}
+				else 
 					curr -> nodeData.assign -> b = BOUND_CORRECT;
 			}
-		}
-		else {
-			if(t == AST_NODE_IO)
-				curr -> nodeData.io -> b = BOUND_RUNTIME;
-			if(t == AST_NODE_ASSIGN) 
+			else 
 				curr -> nodeData.assign -> b = BOUND_RUNTIME;
 		}
-	}
-	else {
-		if(t == AST_NODE_IO)
-			curr -> nodeData.io -> b = BOUND_RUNTIME;	
-		if(t == AST_NODE_ASSIGN) 
-			curr -> nodeData.assign -> b = BOUND_RUNTIME;
 	}
 }
 
@@ -299,9 +315,71 @@ void traverseAST(ASTNode* curr, char* fname) {
 				ch -> nodeData.leaf -> tn -> lex,
 				ch -> nodeData.leaf -> tn -> line_num);
 			}
+
 			ch = ch -> next;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
+			if(tmp == NULL)
+				return;
+			ch = curr -> child -> next;
+			if(ch -> type == AST_NODE_LVALARRSTMT) {
+				if(tmp -> dataType == AST_TYPE_ARRAY){
+					if(ch -> child -> next -> type == AST_NODE_VARIDNUM) {
+						if(tmp -> sdt.r -> dataType != ch -> child -> nodeData.var -> dataType) {
+							fprintf(stderr, 
+							"Type mismatch1 in assignment statement on line %d.\n",
+							ch -> child -> next -> child -> nodeData.leaf -> tn -> line_num);
+						}
+					}
+					else {
+						astDataType t;
+						if(ch -> child -> next -> type == AST_NODE_LEAF)
+							t = ch -> child -> next -> nodeData.leaf -> dataType;
+						if(ch -> child -> next -> type == AST_NODE_AOBEXPR)
+							t = ch -> child -> next -> nodeData.AOBExpr -> dataType;
+						if(ch -> child -> next -> type == AST_NODE_UNARY)
+							t = ch -> child -> next -> nodeData.unary -> dataType;	
+						if(tmp -> sdt.r -> dataType != t) { 
+							fprintf(stderr, 
+							"Type mismatch2 in assignment statement on line %d.\n",
+							curr -> child -> nodeData.leaf -> tn -> line_num);
+						}
+					}
+				}
+				else {
+					fprintf(stderr, 
+					"Non array type element accessed with index on line %d.\n",
+					curr -> child -> nodeData.leaf -> tn -> line_num);
+				}
+			}
+			else {
+				astDataType t;
+				if(ch -> type == AST_NODE_VARIDNUM)
+					t = ch -> nodeData.var -> dataType;
+				else if(ch -> type == AST_NODE_LEAF)
+					t = ch -> nodeData.leaf -> dataType;
+				else if(ch -> type == AST_NODE_AOBEXPR)
+					t = ch -> nodeData.AOBExpr -> dataType;
+				else if(ch -> type == AST_NODE_UNARY)
+					t = ch -> nodeData.unary -> dataType;
+				if(tmp -> dataType != t) {
+					fprintf(stderr, 
+					"Type mismatch3 in assignment statement on line %d.\n",
+					curr -> child -> nodeData.leaf -> tn -> line_num);
+					return;
+				}
+				if(tmp -> dataType == AST_TYPE_ARRAY) {
+					SymTableVar *rhs = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+					if((tmp -> sdt.r -> dataType != rhs -> sdt.r -> dataType)||
+						(tmp -> sdt.r -> low != rhs -> sdt.r -> low)||
+						(tmp -> sdt.r -> high != rhs -> sdt.r -> high)) {
+						fprintf(stderr, 
+						"Type mismatch4 in assignment statement on line %d.\n",
+						curr -> child -> nodeData.leaf -> tn -> line_num);
+						return;
+					}
+				}
+			}
 		}
 		break;
 		
@@ -546,6 +624,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch = ch -> next;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
+			if(ch -> type == AST_NODE_LEAF)
+				curr -> nodeData.unary -> dataType = ch -> nodeData.leaf ->dataType;
+			if(ch -> type == AST_NODE_AOBEXPR)
+				curr -> nodeData.unary -> dataType = ch -> nodeData.AOBExpr ->dataType;
+			if(ch -> type == AST_NODE_VARIDNUM)
+				curr -> nodeData.unary -> dataType = ch -> nodeData.var ->dataType;
 		}
 		break;
 		
@@ -569,6 +653,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch = ch -> next;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
+			ch = curr -> child -> next;
+			curr -> nodeData.lvalueARRStmt -> dataType = ch -> nodeData.AOBExpr -> dataType;
 		}
 		break;
 
@@ -617,12 +703,16 @@ void traverseAST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Array variable('%s') used without index on line %d.\n",
 				idNode -> name, ch -> nodeData.leaf -> tn -> line_num);
+				return;
 			}
 			if(curr -> nodeData.var -> dataType != AST_TYPE_ARRAY && ch-> next != NULL) {
 				fprintf(stderr, 
 				"Non Array variable('%s') used with index line %d.\n", 
 				idNode -> name,
 				ch -> nodeData.leaf -> tn -> line_num);
+			}
+			if(ch -> next != NULL) {
+				curr -> nodeData.var -> dataType = idNode -> sdt.r -> dataType;
 			}
 		}
 		break;
