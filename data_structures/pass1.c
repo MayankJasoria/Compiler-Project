@@ -775,6 +775,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 								tmp -> isDeclared = 0;
 								tmp -> isDefined = 1;
 							}
+							tmp -> isDefined = 1;
 							curr -> localST = tmp;
 							insertplist(curr -> next, str);
 							insertplist(curr -> next -> next, str);
