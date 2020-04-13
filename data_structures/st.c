@@ -30,7 +30,7 @@ SymbolTable getSymbolTable() {
 int lookupDependentVar(SymTableFunc * func, char* name) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {
-		if(strcmp(name, func -> dependentVar) == 0)
+		if((strcmp(name, func -> dependentVar) == 0) && func -> scope == SCOPE_FOR)
 			return 1;
 		func = func -> parent;
 	}
@@ -144,6 +144,7 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> parent = NULL;
 	data -> input_plist = getList();
 	data -> output_plist = getList();
+	data -> scope = SCOPE_DEFAULT;
 	strcpy(data -> dependentVar, "");
 	insertToTable(globalST, name, data, stringHash);
 	return data;
@@ -160,6 +161,7 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> dataTable = getSymbolTable();
 	data -> input_plist = getList();
 	data -> output_plist = getList();
+	data -> scope = SCOPE_DEFAULT;
 	strcpy(data -> dependentVar, "");
 	return data;
 }

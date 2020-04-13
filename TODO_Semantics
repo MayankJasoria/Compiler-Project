@@ -5,3 +5,9 @@
 5. Check if function is declared, but never defined
 6. Check if ourput_plist variables are assigned a value before function terminates
 7. Prevent shadowing of loop and switch variable 
+
+
+
+Implemented:
+1. dependent variable can't be shadowed(redeclared).
+2. 

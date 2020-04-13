@@ -87,6 +87,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_ASSIGN: {
 			/* nothing needed */
+			ASTNode * ch = curr -> child;
+			if(lookupDependentVar(curr -> localST, ch -> nodeData.leaf -> tn -> lex)) {
+				fprintf(stderr, 
+				"For loop variable '%s' re-assigned on line %d.\n", 
+				ch -> nodeData.leaf -> tn -> lex,
+				ch -> nodeData.leaf -> tn -> line_num);
+			}
 		}
 		break;
 		
@@ -176,6 +183,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 			ASTNode* ch1 = ch -> next;
 			ASTNode* ch2 = ch1 -> next;
 			strcpy(ch1 -> localST -> dependentVar, (ch -> nodeData).leaf -> tn -> lex);
+			ch1 -> localST -> scope = SCOPE_COND;
 			pass2AST(ch1, fname);
 			if(ch2 == NULL) {
 				return;
@@ -226,8 +234,10 @@ void pass2AST(ASTNode* curr, char* fname) {
 			}
 
 			ASTNode* ch1 = ch -> next;
-			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR)
+			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
 				strcpy(ch1 -> localST -> dependentVar, (ch -> nodeData).leaf -> tn -> lex);
+				ch1 -> localST -> scope = SCOPE_FOR;
+			}
 			if(ch1 == NULL) {
 				return;
 			}
