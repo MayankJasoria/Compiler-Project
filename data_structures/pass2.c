@@ -128,7 +128,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 						fprintf(stderr, 
 						"For loop variable '%s' re-assigned using moduleReuse on line %d.\n", 
 						str,
-						ch2 -> nodeData.leaf -> tn -> line_num);
+						ch2 -> child -> nodeData.leaf -> tn -> line_num);
 					}
 					ch2 = ch2 -> child -> next;
 				}
