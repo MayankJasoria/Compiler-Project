@@ -72,7 +72,7 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par);
 * 
 * @return updated Symbol Table
 */
-void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType);
+void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType, int line_num);
 
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 

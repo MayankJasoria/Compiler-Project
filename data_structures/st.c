@@ -61,7 +61,7 @@ void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataT
 	st = insertToTable(st, name, data, stringHash);
 }
 
-void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType) {
+void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType, int line_num) {
 	
 	SymTableFunc * fun = fetchFuncData(fname);
 
@@ -75,7 +75,7 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 	} 
 	else {
 		fprintf(stderr, 
-		"A record for the given data item %s already exists within the scope of this function.\nNo changes have been made.\n", varName);
+		"A record for the given data item %s already exists within the scope of this function. No changes have been made. Redeclaration on line %d\n", varName, line_num);
 	}
 }
 
@@ -113,14 +113,14 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 	} 
 	else {
 		fprintf(stderr, 
-		"A record for the given data item already exists within the scope of this function.\nNo changes have been made.\n");
+		"A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line %d\n", lft -> nodeData.leaf -> tn -> line_num);
 	}
 }
 
 SymTableFunc* insertFuncRecord(char* name) {
 
 	if(fetchFuncData(name) != NULL) {
-		fprintf(stderr, "A record with the given already exists within the symbol table.");
+		// fprintf(stderr, "A record with the given already exists within the symbol table.");
 		return NULL;
 	}
 

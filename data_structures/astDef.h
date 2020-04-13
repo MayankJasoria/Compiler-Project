@@ -161,6 +161,8 @@ int typeSize[5];
  * NOTE: All occurrences of 'int a' are only placeholders
  */
 
+char typeName[5][20];
+
 typedef struct pn {
 	int a;
 	// struct moduleDeclarationNode* dec_head; /* Linkedlist of moduleDeclarationNode */
