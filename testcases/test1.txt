@@ -2,7 +2,7 @@ declare module a;
 declare module a;
 declare module b;        **ERROR: module b is declared but not defined **
 declare module c;
-declare module zxy;    **ERROR: module b is declared but not defined **
+declare module zxy;      **ERROR: module b is declared but not defined **
 
 <<module c>> takes input[list:array[1..15] of real, n:integer];
 start 

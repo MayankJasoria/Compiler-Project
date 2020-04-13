@@ -1,35 +1,39 @@
 t2.erp (errors detected correctly):
 	Type mismatch in the expression line 19, tl = Integer, tr = Boolean.
 	Type mismatch in the expression line 20, tl = Integer, tr = Real.
+	Type mismatch3 in assignment statement on line 20.
 	Type mismatch in the expression line 21, tl = Integer, tr = Boolean.
 	Type mismatch in the expression line 22, tl = Integer, tr = Boolean.
-	[ERROR LEFT FOR PASS 2: UNDECLARED VARIABLE var_34]
+	The parameter var_34 is not declared.
+	Input list type mismatch name : compute on line 11.
 
 t3_revised.txt (detected errors are correct):
 	The function used('mod1') is not declared and defined on line 20.
 	Function called (reused)'mod1' is not defined on line 20.
 	Assigning a value from a function which does not return a value
 	Output list type mismatch on line 40.
+	Assigning a value from a function which does not return a value
 	Type mismatch in the expression line 55, tl = Real, tr = Integer.
 	Type mismatch in the expression line 55, tl = Integer, tr = Real.
 	Type mismatch3 in assignment statement on line 55.
-	[
-		LEFT FOR PASS 2: Input parameter type, number mismatch, output_pparameter
-		parameter type, number mispatch, output param not assigned a value
-	]
+	Input list type mismatch name : fun1 on line 18.
+	Input list type mismatch name : fun1 on line 30.
+	Number of output parameters mismatch on line 42.
+	Output list type mismatch on line 44.
 
 t3.txt (correctly detected error):
-	The function used('square') is not declared and defined on line 6.
-	Function called (reused)'square' is not defined on line 6.
+	The function used('square') is not declared and defined on line 7.
+	Function called (reused)'square' is not defined on line 7.
+	The variable to be output is not declared line 8.
 
 testcase2.txt:
 	DO the correction: Dont continue semantic check if there 
 	are compilation errors
 
 testcase7.txt (errors detected correctly):
-	Loop variable is not defined.
-	Loop variable is not defined.
-	The lhs of the Assignment statement i on line 8 is not defined. <-- probably different error should be reported for loop variable
+	Loop variable('i') is not defined line 3.
+	Loop variable('i') is not defined line 6.
+	The lhs of the Assignment statement i on line 8 is not defined.
 
 testcase8.txt (error detected correctly):
 	Loop variable is not defined.
@@ -104,9 +108,9 @@ t7.erp: (all reported errors are correct)
 	A record for the given data item v already exists within the scope of this function. No changes have been made. Redeclaration on line 21
 	Type mismatch in the expression line 22, tl = Integer, tr = Real.
 	Type mismatch in the expression line 22, tl = Integer, tr = Real.
+	The variable to be output is not declared line 23.
 	The lhs of the Assignment statement u1 on line 31 is not defined.
 	Type mismatch3 in assignment statement on line 33.
-	[MISSED ERROR: UNDECLARED VARIABLE x_2 ON LINE 23]
 
 t7.txt: (errors reported correctly)
 	Type mismatch3 in assignment statement on line 14.
@@ -135,11 +139,7 @@ t8.erp: (All reported errors are correct)
 	VarIdNum id('u2') not declared before 80
 	A record for the given data item x_1 already exists within the scope of this function. No changes have been made. Redeclaration on line 82
 	Type mismatch1 in assignment statement on line 83.
-	[
-		MISSED ERRORS:
-		1. Line number 64: undeclared variable u1
-		NOTE: Line no. 42 is logged as error in comments, but is not an error.
-	]
+	Input list type mismatch name : readArr on line 64.
 
 t9.erp: (All reported errors are correct)
 	The function used('mod1') is not declared and defined on line 20.
@@ -157,13 +157,10 @@ t9.erp: (All reported errors are correct)
 	VarIdNum id('c') not declared before 55 [NOTE: this is not mentioned as error in testcase, but is reported correct]
 	Type mismatch in the expression line 55, tl = Integer, tr = Real. [NOTE: this is not mentioned as error in testcase, but is reported correct]
 	Type mismatch in the expression line 55, tl = Integer, tr = Real. [NOTE: this is not mentioned as error in testcase, but is reported correct]
-	[
-		KEPT FOR PASS 2:
-		1. Input parameters types mismatch (line 18)
-		2. Input parameters numbers mismatch (line 30)
-		3. Output parameters numbers mismatch (line 42)
-		4. Output parameters types mismatch (line 44)
-	]
+	Input list type mismatch name : fun1 on line 18.
+	Input list type mismatch name : fun1 on line 30.
+	Number of output parameters mismatch on line 42.
+	Output list type mismatch on line 44.
 	[
 		MISSED ERROR: The output parameter new does not get assigned a value (line 56)
 	]
@@ -177,30 +174,45 @@ test1.txt (reported errors are correct):
 	The variable to be output is not declared line 56.
 	The lhs of the Assignment statement i on line 57 is not defined.
 	VarIdNum id('i') not declared before 57
+	Case value doen't match the switch variable type on line 27.
 	[
 		KEPT FOR PASS 2:
 		1. module b is declared but not defined (line 3)
 		2. module xyz is declared but not defined (line 5)
 	]
-	[
-		MISSED ERRORS:
-		1. Line 27: switch statement on integer having case true
-	]
 
 test2.txt:
-	Default case in bool type switch statement on line 14. <-- partially correct. The case statements (case 1, case 2, are also invalid)
-	[ALSO, variable 'boo' has not been assigned any value]
+	Default case in bool type switch statement on line 14.
+	Case value doen't match the switch variable type on line 16.
+	Case value doen't match the switch variable type on line 18.
+	[
+		MISSED: 'boo' has not been assigned a value
+	]
 
 test3.txt:
 	Redundant declaration of the function 'c' on line 4.
+	The lhs of the Assignment statement a on line 6 is not defined.
+	Switch variable('q') is of real type on line 8.
 	Default case not present in int type switch statement line 27.
 	Switch variable('akki') is of real type on line 42.
 	Redundant declaration of the function 'd' on line 74.
+	Switch variable('c') is not defined line 79.
+	The variable to be output is not declared line 81.
+	Default case not present in int type switch statement line 79.
+	Case value doen't match the switch variable type on line 52.
 
 test4.txt (errors reported correctly):
-	Recursion is not supported.
-	Index variable in range arrays is not Integer. 
-	Redundant declaration of the function.
+	Recursion is not supported on line 12.
+	Index variable in range arrays is not Integer.
+	Type mismatch3 in assignment statement on line 32.
+	Redundant declaration of the function 'd' on line 64.
+	Array variable('aaa') used without index on line 71.
+	Type mismatch in the expression line 74, tl = Real, tr = Integer.
+	Type mismatch3 in assignment statement on line 74.
+	Assigning a value from a function which does not return a value
+	Output list type mismatch on line 13.
+	Assigning a value from a function which does not return a value
+	Input list type mismatch name : readArr on line 13.
 
 testcase1.txt (errors reported correctly):
 	Array variable used without index.
@@ -555,15 +567,30 @@ Testcases_stage2 [Shubham]:
 		| Default case in bool type switch statement on line 62.
 		^--This one shouldn't be there. It seems to be connected to error on Line 54.line
 
-Line 70: case 20: A:= 12.90 + p;       **ERROR: Case value is incorrect as condiiton variable type is boolean**
-Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
-Line 96: k:= k+2;                            **ERROR: for loop variable k cannot be assigned a value** 
-Line 126: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
-Line 131: [v1, a, k, h]:=use module function1 with parameters b7, v2, p, b7, b;	**ERROR: input parameter type mismatch **			
-Line 133: end						 ** ERROR: Output parameter n is not assigned any value **
-Line 174: [x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**	
-Line 190:  default: E[9]:= B[15]+Q;	      **not an error**	
-Line 191: [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**       
-Line 1
+		These errors were not reported:
+		Line 70: case 20: A:= 12.90 + p;       **ERROR: Case value is incorrect as condiiton variable type is boolean**
+		Line 81: default: E[9]:= B[15]+Q;	      **ERROR: presence of default statement is incorrect as condiiton variable type is boolean** 
+		Line 96: k:= k+2;                            **ERROR: for loop variable k cannot be assigned a value** 
+		Line 126: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
+		Line 131: [v1, a, k, h]:=use module function1 with parameters b7, v2, p, b7, b;	**ERROR: input parameter type mismatch **			
+		Line 133: end						 ** ERROR: Output parameter n is not assigned any value **
+		Line 174: [x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**	
+		Line 190:  default: E[9]:= B[15]+Q;	      **not an error**	
+		Line 191: [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**       
+		Line 277: <<module function1>>			    	**ERROR: function1 cannot be overloaded**
+
+
+		| Array variable('b') used without index on line 282.
+		| Array type variable 'b' in arithmetic operation on line 282.
+		| Type mismatch3 in assignment statement on line 282.
+		^--- These errors are reported due to entering overloaded function1 body. Entering
+			it should be avoided in pass2.
+
+	t10.txt:
+
+	Following errors were not reported:
+	Line 33: case true: m:=m-n;			**ERROR: Case value is incorrect as condiiton variable type is integer**
+	Line 57: case 20: A:= 12.90 + p;       		**ERROR: Case value is incorrect as condiiton variable type is boolean**
+	Line 83: k:= k+2;                            **ERROR: for loop variable k cannot be assigned a value** 
 
 

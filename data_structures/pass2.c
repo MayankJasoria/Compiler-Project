@@ -109,6 +109,10 @@ void pass2AST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Output list type mismatch on line %d.\n", line_num);
 			}
+			if(ch -> prev != NULL && listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST) == -1) {
+				fprintf(stderr, 
+				"Number of output parameters mismatch on line %d.\n", line_num);
+			}
 			
 			/* searching the idList in case 38, optioanal may be NULL*/
 			ch = ch -> next;
@@ -118,6 +122,10 @@ void pass2AST(ASTNode* curr, char* fname) {
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
 				"Input list type mismatch name : %s on line %d.\n", tmp -> name, line_num);
+			}
+			if(listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST) == -1) {
+				fprintf(stderr, 
+				"Number of input parameters mismatch name : %s on line %d.\n", tmp -> name, line_num);
 			}
 		}
 		break;

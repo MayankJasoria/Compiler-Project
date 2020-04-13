@@ -154,9 +154,7 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 	}
 	if(head == NULL && node == NULL)
 		return 1;
-	fprintf(stderr, 
-	"Different number of parameters.\n");
-	return 0;
+	return -1;
 }
 
 void traverseAST(ASTNode* curr, char* fname) {
@@ -412,7 +410,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Output list type mismatch on line %d.\n", line_num);
 			}
-			
+			if(ch -> prev != NULL && listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST) == -1) {
+				fprintf(stderr, 
+				"Number of output parameters mismatch on line %d.\n", line_num);
+			}
+
 			/* searching the idList in case 38, optioanal may be NULL*/
 			ch = ch -> next;
 			while(ch -> type != AST_NODE_IDLIST)
@@ -421,6 +423,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
 				"Input list type mismatch name : %s on line %d.\n", tmp -> name, line_num);
+			}
+			if(listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST) == -1) {
+				fprintf(stderr, 
+				"Number of input parameters mismatch on line %d.\n", line_num);
 			}
 		}
 		break;
@@ -911,12 +917,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 					SymTableVar* idx = fetchVarData(curr -> localST, str);
 					if(idx == NULL) {
 						fprintf(stderr, 
-						"Index variable is not defined.\n");
+						"Index variable is not defined on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
 						return;
 					}
 					if(idx -> dataType != AST_TYPE_INT) {
 						fprintf(stderr, 
-						"Index variable in range arrays is not Integer.\n");
+						"Index variable in range arrays is not Integer on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
 					}
 				}
 				break;

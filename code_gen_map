@@ -5,6 +5,7 @@
  */
 
 This might be helpful: https://www.cs.uaf.edu/2005/fall/cs301/support/x86/nasm.html
+NASM Documentation: https://www.nasm.us/xdoc/2.14.02/nasmdoc.pdf
 
 To compile nasm programs:
     nasm -f elf <file_name>.asm
@@ -45,8 +46,7 @@ https://stackoverflow.com/questions/17239781/x86-assembly-why-do-i-need-stack-fr
 /* Saves the pointer to the base of current stack frame, and moves stack pointer to 
     ebx. Thus we are free to use stack inside the called function */
 
-  
-    |  # bp |   |   |   |   |   |   | $ sp (new)  |  |   |   |   |   | | 
+
 
     /*setting the stack frame*/
         push    ebp    
@@ -68,7 +68,8 @@ traverseAST(): {
             /* init text and data section here */
             ----
             section .data
-            ;define all the global variables here 
+            ;define all the global variables here
+            msg db "hello" 
             section .text
             global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
             ----
@@ -108,6 +109,7 @@ traverseAST(): {
                     ---
                     ret
                     ---
+                /* TODO: Handle other cases */    
 
         }
         AST_NODE_IO: {
@@ -118,7 +120,7 @@ traverseAST(): {
                    Get the variable from symbol table. It must have an offset. */
                 ----
                 mov     edx, ID.width           ; number of bytes to read
-                mov     ecx, [ebp + offset]     ; reserved space to store the input
+                mov     ecx, ebp + offset     ; reserved space to store the input
                 mov     ebx, 0                  ; write to stdin
                 mov     eax, 3                  ; invoke SYS_READ (kernel opcode 3)
                 int     80h                     ; interrupt, switch context to kernel
@@ -132,18 +134,18 @@ traverseAST(): {
                     /* Get the symbol table entry for ID and its offset */
                     ----
                     mov	edx, ID.width   ;number of bytes to write
-                    mov ecx, [ebp + offset]       ;move memory address of the value
+                    mov ecx, ebp + offset       ;move memory address of the value
                     ----
                 else if ID[index]:
                     ----
-                    mov edx, ID.width
-                    mov ecx, [ebp + offset + index]
+                    mov edx, ID.(width of each element)
+                    mov ecx, ebp + offset + index*(width of each element)
                     ----
                 else:
                     /* not sure what to do here */
                     ----
                     mov edx, NUM.width | RNUM.width
-                    mov ecx, NUM | RNUM
+                    mov ecx, NUM | RNUM  ; Not sure how to output constant, we dont need memory location here
                     ----
 
                 ----
@@ -161,7 +163,7 @@ traverseAST(): {
             ch = ch->next;
             traverseAST(ch, fname);
             ----
-            pop ax
+            mov ax, <temp_rhs>.offset    ; Requires more discussion
             mov [ebp + <lhs>.offset], ax
             ----
         }
@@ -172,7 +174,7 @@ traverseAST(): {
 
             ----
             ;Save the current stack frame pointer
-            pusha   ;ebp          
+            pusha   ;ebp       
             ;Move the current pointer to stack as the base of the called function.
             ;This makes sure that we are free to stack pointer now 
             mov     ebp,esp 
@@ -186,11 +188,10 @@ traverseAST(): {
             ----
             add esp, actRecSize
             ----
-
+            [ebp + offset_a]
 
             /* Iterate in through args list, and assign them values at their offsets in the frame */
             for each <arg> in modulereuse.args and corresponsing <input_param> in input_plist:
-                ----
                 mov ax, <arg>.value
                 mov [ebp + <input_param>.offset], ax 
                 ----
@@ -207,6 +208,8 @@ traverseAST(): {
             popa    ; ebp
             ----
 
+        [a,b] = modulereuse func1 with params [4,5]
+            | ebp (old)|....        |esp(old)|     ..pusha...         | ebp(new) | + offset
             /* Store the output.
                 We can do this by iterating through the output_plist */
             

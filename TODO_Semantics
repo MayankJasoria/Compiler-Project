@@ -2,4 +2,6 @@
 2. Function type checking.
 3. While expression of boolean type.
 4. t2.txt line 13
-5. 
+5. Check if function is declared, but never defined
+6. Check if ourput_plist variables are assigned a value before function terminates
+7. Prevent shadowing of loop and switch variable 
