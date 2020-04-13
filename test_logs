@@ -1,0 +1,293 @@
+c12.erp (errors detected correctly): Type mismatch in the expression.
+Right operator of LOP is not boolean type.
+
+test3.txt:
+Redundant declaration of the function.
+Default case not present in int type line 27.
+Default case not present in int type line 34.
+[ERROR NOT REPORTED: case 0 for boolean switch at line 50!]
+[ERROR NOT REPORTED: multiple 'case true' for boolena switch at line 58]
+switch variable is of real type.
+Redundant declaration of the function.
+[ERROR NOT REPORTED: switch variable is name of a module!]
+
+t2.erp (errors detected correctly):
+Type mismatch in the expression line 19.
+Type mismatch in the expression line 20.
+Type mismatch in the expression 21.
+Type mismatch in the expression 22.
+[ERROR LEFT FOR PASS 2: UNDECLARED VARIABLE var_34]
+
+testcase2.txt:
+DO the correction: Dont continue semantic check if there 
+are compilation errors
+
+testcase7.txt (errors detected correctly):
+Loop variable is not defined.
+Loop variable is not defined.
+The lhs of the Assignment statement i on line 8 is not defined. <-- probably different error should be reported for loop variable
+
+testcase8.txt (error detected correctly):
+Loop variable is not defined.
+
+v1.txt:
+The lhs of the Assignment statement x_1 on line 8 is not defined.
+VarIdNum id not declared before u1 8
+A record for the given data item i already exists within the scope of this function.
+No changes have been made.
+The lhs of the Assignment statement x_1 on line 10 is not defined.
+VarIdNum id not declared before u2 10
+VarIdNum id not declared before u3 10
+VarIdNum id not declared before u3 14
+The lhs of the Assignment statement x_1 on line 32 is not defined.
+VarIdNum id not declared before u1 32
+A record for the given data item i already exists within the scope of this function.
+No changes have been made.
+Array type variables in arithmetic operation.
+Output list type mismatch.
+Input list type mismatch name : newfunc1.
+Different number of parameters.
+Input list type mismatch name : newfunc1.
+Different number of parameters.
+Output list type mismatch.
+Input list type mismatch name : newfunc1.
+Array type variables in arithmetic operation.
+Type mismatch in the expression line 75.
+Type mismatch in the expression line 75.
+Type mismatch in the expression line 75.
+Array type variables in arithmetic operation.
+Input list type mismatch name : newfunc1.
+A record for the given data item u already exists within the scope of this function.
+No changes have been made.
+A record for the given data item v already exists within the scope of this function.
+No changes have been made.
+Type mismatch in the expression line 80.
+Array type variables in arithmetic operation.
+The variable taken as input is not being declared line 94.
+The lhs of the Assignment statement u1 on line 95 is not defined.
+The function used is not declared and defined.
+Function called (reused)'newfunc2' is   not defined.
+Default case not present in int type line 97.
+Type mismatch in the expression line 102.
+The lhs of the Assignment statement s on line 103 is not defined.
+VarIdNum id not declared before k 103
+The lhs of the Assignment statement x_1 on line 113 is not defined.
+VarIdNum id not declared before u1 113
+A record for the given data item i already exists within the scope of this function.
+No changes have been made.
+Recursion is not supported.
+----------------FEEDBACK on v1.txt ------------------
+Line 
+-----------------------------------------------------
+
+t3.erp (errors detected correctly):
+The function used is not declared and defined.
+Function called (reused)'square' is   not defined.
+
+test4.txt (errors reported correctly):
+Recursion is not supported.
+Index variable in range arrays is not Integer. 
+Redundant declaration of the function.
+
+testcase1.txt (errors reported correctly):
+Array variable used without index.
+Type mismatch in the expression line 12.
+
+testcase3.txt (errors reported correctly):
+Redundant declaration of the function.
+
+UltimateTestcase.erp:
+Line number (143): syntax error -- missing  'BREAK' 'SEMICOL'
+
+Line number (143): syntax error -- unexpected 'of'
+
+Line number (143): syntax error  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Line number (153): syntax error -- unexpected '<<' 'module'  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Line number (153): syntax error -- unexpected '>>' 'takes' 'input'  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Line number (154): syntax error -- missing  'SQBC' 'ASSIGNOP' 'USE' 'MODULE' 'ID' 'WITH' 'PARAMETERS'  -- expected one of: 'ID'
+
+Line number (154): syntax error -- missing  'SEMICOL' -- unexpected ':' 'integer' ','
+
+Line number (154): syntax error -- unexpected ':' 'real' ','  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Line number (154): syntax error -- unexpected ':' 'array'  -- expected one of: 'ASSIGNOP' 'SQBO' 
+
+Line number (154): syntax error -- unexpected '0' '..' '9999'  -- expected one of: 'ID'
+
+Line number (154): syntax error -- missing  'ASSIGNOP' 'USE' 'MODULE' 'ID' 'WITH' 'PARAMETERS' -- unexpected 'of' 'integer' ','
+
+Line number (154): syntax error -- missing  'SEMICOL' -- unexpected ':' 'boolean' ',' 
+
+Line number (154): syntax error -- unexpected ':' 'array'  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Line number (154): syntax error -- unexpected '..' '7'  -- expected one of: 'EMPTY' 'COMMA'
+
+Line number (154): syntax error -- missing  'ASSIGNOP' 'USE' 'MODULE' 'ID' 'WITH' 'PARAMETERS' -- unexpected 'of' 'real' ',' 
+
+Line number (154): syntax error -- missing  'SEMICOL' -- unexpected ':' 'array'
+
+Line number (154): syntax error -- unexpected '7' '..' 
+
+Line number (154): syntax error -- missing  'ASSIGNOP' 'USE' 'MODULE' 'ID' 'WITH' 'PARAMETERS' -- unexpected 'of' 'real'  -- expected one of: 'ID'   
+
+Line number (154): syntax error -- missing  'SEMICOL' -- unexpected ']' ';' 'returns'
+
+Line number (155): syntax error -- missing  'SQBC' 'ASSIGNOP' 'USE' 'MODULE' 'ID' 'WITH' 'PARAMETERS'  -- expected one of: 'ID'
+
+Line number (155): syntax error -- missing  'SEMICOL' -- unexpected ':' 'real' ','
+
+Line number (155): syntax error -- unexpected ':' 'integer' ','  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Line number (155): syntax error -- unexpected ':' 'boolean' ']' ';' 'start'  -- expected one of: 'ASSIGNOP' 'SQBO'
+
+Compilation ended with errors.
+
+Redundant declaration of the function 'module1'.
+Redundant declaration of the function 'module2'.
+The variable taken as input is not being declared line 40.
+Loop variable('id1') is not defined line 55.
+VarIdNum id('a') not declared before 60
+VarIdNum id('b') not declared before 60
+VarIdNum id('b') not declared before 60
+VarIdNum id('c') not declared before 60
+VarIdNum id('c') not declared before 60
+VarIdNum id('d') not declared before 60
+VarIdNum id('d') not declared before 60
+VarIdNum id('e') not declared before 60
+VarIdNum id('c') not declared before 60
+VarIdNum id('d') not declared before 60
+Type mismatch in the expression line 60, tl = Integer, tr = Real.
+VarIdNum id('arr') not declared before 60
+Right operator of LOP is not boolean type line 60.
+For loop variable('TRUE') is not of int type on line 68.
+The lhs of the Assignment statement arithorboolvar on line 79 is not defined.
+VarIdNum id('a') not declared before 79
+VarIdNum id('b') not declared before 79
+VarIdNum id('b') not declared before 79
+VarIdNum id('c') not declared before 79
+VarIdNum id('c') not declared before 79
+VarIdNum id('d') not declared before 79
+VarIdNum id('d') not declared before 79
+VarIdNum id('e') not declared before 79
+VarIdNum id('c') not declared before 79
+VarIdNum id('d') not declared before 79
+Type mismatch in the expression line 79, tl = Integer, tr = Real.
+VarIdNum id('arr') not declared before 79
+Right operator of LOP is not boolean type line 79.
+The lhs of the Assignment statement arithvar on line 81 is not defined.
+VarIdNum id('a') not declared before 81
+VarIdNum id('b') not declared before 81
+The lhs of the Assignment statement arithvar on line 82 is not defined.
+The lhs of the Assignment statement arithvar on line 83 is not defined.
+The lhs of the Assignment statement arithvar on line 84 is not defined.
+VarIdNum id('a') not declared before 84
+VarIdNum id('b') not declared before 84
+The lhs of the Assignment statement arithvar on line 85 is not defined.
+VarIdNum id('a') not declared before 85
+VarIdNum id('b') not declared before 85
+The lhs of the Assignment statement arithvar on line 86 is not defined.
+VarIdNum id('a') not declared before 86
+VarIdNum id('b') not declared before 86
+The lhs of the Assignment statement arithvar on line 87 is not defined.
+VarIdNum id('a') not declared before 87
+VarIdNum id('b') not declared before 87
+The lhs of the Assignment statement arithvar on line 88 is not defined.
+Index variable is not defined.
+VarIdNum id('arr1') not declared before 88
+The lhs of the Assignment statement arithvar on line 89 is not defined.
+VarIdNum id('arr1') not declared before 89
+The lhs of the Assignment statement arithvar on line 90 is not defined.
+VarIdNum id('arr1') not declared before 90
+The lhs of the Assignment statement arithvar on line 91 is not defined.
+The lhs of the Assignment statement arithvar on line 92 is not defined.
+The lhs of the Assignment statement id3 on line 95 is not defined.
+Index variable is not defined.
+VarIdNum id('arr4') not declared before 95
+The lhs of the Assignment statement id4 on line 96 is not defined.
+VarIdNum id('arr5') not declared before 96
+The lhs of the Assignment statement id5 on line 97 is not defined.
+VarIdNum id('arr4') not declared before 97
+The lhs of the Assignment statement id6 on line 98 is not defined.
+The lhs of the Assignment statement id7 on line 99 is not defined.
+The lhs of the Assignment statement arr1 on line 101 is not defined.
+VarIdNum id('a') not declared before 101
+VarIdNum id('b') not declared before 101
+VarIdNum id('b') not declared before 101
+VarIdNum id('c') not declared before 101
+VarIdNum id('c') not declared before 101
+VarIdNum id('d') not declared before 101
+VarIdNum id('d') not declared before 101
+VarIdNum id('e') not declared before 101
+VarIdNum id('c') not declared before 101
+VarIdNum id('d') not declared before 101
+Type mismatch in the expression line 101, tl = Integer, tr = Real.
+VarIdNum id('arr') not declared before 101
+Right operator of LOP is not boolean type line 101.
+The lhs of the Assignment statement arr2 on line 102 is not defined.
+VarIdNum id('a') not declared before 102
+VarIdNum id('b') not declared before 102
+The lhs of the Assignment statement arr1 on line 103 is not defined.
+Index variable is not defined.
+VarIdNum id('arr4') not declared before 103
+The lhs of the Assignment statement arr1 on line 104 is not defined.
+VarIdNum id('arr5') not declared before 104
+The lhs of the Assignment statement arr2 on line 105 is not defined.
+VarIdNum id('arr4') not declared before 105
+The lhs of the Assignment statement arr1 on line 106 is not defined.
+The lhs of the Assignment statement arr2 on line 107 is not defined.
+Index variable is not defined.
+Index variable is not defined.
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 119
+Index variable is not defined.
+Index variable is not defined.
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 121
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 121
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 121
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 122
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 122
+A record for the given data item already exists within the scope of this function. No changes have been made. Redeclaration on line 122
+The lhs of the Assignment statement conditional on line 143 is not defined.
+The lhs of the Assignment statement statements on line 143 is not defined.
+The lhs of the Assignment statement module1 on line 153 is not defined.
+The function used('----') is not declared and defined on line -1.
+The function used('----') is not declared and defined on line -1.
+Function called (reused)'----' is not defined on line -1.
+The lhs of the Assignment statement ip2 on line 154 is not defined.
+The lhs of the Assignment statement ip3 on line 154 is not defined.
+The function used('----') is not declared and defined on line -1.
+The function used('----') is not declared and defined on line -1.
+Function called (reused)'----' is not defined on line -1.
+The lhs of the Assignment statement ip768 on line 154 is not defined.
+The function used('----') is not declared and defined on line -1.
+Function called (reused)'----' is not defined on line -1.
+The function used('----') is not declared and defined on line -1.
+The function used('----') is not declared and defined on line -1.
+Function called (reused)'----' is not defined on line -1.
+The function used('----') is not declared and defined on line -1.
+The function used('----') is not declared and defined on line -1.
+Function called (reused)'----' is not defined on line -1.
+The lhs of the Assignment statement ip2 on line 155 is not defined.
+The lhs of the Assignment statement ip1001 on line 155 is not defined.
+Redundant declaration of the function 'module2'.
+
+Testcases_stage2/t1.txt:
+VarIdNum id('v') not declared before 17
+Right operator of LOP is not boolean type line 17.
+A record for the given data item b already exists within the scope of this function. No changes have been made. Redeclaration on line 22
+A record for the given data item abc_1 already exists within the scope of this function. No changes have been made. Redeclaration on line 35
+VarIdNum id('res_2_b') not declared before 38
+VarIdNum id('p') not declared before 38
+Type mismatch in the expression line 38, tl = Integer, tr = Real.
+Type mismatch in the expression line 40, tl = Integer, tr = Real.
+VarIdNum id('res_2_b') not declared before 42
+Type mismatch in the expression line 42, tl = Integer, tr = Real.
+VarIdNum id('d') not declared before 43
+A record for the given data item new already exists within the scope of this function. No changes have been made. Redeclaration on line 44
+The variable taken as input is not being declared line 53.
+The parameter k is not declared.
+Output list type mismatch on line 56.
+Input list type mismatch name : compute on line 56.
+A record for the given data item u1 already exists within the scope of this function. No changes have been made. Redeclaration on line 58
