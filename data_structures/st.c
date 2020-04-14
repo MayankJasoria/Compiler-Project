@@ -162,6 +162,7 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> input_plist = getList();
 	data -> output_plist = getList();
 	data -> scope = SCOPE_DEFAULT;
+	strcpy(data -> name, "");
 	strcpy(data -> dependentVar, "");
 	return data;
 }

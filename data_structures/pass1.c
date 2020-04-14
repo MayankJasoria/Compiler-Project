@@ -566,9 +566,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Switch variable('%s') is of real type on line %d.\n", ch -> nodeData.leaf -> tn -> lex,
 					ch -> nodeData.leaf -> tn -> line_num);
-				return;
 			}
-
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
 			ASTNode* ch1 = ch -> next;
 			ch1 -> localST = newST;
@@ -582,6 +580,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 					fprintf(stderr, 
 					"Default case in bool type switch statement on line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
 				}
+				if(ch2 == NULL)
+					return;
+				ch2 -> localST = newST;
+				traverseAST(ch2, fname);
 			}
 			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
 				if(curr -> nodeData.condStmt -> def == 0) {
@@ -600,6 +602,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else {
 				fprintf(stderr, 
 				"Switch variable not of feasible type on line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
+				if(ch2 == NULL)
+					return;
+				ch2 -> localST = newST;
+				traverseAST(ch2, fname);
 			}
 		}
 		break;

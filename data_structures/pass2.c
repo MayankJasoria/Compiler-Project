@@ -15,6 +15,23 @@ void pass2Children(ASTNode * head, char * fname) {
 	}
 }
 
+void checkOutputAssignment(SymTableFunc * func) {
+
+	if(strcmp(func -> name, "") == 0)
+		return;
+	SymTableVar * tmp;
+	Node * head = func -> output_plist -> head;
+	while(head != NULL) {
+		tmp = (SymTableVar *) (head -> data);
+		tmp = fetchVarData(func, tmp -> name);
+		if(tmp -> isAssigned == 0) {
+			fprintf(stderr, "The output variable '%s' of function '%s' is not assigned any value\n",
+				tmp -> name, func -> name);
+		}
+		head = head -> next;
+	}
+}
+
 void pass2AST(ASTNode* curr, char* fname) {
 	
 	switch(curr -> type) {
@@ -44,6 +61,9 @@ void pass2AST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_MODULE: {
 			ASTNode* ch = curr -> child;
+			if(ch -> next -> localST == NULL) {
+				return;
+			}
 			pass2Children(ch, fname);
 		}
 		break;
@@ -71,6 +91,10 @@ void pass2AST(ASTNode* curr, char* fname) {
 		case AST_NODE_STATEMENT: {
 			ASTNode* ch = curr -> child;
 			pass2Children(ch, fname);
+			ch = curr -> child;
+			if(ch -> next == NULL) {
+				checkOutputAssignment(curr -> localST);
+			}
 		}
 		break;
 
@@ -84,6 +108,10 @@ void pass2AST(ASTNode* curr, char* fname) {
 					ch -> nodeData.leaf -> tn -> lex,
 					ch -> nodeData.leaf -> tn -> line_num);
 				}
+				SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				if(lhs == NULL)
+					return;
+				lhs -> isAssigned = 1;
 			}
 		}
 		break;
@@ -103,6 +131,10 @@ void pass2AST(ASTNode* curr, char* fname) {
 				ch -> nodeData.leaf -> tn -> lex,
 				ch -> nodeData.leaf -> tn -> line_num);
 			}
+			SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			if(lhs == NULL)
+				return;
+			lhs -> isAssigned = 1;
 		}
 		break;
 		
@@ -130,6 +162,9 @@ void pass2AST(ASTNode* curr, char* fname) {
 						str,
 						ch2 -> child -> nodeData.leaf -> tn -> line_num);
 					}
+					SymTableVar * lhs = fetchVarData(curr -> localST, str);
+					if(lhs != NULL)
+						lhs -> isAssigned = 1;
 					ch2 = ch2 -> child -> next;
 				}
 			}
