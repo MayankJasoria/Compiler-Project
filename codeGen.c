@@ -21,16 +21,82 @@ void emitCodeChildren(ASTNode * head, char * fname) {
     }
 }
 
+
 void takeInput(astDataType t, SymTableVar * idNode) {
 
+	fprintf(fp, "push rbp\n");
+	int offset = idNode -> offset;
+	// unsigned long long int addr =  
 	switch(t) {
 		case AST_TYPE_INT: {
-			
+			fprintf(fp, "mov rdi, op1\n");
+			fprintf(fp, "mov rsi, type_int\n");
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
+
+			fprintf(fp, "push rbp\n");
+			fprintf(fp, "mov rdi, fmt_int\n");
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "add rax, %d\n", offset);
+			fprintf(fp, "mov rsi, rax\n");
+			fprintf(fp, "call scanf\n");
+			fprintf(fp, "pop rbp\n");
 		}
 		break;
+		case AST_TYPE_REAL: {
+			fprintf(fp, "mov rdi, op1\n");
+			fprintf(fp, "mov rsi, type_float\n");
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
 
+			fprintf(fp, "push rbp\n");
+			fprintf(fp, "mov rdi, fmt_float\n");
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "add rax, %d\n", offset);
+			fprintf(fp, "mov rsi, rax\n");
+			fprintf(fp, "call scanf\n");
+			fprintf(fp, "pop rbp\n");
+		}
+		break;
+		case AST_TYPE_BOOLEAN: {
+			fprintf(fp, "mov rdi, op1\n");
+			fprintf(fp, "mov rsi, type_bool\n");
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
 
+			fprintf(fp, "push rbp\n");
+			fprintf(fp, "mov rdi, fmt_string\n");
+			fprintf(fp, "mov rsi, buffer\n");
+			fprintf(fp, "call scanf\n");
+			fprintf(fp, "pop rbp\n");
 
+			fprintf(fp, "mov rax, byte[buffer]\n");
+			fprintf(fp, "cmp rax, 116d\n");
+			fprintf(fp, "jnz label_%d\n", label_num++);
+			fprintf(fp, "mov rax, 1d\n");
+			fprintf(fp, "mov [rbp + %d], rax\n", offset);
+			fprintf(fp, "jmp label_%d\n", label_num++);
+			fprintf(fp, "label_%d:\n", label_num - 2);
+			fprintf(fp, "mov rax, 0d\n");
+			fprintf(fp, "mov [rbp + %d], rax\n", offset);
+			fprintf(fp, "label_%d:\n", label_num - 1);
+		}
+		break;
+		case AST_TYPE_ARRAY: {
+			fprintf(fp, "mov rdi, op2\n");
+			fprintf(fp, "mov rsi, type_float\n");
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
+
+			fprintf(fp, "push rbp\n");
+			fprintf(fp, "mov rdi, fmt_float\n");
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "add rax, %d\n", offset);
+			fprintf(fp, "mov rsi, rax\n");
+			fprintf(fp, "call scanf\n");
+			fprintf(fp, "pop rbp\n");
+		}
+		break;
 	}
 }
 
@@ -42,7 +108,7 @@ void codegenInit() {
 		   
 	fprintf(fp, ";init code and data\n");
 	fprintf(fp, "section .data\n");
-	fprintf(fp, "fmt_float: db \"%f\", 0\n");
+	fprintf(fp, "fmt_float: db \"%lf\", 0\n");
 	fprintf(fp, "fmt_int: db \"%d\", 0\n");
 	fprintf(fp, "fmt_string: db \"%s\", 0\n");
 
@@ -53,7 +119,7 @@ void codegenInit() {
 	fprintf(fp, "op1: db \"Input: Enter an %s Value\n\", 0\n");
 	fprintf(fp, "op2: db \"Input: Enter %d array elements of %s type for range %d to %d\", 0\n");
 
-	fprintf(fp, "output_fmt_float: db \"Output: %f\n\", 0xA, 0\n");
+	fprintf(fp, "output_fmt_float: db \"Output: %lf\n\", 0xA, 0\n");
 	fprintf(fp, "output_fmt_int: db \"Output: %d\n\", 0xA, 0\n");
 	fprintf(fp, "output_fmt_string: db \"Output: %s\n\", 0xA, 0\n");
 
@@ -62,6 +128,8 @@ void codegenInit() {
 
 	fprintf(fp, "except_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %d.\n\"");
 	
+	fprintf(fp, "section .bss");
+	fprintf(fp, "\tbuffer: resb 64\n");
 	fprintf(fp, "section .text\n");
 	fprintf(fp, "\tglobal main\n");
 	fprintf(fp, "\textern printf\n");

@@ -413,9 +413,9 @@ main:
     fadd
     fistp dword [ebp + offset]
 
----------------------------------------------------------------------------------
-| METHOD TO ADD TWO FLOATING POINT NUMBERS IN x86-64 NASM AND print using printf|
----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+| METHOD TO ADD TWO FLOATING POINT NUMBERS IN x86-64 NASM AND print using printf |
+----------------------------------------------------------------------------------
 global main
 extern printf, scanf
 
@@ -445,7 +445,36 @@ main:
 	pop rbp
 	mov rax, 0
     ret
---------------------------------------------------------------------------
+----------------------------------------------------------------------------------
+| METHOD TO scan TWO FLOATING POINT NUMBERS IN x86-64 NASM using scanf           |
+----------------------------------------------------------------------------------
+section .data
+    fmt: db "%lf %lf", 0
+    p_fmt: db "%lf %lf", 0xA, 0
 
+section .bss
+    var1: resb 8
+    var2: resb 8
 
+section .text
+    global main
+    extern printf, scanf
 
+main:
+    push rbp
+    mov rdi, fmt
+    mov rsi, var1
+    mov rdx, var2
+    call scanf
+    pop rbp
+
+    push rbp
+    mov rdi, p_fmt
+    movq xmm0, qword [var1]
+    movq xmm1, qword [var2]
+    mov rax, 2
+    call printf
+    pop rbp
+    ret
+
+    --------------------------------------------------------------
