@@ -339,6 +339,8 @@ typedef struct {
 
 typedef struct {
 	int def;
+	int end_line_num;
+	int def_line_num;
 	/* TODO: add data fields later */
 } condStmtNode;
 

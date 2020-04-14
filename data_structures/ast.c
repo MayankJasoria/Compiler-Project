@@ -824,7 +824,12 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			ASTNode* cs = constructAST(curr, idNode, ch);
 			ch = findinPT(ch, _default);
 			ASTNode* def = constructAST(curr, cs, ch);
-
+			while(ch != NULL) {
+				if(ch -> tag == T && ch -> sym.T == END)
+					break;
+				ch = ch -> next;
+			}
+			curr -> nodeData.condStmt -> end_line_num = ch -> line_num;
 			addChild(curr, def);
 			addChild(curr, cs);
 			addChild(curr, idNode);
@@ -904,6 +909,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		case 83: {// default : DEFAULT COLON statements BREAK SEMICOL
 			ch = findinPT(ch, statements);
 			parent -> nodeData.condStmt -> def = 1;
+			parent -> nodeData.condStmt -> def_line_num = ch -> prev -> prev -> line_num;
 			return constructAST(parent, NULL, ch);
 		}
 		

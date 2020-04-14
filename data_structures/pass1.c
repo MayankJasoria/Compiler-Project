@@ -578,7 +578,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(ch -> nodeData.leaf -> dataType == AST_TYPE_BOOLEAN) {
 				if(curr -> nodeData.condStmt -> def == 1) {
 					fprintf(stderr, 
-					"Default case in bool type switch statement on line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
+					"Default case in bool type switch statement on line %d.\n", curr -> nodeData.condStmt -> def_line_num);
 				}
 				if(ch2 == NULL)
 					return;
@@ -588,7 +588,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
 				if(curr -> nodeData.condStmt -> def == 0) {
 					fprintf(stderr, 
-					"Default case not present in int type switch statement line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
+					"Default case not present in int type switch statement line %d.\n", curr -> nodeData.condStmt -> end_line_num);
 				}
 				else {
 					if(ch2 == NULL) {

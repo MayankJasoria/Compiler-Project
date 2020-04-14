@@ -632,7 +632,9 @@ token * getNextToken(FILE * fp) {
 			case 45:
 				line_num++;
 				nxt = streamBuffer[buffer_id];
-				if(nxt != '\n')
+				if(nxt == '*') 
+					state = 46;
+				else if(nxt != '\n')
 					state = 44; 
 				buffer_id++;
 				break;
