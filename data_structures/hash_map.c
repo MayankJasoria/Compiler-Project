@@ -130,3 +130,18 @@ int numberHash(void *y) {
     x = (x >> 16) ^ x;
     return x % HASH_TABLE_SIZE;
 }
+
+
+/**
+ * Prints the 'valid entries' of hash table for debugging purposes 
+ */  
+void printHashTable(FILE* fp, HashTable hashtable, void (*printHash)(FILE* fp, void* data)) {
+	for (int i=0; i < HASH_TABLE_SIZE; i++) {
+		if(hashtable[i] != NULL) {
+		// 	printf("[NULL]\n");
+		// } else {
+			// printf("[%d] --> ", i);
+			printList(fp, hashtable[i], printHash);
+		}
+	}
+}

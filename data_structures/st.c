@@ -10,6 +10,11 @@
 #include "astDef.h"
 #include "hash_map.h"
 
+#define PRINT_VARIABLE_HEADINGS "%-15s%-15s%-15s%-15s%-15s%-15s\n"
+#define PRINT_VARIABLE_DATA "%-15s%-15d%-15d%-15d%-15d%-15d\n"
+#define PRINT_FUNC_HEADINGS "%-15s%-15s%-15s%-15s\n"
+#define PRINT_FUNC_DATA "%-15s%-15d%-15d%-15d"
+
 int typeSize[] = {16, 16, 16, -1, 2};
 
 /* Doubts regarding the hash table implementation:
@@ -146,6 +151,7 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> output_plist = getList();
 	data -> scope = SCOPE_DEFAULT;
 	strcpy(data -> dependentVar, "");
+	strcpy(data -> nextJump, "");
 	insertToTable(globalST, name, data, stringHash);
 	return data;
 }
@@ -164,6 +170,7 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> scope = SCOPE_DEFAULT;
 	strcpy(data -> name, "");
 	strcpy(data -> dependentVar, "");
+	strcpy(data -> nextJump, "");
 	return data;
 }
 
@@ -257,4 +264,23 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
  */
 int string_comp_id(void* data, void* list_ele) {
 	return strcmp((char *)data, ((SymTableVar *)list_ele)->name) == 0;
+}
+
+void printVar(FILE* fp, void* data) {
+	SymTableVar* varData = (SymTableVar*) data;
+	fprintf(fp, PRINT_VARIABLE_DATA, varData->name, varData->type, varData->isAssigned, varData->width, varData->offset, varData->dataType);
+}
+
+void printFunc(FILE* fp, void* data) {
+	SymTableFunc* funcData = (SymTableFunc*) data;
+	fprintf(fp, PRINT_FUNC_DATA, funcData->name, funcData->type, funcData->isDeclared, funcData->isDefined);
+}
+
+void printSymbolTable(FILE* fp, SymbolTable st, void (printElement)(FILE*, void*)) {
+	if(printElement == printVar) {
+		fprintf(fp, PRINT_VARIABLE_HEADINGS, "Variable Name", "Type", "Is Assigned", "Width", "Offset", "AST DataType");
+	} else if(printElement == printFunc) {
+		fprintf(fp, PRINT_FUNC_HEADINGS, "Function Name", "Type", "Is Declared", "Is Defined");
+	}
+	printHashTable(fp, st, printElement);
 }

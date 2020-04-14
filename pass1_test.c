@@ -12,24 +12,24 @@
 
 int main(int argc, char* argv[]) {
 
-    char* inputfile = "testcases/test3.txt";
+	char* inputfile = "Testcases_stage2/t6.txt";
 
-    /* initializing lexer and parser */
-    lexerinit();
-    parserInit("grammar_new.erp");
-    ComputeFirstAndFollowSets();
-    createParseTable();
+	/* initializing lexer and parser */
+	lexerinit();
+	parserInit("grammar_new.erp");
+	ComputeFirstAndFollowSets();
+	createParseTable();
 
-    parseInputSourceCode(inputfile);
-    printf("\n");
-    /* printParseTree(PT, outputfile); */
-    /* Use PT to construct AST */
+	parseInputSourceCode(inputfile);
+	printf("\n");
+	/* printParseTree(PT, outputfile); */
+	/* Use PT to construct AST */
 
-    ASTNode* root = constructAST(NULL, NULL, PT); 
+	ASTNode* root = constructAST(NULL, NULL, PT); 
 
-    globalST = getSymbolTable();
+	globalST = getSymbolTable();
 
-    traverseAST(root, "");
-    pass2AST(root, "");
-    printf("Hooray!!");
+	traverseAST(root, "");
+	pass2AST(root, "");
+	printf("Hooray!!");
 }

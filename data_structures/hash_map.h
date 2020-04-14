@@ -73,6 +73,13 @@ int numberHash(void* y);
  */
 int stringHash(void* y);
 
-
+/**
+ * Prints the 'valid entries' of the hash table
+ * @param fp			The FILE pointer into which table should be printed
+ * @param hashtable     The hash table to be printed
+ * @param printelement  The function specifying how each 
+ *                      hashed element should be printed
+ */
+void printHashTable(FILE* fp, HashTable hashtable, void (*printElement)(FILE*, void*));
 
 #endif

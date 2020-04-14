@@ -500,7 +500,7 @@ Testcases_stage2 [Shubham]:
 			 Third one should be "Number of parameters mis-match".
 			 Surprisingly third error is not listed as an error in the testcase file.
 
-	t4.txt **[RESOLVED]**[EXCEPT: output_plist assignments]:
+	t4.txt =[**FULLY RESOLVED**]=:
 		  VarIdNum id('p') not declared before 51 <-- correct
 		| Type mismatch in the expression line 51, tl = Real, tr = Integer.
 		| Type mismatch in the expression line 51, tl = Real, tr = Integer.
@@ -512,7 +512,7 @@ Testcases_stage2 [Shubham]:
 		| Output list type mismatch on line 95.
 		^-- Side-effect
 
-	t5.txt **[RESOLVED]** [EXCEPT: output_plist assignments]:
+	t5.txt =[**FULLY RESOLVED**]=:
 		| Type mismatch in the expression line 48, tl = Integer, tr = Real.
 		| Type mismatch in the expression line 48, tl = Real, tr = Integer.
 		| Type mismatch3 in assignment statement on line 48.
@@ -522,7 +522,7 @@ Testcases_stage2 [Shubham]:
 
 		** Ignored all side-effect errors already specified **
 
-	t6.txt **[RESOLVED]** [EXCEPT: output_plist assignments]:
+	t6.txt =[**FULLY RESOLVED**]=:
 		| Type mismatch in the expression line 85, tl = Integer, tr = Real.
 		| Type mismatch in the expression line 85, tl = Real, tr = Integer.
 		| Type mismatch3 in assignment statement on line 85.
@@ -533,7 +533,7 @@ Testcases_stage2 [Shubham]:
 		| Type mismatch3 in assignment statement on line 138.
 		^--- correct, but there should be only one error for each line
 
-	t7.txt **[RESOLVED]** [EXCEPT: output_plist assignments]:
+	t7.txt  =[**FULLY RESOLVED**]=:
 		 Array variable('m') used without index on line 27.
 		 Array variable('p') used without index on line 27.
 		| Array type variable 'm' in arithmetic operation on line 27.
@@ -587,7 +587,7 @@ Testcases_stage2 [Shubham]:
 		|
 		| No error reported on this line
 
-	t8.txt [NOT RESOLVED: output_plist assignments]:
+	t8.txt =[**FULLY RESOLVED**]=:
 
 	Errors on following line numbers were not reported:
 		Line 43: [v1, u, k, v3]:=use module function1 with parameters b4, v2, p, v3, u;	**ERROR: input parameter type mismatch **			
@@ -603,7 +603,7 @@ Testcases_stage2 [Shubham]:
 		| Type mismatch3 in assignment statement on line 199.
 		^--- These seem to be because of Error on Line 194, which shouldn't be there
 
-	t9.txt [NOT RESOLVED: output_plist assignments]:
+	t9.txt =[**FULLY RESOLVED**]=:
 		
 		  Switch variable('p') is of real type on line 54. <-- correct
 		| Default case in bool type switch statement on line 62.

@@ -1,8 +1,8 @@
 /*  GROUP 48:
-  PUNEET ANAND    2016B4A70487P
-  MAYANK JASORIA  2016B1A70703P
-  SHUBHAM TIWARI  2016B4A70935P
-  VIBHAV OSWAL    2016B4A70594P */
+	PUNEET ANAND    2016B4A70487P
+	MAYANK JASORIA  2016B1A70703P
+	SHUBHAM TIWARI  2016B4A70935P
+	VIBHAV OSWAL    2016B4A70594P */
 
 #ifndef _SYMBOL_TABLE
 #define _SYMBOL_TABLE
@@ -93,12 +93,35 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 /**
 * Given a width, updates the activation record size of a function
 * (to be used when adding a variable to a child scope of a function)
-* @param st		The Symbol Table
+* @param st			The Symbol Table
 * @param funcName	The name of the function
 * @param varWidth	The width of the variable
 * 
 * @return updated symbol table
 */
 SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
+
+/**
+ * Prints all elements of a given symbol table
+ * @param fp			The FILE pointer into which table should be printed
+ * @param st			The symbol table to be printed
+ * @param printElement	Function specifying how each element of
+ * 						the symbol table should be printed
+ */
+void printSymbolTable(FILE* fp, SymbolTable st, void (*printElement)(FILE*, void*));
+
+/**
+ * Function to print the details of a variable in the symbol table
+ * @param fp			The FILE pointer into which table should be printed
+ * @param data	The data to be printed
+ */
+void printVar(FILE* fp, void* data);
+
+/**
+ * Function to print the details of a function in the symbol table
+ * @param fp			The FILE pointer into which table should be printed
+ * @param data	The data to be printed
+ */
+void printFunc(FILE* fp, void* data);
 
 #endif

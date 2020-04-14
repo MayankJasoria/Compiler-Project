@@ -98,13 +98,13 @@ boolean isStackEmpty(Stack stack) {
     return False;
 }
 
-void printStack(Stack st, void (*printElement)(void* data)) {
-    if(st == NULL) {
-        fprintf(stderr, "The given stack is empty\n");
-        return;
-    }
-    printf("Top\n");
-    printf(" |\n");
-    printf("\\/\n");
-    printList(st->st, printElement);
-}
+// void printStack(Stack st, void (*printElement)(void* data)) {
+//     if(st == NULL) {
+//         fprintf(stderr, "The given stack is empty\n");
+//         return;
+//     }
+//     printf("Top\n");
+//     printf(" |\n");
+//     printf("\\/\n");
+//     printList(st->st, printElement);
+// }

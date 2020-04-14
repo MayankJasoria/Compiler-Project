@@ -39,6 +39,7 @@ main:
 	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
 	int 80h		 ;generate interrupt
 
+    
 /* --------------------------- */
 
 /* ---- A standard way to setup stack frames [makes debugging easy] ---- */
@@ -47,11 +48,13 @@ https://stackoverflow.com/questions/17239781/x86-assembly-why-do-i-need-stack-fr
     ebx. Thus we are free to use stack inside the called function */
 
 
-
+| #(ebp) (old)  |   |   |   |  $(esp) (old), #ebp (new)|  |  |  |  |  |  | $(esp)(new) |  |
+    
     /*setting the stack frame*/
         push    ebp    
         mov     ebp,esp
 
+        add esp, actRecSize
         ...
         code goes here
         ...
@@ -120,7 +123,7 @@ traverseAST(): {
                    Get the variable from symbol table. It must have an offset. */
                 ----
                 mov     edx, ID.width           ; number of bytes to read
-                mov     ecx, ebp + offset     ; reserved space to store the input
+                mov     ecx, ebp + offset       ; reserved space to store the input
                 mov     ebx, 0                  ; write to stdin
                 mov     eax, 3                  ; invoke SYS_READ (kernel opcode 3)
                 int     80h                     ; interrupt, switch context to kernel
@@ -171,10 +174,10 @@ traverseAST(): {
             /* Setting the stack frame. */
 
             /* Get symbolTableFunc for the called module. */
-
+            ;eax, ecx, ebx, edx, esi , edi, esp , ebp
             ----
             ;Save the current stack frame pointer
-            pusha   ;ebp       
+            pusha   ;ebp    
             ;Move the current pointer to stack as the base of the called function.
             ;This makes sure that we are free to stack pointer now 
             mov     ebp,esp 
@@ -311,3 +314,138 @@ traverseAST(): {
         }
     }
 }
+
+
+COND1:
+COND2:
+
+FOR1:
+FOR2:
+FOR3:
+
+WHILE1:
+WHILE2:
+
+
+switch(var) {
+    case 1: // 
+        switch(var1) {
+            case 4:
+            case 5:
+
+        }
+    case 3: // 
+    
+    default: //
+}
+
+cmp bla, case_val
+jne curr -> nextJump
+....
+goto switch -> nextJump
+jne bla2 curr -> nextJump
+
+How to use printf in NASM:
+http://nasmcodeasy.blogspot.com/2014/04/using-c-printf-in-nasm.html
+
+
+
+----------------------------------------------------------
+FPU
+----------
+
+; finit
+; fld dword []
+; fld qword []
+; fld tword []
+
+; fadd/fmul/fdiv/fcom
+
+; fstp	dword []
+
+; fstsw ax ; FPU status register / analogous to flag
+
+section .data
+msg	db	'Hello world!',0Ah;
+omega  dd 2.3
+omega2 dd 3.5
+print_format db "Result: %f",0xA,0
+section .text
+global main:     ; _start when linking with ld
+
+main:
+	;push dword rax
+	;push dword rbx
+	finit   
+	fld dword [omega]
+	fld dword [omega2]
+	fadd
+	
+	mov rsp, 4
+	fistp dword [omega2]
+	
+	mov	rdx, 4  ;number of bytes to write
+	mov rax, rsp
+	sub rax, 4
+	mov rcx, omega2 ;move memory address of our message string
+	mov rbx, 1	 ;write to stdout
+	mov rax, 4	 ;marshal system write system call opcode into eax
+	int 80h		 ;generate interrupt    	
+
+	mov	rbx, 0	 ;return 0 status on exit - 'No errors'
+	mov rax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
+	int 80h		 ;generate interrupt
+
+
+
+    st0 = [mem1] + [mem] + [mem2]
+    st1 = [mem1] + [mem]
+    st2 = [mem]
+    st3
+    st4
+    ...
+    st7
+
+    fld [mem]
+    fld [mem1]
+    fadd
+    fld [mem2]
+    fadd
+    fistp dword [ebp + offset]
+
+---------------------------------------------------------------------------------
+| METHOD TO ADD TWO FLOATING POINT NUMBERS IN x86-64 NASM AND print using printf|
+---------------------------------------------------------------------------------
+global main
+extern printf, scanf
+
+section .data
+    scan_format: db "%f",0
+    print_format: db "Result: %f",0xA,0
+	result_num: dq 9.35
+	result_num2: dq 4.87
+section .text
+main:
+	finit   
+	fld qword [result_num]
+	fld qword [result_num2]
+	fadd
+
+    ;sub rsp,8  ;reserve stack for a double in stack
+    ;push rbp
+    fstp qword [result_num]  
+
+	push rbp
+	
+	mov	rdi, print_format			; format for printf
+	movq	xmm0, qword [result_num]
+	mov rax, 1
+    call printf
+
+	pop rbp
+	mov rax, 0
+    ret
+--------------------------------------------------------------------------
+
+
+

@@ -537,6 +537,7 @@ typedef struct SymTableFunc {
 	int actRecSize; /* field for storing activation record size */
 	char dependentVar[30];
 	scopeType scope;
+	char nextJump[30];
 } SymTableFunc;
 
 typedef struct symTableVar {	
