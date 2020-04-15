@@ -36,7 +36,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rdi, fmt_int\n");
 			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "add rax, %d\n", offset);
+			fprintf(fp, "sub rax, %d\n", offset + typeSize[t]);
 			fprintf(fp, "mov rsi, rax\n");
 			fprintf(fp, "call scanf\n");
 			fprintf(fp, "pop rbp\n");
@@ -51,7 +51,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rdi, fmt_float\n");
 			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "add rax, %d\n", offset);
+			fprintf(fp, "sub rax, %d\n", offset + typeSize[t]);
 			fprintf(fp, "mov rsi, rax\n");
 			fprintf(fp, "call scanf\n");
 			fprintf(fp, "pop rbp\n");
@@ -66,7 +66,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rdi, fmt_bool\n");
 			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "add rax, %d\n", offset);
+			fprintf(fp, "sub rax, %d\n", offset + typeSize[t]);
 			fprintf(fp, "mov rsi, rax\n");
 			fprintf(fp, "call scanf\n");
 			fprintf(fp, "pop rbp\n");
@@ -96,6 +96,8 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				rte();
 			}
 			astDataType type = idNode -> sdt.r -> dataType;
+
+			fprintf(fp, "\n; ### Asking for user input for Array ###\n");
 			fprintf(fp, "mov rdi, op2\n");
 			fprintf(fp, "mov rsi, %dd\n", right - lft + 1);
 			if(type == AST_TYPE_INT)
@@ -108,8 +110,14 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "mov r8, %dd\n", right);
 			fprintf(fp, "call printf\n");
 			fprintf(fp, "pop rbp\n");
+			
+			fprintf(fp, "\n; ### rdx will be the address of the first element of the array ###\n");
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "sub rax, %d\n", offset + typeSize[AST_TYPE_POINTER]);
+			fprintf(fp, "mov rdx, qword [rax]\n");
 
-			fprintf(fp, "mov rdx, qword [rbp + %dd]\n", offset);
+			fprintf(fp, "\n; ### Loop for scanning each element of the array ### \n");
+			
 			fprintf(fp, "mov rcx, %dd\n", right - lft + 1);
 			fprintf(fp, "label_%d:\n", label_num++);
 			
@@ -117,6 +125,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "push rcx\n");
 			fprintf(fp, "push rbp\n");
 			
+			fprintf(fp, "\n; ### Scanning input ###\n");
 			if(type == AST_TYPE_INT) 
 				fprintf(fp, "mov rdi, fmt_int\n");
 			else if(type == AST_TYPE_REAL) 
@@ -124,13 +133,14 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			else if(type == AST_TYPE_BOOLEAN) 
 				fprintf(fp, "mov rdi, fmt_bool\n");
 
+			fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "mov rsi, rdx\n");
 			fprintf(fp, "call scanf\n");
 			fprintf(fp, "pop rbp\n");
 			fprintf(fp, "pop rcx\n");
 			fprintf(fp, "pop rdx\n");
-			fprintf(fp, "add rdx, %dd\n", typeSize[type]);
-			fprintf(fp, "dec rcx\n", label_num - 1);
+			fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
+			fprintf(fp, "dec rcx\n");
 			fprintf(fp, "jnz label_%d\n", label_num - 1);
 			fprintf(fp, "pop rbp\n");
 		}
@@ -190,14 +200,23 @@ void giveOutput(ASTNode * curr) {
 			ASTNode * idNode = ch -> child;
 			SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
 			if(id -> dataType != AST_TYPE_ARRAY) {
+				if(id -> isAssigned == 0) {
+					rte();
+				}
 				fprintf(fp, "push rbp\n");
 				if(id -> dataType == AST_TYPE_INT) {
+					int val = id -> sdt.intVal;
 					fprintf(fp, "mov rdi, output_fmt_int\n");
-					fprintf(fp, "mov si, word[rbp + %dd]", id -> offset);
+					fprintf(fp, "mov rax, rbp\n");
+					fprintf(fp, "sub rax, %dd\n", id->offset);
+					fprintf(fp, "mov si, word[rax]\n");
 				}
 				else if(id -> dataType == AST_TYPE_REAL) {
 					fprintf(fp, "mov rdi, output_fmt_float\n");
-					fprintf(fp, "mov si, dword[rbp + %dd]", id -> offset);
+					fprintf(fp, "mov rax, rbp\n");
+					fprintf(fp, "sub rax, %dd\n", id->offset);
+					fprintf(fp, "cvtss2sd xmm0, dword[rax]\n");
+					fprintf(fp, "mov rax, 1");
 				}
 				else if(id -> dataType == AST_TYPE_BOOLEAN) {
 					if(id -> sdt.boolVal)
@@ -237,8 +256,10 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, "mov rdi, output_fmt_plain\n" );
 				fprintf(fp, "call printf\n");
 				fprintf(fp, "pop rbp\n");
-				
-				fprintf(fp, "mov rdx, qword [rbp + %dd]\n", offset);
+
+				fprintf(fp, "mov rax, rbp\n");
+				fprintf(fp, "sub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
+				fprintf(fp, "mov rdx, qword [rax]\n");
 				fprintf(fp, "mov rcx, %dd\n", right - lft + 1);
 
 				fprintf(fp, "label_%d:\n", label_num++);
@@ -246,16 +267,27 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, "push rdx\n");
 				fprintf(fp, "push rcx\n");
 				fprintf(fp, "push rbp\n");
-			
+
 				if(type == AST_TYPE_INT) {
-					fprintf(fp, "mov rdi, fmt_int\n");
-					fprintf(fp, "mov si, word[rdx]\n");
+					int val = id -> sdt.intVal;
+					fprintf(fp, "mov rdi, output_fmt_int\n");
+					fprintf(fp, "mov rax, rdx\n");
+					fprintf(fp, "sub rax, %dd\n", typeSize[type]);
+					fprintf(fp, "mov si, word[rax]\n");
 				}
 				else if(type == AST_TYPE_REAL) {
-					fprintf(fp, "mov rdi, fmt_float\n");
+					fprintf(fp, "mov rdi, output_fmt_float\n");
+					fprintf(fp, "mov rax, rdx\n");
+					fprintf(fp, "sub rax, %dd\n", typeSize[type]);
+					fprintf(fp, "cvtss2sd xmm0, dword[rax]\n");
+					fprintf(fp, "mov rax, 1\n");
 				}
-				else if(type == AST_TYPE_BOOLEAN) 
-					fprintf(fp, "mov rdi, fmt_bool\n");
+				else if(type == AST_TYPE_BOOLEAN) {
+					if(id -> sdt.boolVal)
+						fprintf(fp, "mov rdi, bool_true\n");
+					else
+						fprintf(fp, "mov rdi, bool_false\n");
+				}
 
 				fprintf(fp, "call printf\n");
 				fprintf(fp, "pop rbp\n");
@@ -270,7 +302,7 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
 				fprintf(fp, "dec rcx\n");
 				fprintf(fp, "jnz label_%d\n", label_num - 1);
-				fprintf(fp, "pop rbp\n");			
+				fprintf(fp, "pop rbp\n");
 
 				fprintf(fp, "push rbp\n");
 				fprintf(fp, "mov rdi, end_line\n" );
@@ -309,7 +341,7 @@ void giveOutput(ASTNode * curr) {
 			ASTNode * i = ch -> child -> next;
 			int idx;
 			if(i -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
-				idx = i -> nodeData.leaf -> tn -> val_int;
+				idx = i -> nodeData.leaf -> tn -> value.val_int;
 			else {
 				SymTableVar * tmp = fetchVarData(curr -> localST, i -> nodeData.leaf -> tn -> lex);
 				if(tmp -> isAssigned == 0) {
@@ -321,15 +353,22 @@ void giveOutput(ASTNode * curr) {
 				rte();
 			}
 
-			fprintf(fp, "mov rdx, qword [rbp + %dd]\n", offset);
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "sub rax, %dd\n", offset);
+			fprintf(fp, "mov rdx, qword [rax]\n");
 			fprintf(fp, "push rbp\n");
 			if(id -> dataType == AST_TYPE_INT) {
 				fprintf(fp, "mov rdi, output_fmt_int\n");
-				fprintf(fp, "mov si, word[rdx + %dd]", idx - lft);
+				fprintf(fp, "mov rax, rdx\n");
+				fprintf(fp, "sub rax, %dd\n", (idx - lft)*typeSize[type]);
+				fprintf(fp, "mov si, word[rax]");
 			}
 			else if(id -> dataType == AST_TYPE_REAL) {
 				fprintf(fp, "mov rdi, output_fmt_float\n");
-				fprintf(fp, "mov si, dword[rdx + %dd]", idx - lft);
+				fprintf(fp, "mov rax, rdx\n");
+				fprintf(fp, "sub rax, %dd\n", (idx - lft)*typeSize[type]);
+				fprintf(fp, "cvtss2sd xmm0, dword[rax]\n");
+				fprintf(fp, "mov rax, 1\n");
 			}
 			else if(id -> dataType == AST_TYPE_BOOLEAN) {
 				if(id -> sdt.boolVal)
@@ -375,7 +414,7 @@ void codegenInit() {
 
 	fprintf(fp, "except_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %d.\n\"");
 	
-	fprintf(fp, "section .bss");
+	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
 	fprintf(fp, "section .text\n");
 	fprintf(fp, "\tglobal main\n");
