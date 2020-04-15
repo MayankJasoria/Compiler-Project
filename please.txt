@@ -1,0 +1,19 @@
+Variable Name       Module Name         Scope Line No.      Width     Is Array  Static/Dynamic Range               Type of element     Offset    Nesting Level  
+a                   var_demo_array      8  -20              2         No        ---            ---                 Integer             55        0              
+b                   var_demo_array      8  -20              2         No        ---            ---                 Integer             57        0              
+k                   var_demo_array      8  -20              1         No        ---            ---                 Boolean             54        0              
+n                   var_demo_array      8  -20              2         No        ---            ---                 Integer             52        0              
+p                   var_demo_array      8  -20              46        Yes       Static         [2  ,20 ]           Integer             59        0              
+A                   f1                  26 -42              22        Yes       Static         [4  ,10 ]           Integer             115       0              
+B                   f1                  26 -42              22        Yes       Static         [4  ,10 ]           Integer             137       0              
+C                   f1                  26 -42              50        Yes       Static         [10 ,30 ]           Integer             159       0              
+m                   f1                  26 -42              1         No        ---            ---                 Boolean             104       0              
+n                   f1                  26 -42              2         No        ---            ---                 Integer             105       0              
+x                   f1                  26 -42              4         No        ---            ---                 Real                107       0              
+y                   f1                  26 -42              4         No        ---            ---                 Real                111       0              
+u1                  driver              47 -59              1         No        ---            ---                 Boolean             4         0              
+A                   driver              47 -59              2         No        ---            ---                 Integer             2         0              
+B                   driver              47 -59              46        Yes       Static         [2  ,20 ]           Integer             9         0              
+C                   driver              47 -59              46        Yes       Static         [2  ,20 ]           Integer             55        0              
+p                   driver              47 -59              4         No        ---            ---                 Real                5         0              
+v_1_2_3             driver              47 -59              2         No        ---            ---                 Integer             0         0              

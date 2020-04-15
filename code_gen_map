@@ -478,3 +478,53 @@ main:
     ret
 
     --------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+| METHOD TO immediately load a float value and add floating point numbers without |
+| using FPU unit                                                                  |
+-----------------------------------------------------------------------------------
+section .data
+	print_format_xmm: db "Result from XMM: %f",0xA,0
+	print_format_mem: db "Result from Memory: %f",0xA,0
+	val: dw 2
+section .bss
+	buffer: resb 4
+section .text
+	global main
+	extern scanf, printf
+
+main:	
+	mov dword [buffer], __float32__(9.35)
+
+	; This uses addsd instruction in x86 to add an integer to immediate float
+	; This can be done without FPU stack
+
+    cvtss2sd xmm0, __float32__(9.35)    
+
+	cvtsi2sd xmm1, [val]
+	cvtss2sd xmm0, [buffer]
+	addsd xmm0, xmm1
+
+	movss dword [buffer], xmm0          ; There is some problem here
+	
+    movq rax, xmm0
+
+	push rbp
+	
+	mov	rdi, print_format_xmm			; format for printf
+	mov rax, 1
+    call printf
+
+	pop rbp
+	mov rax, 0
+	;--------------------------------------------
+	push rbp
+	
+	mov	rdi, print_format_mem			; format for printf
+	movss xmm0, dword [buffer]
+	mov rax, 1
+    call printf
+
+	pop rbp
+	mov rax, 0
+    ret
