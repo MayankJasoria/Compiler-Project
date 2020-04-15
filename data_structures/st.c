@@ -271,6 +271,7 @@ int string_comp_id(void* data, void* list_ele) {
 }
 
 void printVar(FILE* fp, void* data) {
+	
 	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
 	SymTableFunc* tab = varData -> table;
 	SymTableFunc* tmp = tab;
@@ -279,11 +280,23 @@ void printVar(FILE* fp, void* data) {
 	char modName[30];
 	strcpy(modName, tmp -> name);
 	int startline = tab -> start_line_num;
-	
-	
-
-
-
+	int endline = tab -> end_line_num;
+	int varWidth = varData -> width;
+	int isArray = varData -> dataType == AST_TYPE_ARRAY;
+	int isDynamic = -1;
+	if(isArray) {
+		if(strcmp(varData -> sdt.r -> lowId, "") == 0 && strcmp(varData -> sdt.r -> highId, "") == 0)
+			isDynamic = 0;
+		else
+			isDynamic = 1;
+	}
+	char type[30];
+	strcpy(type, typeName[varData -> dataType]);
+	if(isArray)
+		strcpy(type, typeName[varData -> sdt.r -> dataType]);
+	int offset = tab -> offset;
+	int nestLevel = tab -> level;
+	/* TODO: left index, right index. Need if else in the print itself */
 
 	fprintf(fp, PRINT_VARIABLE_DATA, varData->name, varData->type, varData->isAssigned, varData->width, varData->offset, typeName[varData->dataType]);
 }
