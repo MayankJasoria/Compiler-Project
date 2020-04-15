@@ -83,6 +83,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		}
 		break;
 		case AST_TYPE_ARRAY: {
+			/**
+			 * TODO: Complete Array input
+			 */
 			fprintf(fp, "mov rdi, op2\n");
 			fprintf(fp, "mov rsi, type_float\n");
 			fprintf(fp, "call printf\n");

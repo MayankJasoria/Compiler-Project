@@ -186,7 +186,6 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			curr = getASTNode(nodeData, AST_NODE_MODULELIST); 
 
 			ASTNode* modDef = constructAST(curr, NULL, findinPT(ch, moduledef));
-
 			addChild(curr, modDef);
 			return curr;
 		}
@@ -347,7 +346,15 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		}
 
 		case 21: {// moduleDef : START statements END
-			return constructAST(parent, NULL, ch -> next);
+			ASTNode * curr = constructAST(parent, NULL, ch -> next);
+			if(parent -> type == AST_NODE_MODULELIST) {
+				parent -> nodeData.moduleList -> start_line_num = tn -> child -> line_num;
+				parent -> nodeData.moduleList -> end_line_num = tn -> child -> next -> next -> line_num;
+			}
+			else if(parent -> type == AST_NODE_MODULE) {
+				parent -> nodeData.module -> start_line_num = tn -> child -> line_num;
+				parent -> nodeData.module -> end_line_num = tn -> child -> next -> next -> line_num;
+			}
 		}
 
 		/* CHECK @ everything is ASTNode type, so we don't need a separate type for the AST_NODE_STATEMENT */
@@ -824,15 +831,24 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			ASTNode* cs = constructAST(curr, idNode, ch);
 			ch = findinPT(ch, _default);
 			ASTNode* def = constructAST(curr, cs, ch);
+
+			addChild(curr, def);
+			addChild(curr, cs);
+			addChild(curr, idNode);
+			
+			ch = tn -> child;
+			while(ch != NULL) {
+				if(ch -> tag == T && ch -> sym.T == START)
+					break;
+				ch = ch -> next;
+			}
+			curr -> nodeData.condStmt -> start_line_num = ch -> line_num;
 			while(ch != NULL) {
 				if(ch -> tag == T && ch -> sym.T == END)
 					break;
 				ch = ch -> next;
 			}
 			curr -> nodeData.condStmt -> end_line_num = ch -> line_num;
-			addChild(curr, def);
-			addChild(curr, cs);
-			addChild(curr, idNode);
 			return curr;
 		}	
 		
@@ -926,12 +942,18 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			ASTNode* idNode = constructAST(curr, NULL, ch -> next -> next);
 			ch = findinPT(ch, range);
 			ASTNode* range = constructAST(curr, idNode, ch);
+			
 			ch = findinPT(ch, statements);
-			ASTNode* stmt = constructAST(curr, range, ch);
+			
+			curr -> nodeData.iterStmt -> start_line_num = ch -> prev -> line_num;
+			curr -> nodeData.iterStmt -> end_line_num = ch -> next -> line_num;
 
+			ASTNode* stmt = constructAST(curr, range, ch);
+				
 			addChild(curr, stmt);
 			addChild(curr, range);
 			addChild(curr, idNode);
+
 			return curr;
 		}
 		
@@ -944,6 +966,10 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			ch = findinPT(ch, arithorboolexpr);
 			ASTNode* aob = constructAST(curr, NULL, ch);
 			ch = findinPT(ch, statements);
+
+			curr -> nodeData.iterStmt -> start_line_num = ch -> prev -> line_num;
+			curr -> nodeData.iterStmt -> end_line_num = ch -> next -> line_num;
+			
 			ASTNode* stmt = constructAST(curr, aob, ch);
 
 			addChild(curr, stmt);

@@ -183,6 +183,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 				if(ch == NULL)
 					return;
 				ch -> localST = tmp;
+				tmp -> start_line_num = curr -> nodeData.moduleList -> start_line_num;
+				tmp -> end_line_num = curr -> nodeData.moduleList -> end_line_num;
 				traverseAST(ch, "driver");
 			}
 			else
@@ -199,6 +201,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 					ch -> localST = curr -> localST;
 					traverseAST(ch, fname);
 					tmp = ch -> localST;
+					tmp -> start_line_num = curr -> nodeData.module -> start_line_num;
+					tmp -> end_line_num = curr -> nodeData.module -> end_line_num;
 					/* Report topmost error; ignore nested errors*/
 					if(tmp == NULL)
 						return;
@@ -568,6 +572,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 					ch -> nodeData.leaf -> tn -> line_num);
 			}
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
+			newST -> start_line_num = curr -> nodeData.condStmt -> start_line_num;
+			newST -> end_line_num = curr -> nodeData.condStmt -> end_line_num;
 			ASTNode* ch1 = ch -> next;
 			ch1 -> localST = newST;
 			ch1 -> nodeData.dataType = ch -> nodeData.dataType;
@@ -686,6 +692,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
+
+			newST -> start_line_num = curr -> nodeData.condStmt -> start_line_num;
+			newST -> end_line_num = curr -> nodeData.condStmt -> end_line_num;
+
 			ASTNode* ch1 = ch -> next;
 			if(ch1 == NULL) {
 				return;

@@ -10,12 +10,13 @@
 #include "astDef.h"
 #include "hash_map.h"
 
-#define PRINT_VARIABLE_HEADINGS "%-15s%-15s%-15s%-15s%-15s%-15s\n"
-#define PRINT_VARIABLE_DATA "%-15s%-15d%-15d%-15d%-15d%-15d\n"
+#define PRINT_VARIABLE_HEADINGS "%-20s%-20s%-20s%-10s%-10s%-15s%-10s%-15s%-10s%-15s\n"
+#define PRINT_VARIABLE_DATA "%-20s%-20s%-3d-%-16d%-10d%-10s%-15s%-10s%-15s%-10d%-15d\n" 
+#define PRINT_VAR_ARRAY_DATA "%-20s%-20s%-3d-%-16d%-10d%-10s%-15s[%-3d,%-3d] %-15s%-10d%-15d\n"
 #define PRINT_FUNC_HEADINGS "%-15s%-15s%-15s%-15s\n"
 #define PRINT_FUNC_DATA "%-15s%-15d%-15d%-15d"
 
-int typeSize[] = {16, 16, 16, -1, 2};
+int typeSize[] = {2, 4, 1, -1, 8};
 
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.
@@ -63,7 +64,7 @@ SymTableFunc * fetchFuncData(char* name) {
 	return data;
 }
 
-void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataType dataType, SymDataType s) {
+void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s) {
 
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data -> name, name);
@@ -72,8 +73,9 @@ void insertVarRecord(SymbolTable st, char* name, int width, int offset, astDataT
 	data -> dataType = dataType;
 	data -> type = SYM_VARIABLE;
 	data -> sdt = s;
+	data -> table = func;
 
-	st = insertToTable(st, name, data, stringHash);
+	func -> dataTable = insertToTable(func -> dataTable, name, data, stringHash);
 }
 
 void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType, int line_num) {
@@ -84,7 +86,7 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 		int offset = fun -> actRecSize;
 		int width = typeSize[varDataType];
 		SymDataType s;
-		insertVarRecord(funcData -> dataTable, varName, width, offset, varDataType, s);
+		insertVarRecord(funcData , varName, width, offset, varDataType, s);
 		// st = insertVarRecord(st, varName, varWidth, offset, varDataType);
 		fun -> actRecSize += width;
 	} 
@@ -120,10 +122,10 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 
 		int varWidth;
 		if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM && right -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
-			varWidth = typeSize[varDataType]*(a -> high - a -> low + 1);
+			varWidth = typeSize[varDataType]*(a -> high - a -> low + 1) + typeSize[AST_TYPE_POINTER];
 		else
 			varWidth = typeSize[AST_TYPE_POINTER];
-		insertVarRecord(funcData -> dataTable, varName, varWidth, offset, AST_TYPE_ARRAY, s);
+		insertVarRecord(funcData, varName, varWidth, offset, AST_TYPE_ARRAY, s);
 		fun->actRecSize += varWidth;
 	} 
 	else {
@@ -150,6 +152,7 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> input_plist = getList();
 	data -> output_plist = getList();
 	data -> scope = SCOPE_DEFAULT;
+	data -> level = 0;
 	strcpy(data -> dependentVar, "");
 	strcpy(data -> nextJump, "");
 	insertToTable(globalST, name, data, stringHash);
@@ -168,6 +171,7 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> input_plist = getList();
 	data -> output_plist = getList();
 	data -> scope = SCOPE_DEFAULT;
+	data -> level = par -> level + 1;
 	strcpy(data -> name, "");
 	strcpy(data -> dependentVar, "");
 	strcpy(data -> nextJump, "");
@@ -206,7 +210,7 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	else {
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);
 
-		insertVarRecord(funcData->dataTable, varName, varData->width, varData->offset, varData->dataType, new);
+		insertVarRecord(funcData, varName, varData->width, varData->offset, varData->dataType, new);
 	}
 }
 
@@ -234,7 +238,7 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 
 	int varWidth;
 	if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM && right -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
-		varWidth = typeSize[varDataType]*(a -> high - a -> low + 1);
+		varWidth = typeSize[varDataType]*(a -> high - a -> low + 1) + typeSize[AST_TYPE_POINTER];
 	else
 		varWidth = typeSize[AST_TYPE_POINTER];
 	SymTableVar * varData = (SymTableVar *)malloc(sizeof(SymTableVar));
@@ -248,11 +252,11 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
 	} else {
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);
-		insertVarRecord(funcData -> dataTable, varName, varWidth, offset, AST_TYPE_ARRAY, s);
+		insertVarRecord(funcData, varName, varWidth, offset, AST_TYPE_ARRAY, s);
 	}
 
 	/* update activation record size */
-	funcData -> actRecSize += varData -> width;
+	// funcData -> actRecSize += varData -> width;
 	
 	funcData->actRecSize += varWidth;
 }
@@ -267,8 +271,21 @@ int string_comp_id(void* data, void* list_ele) {
 }
 
 void printVar(FILE* fp, void* data) {
-	SymTableVar* varData = (SymTableVar*) data;
-	fprintf(fp, PRINT_VARIABLE_DATA, varData->name, varData->type, varData->isAssigned, varData->width, varData->offset, varData->dataType);
+	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
+	SymTableFunc* tab = varData -> table;
+	SymTableFunc* tmp = tab;
+	while(tmp -> parent != NULL)
+		tmp = tmp -> parent;
+	char modName[30];
+	strcpy(modName, tmp -> name);
+	int startline = tab -> start_line_num;
+	
+	
+
+
+
+
+	fprintf(fp, PRINT_VARIABLE_DATA, varData->name, varData->type, varData->isAssigned, varData->width, varData->offset, typeName[varData->dataType]);
 }
 
 void printFunc(FILE* fp, void* data) {
@@ -276,11 +293,98 @@ void printFunc(FILE* fp, void* data) {
 	fprintf(fp, PRINT_FUNC_DATA, funcData->name, funcData->type, funcData->isDeclared, funcData->isDefined);
 }
 
-void printSymbolTable(FILE* fp, SymbolTable st, void (printElement)(FILE*, void*)) {
+
+/**
+ *  For printing the Symbol Table giving following information (ten in number) for each variable identifier at each line using formatted output.[ Use width of variables of type integer as 2, of real as 4 and of boolean as 1 for printing the symbol table] 
+Variable name 
+Scope - module name
+scope - line number pairs of start and end of the scope
+width    (if a variable is of array type, then add 1 to total requirement for all elements of an array for holding address of the first element) 
+is array
+if array, whether static or dynamic    
+if array, range variables or number lexemes (e.g. [m, n], [p, q], [10, 20] etc.)
+type of element
+offset
+nesting level (for an input or output parameter, level= 0, local variable in function definition, level = 1, any variable inside a nested scope should get its level incremented appropriately)
+
+a      read_array                   19-27        4       no         ---                   ---                  real        54  3
+B      switch_var_demo1       		36- 56      43     yes      static array    	 [10,  30]        			integer    	26  2
+*/
+void printSymbolTable(SymbolTable st, void (printElement)(FILE*, void*)) {
+	FILE * fp = fopen("please.txt", "w");
 	if(printElement == printVar) {
 		fprintf(fp, PRINT_VARIABLE_HEADINGS, "Variable Name", "Type", "Is Assigned", "Width", "Offset", "AST DataType");
 	} else if(printElement == printFunc) {
 		fprintf(fp, PRINT_FUNC_HEADINGS, "Function Name", "Type", "Is Declared", "Is Defined");
 	}
 	printHashTable(fp, st, printElement);
+}
+
+void outputChildren(ASTNode * head) {
+	ASTNode * ch = head;
+	while(ch != NULL) {
+		outputSymbolTable(ch);
+		ch = ch -> next;
+	}
+}
+
+void outputSymbolTable(ASTNode * curr) {
+	switch(curr -> type) {
+		case AST_NODE_PROGRAM: {
+			ASTNode* ch = curr -> child;
+			outputChildren(ch);
+		}
+		break;
+
+		case AST_NODE_MODULELIST: {
+			ASTNode* ch = curr -> child;
+			if(curr -> nodeData.moduleList -> type == AST_MODULE_DRIVER) {
+				SymTableFunc * dr = fetchFuncData("driver");
+				printSymbolTable(dr -> dataTable, printVar);
+			}
+			else 
+				outputChildren(ch);
+		}
+		break;
+
+		case AST_NODE_MODULE: {
+			ASTNode* ch = curr -> child;
+			SymTableFunc* tmp;
+			char name[30];
+			strcpy(name, ch -> nodeData.leaf -> tn -> lex);
+			tmp = fetchFuncData(name);
+			printSymbolTable(tmp -> dataTable, printVar);
+			outputChildren(ch);
+		}
+		break;
+		
+		case AST_NODE_STATEMENT: {
+			ASTNode * ch = curr -> child;
+			outputChildren(ch);
+		}
+		break;
+
+		case AST_NODE_CONDSTMT: {
+			ASTNode * ch = curr -> child -> next;
+			printSymbolTable(ch -> localST -> dataTable, printVar);
+			ch = curr -> child;
+			outputChildren(ch);
+		}
+		break;
+
+		case AST_NODE_ITERSTMT: {
+			ASTNode * ch = curr -> child -> next;
+			if(ch == NULL)
+				return;
+			printSymbolTable(ch -> localST -> dataTable, printVar);
+			ch = curr -> child;
+			outputChildren(ch);
+		}
+		break;
+
+		default: {
+			/* do nothing */
+		}
+		break;
+	}
 }

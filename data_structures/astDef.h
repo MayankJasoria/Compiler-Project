@@ -191,6 +191,8 @@ typedef struct {
 typedef struct moduleNode {
 	// placeholder
 	int a;
+	int start_line_num;
+	int end_line_num;
     // struct leafNode* id_ptr;
     // struct inputListNode* input_plist_head;
     // struct outputListNode* output_plist_head;
@@ -202,6 +204,8 @@ typedef struct {
 	module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
 	/* check note above */
 	// struct ASTNode* next; /* Points to next element of type moduleListNode */
+	int start_line_num;
+	int end_line_num;
 } moduleListNode;
 
 
@@ -339,6 +343,7 @@ typedef struct {
 
 typedef struct {
 	int def;
+	int start_line_num;
 	int end_line_num;
 	int def_line_num;
 	/* TODO: add data fields later */
@@ -372,6 +377,8 @@ typedef struct {
 typedef struct {
 	/* TODO: add data fields later */
 	iter_type type; /* tag for iterative statement */
+	int start_line_num;
+	int end_line_num;
 } iterStmtNode;
 
 /* Temporary Node */
@@ -537,6 +544,9 @@ typedef struct SymTableFunc {
 	int actRecSize; /* field for storing activation record size */
 	char dependentVar[30];
 	scopeType scope;
+	int level;
+	int start_line_num;
+	int end_line_num;
 	char nextJump[30];
 } SymTableFunc;
 
@@ -551,6 +561,7 @@ typedef struct symTableVar {
 	*/
 	astDataType dataType;
 	SymDataType sdt;
+	SymTableFunc * table;
 } SymTableVar;
 
 #endif

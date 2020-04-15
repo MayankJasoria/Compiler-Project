@@ -165,5 +165,5 @@ void printList(FILE* fp, List list, void (*printElement)(FILE* fp, void* data)) 
 		// printf("} --> ");
 		curr = curr->next;
 	}
-	printf("NULL\n");
+	// printf("NULL\n");
 }

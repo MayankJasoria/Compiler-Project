@@ -1,0 +1,6 @@
+Variable Name  Type           Is Assigned    Width          Offset         AST DataType   
+a              0              1              2              55             Integer        
+b              0              1              2              57             Integer        
+k              0              1              1              54             Boolean        
+n              0              1              2              52             Integer        
+p              0              1              46             59             Array          

@@ -12,7 +12,7 @@
 
 int main(int argc, char* argv[]) {
 
-	char* inputfile = "Testcases_stage2/t6.txt";
+	char* inputfile = "Testcases_stage2/t2.txt";
 
 	/* initializing lexer and parser */
 	lexerinit();
@@ -31,5 +31,8 @@ int main(int argc, char* argv[]) {
 
 	traverseAST(root, "");
 	pass2AST(root, "");
+	FILE* fp = fopen("SymOut.txt", "w");
+	printSymbolTable(fp, fetchFuncData("var_demo_array") -> dataTable, printVar);
+	fclose(fp);
 	printf("Hooray!!");
 }
