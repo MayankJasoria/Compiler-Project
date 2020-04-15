@@ -21,7 +21,6 @@ void emitCodeChildren(ASTNode * head, char * fname) {
     }
 }
 
-
 void takeInput(astDataType t, SymTableVar * idNode) {
 
 	fprintf(fp, "push rbp\n");
@@ -120,8 +119,8 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				fprintf(fp, "push rdx\n");
 				fprintf(fp, "push rcx\n");
 				fprintf(fp, "call scanf\n");
-				fprintf(fp, "pop rcx");
-				fprintf(fp, "pop rdx");
+				fprintf(fp, "pop rcx\n");
+				fprintf(fp, "pop rdx\n");
 				fprintf(fp, "pop rbp\n");
 			}
 			else if(type == AST_TYPE_REAL) {
@@ -131,8 +130,8 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				fprintf(fp, "push rdx\n");
 				fprintf(fp, "push rcx\n");
 				fprintf(fp, "call scanf\n");
-				fprintf(fp, "pop rcx");
-				fprintf(fp, "pop rdx");
+				fprintf(fp, "pop rcx\n");
+				fprintf(fp, "pop rdx\n");
 				fprintf(fp, "pop rbp\n");
 			}
 			else if(type == AST_TYPE_BOOLEAN) {
@@ -142,15 +141,91 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				fprintf(fp, "push rdx\n");
 				fprintf(fp, "push rcx\n");
 				fprintf(fp, "call scanf\n");
-				fprintf(fp, "pop rcx");
-				fprintf(fp, "pop rdx");
+				fprintf(fp, "pop rcx\n");
+				fprintf(fp, "pop rdx\n");
 				fprintf(fp, "pop rbp\n");
 			}
 			fprintf(fp, "add rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "dec rcx\n", label_num - 1);
 			fprintf(fp, "jnz label_%d\n", label_num - 1);
+			fprintf(fp, "pop rbp\n");
 		}
 		break;
+	}
+}
+
+void giveOutput(ASTNode * curr) {
+	ASTNode * ch = curr -> child;
+	if(ch -> type == AST_NODE_LEAF) {
+		switch(ch -> nodeData.leaf -> type) {
+			case AST_LEAF_VARIDNUM_NUM: {
+				int val = ch -> nodeData.leaf -> tn -> value.val_int;
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, output_fmt_int\n");
+				fprintf(fp, "mov rsi, %d\n", val);
+				fprintf(fp, "call printf\n");
+				fprintf(fp, "pop rbp\n");
+			}
+			break;
+			case AST_LEAF_VARIDNUM_RNUM: {
+				float val = ch -> nodeData.leaf -> tn -> value.val_float;
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, output_fmt_float\n");
+				fprintf(fp, "sub rsp, 4\n");
+				fprintf(fp, "mov dword [rsp], __float32__(%f)\n", val);
+				fprintf(fp, "cvtss2sd xmm0, [rsp]\n");
+				fprintf(fp, "add rsp, 4\n");
+				fprintf(fp, "mov rax, 1\n");
+				fprintf(fp, "call printf\n");
+				fprintf(fp, "pop rbp\n");
+			}
+			break;
+			case AST_LEAF_BOOLTRUE: {
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, bool_true\n" );
+				fprintf(fp, "call printf\n");
+				fprintf(fp, "pop rbp\n");
+			}
+			break;
+			case AST_LEAF_BOOLFALSE: {
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, bool_false\n" );
+				fprintf(fp, "call printf\n");
+				fprintf(fp, "pop rbp\n");
+			}
+			break;
+			default: {
+				/* do nothing */
+			}
+			break;
+		}
+	}
+	if(ch -> type == AST_NODE_VARIDNUM) {
+		if(ch -> next == NULL) {
+			/* non array variable */
+			ASTNode * idNode = ch -> child;
+			SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
+			fprintf(fp, "push rbp\n");
+			if(id -> dataType == AST_TYPE_INT) {
+				fprintf(fp, "mov rdi, output_fmt_int\n");
+				fprintf(fp, "mov si, word[rbp + %dd]", id -> offset);
+			}
+			else if(id -> dataType == AST_TYPE_REAL) {
+				fprintf(fp, "mov rdi, output_fmt_float\n");
+				fprintf(fp, "mov si, dword[rbp + %dd]", id -> offset);
+			}
+			else if(id -> dataType == AST_TYPE_BOOLEAN) {
+				if(id -> sdt.boolVal)
+					fprintf(fp, "mov rdi, bool_true\n");
+				else
+					fprintf(fp, "mov rdi, bool_false\n");
+			}
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
+		}
+		else {
+			/* array type */
+		}
 	}
 }
 
@@ -263,9 +338,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				takeInput(t, idNode);
 			}
 			else { // AST_IO_PRINT
-				if(ch -> type == AST_NODE_VARIDNUM) {
-					
-				} 
+				giveOutput(ch);
 			}
 		}
 		break;
