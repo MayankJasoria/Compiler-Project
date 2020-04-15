@@ -203,6 +203,7 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	varData -> width = typeSize[varDataType];
 	varData -> dataType = varDataType;
 	SymDataType new;
+	varData -> table = funcData;
 	varData -> sdt = new;
 	varData -> isAssigned = 0;
 
@@ -254,6 +255,7 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	varData -> offset = offset;
 	varData -> dataType = AST_TYPE_ARRAY;
 	varData -> sdt = s;
+	varData -> table = funcData;
 	if(paramType == 0) {
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
 	} else {
@@ -296,6 +298,68 @@ int intlen(int num) {
 
 void printVar(FILE* fp, void* data) {
 	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
+	SymTableFunc* tab = varData -> table;
+	SymTableFunc* tmp = tab;
+	while(tmp -> parent != NULL)
+		tmp = tmp -> parent;
+	char modName[30];
+	strcpy(modName, tmp -> name);
+	int startline = tab -> start_line_num;
+	int endline = tab -> end_line_num;
+	int varWidth = varData -> width;
+	int isArray = varData -> dataType == AST_TYPE_ARRAY;
+	int isDynamic = -1;
+	if(isArray) {
+		if(strcmp(varData -> sdt.r -> lowId, "") == 0 && strcmp(varData -> sdt.r -> highId, "") == 0)
+			isDynamic = 0;
+		else
+			isDynamic = 1;
+	}
+	char type[30];
+	strcpy(type, typeName[varData -> dataType]);
+	if(isArray)
+		strcpy(type, typeName[varData -> sdt.r -> dataType]);
+	int offset = varData -> offset;
+	int nestLevel = tab -> level;
+	/* TODO: left index, right index. Need if else in the print itself */
+	if(!isArray) {
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		fprintf(fp, PRINT_VARIABLE_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
+			varWidth, "No", "---", "---", type, offset, nestLevel);
+	} else if(!isDynamic) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
+		fprintf(fp, PRINT_VAR_STAT_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
+			varWidth, "Yes", "Static", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
+	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
+		fprintf(fp, PRINT_VAR_LDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
+			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
+	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
+		fprintf(fp, PRINT_VAR_RDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
+			varWidth, "Yes", "Dynamic", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type, offset, nestLevel);
+	} else {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + strlen(varData->sdt.r->highId));
+		fprintf(fp, PRINT_VAR_LRDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
+			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->highId, spaceWidth, " ", type, offset, nestLevel);
+	}
+}
+
+void printListVar(FILE* fp, void* data) {
+	SymTableVar* varData = (SymTableVar*) data;
 	SymTableFunc* tab = varData -> table;
 	SymTableFunc* tmp = tab;
 	while(tmp -> parent != NULL)
@@ -424,7 +488,7 @@ void outputSymbolTable(FILE* fp, ASTNode * curr) {
 			char name[30];
 			strcpy(name, ch -> nodeData.leaf -> tn -> lex);
 			tmp = fetchFuncData(name);
-			
+			printList(fp, tmp->input_plist, printListVar);
 			printSymbolTable(fp, tmp -> dataTable, printVar);
 			outputChildren(fp, ch);
 		}

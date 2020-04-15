@@ -1,4 +1,7 @@
 Variable Name            Module Name              Scope Line No.      Width     Is Array  Static/Dynamic Range                    Type of element     Offset    Nesting Level  
+a                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             0         0              
+b                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             50        0              
+c                        f1                       4 - 59              4         No        ---            ---                      Real                100       0              
 A                        f1                       4 - 59              8         Yes       Dynamic        [5, y1]                  Integer             287       0              
 B                        f1                       4 - 59              8         Yes       Dynamic        [5, y1]                  Integer             295       0              
 C                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             497       0              
@@ -22,4 +25,6 @@ A                        f1                       33 - 50             4         
 B                        f1                       33 - 50             50        Yes       Static         [10, 30]                 Integer             563       2              
 E                        f1                       33 - 50             22        Yes       Static         [4, 10]                  Integer             613       2              
 Q                        f1                       33 - 50             2         No        ---            ---                      Integer             561       2              
+a                        function3                66 - 68             4         No        ---            ---                      Real                0         0              
+b                        function3                66 - 68             4         No        ---            ---                      Real                4         0              
 c                        function3                66 - 68             4         No        ---            ---                      Real                8         0              
