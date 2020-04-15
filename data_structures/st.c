@@ -294,7 +294,7 @@ void printVar(FILE* fp, void* data) {
 	strcpy(type, typeName[varData -> dataType]);
 	if(isArray)
 		strcpy(type, typeName[varData -> sdt.r -> dataType]);
-	int offset = tab -> offset;
+	int offset = varData -> offset;
 	int nestLevel = tab -> level;
 	/* TODO: left index, right index. Need if else in the print itself */
 

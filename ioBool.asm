@@ -1,11 +1,11 @@
 
 section .data
-	fmt: db "%hu %hu", 0
-	p_fmt: db "%hu %hu", 0xA, 0
+	fmt: db "%c %c", 0
+	p_fmt: db "%c %c", 0xA, 0
 
 section .bss
-	var1: resb 2
-	var2: resb 2
+	var1: resb 1
+	var2: resb 1
 
 section .text
 	global main
@@ -21,9 +21,8 @@ main:
 
 	push rbp
 	mov rdi, p_fmt
-	mov si, word [var1]
-	mov dx, word [var2]
-	mov rax, 2
+	movzx si, byte [var1]
+	movzx dx, byte [var2]
 	call printf
 	pop rbp
 	ret

@@ -65,39 +65,90 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "pop rbp\n");
 
 			fprintf(fp, "push rbp\n");
-			fprintf(fp, "mov rdi, fmt_string\n");
-			fprintf(fp, "mov rsi, buffer\n");
-			fprintf(fp, "call scanf\n");
-			fprintf(fp, "pop rbp\n");
-
-			fprintf(fp, "mov rax, byte[buffer]\n");
-			fprintf(fp, "cmp rax, 116d\n");
-			fprintf(fp, "jnz label_%d\n", label_num++);
-			fprintf(fp, "mov rax, 1d\n");
-			fprintf(fp, "mov [rbp + %d], rax\n", offset);
-			fprintf(fp, "jmp label_%d\n", label_num++);
-			fprintf(fp, "label_%d:\n", label_num - 2);
-			fprintf(fp, "mov rax, 0d\n");
-			fprintf(fp, "mov [rbp + %d], rax\n", offset);
-			fprintf(fp, "label_%d:\n", label_num - 1);
-		}
-		break;
-		case AST_TYPE_ARRAY: {
-			/**
-			 * TODO: Complete Array input
-			 */
-			fprintf(fp, "mov rdi, op2\n");
-			fprintf(fp, "mov rsi, type_float\n");
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
-
-			fprintf(fp, "push rbp\n");
-			fprintf(fp, "mov rdi, fmt_float\n");
+			fprintf(fp, "mov rdi, fmt_bool\n");
 			fprintf(fp, "mov rax, rbp\n");
 			fprintf(fp, "add rax, %d\n", offset);
 			fprintf(fp, "mov rsi, rax\n");
 			fprintf(fp, "call scanf\n");
 			fprintf(fp, "pop rbp\n");
+		}
+		break;
+		case AST_TYPE_ARRAY: {
+			int lft, right;
+			if(strcmp(idNode -> sdt.r -> lowId, "") == 0) 
+				lft = idNode -> sdt.r -> low;
+			else {
+				SymTableVar * l = fetchVarData(idNode -> table, idNode -> sdt.r -> lowId);
+				if(l -> isAssigned == 0) {
+					rte();
+				}
+				lft = l -> sdt.intVal;
+			}
+			if(strcmp(idNode -> sdt.r -> highId, "") == 0) 
+				right = idNode -> sdt.r -> high;
+			else {
+				SymTableVar * r = fetchVarData(idNode -> table, idNode -> sdt.r -> highId);
+				if(r -> isAssigned == 0) {
+					rte();
+				}
+				right = r -> sdt.intVal;
+			}
+			if(left > right) {
+				ret();
+			}
+			astDataType type = idNode -> sdt.r -> dataType;
+			fprintf(fp, "mov rdi, op2\n");
+			fprintf(fp, "mov rsi, %dd\n", right - left + 1);
+			if(type == AST_TYPE_INT)
+				fprintf(fp, "mov rdx, type_int\n");
+			else if(type == AST_TYPE_REAL)
+				fprintf(fp, "mov rdx, type_float\n");
+			else if(type == AST_TYPE_BOOLEAN)
+				fprintf(fp, "mov rdx, type_bool\n");
+			fprintf(fp, "mov rcx, %dd\n", left);
+			fprintf(fp, "mov r8, %dd\n", right);
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
+
+			fprintf(fp, "mov rdx, qword [%dd]\n", offset);
+			fprintf(fp, "mov rcx, %dd\n", right - left + 1);
+			fprintf(fp, "label_%d:\n", label_num++);
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, fmt_int\n");
+				fprintf(fp, "mov rsi, rdx\n");
+				fprintf(fp, "push rdx\n");
+				fprintf(fp, "push rcx\n");
+				fprintf(fp, "call scanf\n");
+				fprintf(fp, "pop rcx");
+				fprintf(fp, "pop rdx");
+				fprintf(fp, "pop rbp\n");
+			}
+			else if(type == AST_TYPE_REAL) {
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, fmt_float\n");
+				fprintf(fp, "mov rsi, rdx\n");
+				fprintf(fp, "push rdx\n");
+				fprintf(fp, "push rcx\n");
+				fprintf(fp, "call scanf\n");
+				fprintf(fp, "pop rcx");
+				fprintf(fp, "pop rdx");
+				fprintf(fp, "pop rbp\n");
+			}
+			else if(type == AST_TYPE_BOOLEAN) {
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, fmt_bool\n");
+				fprintf(fp, "mov rsi, rdx\n");
+				fprintf(fp, "push rdx\n");
+				fprintf(fp, "push rcx\n");
+				fprintf(fp, "call scanf\n");
+				fprintf(fp, "pop rcx");
+				fprintf(fp, "pop rdx");
+				fprintf(fp, "pop rbp\n");
+			}
+			fprintf(fp, "add rdx, %dd\n", typeSize[type]);
+			fprintf(fp, "dec rcx\n", label_num - 1);
+			fprintf(fp, "jnz label_%d\n", label_num - 1);
 		}
 		break;
 	}
@@ -111,19 +162,20 @@ void codegenInit() {
 		   
 	fprintf(fp, ";init code and data\n");
 	fprintf(fp, "section .data\n");
-	fprintf(fp, "fmt_float: db \"%lf\", 0\n");
-	fprintf(fp, "fmt_int: db \"%d\", 0\n");
+	fprintf(fp, "fmt_float: db \"%f\", 0\n");
+	fprintf(fp, "fmt_int: db \"%hd\", 0\n");
 	fprintf(fp, "fmt_string: db \"%s\", 0\n");
+	fprintf(fp, "fmt_bool: db \"%c\", 0\n");
 
-	fprintf(fp, "type_int: db \"Integer\", 0xA, 0\n");
-	fprintf(fp, "type_float: db \"Real Number\", 0xA, 0\n");
-	fprintf(fp, "type_bool: db \"Boolean\", 0xA, 0\n");
+	fprintf(fp, "type_int: db \"Integer\", 0\n");
+	fprintf(fp, "type_float: db \"Real Number\", 0\n");
+	fprintf(fp, "type_bool: db \"Boolean\", 0\n");
 	
 	fprintf(fp, "op1: db \"Input: Enter an %s Value\n\", 0\n");
 	fprintf(fp, "op2: db \"Input: Enter %d array elements of %s type for range %d to %d\", 0\n");
 
-	fprintf(fp, "output_fmt_float: db \"Output: %lf\n\", 0xA, 0\n");
-	fprintf(fp, "output_fmt_int: db \"Output: %d\n\", 0xA, 0\n");
+	fprintf(fp, "output_fmt_float: db \"Output: %f\n\", 0xA, 0\n");
+	fprintf(fp, "output_fmt_int: db \"Output: %hd\n\", 0xA, 0\n");
 	fprintf(fp, "output_fmt_string: db \"Output: %s\n\", 0xA, 0\n");
 
 	fprintf(fp, "bool_true: db \"true\", 0xA, 0\n");
@@ -204,45 +256,6 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_IO: {
-			/* 
-				Fetch the variable from the symbol table on which the I/O is called 
-
-            else if put_val:
-                /* Put value is on var
-                    var -> var_id_num
-                    var_id_num -> ID, ID[index], NUM, RNUM 
-                if ID:
-                    
-                    ----
-                    mov	edx, ID.width   ;number of bytes to write
-                    mov ecx, ebp + offset       ;move memory address of the value
-                    ----
-                else if ID[index]:
-                    ----
-                    mov edx, ID.(width of each element)
-                    mov ecx, ebp + offset + index*(width of each element)
-                    ----
-                else:
-                     not sure what to do here 
-                    ----
-                    mov edx, NUM.width | RNUM.width
-                    mov ecx, NUM | RNUM  ; Not sure how to output constant, we dont need memory location here
-                    ----
-
-                ----
-                mov ebx, 1	        ;write to stdout
-                mov eax, 4	        ;marshal system write system call opcode into eax
-                int 80h		        ;generate interrupt    
-                ---- 
-
-				fprintf(fp, "mov	edx, %d					; number of bytes to read\n", width);
-				fprintf(fp, "mov	eax, ebp				; moving base pointer to temp register");
-				fprintf(fp, "add	eax, %d				 	; computing memory location of variable", offset);
-                fprintf(fp, "mov    ecx, eax				; moves the pointer to the memory location to ecx\n");
-                fprintf(fp, "mov    ebx, 0					; write to stdin\n");
-                fprintf(fp, "mov    eax, 3					; invoke SYS_READ (kernel opcode 3)");
-                fprintf(fp, "int    80h						; interrupt, switch context to kernel");
-			*/
 			ASTNode* ch = curr -> child;
 			if(curr -> nodeData.io -> type == AST_IO_GETVAL) {
 				SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);

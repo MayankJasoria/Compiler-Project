@@ -1,7 +1,7 @@
 
 section .data
-	fmt: db "%hu %hu", 0
-	p_fmt: db "%hu %hu", 0xA, 0
+	fmt: db "%hd %hd", 0
+	p_fmt: db "%hd %hd", 0xA, 0
 
 section .bss
 	var1: resb 2
@@ -23,7 +23,6 @@ main:
 	mov rdi, p_fmt
 	mov si, word [var1]
 	mov dx, word [var2]
-	mov rax, 2
 	call printf
 	pop rbp
 	ret
