@@ -14,15 +14,12 @@
 #define PRINT_FUNC_HEADINGS "%-15s%-15s%-15s%-15s\n"
 #define PRINT_FUNC_DATA "%-15s%-15d%-15d%-15d"
 
-#define PRINT_VARIABLE_HEADINGS "%-20s%-20s%-20s%-10s%-10s%-15s%-20s%-20s%-10s%-15s\n"
-#define PRINT_VARIABLE_DATA "%-20s%-20s%-3d- %-15d%-10d%-10s%-15s%-20s%-20s%-10d%-15d\n" 
-#define PRINT_VAR_STAT_ARRAY_DATA "%-20s%-20s%-3d-%-16d%-10d%-10s%-15s[%-3d,%-3d]           %-20s%-10d%-15d\n"
-/**
- * FIXME: Correct spacing issues in the next 3 #define macros
- */
-#define PRINT_VAR_LDYN_ARRAY_DATA "%-20s%-20s%-3d- %-15d%-10d%-10s%-15s[%s,%-3d] %-20s%-10d%-15d\n"
-#define PRINT_VAR_RDYN_ARRAY_DATA "%-20s%-20s%-3d- %-15d%-10d%-10s%-15s[%-3d,%s] %-20s%-10d%-15d\n"
-#define PRINT_VAR_LRDYN_ARRAY_DATA "%-20s%-20s%-3d- %-15d%-10d%-10s%-15s[%s,%s] %-20s%-10d%-15d\n"
+#define PRINT_VARIABLE_HEADINGS "%-25s%-25s%-20s%-10s%-10s%-15s%-25s%-20s%-10s%-15s\n"
+#define PRINT_VARIABLE_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s%-25s%-20s%-10d%-15d\n" 
+#define PRINT_VAR_STAT_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%d, %d]%-*s%-20s%-10d%-15d\n"
+#define PRINT_VAR_LDYN_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%s, %d]%-*s%-20s%-10d%-15d\n"
+#define PRINT_VAR_RDYN_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%d, %s]%-*s%-20s%-10d%-15d\n"
+#define PRINT_VAR_LRDYN_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%s, %s]%-*s%-20s%-10d%-15d\n"
 
 
 int typeSize[] = {2, 4, 1, -1, 8};
@@ -124,7 +121,7 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 			a -> high = (right -> nodeData.leaf -> tn -> value.val_int);
 		}
 		else 
-			strcpy(a -> highId, lft -> nodeData.leaf -> tn -> lex);
+			strcpy(a -> highId, right -> nodeData.leaf -> tn -> lex);
 
 		SymDataType s;
 		s.r = a;
@@ -279,6 +276,24 @@ int string_comp_id(void* data, void* list_ele) {
 	return strcmp((char *)data, ((SymTableVar *)list_ele)->name) == 0;
 }
 
+/**
+ * Utility function for computing length of an integer
+ * @param num	The number whose length is to be computed
+ * 
+ * @return the no. of digits in the given integer
+ */
+int intlen(int num) {
+	int count =0;
+	if(num < 0) {
+		num = -num;
+	}
+	while(num != 0) {
+		count++;
+		num /= 10;
+	}
+	return count;
+}
+
 void printVar(FILE* fp, void* data) {
 	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
 	SymTableFunc* tab = varData -> table;
@@ -306,20 +321,38 @@ void printVar(FILE* fp, void* data) {
 	int nestLevel = tab -> level;
 	/* TODO: left index, right index. Need if else in the print itself */
 	if(!isArray) {
-		fprintf(fp, PRINT_VARIABLE_DATA, varData->name, modName, startline, endline, 
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		fprintf(fp, PRINT_VARIABLE_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
 			varWidth, "No", "---", "---", type, offset, nestLevel);
 	} else if(!isDynamic) {
-		fprintf(fp, PRINT_VAR_STAT_ARRAY_DATA, varData->name, modName, startline, endline, 
-			varWidth, "Yes", "Static", varData->sdt.r->low, varData->sdt.r->high, type, offset, nestLevel);
-	} else if(!strcmp(varData->sdt.r->lowId, "") && strcmp(varData->sdt.r->highId, "")) {
-		fprintf(fp, PRINT_VAR_LDYN_ARRAY_DATA, varData->name, modName, startline, endline,
-			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->high, type, offset, nestLevel);
-	} else if(strcmp(varData->sdt.r->lowId, "") && !strcmp(varData->sdt.r->highId, "")) {
-		fprintf(fp, PRINT_VAR_RDYN_ARRAY_DATA, varData->name, modName, startline, endline,
-			varWidth, "Yes", "Dynamic", varData->sdt.r->low, varData->sdt.r->highId, type, offset, nestLevel);
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
+		fprintf(fp, PRINT_VAR_STAT_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
+			varWidth, "Yes", "Static", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
+	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
+		fprintf(fp, PRINT_VAR_LDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
+			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
+	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
+		fprintf(fp, PRINT_VAR_RDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
+			varWidth, "Yes", "Dynamic", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type, offset, nestLevel);
 	} else {
-		fprintf(fp, PRINT_VAR_LRDYN_ARRAY_DATA, varData->name, modName, startline, endline,
-			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->highId, type, offset, nestLevel);
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + strlen(varData->sdt.r->highId));
+		fprintf(fp, PRINT_VAR_LRDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
+			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->highId, spaceWidth, " ", type, offset, nestLevel);
 	}
 }
 
@@ -391,6 +424,7 @@ void outputSymbolTable(FILE* fp, ASTNode * curr) {
 			char name[30];
 			strcpy(name, ch -> nodeData.leaf -> tn -> lex);
 			tmp = fetchFuncData(name);
+			
 			printSymbolTable(fp, tmp -> dataTable, printVar);
 			outputChildren(fp, ch);
 		}

@@ -201,11 +201,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 					ch -> localST = curr -> localST;
 					traverseAST(ch, fname);
 					tmp = ch -> localST;
+					if(tmp == NULL)
+						return;
 					tmp -> start_line_num = curr -> nodeData.module -> start_line_num;
 					tmp -> end_line_num = curr -> nodeData.module -> end_line_num;
 					/* Report topmost error; ignore nested errors*/
-					if(tmp == NULL)
-						return;
 					strcpy(name, ch -> nodeData.leaf -> tn -> lex);
 				}
 				else {
