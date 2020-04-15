@@ -31,8 +31,10 @@ int main(int argc, char* argv[]) {
 
 	traverseAST(root, "");
 	pass2AST(root, "");
-	FILE* fp = fopen("SymOut.txt", "w");
-	printSymbolTable(fp, fetchFuncData("var_demo_array") -> dataTable, printVar);
-	fclose(fp);
+	// FILE* fp = fopen("SymOut.txt", "w");
+	// printSymbolTable(fp, fetchFuncData("var_demo_array") -> dataTable, printVar);
+	// fclose(fp);
+
+	outputSymbolTable(NULL, root);
 	printf("Hooray!!");
 }

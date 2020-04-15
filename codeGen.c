@@ -92,25 +92,25 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				}
 				right = r -> sdt.intVal;
 			}
-			if(left > right) {
-				ret();
+			if(lft > right) {
+				rte();
 			}
 			astDataType type = idNode -> sdt.r -> dataType;
 			fprintf(fp, "mov rdi, op2\n");
-			fprintf(fp, "mov rsi, %dd\n", right - left + 1);
+			fprintf(fp, "mov rsi, %dd\n", right - lft + 1);
 			if(type == AST_TYPE_INT)
 				fprintf(fp, "mov rdx, type_int\n");
 			else if(type == AST_TYPE_REAL)
 				fprintf(fp, "mov rdx, type_float\n");
 			else if(type == AST_TYPE_BOOLEAN)
 				fprintf(fp, "mov rdx, type_bool\n");
-			fprintf(fp, "mov rcx, %dd\n", left);
+			fprintf(fp, "mov rcx, %dd\n", lft);
 			fprintf(fp, "mov r8, %dd\n", right);
 			fprintf(fp, "call printf\n");
 			fprintf(fp, "pop rbp\n");
 
 			fprintf(fp, "mov rdx, qword [%dd]\n", offset);
-			fprintf(fp, "mov rcx, %dd\n", right - left + 1);
+			fprintf(fp, "mov rcx, %dd\n", right - lft + 1);
 			fprintf(fp, "label_%d:\n", label_num++);
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "push rbp\n");
