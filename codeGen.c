@@ -243,30 +243,102 @@ void giveOutput(ASTNode * curr) {
 
 				fprintf(fp, "label_%d:\n", label_num++);
 			
-				fprintf(fp, "push rbp\n");
 				fprintf(fp, "push rdx\n");
 				fprintf(fp, "push rcx\n");
-
-				if(type == AST_TYPE_INT) 
+				fprintf(fp, "push rbp\n");
+			
+				if(type == AST_TYPE_INT) {
 					fprintf(fp, "mov rdi, fmt_int\n");
-				else if(type == AST_TYPE_REAL) 
+					fprintf(fp, "mov si, word[rdx]\n");
+				}
+				else if(type == AST_TYPE_REAL) {
 					fprintf(fp, "mov rdi, fmt_float\n");
+				}
 				else if(type == AST_TYPE_BOOLEAN) 
 					fprintf(fp, "mov rdi, fmt_bool\n");
 
-				fprintf(fp, "mov rsi, rdx\n");
-				fprintf(fp, "call scanf\n");
+				fprintf(fp, "call printf\n");
 				fprintf(fp, "pop rbp\n");
 				fprintf(fp, "pop rcx\n");
 				fprintf(fp, "pop rdx\n");
-				fprintf(fp, "add rdx, %dd\n", typeSize[type]);
-				fprintf(fp, "dec rcx\n", label_num - 1);
+
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, single_space\n" );
+				fprintf(fp, "call printf\n");
+				fprintf(fp, "pop rbp\n");
+
+				fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
+				fprintf(fp, "dec rcx\n");
 				fprintf(fp, "jnz label_%d\n", label_num - 1);
 				fprintf(fp, "pop rbp\n");			
+
+				fprintf(fp, "push rbp\n");
+				fprintf(fp, "mov rdi, end_line\n" );
+				fprintf(fp, "call printf\n");
+				fprintf(fp, "pop rbp\n");
 			}
 		}
 		else {
+			ASTNode * idNode = ch -> child;
+			SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
+			int lft, right;
+			int offset = id -> offset;
+			if(strcmp(id -> sdt.r -> lowId, "") == 0) 
+				lft = id -> sdt.r -> low;
+			else {
+				SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId);
+				if(l -> isAssigned == 0) {
+					rte();
+				}
+				lft = l -> sdt.intVal;
+			}
+			if(strcmp(id -> sdt.r -> highId, "") == 0) 
+				right = id -> sdt.r -> high;
+			else {
+				SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId);
+				if(r -> isAssigned == 0) {
+					rte();
+				}
+				right = r -> sdt.intVal;
+			}
+			if(lft > right) {
+				rte();
+			}
+			astDataType type = id -> sdt.r -> dataType;
 
+			ASTNode * i = ch -> child -> next;
+			int idx;
+			if(i -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
+				idx = i -> nodeData.leaf -> tn -> val_int;
+			else {
+				SymTableVar * tmp = fetchVarData(curr -> localST, i -> nodeData.leaf -> tn -> lex);
+				if(tmp -> isAssigned == 0) {
+					rte();
+				}
+				idx = tmp -> sdt.intVal;
+			}
+			if(idx < lft || idx > right) {
+				rte();
+			}
+
+			fprintf(fp, "mov rdx, qword [rbp + %dd]\n", offset);
+			fprintf(fp, "push rbp\n");
+			if(id -> dataType == AST_TYPE_INT) {
+				fprintf(fp, "mov rdi, output_fmt_int\n");
+				fprintf(fp, "mov si, word[rdx + %dd]", idx - lft);
+			}
+			else if(id -> dataType == AST_TYPE_REAL) {
+				fprintf(fp, "mov rdi, output_fmt_float\n");
+				fprintf(fp, "mov si, dword[rdx + %dd]", idx - lft);
+			}
+			else if(id -> dataType == AST_TYPE_BOOLEAN) {
+				if(id -> sdt.boolVal)
+					fprintf(fp, "mov rdi, bool_true\n");
+				else
+					fprintf(fp, "mov rdi, bool_false\n");
+			}
+			fprintf(fp, "call printf\n");
+			fprintf(fp, "pop rbp\n");
 		}
 	}
 }
@@ -284,6 +356,7 @@ void codegenInit() {
 	fprintf(fp, "fmt_string: db \"%s\", 0\n");
 	fprintf(fp, "fmt_bool: db \"%c\", 0\n");
 	fprintf(fp, "single_space: db \" \", 0\n");
+	fprintf(fp, "end_line: db \"\", 0xA, 0\n");	
 
 	fprintf(fp, "type_int: db \"Integer\", 0\n");
 	fprintf(fp, "type_float: db \"Real Number\", 0\n");
