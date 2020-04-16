@@ -70,6 +70,12 @@ SymTableFunc * fetchFuncData(char* name) {
 	return data;
 }
 
+SymTableFunc * getParentFunc(SymTableFunc * local) {
+	while(local -> parent != NULL)
+		local = local -> parent;
+	return local;
+}
+
 void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s) {
 
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));

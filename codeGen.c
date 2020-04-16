@@ -402,6 +402,9 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		default:
 			break;
 	}
+	SymTableFunc * par = fetParentFunc(operator -> parent -> localST);
+	operator -> parent -> temporaryOffset = (par -> actRecSize) + 8 + (par -> dynamicRecSize);
+	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
 		fprintf(fp, "sub rsp, 2\n");
 		fprintf(fp, "mov word [rsp], r8w\n");
@@ -846,26 +849,30 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_DECLARESTMT: {
-			ASTNode* ch = curr -> child;
-			ch -> next -> localST = curr -> localST;
-			emitCodeAST(ch -> next, fname);
-			ASTNode* tmp = ch;
-			while(tmp != NULL) {
-
-				ASTNode* idNode = tmp -> child;
-
-				if(ch -> next -> type == AST_NODE_ARRAY) {
-
-					ASTNode* lft = (ch -> next) -> child -> child;
-					ASTNode* right = lft -> next; 
-					astDataType t = (ch -> next) -> child -> next -> nodeData.leaf -> dataType;
-					addArrToFunction(curr -> localST, fname, idNode -> nodeData.leaf -> tn -> lex, lft, right, t);
+			ASTNode * ch = curr -> child;
+			if(ch -> next -> type == AST_NODE_ARRAY) {
+				ASTNode * arr = ch -> next;
+				if(arr -> nodeData.dataType -> is_static == 0)
+					return;
+				ASTNode * idNode = ch;
+				astDataType type = arr -> nodeData.dataType -> dataType;
+				while(idNode != NULL) {
+					SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex); 
+					fprintf(fp, "mov rax, rbp\n");
+					fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
+					fprintf(fp, "mov qword [rax], rsp\n");
+					getLeftRightIndex();
+					fprintf(fp, "cmp r10w, r11w\n");
+					fprintf(fp, "jgt rte\n");
+					fprintf(fp, "mov rcx, r11w\n");
+					fprintf(fp, "sub rcx, r10w\n");
+					fprintf(fp, "inc rcx\n");
+					fprintf(fp, "label_%d\n", label_num++);
+					fprintf(fp, "sub rsp, %dd\n", typeSize[type]);
+					fprintf(fp, "dec rcx\n");
+					fprintf(fp, "jnz label_%d\n", label_num - 1);
+					idNode = idNode -> child -> next;
 				}
-				else {
-					addDataToFunction(curr -> localST, fname, idNode -> nodeData.leaf -> tn -> lex, ch -> next -> nodeData.leaf -> dataType, idNode -> nodeData.leaf -> tn -> line_num);
-				}
-				tmp = tmp -> child;
-				tmp = tmp -> next;
 			}
 		}
 		break;
