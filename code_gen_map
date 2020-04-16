@@ -535,4 +535,16 @@ declareStmt : DECLARE idList COLON dataType SEMICOL
 case AST_NODE_DECLARESTMT:    
     ASTNode* ch = curr-> child;
 
+   push rbp
    
+   F |  ^
+   E |  |
+   D |  |
+   C |  |
+   B |[rbp]
+   A |  |
+   9 |  |
+   8 |  \/
+   7 |  <--- rsp, rbp
+
+   mpv rcx, qword [rbp + 1]; read from 7 to E! 

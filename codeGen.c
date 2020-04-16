@@ -840,18 +840,21 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rbp, rsp\n");
 
+			/* Actual parameters */
 			ASTNode * inParam = ch -> next;
 			if(inParam -> type != AST_NODE_IDLIST)
 				inParam = inParam -> next;
 
 			int inputSize = 0;
+			/* Traversing actual parameters */
 			while(inParam != NULL) {
 				ASTNode * idNode = inParam -> child;
+				/* Fetch current ID from symbol table */
 				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
 				if(id -> isAssigned == 0)
 					rte();
-				fprintf(fp, "mov rax, qword [rbp]\n");
-				fprintf(fp, "mov rcx, [rax]\n");
+				fprintf(fp, "mov rcx, qword [rbp]\n");
+				//fprintf(fp, "mov rcx, rax\n");
 				fprintf(fp, "sub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				inputSize += typeSize[id -> dataType];
 				if(id -> dataType == AST_TYPE_INT) {
