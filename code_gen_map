@@ -406,6 +406,7 @@ main:
     ...
     st7
 
+    finit
     fld [mem]
     fld [mem1]
     fadd
@@ -528,3 +529,10 @@ main:
 	pop rbp
 	mov rax, 0
     ret
+
+;------------------------------------------------------------------
+declareStmt : DECLARE idList COLON dataType SEMICOL
+case AST_NODE_DECLARESTMT:    
+    ASTNode* ch = curr-> child;
+
+   

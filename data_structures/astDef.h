@@ -10,16 +10,16 @@
 #include "hash_map.h"
 
 /**
- *  astDef.h: Contains definitions for constructing abstract syntax tree 
- *  Note: 'declarationNode' in our semantic rules documentation has been changed to
- *         'moduleDeclarationsNode' in this code to avoid confusion.
+*  astDef.h: Contains definitions for constructing abstract syntax tree 
+*  Note: 'declarationNode' in our semantic rules documentation has been changed to
+*         'moduleDeclarationsNode' in this code to avoid confusion.
 */
 
 /**
- * nodeType: Identifies the type of node represented by the 
- *           ASTNode. 
- * Naming convention: Construct name in all uppercase letters
- */
+* nodeType: Identifies the type of node represented by the 
+*           ASTNode. 
+* Naming convention: Construct name in all uppercase letters
+*/
 
 typedef enum {
 	BOUND_RUNTIME,
@@ -158,8 +158,8 @@ typedef enum {
 
 int typeSize[5];
 /**
- * NOTE: All occurrences of 'int a' are only placeholders
- */
+* NOTE: All occurrences of 'int a' are only placeholders
+*/
 
 char typeName[5][20];
 
@@ -193,10 +193,10 @@ typedef struct moduleNode {
 	int a;
 	int start_line_num;
 	int end_line_num;
-    // struct leafNode* id_ptr;
-    // struct inputListNode* input_plist_head;
-    // struct outputListNode* output_plist_head;
-    // struct statementNode* moduleDef_head;
+	// struct leafNode* id_ptr;
+	// struct inputListNode* input_plist_head;
+	// struct outputListNode* output_plist_head;
+	// struct statementNode* moduleDef_head;
 } moduleNode;
 
 
@@ -327,9 +327,9 @@ typedef struct {
 
 typedef struct {
 	/*
-	 * Three children.
-	 * TODO: Define Data fields later
-	 */
+	* Three children.
+	* TODO: Define Data fields later
+	*/
 	
 	/* tag */
 	int temporaryOffset;
@@ -434,8 +434,8 @@ typedef struct {
 
 
 /**
- * Represents a node in the abstract syntax tree (AST)
- */ 
+* Represents a node in the abstract syntax tree (AST)
+*/ 
 
 typedef union {
 	programNode* program;
@@ -472,7 +472,7 @@ struct SymTableFunc;
 typedef struct ASTNode {
 
 	/* Attributes specific to the AST node 
-	   Naming convention: 
+	Naming convention: 
 		1. Name of node type is the construct name is small case
 		2. If the construct name is a keyword in C then append '_n' at the end in (1)
 		3. Typedefs not used as they abstract out the record type representing the node and reduce code readability   
@@ -482,9 +482,9 @@ typedef struct ASTNode {
 	astNodeType type; /* Type of node represented by this AST node */
 
 	/**
-	 * Include pointer to Symbol Table Entry of nested constructs [if, while etc.].
-	 * (This contains pointer to variable symbol table)
-	 */
+	* Include pointer to Symbol Table Entry of nested constructs [if, while etc.].
+	* (This contains pointer to variable symbol table)
+	*/
 	struct SymTableFunc* localST;
 	
 	/* TODO: add data fields later */
@@ -498,10 +498,10 @@ typedef struct ASTNode {
 } ASTNode;
 
 /**
- * -------------------------------------------------------------------------------- 
- * 	START OF stDef.h Code here copied from stDef.h to avoid circulardependenncies
- * --------------------------------------------------------------------------------
- */
+* -------------------------------------------------------------------------------- 
+* 	START OF stDef.h Code here copied from stDef.h to avoid circulardependenncies
+* --------------------------------------------------------------------------------
+*/
 
 /* defining a symbol table */
 typedef HashTable SymbolTable;
@@ -572,5 +572,7 @@ typedef struct symTableVar {
 
 int numASTnodes;
 int ASTSize;
+
+#endifTSize;
 
 #endif

@@ -26,6 +26,9 @@ int getIDOffset(ASTNode * idNode) {
 	return tmp -> offset;
 }
 
+/**
+ * Returns temporary offset of the node in the expression
+ */ 
 int getExprOffset(ASTNode * expr) {
 	if(expr -> type == AST_NODE_LEAF)
 		return expr -> nodeData.leaf -> temporaryOffset;
@@ -37,6 +40,10 @@ int getExprOffset(ASTNode * expr) {
 		return expr -> nodeData.unary -> temporaryOffset;
 }
 
+/**
+ * Returns datatype of expression
+ * @param expr	AST Node representing the root of expression subtree
+ */
 int getExprType(ASTNode * expr) {
 	
 	if(expr -> type == AST_NODE_LEAF)
@@ -49,7 +56,7 @@ int getExprType(ASTNode * expr) {
 		return expr -> nodeData.unary -> dataType;
 }
 
-/*
+/**
  * Populates  	r10w : left index
  * 				r11w : right index 
  */
@@ -95,18 +102,32 @@ void getInputElement() {
 	fprintf(fp, "pop rbp\n");
 }
 
+/**
+ * r9 <- offset relative to base address of array, the offset, base address rdx
+ * @param arr	AST node of the array
+ * @param index	AST Node specifying index
+ */
 void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 
+	/* Array index */
 	ASTNode * i = index;
+
+	/* Fetch array from symbol table */ 
 	SymTableVar * id = fetchVarData(arr -> localST, arr -> nodeData.leaf -> tn -> lex);
+	
+	/* DataType of elements of array */
 	astDataType type = id -> sdt.r -> dataType;
 	int offset = id -> offset;
 	int idx;
+	
+	/* store the value of the index in r8w */
 	if(i -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
+		/* index is of type NUM */
 		idx = i -> nodeData.leaf -> tn -> value.val_int;
-		fprintf(fp, "mov r8w, idx\n");
+		fprintf(fp, "mov r8w, %dd\n", idx);
 	}
 	else {
+		/* index is of type ID */
 		SymTableVar * tmp = fetchVarData(arr -> localST, i -> nodeData.leaf -> tn -> lex);
 		if(tmp -> isAssigned == 0) {
 			rte();
@@ -119,10 +140,12 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	// if(idx < lft || idx > right) {
 	// 	rte();
 	// }
+	/* Move base address of array to r8x */
 	fprintf(fp, "mov rax, rbp\n");
 	fprintf(fp, "sub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
 	fprintf(fp, "mov rdx, qword [rax]\n");
 
+	/* compute element address as: [rdx - (r8w - r10w + 1) * width] */
 	fprintf(fp, "mov r9w, 0\n");
 	fprintf(fp, "sub r8w, r10w\n");
 	fprintf(fp, "inc r8w\n");
@@ -134,7 +157,8 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	fprintf(fp, "movsz r9, r9w\n");
 }
 
-/* Important NOTE: Function was initially designed to modularize arrays,
+/**
+ * NOTE: Function was initially designed to modularize arrays,
  * but later found out that this can be reused for non array types as well.
  * don't go by the name
  */
@@ -172,10 +196,21 @@ void outputArrayElement(SymTableVar * id) {
 	fprintf(fp, "pop rbp\n");
 }
 
+/**
+ * Emits code for copying rhs to lhs
+ * If lhsOff is -1, left hand side is treated as an array and assumed
+ * that rdx is base and r9 is offset, already emitted.
+ * @param lshOff
+ * @param rhsOff
+ * @param type
+ */ 
 void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
+	/* offset of rhs is in rax */
 	fprintf(fp, "mov rax, rbp\n");
 	fprintf(fp, "sub rax, %dd\n", rhsOff + typeSize[type]);
+	
+	/*  */
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "mov r8w, word [rax]\n");
 		if(lhsOff == -1) {
@@ -222,7 +257,7 @@ void if0else1() {
 	fprintf(fp, "label_%d\n", label_num - 1);
 }
 
-/*
+/**
  * Floating point operations source: https://gist.github.com/nikAizuddin/0e307cac142792dcdeba
  *	cmp    eax, 0000000000000000B ;is st0 > source ?
  *  je     .example_11_greater
@@ -403,7 +438,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			break;
 	}
 	SymTableFunc * par = fetParentFunc(operator -> parent -> localST);
-	operator -> parent -> temporaryOffset = par -> dynamicRecSize;
+	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
 		fprintf(fp, "mov rax, rsp\n");
@@ -762,16 +797,29 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			emitCodeChildren(ch, fname);
 			ch = curr -> child;
 			if(ch -> next -> type == AST_NODE_LVALARRSTMT) {
+				/* Fetching Array data form Symbol Table */
 				SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				
+				/* Getting index of array element being accessed */
 				ASTNode * index = ch -> next -> child;
+
+				/* Getting range limits of array: r10 left, r11 right*/
 				getLeftRightIndex(id);
+
+				/* rdx -> base, r9 -> offset of array element */
 				fetchArraybyIndex(ch, index);
+				
+				/* Evaluating expression on RHS */
 				ASTNode * rhs = ch -> next -> child -> next;
+
+				/* Get offset of temporary variable on RHS of operator */
 				int rhsOff = getExprOffset(rhs);
 				astDataType type = getExprType(rhs);
+
 				moveOffsetToOffset(-1, rhsOff, type);
 			}
 			else {
+				/* LVALUE_ID_STMT */
 				int lhsOff = getIDOffset(ch);
 				int rhsOff = getExprOffset(ch -> next);
 				astDataType type = ch -> nodeData.leaf -> dataType;
@@ -785,6 +833,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_MODULEREUSE: {
 			ASTNode * ch = curr -> child;
 			
+			/* Setting up stack frame. Set the current stack pointer as the starting 
+			   of the base of stack frame of the function being called, and storing 
+			   current base pointer in stack */
+			fprintf(fp, "; ### Setting up the stack frame ###");
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rbp, rsp\n");
 
@@ -865,7 +917,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "mov rax, rbp\n");
 					fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
 					fprintf(fp, "mov qword [rax], rsp\n");
-					getLeftRightIndex();
+					getLeftRightIndex(id);
 					fprintf(fp, "cmp r10w, r11w\n");
 					fprintf(fp, "jgt rte\n");
 					fprintf(fp, "mov rcx, r11w\n");
