@@ -21,6 +21,34 @@ void emitCodeChildren(ASTNode * head, char * fname) {
     }
 }
 
+int getIDOffset(ASTNode * idNode) {
+	SymTableVar * tmp = fetchVarData(idNode -> localST, idNode -> nodeData.leaf -> tn -> lex);
+	return tmp -> offset;
+}
+
+int getExprOffset(ASTNode * expr) {
+	
+	if(expr -> type == AST_NODE_LEAF)
+		return rhs -> nodeData.leaf -> temporaryOffset;
+	else if(expr -> type == AST_NODE_VARIDNUM)
+		return rhs -> nodeData.var -> temporaryOffset;
+	else if(expr -> type == AST_NODE_AOBEXPR)
+		return rhs -> nodeData.AOBExpr -> temporaryOffset;
+	else if(expr -> type == AST_NODE_UNARY)
+		return rhs -> nodeData.unary -> temporaryOffset;
+}
+
+int getExprType(ASTNode * expr) {
+	
+	if(expr -> type == AST_NODE_LEAF)
+		return rhs -> nodeData.leaf -> dataType;
+	else if(expr -> type == AST_NODE_VARIDNUM)
+		return rhs -> nodeData.var -> dataType;
+	else if(expr -> type == AST_NODE_AOBEXPR)
+		return rhs -> nodeData.AOBExpr -> dataType;
+	else if(expr -> type == AST_NODE_UNARY)
+		return rhs -> nodeData.unary -> dataType;
+}
 
 /*
  * Populates  	r10w : left index
@@ -143,6 +171,48 @@ void outputArrayElement(SymTableVar * id) {
 	}
 	fprintf(fp, "call printf\n");
 	fprintf(fp, "pop rbp\n");
+}
+
+void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
+
+	fprintf(fp, "mov rax, rbp\n");
+	fprintf(fp, "sub rax, %dd\n", rhsOff + typeSize[type]);
+	if(type == AST_TYPE_INT) {
+		fprintf(fp, "mov r8w, word [rax]\n");
+		if(lhsOff == -1) {
+			fprintf(fp, "mov rax, rdx\n");
+			fprintf(fp, "sub rax, r9\n");
+		}
+		else {
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "sub rbp, %dd\n", typeSize[type] + lhsOff);
+		}
+		fprintf(fp, "mov word [rax], r8w\n");
+	}
+	if(type == AST_TYPE_REAL) {
+		fprintf(fp, "mov r8d, dword [rax]\n");
+		if(lhsOff == -1) {
+			fprintf(fp, "mov rax, rdx\n");
+			fprintf(fp, "sub rax, r9\n");
+		}
+		else {
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "sub rbp, %dd\n", typeSize[type] + lhsOff);
+		}
+		fprintf(fp, "mov dword [rax], r8d\n");
+	}
+	if(type == AST_TYPE_BOOLEAN) {
+		fprintf(fp, "mov r8b, byte [rax]\n");
+		if(lhsOff == -1) {
+			fprintf(fp, "mov rax, rdx\n");
+			fprintf(fp, "sub rax, r9\n");
+		}
+		else {
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "sub rbp, %dd\n", typeSize[type] + lhsOff);
+		}
+		fprintf(fp, "mov byte [rax], r8b\n");
+	}
 }
 
 void takeInput(astDataType t, SymTableVar * idNode) {
@@ -301,6 +371,7 @@ void giveOutput(ASTNode * curr) {
 				rte();
 			}
 			fprintf(fp, "mov r9, %dd\n", (id -> offset) + typeSize[id -> dataType];
+			fprintf(fp, "mov rdx, rbp\n");
 			outputArrayElement(id);
 			return;
 		}
@@ -487,7 +558,20 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_ASSIGN: {
 			ASTNode* ch = curr -> child;
 			if(ch -> next -> type == AST_NODE_LVALARRSTMT) {
-
+				SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				ASTNode * index = ch -> next -> child;
+				getLeftRightIndex(id);
+				fetchArraybyIndex(ch, index);
+				ASTNode * rhs = ch -> next -> child -> next;
+				int rhsOff = getExprOffset(rhs);
+				astDataType type = getExprType(rhs);
+				moveOffsetToOffset(-1, rhsOff, type)
+			}
+			else {
+				int lhsOff = getIDOffset(ch);
+				int rhsOff = getExprOffset(ch -> next);
+				astDataType type = ch -> nodeData.leaf -> dataType;
+				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
 		}
 		break;

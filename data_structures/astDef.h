@@ -404,6 +404,7 @@ typedef struct {
 typedef struct {
 
 	boundCheck b;
+	int temporaryOffset;
 	astDataType dataType;
 	int a;
 } varidnumNode;
