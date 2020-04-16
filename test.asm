@@ -14,4 +14,5 @@ section .text
 main:
 	push ax
 	pop ax	
+	and al, bl
 	ret

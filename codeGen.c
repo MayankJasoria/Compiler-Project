@@ -215,6 +215,159 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 	}
 }
 
+void if0else1() {
+	fprintf(fp, "mov r8b, 0\n");
+	fprintf(fp, "jmp label_%d\n", label_num++);
+	fprintf(fp, "label_%d:\n", label_num - 2);
+	fprintf(fp, "mov r8b, 1\n");
+	fprintf(fp, "label_%d\n", label_num - 1);
+}
+
+/*
+ * Floating point operations source: https://gist.github.com/nikAizuddin/0e307cac142792dcdeba
+ *	cmp    eax, 0000000000000000B ;is st0 > source ?
+ *  je     .example_11_greater
+    cmp    eax, 0000000100000000B ;is st0 < source ?
+    je     .example_11_less
+    cmp    eax, 0100000000000000B ;is st0 = source ?
+    je     .example_11_equal
+
+ */
+void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type) {
+
+	fprintf(fp, "mov rax, rbp\n");
+	fprintf(fp, "sub rax, %dd\n", leftOp + typeSize[type]);
+	fprintf(fp, "mov r10, rbp\n");
+	fprintf(fp, "sub r10, %dd\n", rightOp + typeSize[type]);
+	if(type == AST_TYPE_INT) {
+		fprintf(fp, "mov r8w, word [rax]\n");
+		fprintf(fp, "mov r9w, word [r10]\n");
+	}
+	if(type == AST_TYPE_REAL) {
+		fprintf(fp, "finit\n");
+		fprintf(fp, "fld dword [r10]\n");
+		fprintf(fp, "fld dword [rax]\n");
+	}
+	if(type == AST_TYPE_BOOLEAN) {
+		fprintf(fp, "mov r8b, byte [rax]\n");
+		fprintf(fp, "mov r9b, byte [r10]\n");
+	}
+	switch(operator -> nodeData.leaf -> type) {
+		case AST_LEAF_AND:
+			fprintf(fp, "and r8b, r9b\n");
+		case AST_LEAF_OR:
+			fprintf(fp, "or r8b, r9b\n");
+		case AST_LEAF_LT: {
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "cmp r8w, r9w\n");
+				fprintf(fp, "jlt label_%d\n", label_num++);				
+				if0else1();
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0000000100000000B\n");
+				fprintf(fp, "je label_%d\n", label_num++);
+				if0else1();
+			}
+		}
+		case AST_LEAF_LE: {
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "cmp r8w, r9w\n");
+				fprintf(fp, "jle label_%d\n", label_num++);				
+				if0else1();
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0000000100000000B\n");
+				fprintf(fp, "je label_%d\n", label_num++);
+				fprintf(fp, "cmp eax, 0100000000000000B\n");
+				fprintf(fp, "je label_%d\n", label_num - 1);
+				if0else1();
+			}
+		}
+		case AST_LEAF_GT: {
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "cmp r8w, r9w\n");
+				fprintf(fp, "jgt label_%d\n", label_num++);				
+				if0else1();
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0000000000000000B\n");
+				fprintf(fp, "je label_%d\n", label_num++);
+				if0else1();
+			}
+		}
+		case AST_LEAF_GE: {
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "cmp r8w, r9w\n");
+				fprintf(fp, "jge label_%d\n", label_num++);				
+				if0else1();
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0000000000000000B\n");
+				fprintf(fp, "je label_%d\n", label_num++);
+				fprintf(fp, "cmp eax, 0100000000000000B\n");
+				fprintf(fp, "je label_%d\n", label_num - 1);
+				if0else1();
+			}
+		}
+		case AST_LEAF_EQ: {
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "cmp r8w, r9w\n");
+				fprintf(fp, "je label_%d\n", label_num++);				
+				if0else1();
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0100000000000000B\n");
+				fprintf(fp, "je label_%d\n", label_num - 1);
+				if0else1();
+			}
+		}
+		case AST_LEAF_NE: {
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "cmp r8w, r9w\n");
+				fprintf(fp, "jne label_%d\n", label_num++);				
+				if0else1();
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0100000000000000B\n");
+				fprintf(fp, "jne label_%d\n", label_num - 1);
+				if0else1();
+			}
+		}
+		case AST_LEAF_PLUS: {
+			if(type == AST_TYPE_INT) 
+				fprintf(fp, "add r8w, r9w\n");
+		
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fcom st0, st1\n");
+				fprintf(fp, "fstsw ax\n");
+				fprintf(fp, "and eax, 0100011100000000B\n");
+				fprintf(fp, "cmp eax, 0100000000000000B\n");
+				fprintf(fp, "jne label_%d\n", label_num - 1);
+				if0else1();
+			}
+		}
+		
+	}
+}
+
 void takeInput(astDataType t, SymTableVar * idNode) {
 
 	fprintf(fp, "push rbp\n");
@@ -640,7 +793,11 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			ASTNode * ch = curr -> child;
 			emitCodeChildren(ch);
 			ch = curr -> child;
-			
+			int leftOpTemp, rightOpTemp;
+			leftOpTemp = getExprOffset(ch);
+			rightOpTemp = getExprOffset(ch -> next -> next);
+			astDataType type = getExprType(ch);
+			applyOperator(leftOpTemp, rightOpTemp, ch -> next, type);
 		}
 		break;
 
