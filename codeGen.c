@@ -957,57 +957,12 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 		
 		case AST_NODE_LVALARRSTMT: {
-			ASTNode* ch = curr -> child;
-			SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
-			SymTableVar* par = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex);
-			if(par == NULL) {
-				// fprintf(stderr, 
-				// "Lvalue The variable taken as input is not being declared.\n");
-				/* already been taken care of */
-			}
-			else if(par -> dataType != AST_TYPE_ARRAY) {
-				fprintf(stderr, 
-				"A non array type variable('%s') access using whichId on line %d\n", par -> name,
-					ch -> nodeData.leaf -> tn -> line_num);
-			}
-			else if(ch -> next != NULL) {
-				boundChecking(par, curr -> parent);
-			}
-			ch = ch -> next;
-			ch -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-			ch = curr -> child -> next;
-			curr -> nodeData.lvalueARRStmt -> dataType = ch -> nodeData.AOBExpr -> dataType;
+			/* do nothing */
 		}
 		break;
 
 		case AST_NODE_ITERSTMT: {
-			ASTNode* ch = curr -> child;
-			ch -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-			ch = curr -> child;
-			if(ch -> nodeData.leaf -> dataType != AST_TYPE_INT) {
-				fprintf(stderr, 
-				"For loop variable('%s') is not of int type on line %d.\n",
-				ch -> nodeData.leaf -> tn -> lex,
-				ch -> nodeData.leaf -> tn -> line_num);
-				return;
-			}
-
-			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
-			ASTNode* ch1 = ch -> next;
-			if(ch1 == NULL) {
-				return;
-			}
-			ch1 -> localST = newST;
-			emitCodeAST(ch1, fname);
-
-			ASTNode* ch2 = ch1 -> next;
-			if(ch2 == NULL) {
-				return;
-			}
-			ch2 -> localST = newST;
-			emitCodeAST(ch2, fname);
+			
 		}
 		break;
 
