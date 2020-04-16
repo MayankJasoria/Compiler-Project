@@ -254,9 +254,11 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	switch(operator -> nodeData.leaf -> type) {
 		case AST_LEAF_AND:
 			fprintf(fp, "and r8b, r9b\n");
+			break;
 		case AST_LEAF_OR:
 			fprintf(fp, "or r8b, r9b\n");
-		case AST_LEAF_LT: {
+			break;
+		case AST_LEAF_LT:
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "cmp r8w, r9w\n");
 				fprintf(fp, "jlt label_%d\n", label_num++);				
@@ -270,8 +272,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "je label_%d\n", label_num++);
 				if0else1();
 			}
-		}
-		case AST_LEAF_LE: {
+			break;
+		case AST_LEAF_LE: 
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "cmp r8w, r9w\n");
 				fprintf(fp, "jle label_%d\n", label_num++);				
@@ -287,8 +289,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "je label_%d\n", label_num - 1);
 				if0else1();
 			}
-		}
-		case AST_LEAF_GT: {
+			break;
+		case AST_LEAF_GT:
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "cmp r8w, r9w\n");
 				fprintf(fp, "jgt label_%d\n", label_num++);				
@@ -302,8 +304,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "je label_%d\n", label_num++);
 				if0else1();
 			}
-		}
-		case AST_LEAF_GE: {
+			break;
+		case AST_LEAF_GE: 
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "cmp r8w, r9w\n");
 				fprintf(fp, "jge label_%d\n", label_num++);				
@@ -319,8 +321,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "je label_%d\n", label_num - 1);
 				if0else1();
 			}
-		}
-		case AST_LEAF_EQ: {
+			break;
+		case AST_LEAF_EQ: 
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "cmp r8w, r9w\n");
 				fprintf(fp, "je label_%d\n", label_num++);				
@@ -334,8 +336,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "je label_%d\n", label_num - 1);
 				if0else1();
 			}
-		}
-		case AST_LEAF_NE: {
+			break;
+		case AST_LEAF_NE: 
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "cmp r8w, r9w\n");
 				fprintf(fp, "jne label_%d\n", label_num++);				
@@ -349,21 +351,64 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "jne label_%d\n", label_num - 1);
 				if0else1();
 			}
-		}
-		case AST_LEAF_PLUS: {
+			break;
+		case AST_LEAF_PLUS: 
 			if(type == AST_TYPE_INT) 
 				fprintf(fp, "add r8w, r9w\n");
 		
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0100000000000000B\n");
-				fprintf(fp, "jne label_%d\n", label_num - 1);
-				if0else1();
+				fprintf(fp, "fadd\n");
+				fprintf(fp, "sub rsp, 4\n");
+				fprintf(fp, "fstp dword [rsp]\n");
 			}
-		}
+			break;
+		case AST_LEAF_MINUS: 
+			if(type == AST_TYPE_INT) 
+				fprintf(fp, "sub r8w, r9w\n");
 		
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fsub\n");
+				fprintf(fp, "sub rsp, 4\n");
+				fprintf(fp, "fstp dword [rsp]\n");
+			}
+			break;
+		case AST_LEAF_MUL: 
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "mov eax, r8w\n");
+				fprintf(fp, "mul r9w\n");
+				fprintf(fp, "mov r8w, eax\n");
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fmul\n");
+				fprintf(fp, "sub rsp, 4\n");
+				fprintf(fp, "fstp dword [rsp]\n");
+			}
+			break;
+		case AST_LEAF_DIV:
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "mov edx, 0\n");
+				fprintf(fp, "mov eax, r8w\n");
+				fprintf(fp, "cmp r9w, 0\n");
+				fprintf(fp, "jz rte\n");
+				fprintf(fp, "div r9w\n");
+				fprintf(fp, "mov r8w, eax\n");
+			}
+			if(type == AST_TYPE_REAL) {
+				fprintf(fp, "fdiv\n");
+				fprintf(fp, "sub rsp, 4\n");
+				fprintf(fp, "fstp dword [rsp]\n");
+			}
+			break;
+		default:
+			break;
+	}
+	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
+		fprintf(fp, "sub rsp, 2\n");
+		fprintf(fp, "mov word [rsp], r8w\n");
+	}
+	else if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_BOOLEAN) {
+		fprintf(fp, "sub rsp, 1\n");
+		fprintf(fp, "mov byte [rsp], r8b\n");
 	}
 }
 

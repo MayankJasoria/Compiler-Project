@@ -546,6 +546,7 @@ typedef struct SymTableFunc {
 	List output_plist; /* List of output parameter variables */
 	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */
 	int actRecSize; /* field for storing activation record size */
+	int dynamicRecSize;
 	char dependentVar[30];
 	scopeType scope;
 	int level;
