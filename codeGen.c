@@ -403,7 +403,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			break;
 	}
 	SymTableFunc * par = fetParentFunc(operator -> parent -> localST);
-	operator -> parent -> temporaryOffset = (par -> actRecSize) + 8 + (par -> dynamicRecSize);
+	operator -> parent -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
 		fprintf(fp, "sub rsp, 2\n");
@@ -775,6 +775,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = ch -> nodeData.leaf -> dataType;
 				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
+			fprintf(fp, "add rsp, %dd\n", curr -> localST -> dynamicRecSize);
+			curr -> localST -> dynamicRecSize = 0;
 		}
 		break;
 		
@@ -879,53 +881,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode* ch = curr -> child;
-			ch -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-			if((ch -> nodeData).leaf -> dataType == AST_TYPE_REAL) {
-				fprintf(stderr, 
-				"Switch variable('%s') is of real type on line %d.\n", ch -> nodeData.leaf -> tn -> lex,
-					ch -> nodeData.leaf -> tn -> line_num);
-			}
-			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
-			ASTNode* ch1 = ch -> next;
-			ch1 -> localST = newST;
-			ch1 -> nodeData.dataType = ch -> nodeData.dataType;
-			strcpy(ch1 -> nodeData.caseStmt -> switchVar, ch -> nodeData.leaf -> tn -> lex);
-			emitCodeAST(ch1, fname);
-
-			ASTNode* ch2 = ch1 -> next;
-			if(ch -> nodeData.leaf -> dataType == AST_TYPE_BOOLEAN) {
-				if(curr -> nodeData.condStmt -> def == 1) {
-					fprintf(stderr, 
-					"Default case in bool type switch statement on line %d.\n", curr -> nodeData.condStmt -> def_line_num);
-				}
-				if(ch2 == NULL)
-					return;
-				ch2 -> localST = newST;
-				emitCodeAST(ch2, fname);
-			}
-			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
-				if(curr -> nodeData.condStmt -> def == 0) {
-					fprintf(stderr, 
-					"Default case not present in int type switch statement line %d.\n", curr -> nodeData.condStmt -> end_line_num);
-				}
-				else {
-					if(ch2 == NULL) {
-						return;
-					}
-					ch2 -> localST = newST;
-					// ch2 -> nodeData.statement -> type = ch -> nodeData.leaf -> dataType;
-					emitCodeAST(ch2, fname);
-				}
-			}
-			else {
-				fprintf(stderr, 
-				"Switch variable not of feasible type on line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
-				if(ch2 == NULL)
-					return;
-				ch2 -> localST = newST;
-				emitCodeAST(ch2, fname);
-			}
+			SymTableVar * switchVar = fetchVarData(curr -> localST);
+			
+			
 		}
 		break;
 		
