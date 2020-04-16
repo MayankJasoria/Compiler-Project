@@ -234,9 +234,9 @@ void if0else1() {
  */
 void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type) {
 
-	fprintf(fp, "mov rax, rbp\n");
+	fprintf(fp, "mov rax, rsp\n");
 	fprintf(fp, "sub rax, %dd\n", leftOp + typeSize[type]);
-	fprintf(fp, "mov r10, rbp\n");
+	fprintf(fp, "mov r10, rsp\n");
 	fprintf(fp, "sub r10, %dd\n", rightOp + typeSize[type]);
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "mov r8w, word [rax]\n");
@@ -881,32 +881,37 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode* ch = curr -> child;
-			SymTableVar * switchVar = fetchVarData(curr -> localST);
-			
-			
+			SymTableVar * switchVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			ch -> child -> next -> nodeData.caseStmt -> breakLabel = label_num++;
+			int tmp = label_num - 1;
+			emitCodeAST(ch -> next, fname);
+			fprintf(fp, "label_%d:\n", label_num - 1);
+			emitCodeAST(ch -> next -> next, fname);
+			fprintf(fp, "label_%d:\n", tmp);
+			/* Check: defualt will automatically be handled(statements) */
 		}
 		break;
 		
 		case AST_NODE_CASESTMT: {
-			ASTNode* ch = curr -> child;
-			ch -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-
-			ch = ch -> next;
-			if(ch == NULL)
-				return;
-			ch -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-
-			ch = ch -> next;
-			if(ch == NULL) {
-				return;
+			ASTNode * ch = curr -> child;
+			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
+			fprintf(fp, "label_%d\n", label_num - 1);
+			fprintf(fp, "mov rax, rbp\n");
+			fprintf(fp, "add rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
+			if(switchvar -> dataType == AST_TYPE_INT) {
+				fprintf(fp, "mov eax, word [rax]\n");
+				int val = ch -> nodeData.leaf -> tn -> value.val_int;
+				fprintf(fp, "cmp eax, %dd\n", val);
+				fprintf(fp, "jnz label_%d\n", label_num++);
+				fprintf(fp, "label_%d:\n", label_num - 2);
+				emitCodeAST(ch -> next, fname);
+				fprintf(fp, "jmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
+				ch = ch -> next -> next;
+				if(ch != NULL) {
+					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
+					emitCodeAST(ch);
+				}
 			}
-
-			ch -> localST = curr -> localST;
-			ch -> nodeData.dataType = curr -> nodeData.dataType;
-			strcpy(ch -> nodeData.caseStmt -> switchVar, curr -> nodeData.caseStmt -> switchVar);
-			emitCodeAST(ch, fname);
 		}
 		break;
 
