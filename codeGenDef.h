@@ -14,5 +14,6 @@ int label_num;
 
 
 
-name:
+/* name:
 nextJump;
+*/
