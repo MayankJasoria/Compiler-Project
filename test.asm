@@ -15,4 +15,7 @@ main:
 	push ax
 	pop ax	
 	and al, bl
+	sub rsp, 2
+	mov word [rsp], 103d
+	add rsp, 2
 	ret

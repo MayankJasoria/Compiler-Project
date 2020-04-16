@@ -489,6 +489,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		}
 		break;
 		case AST_TYPE_ARRAY: {
+			
 			getLeftRightIndex(idNode);
 			/* TODO write it in register format */
 			// if(lft > right) {
@@ -850,8 +851,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
 				if(id -> isAssigned == 0)
 					rte();
-				fprintf(fp, "mov rax, qword [rbp]\n");
-				fprintf(fp, "mov rcx, [rax]\n");
+				fprintf(fp, "mov rcx, qword [rbp]\n");
+				// fprintf(fp, "mov rcx, [rax]\n");
 				fprintf(fp, "sub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				inputSize += typeSize[id -> dataType];
 				if(id -> dataType == AST_TYPE_INT) {
@@ -1014,7 +1015,33 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_ITERSTMT: {
-			
+			ASTNode * ch = curr -> child;
+			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
+
+				int tmp = label_num - 1;
+				SymTableVar * loopVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				
+				int num1 = ch -> next -> child -> nodeData.leaf -> tn -> value.val_int;
+				int num2 = ch -> next -> child -> next -> nodeData.leaf -> tn -> value.val_int;
+				
+				if(num1 > num2)
+					return;
+				// optimized
+
+				fprintf(fp, "mov cx, %d\n", num1);
+
+				fprintf(fp, "label_%d\n", label_num++);
+				fprintf(fp, "mov rax, rbp\n");
+				fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
+				fprintf(fp, "mov word [rax], cx\n");
+
+				emitCodeAST(ch -> next -> next, fname);
+
+				fprintf(fp, "mov cx, word[rax]\n");
+				fprintf(fp, "inc cx\n");
+				fprintf(fp, "cmp cx, %d", num2);
+				fprintf(fp, "jnz label_%d", label_num - 1);
+			}
 		}
 		break;
 
