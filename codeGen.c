@@ -577,52 +577,50 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 		
 		case AST_NODE_MODULEREUSE: {
-			ASTNode* ch = curr -> child;
-			emitCodeChildren(ch, fname);
+			ASTNode * ch = curr -> child;
+			
+			fprintf(fp, "push rbp\n");
+			fprintf(fp, "mov rbp, rsp\n");
+
+			ASTNode * inParam = ch -> next;
+			if(inParam -> type != AST_NODE_IDLIST)
+				inParam = inParam -> next;
+
+			int inputSize = 0;
+			while(inParam != NULL) {
+				ASTNode * idNode = inParam -> child;
+				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
+				if(id -> isAssigned == 0)
+					rte();
+				fprintf(fp, "mov rax, qword [rbp]\n");
+				fprintf(fp, "mov rcx, [rax]\n");
+				fprintf(fp, "sub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
+				inputSize += typeSize[id -> dataType];
+				if(id -> dataType == AST_TYPE_INT) {
+					fprintf(fp, "mov ax, word [rcx]\n");
+					fprintf(fp, "push ax\n");
+				}
+				if(id -> dataType == AST_TYPE_REAL) {
+					fprintf(fp, "mov eax, dword [rcx]\n");
+					fprintf(fp, "push eax\n");
+				}
+				if(id -> dataType == AST_TYPE_BOOLEAN) {
+					fprintf(fp, "mov al, byte [rcx]\n");
+					fprintf(fp, "push al\n");
+				}
+				if(id -> dataType == AST_TYPE_ARRAY) {
+					fprintf(fp, "mov rax, qword [rcx]\n");
+					fprintf(fp, "push rax\n");
+				}
+				inParam = inParam -> child -> next;
+			}
 			ch = curr -> child;
-
-			if(ch -> type == AST_NODE_IDLIST)
+			if(ch -> type != AST_NODE_LEAF)
 				ch = ch -> next;
-
-			int line_num = ch -> nodeData.leaf -> tn -> line_num;
-			SymTableFunc* tmp = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
-			if(tmp == NULL) {
-				fprintf(stderr, 
-				"Function called (reused)'%s' is not defined on line %d.\n", ch -> nodeData.leaf -> tn -> lex, line_num);
-				return;
-			}
-			if(strcmp(fname, tmp -> name) == 0) {
-				fprintf(stderr, 
-				"Recursion is not supported on line %d.\n", line_num);
-				return;
-			}
-			/* To be done in pass2 if the function is not defined. */
-			if(tmp -> isDefined == 0) {
-				curr -> nodeData.moduleReuse -> listCheck = 0;
-				return;
-			}
-			if(ch -> prev != NULL && !listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
-				fprintf(stderr, 
-				"Output list type mismatch on line %d.\n", line_num);
-			}
-			if(ch -> prev != NULL && listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST) == -1) {
-				fprintf(stderr, 
-				"Number of output parameters mismatch on line %d.\n", line_num);
-			}
-
-			/* searching the idList in case 38, optioanal may be NULL*/
-			ch = ch -> next;
-			while(ch -> type != AST_NODE_IDLIST)
-				ch = ch -> next;
-
-			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
-				fprintf(stderr, 
-				"Input list type mismatch name : %s on line %d.\n", tmp -> name, line_num);
-			}
-			if(listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST) == -1) {
-				fprintf(stderr, 
-				"Number of input parameters mismatch on line %d.\n", line_num);
-			}
+			SymTableFunc * fun = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
+			int actRecSize = fun -> actRecSize;
+			fprintf(fp, "add rsp, %dd\n", actRecSize - inputSize);
+			fprintf(fp, "call %s\n", ch -> nodeData.leaf -> tn -> lex);
 		}
 		break;
 

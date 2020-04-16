@@ -12,8 +12,6 @@ section .text
 	extern printf, scanf
 
 main:
-	mov rdx, -2
-	cmp al, 0
-	jz l2
-l2:	
+	push ax
+	pop ax	
 	ret

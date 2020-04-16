@@ -22,7 +22,7 @@
 #define PRINT_VAR_LRDYN_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%s, %s]%-*s%-20s%-10d%-15d\n"
 
 
-int typeSize[] = {2, 4, 1, -1, 8};
+int typeSize[] = {2, 4, 1, 8, 8};
 
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.
