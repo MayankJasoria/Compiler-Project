@@ -437,7 +437,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		default:
 			break;
 	}
-	SymTableFunc * par = fetParentFunc(operator -> parent -> localST);
+	SymTableFunc * par = getParentFunc(operator -> parent -> localST);
 	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
@@ -949,7 +949,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
-			fprintf(fp, "label_%d\n", label_num - 1);
+			fprintf(fp, "label_%d:\n", label_num - 1);
 			fprintf(fp, "mov rax, rbp\n");
 			fprintf(fp, "add rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
@@ -971,7 +971,40 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_UNARY: {
 			ASTNode* ch = curr -> child;
-			int tempOff = 
+			int tempOff = getExprOffset(ch -> next);
+			astDataType type = getExprType(ch -> next);
+			SymTableFunc * par = getParentFunc(curr -> localST)
+			curr -> nodeData.unary -> temporaryOffset = par -> dynamicRecSize;
+			par -> dynamicRecSize += typeSize[type];
+			if(type == AST_TYPE_INT) {
+				fprintf(fp, "mov rax, rsp\n");
+				fprintf(fp, "add rax, %dd\n", typeSize[type] + tempOff);
+				fprintf(fp, "mov ax, word [rax]\n");
+
+				if(ch -> nodeData.leaf -> type == AST_LEAF_UOPMINUS) {
+					fprintf(fp, "xor ax, 0xffff\n");
+					fprintf(fp, "inc ax\n");
+				}
+
+				fprintf(fp, "mov rdx, rsp\n");
+				fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
+				fprintf(fp, "mov word [rdx], ax\n");
+			}
+
+			else {
+				fprintf(fp, "mov rax, rsp\n");
+				fprintf(fp, "add rax, %dd\n", typeSize[type] + tempOff);
+				
+				if(ch -> nodeData.leaf -> type == AST_LEAF_UOPMINUS) {
+					fprintf(fp, "finit\n");
+					fprintf(fp, "fld dword [rax]\n");
+					fprintf(fp, "fchs\n");
+				}
+
+				fprintf(fp, "mov rdx, rsp\n");
+				fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
+				fprintf(fp, "fstp word [rdx]\n");
+			}
 		}
 		break;
 		
