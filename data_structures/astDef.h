@@ -332,6 +332,7 @@ typedef struct {
 	 */
 	
 	/* tag */
+	int temporaryOffset;
 	astDataType dataType;
 	aob_type type;
 } AOBExprNode;
@@ -364,6 +365,7 @@ typedef struct {
 
 typedef struct {
 	int a;
+	int temporaryOffset;
 	astDataType dataType;
 	/* TODO: add data fields later */
 } unaryNode;
@@ -422,6 +424,7 @@ typedef struct {
 	AST_LEAF_NUM,
 	AST_LEAF_BOOL */
 	struct treeNode* tn; /* from leaf of parse tree */
+	int temporaryOffset;
 	astDataType dataType;
 	optype op;
 	leaf_type type; 
