@@ -557,6 +557,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_ASSIGN: {
 			ASTNode* ch = curr -> child;
+			emitCodeChildren(ch);
+			ch = curr -> child;
 			if(ch -> next -> type == AST_NODE_LVALARRSTMT) {
 				SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 				ASTNode * index = ch -> next -> child;
@@ -635,94 +637,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_AOBEXPR: {
-			ASTNode* ch = curr -> child;
-			ch -> localST = curr -> localST;
-			ch -> next -> next -> localST = curr -> localST;
-			ch -> next -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-			emitCodeAST(ch -> next, fname);
-			emitCodeAST(ch -> next -> next, fname);
-			astDataType tl, tr;
+			ASTNode * ch = curr -> child;
+			emitCodeChildren(ch);
 			ch = curr -> child;
-			if(ch -> type == AST_NODE_LEAF) {
-				tl = ch -> nodeData.leaf -> dataType;
-			}
-			else if(ch -> type == AST_NODE_AOBEXPR) {
-				tl = ch -> nodeData.AOBExpr -> dataType;
-			}
-			else if(ch -> type == AST_NODE_VARIDNUM) {
-				tl = ch -> nodeData.var -> dataType;
-			}
-			if(ch -> next -> next -> type == AST_NODE_LEAF) {
-				tr = ch -> next -> next -> nodeData.leaf -> dataType;
-			}
-			else if(ch -> next -> next -> type == AST_NODE_AOBEXPR) {
-				tr = ch -> next -> next -> nodeData.AOBExpr -> dataType;
-			}
-			else if(ch -> next -> next -> type == AST_NODE_VARIDNUM) {
-				tr = ch -> next -> next -> nodeData.var -> dataType;
-			}
-			if(tl == AST_TYPE_ARRAY) {
-				if(ch -> type == AST_NODE_VARIDNUM && ch -> child -> next != NULL) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
-					tl = var -> sdt.r -> dataType;
-				}
-				else if(ch -> type == AST_NODE_VARIDNUM){
-					fprintf(stderr, 
-					"Array type variable '%s' in arithmetic operation on line %d.\n", ch -> child -> nodeData.leaf -> tn -> lex, ch -> child -> nodeData.leaf -> tn -> line_num);
-					return;
-				}
-			}
-			if(tr == AST_TYPE_ARRAY) {
-				if(ch -> next -> next -> type == AST_NODE_VARIDNUM && ch -> next -> next -> child -> next != NULL) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
-					tr = var -> sdt.r -> dataType;
-				}
-				else {
-					fprintf(stderr, 
-					"Array type variable '%s' in arithmetic operation on line %d.\n", ch -> next -> next -> child -> nodeData.leaf -> tn -> lex, ch -> next -> next -> child -> nodeData.leaf -> tn -> line_num);
-					return;
-				}
-			}
-			// tr = (ch -> next -> next) -> nodeData.AOBExpr -> dataType;
-			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
-				if(tl != tr) {
-					fprintf(stderr, 
-					"Type mismatch1 in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
-						typeName[tl], typeName[tr]);
-				}
-				else if(tl == AST_TYPE_BOOLEAN) {
-					fprintf(stderr, 
-					"Bool type variables in arithmetic operation on line %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
-				}
-				else 
-					curr -> nodeData.AOBExpr -> dataType = tl;
-			}
-			else if((ch -> next) -> nodeData.leaf -> op == AST_RELOP) {
-				if(tl != tr) {
-					fprintf(stderr, 
-					"Type mismatch2 in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
-						typeName[tl], typeName[tr]);
-				}
-				else if(tl == AST_TYPE_BOOLEAN) {
-					fprintf(stderr, 
-					"Bool type variables in arithmetic operation on line %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
-				}
-				curr -> nodeData.AOBExpr -> dataType = AST_TYPE_BOOLEAN;
-			}
-			else if((ch -> next) -> nodeData.leaf -> op == AST_LOP) {
-				if(tl != AST_TYPE_BOOLEAN) {
-					fprintf(stderr, 
-					"Left operator of LOP is not boolean type line %d.\n", 
-					(ch -> next) -> nodeData.leaf -> tn -> line_num);		
-				}
-				if(tr != AST_TYPE_BOOLEAN) {
-					fprintf(stderr, 
-					"Right operator of LOP is not boolean type line %d.\n",
-					(ch -> next) -> nodeData.leaf -> tn -> line_num);
-				}
-				curr -> nodeData.AOBExpr -> dataType = AST_TYPE_BOOLEAN;
-			}
+			
 		}
 		break;
 
