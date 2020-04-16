@@ -45,4 +45,18 @@ void parseInputSourceCode(char *testcaseFile);
  */
 void printParseTree(Tree PT, char *outfile);
 
+/**
+ * Computes and returns the size of the Parse Tree
+ */
+static inline int getParseTreeSize() {
+    return numNodes * (sizeof(treeNode) + sizeof(token));
+}
+
+/**
+ * Returns the number of nodes of the parse tree
+ */
+static inline int getParseTreeNumNodes() {
+    return numNodes;
+}
+
 #endif

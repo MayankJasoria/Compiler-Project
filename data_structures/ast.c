@@ -22,6 +22,123 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	node -> type = t;
 	node -> nodeData = nodeData;
 
+	/* Compute size for AST here */
+	numASTnodes++;
+	printf("%d\n", numASTnodes);
+	ASTSize += sizeof(ASTNode);
+
+	switch (t) {
+		case AST_NODE_PROGRAM: {
+			ASTSize += sizeof(programNode);
+		}
+		break;
+		case AST_NODE_MODULEDECLARATION: {
+			ASTSize += sizeof(moduleDeclarationNode);
+		}
+		break;
+		case AST_NODE_MODULELIST: {
+			ASTSize += sizeof(moduleListNode);
+		}
+		break;
+		case AST_NODE_MODULE: {
+			ASTSize += sizeof(moduleNode);
+		}
+		break;
+		case AST_NODE_INPUTLIST: {
+			ASTSize += sizeof(inputListNode);
+		}
+		break;
+		case AST_NODE_OUTPUTLIST: {
+			ASTSize += sizeof(outputListNode);
+		}
+		break;
+		case AST_NODE_ARRAY: {
+			ASTSize += sizeof(dataTypeNode);
+			//dataTypeNode is reused for AST_NODE_ARRAY
+		}
+		break;
+		case AST_NODE_RANGEARRAYS: {
+			ASTSize += sizeof(rangeArraysNode);
+		}
+		break;
+		case AST_NODE_STATEMENT: {
+			ASTSize += sizeof(statementNode);
+		}
+		break;
+		case AST_NODE_IO: {
+			ASTSize += sizeof(ioNode);
+		}
+		break;
+		case AST_NODE_SIMPLESTMT: {
+			ASTSize += sizeof(simpleStmtNode);
+		}
+		break;
+		case AST_NODE_ASSIGN: {
+			ASTSize += sizeof(assignNode);
+		}
+		break;
+		case AST_NODE_WHICHSTMT: {
+			ASTSize += sizeof(whichStmtNode);
+		}
+		break;
+		case AST_NODE_MODULEREUSE: {
+			ASTSize += sizeof(moduleReuseNode);
+		}
+		break;
+		case AST_NODE_IDLIST: {
+			ASTSize += sizeof(idListNode);
+		}
+		break;
+		case AST_NODE_EXPR: {
+			ASTSize += sizeof(exprNode);
+		}
+		break;
+		case AST_NODE_AOBEXPR: {
+			ASTSize += sizeof(AOBExprNode);
+		} 
+		break;
+		case AST_NODE_DECLARESTMT: {
+			ASTSize += sizeof(declareStmtNode);
+		}
+		break;
+		case AST_NODE_CONDSTMT: {
+			ASTSize += sizeof(condStmtNode);
+		}
+		break;
+		case AST_NODE_CASESTMT: {
+			ASTSize += sizeof(caseStmtNode);
+		}
+		break;
+		case AST_NODE_UNARY: {
+			ASTSize += sizeof(unaryNode);
+		}
+		break;
+		case AST_NODE_LVALARRSTMT: {
+			ASTSize += sizeof(lvalueARRStmtNode);
+		}
+		break;
+		case AST_NODE_ITERSTMT: {
+			ASTSize += sizeof(iterStmtNode);
+		}
+		break;
+		case AST_NODE_FOR: {
+			ASTSize += sizeof(forNode);
+		}
+		break;
+		case AST_NODE_WHILE: {
+			ASTSize += sizeof(whileNode);
+		}
+		break;
+		case AST_NODE_VARIDNUM: {
+			ASTSize += sizeof(varidnumNode);
+		}
+		break;
+		case AST_NODE_LEAF: {
+			ASTSize += sizeof(leafNode);
+			ASTSize += sizeof(treeNode);
+		}
+		break;
+	}
 	return node;
 }
 
@@ -121,24 +238,24 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 	leafNode* lf;
 	switch (tn -> rule_num) {
 		case 0: {// program : moduleDeclarations otherModules driverModule otherModules
-				programNode* progNode = (programNode*) malloc(sizeof(programNode));	
-				nodeData.program = progNode;
-				curr = getASTNode(nodeData, AST_NODE_PROGRAM);
-		
-				/* Call siblings one by one */
-				ASTNode* md = constructAST(curr, NULL, ch);
-				ASTNode* om1 = constructAST(curr, md, ch -> next);
-				ASTNode* dm = constructAST(curr, om1, ch -> next -> next);
-				ASTNode* om2 = constructAST(curr, dm, ch -> next -> next -> next);
-				
-				/* add siblings in reverse order, to regenerate correct order */
-				addChild(curr, om2);
-				addChild(curr, dm);
-				addChild(curr, om1);
-				addChild(curr, md);
-				curr -> type = AST_NODE_PROGRAM;	
-				return curr;
-			}
+			programNode* progNode = (programNode*) malloc(sizeof(programNode));	
+			nodeData.program = progNode;
+			curr = getASTNode(nodeData, AST_NODE_PROGRAM);
+	
+			/* Call siblings one by one */
+			ASTNode* md = constructAST(curr, NULL, ch);
+			ASTNode* om1 = constructAST(curr, md, ch -> next);
+			ASTNode* dm = constructAST(curr, om1, ch -> next -> next);
+			ASTNode* om2 = constructAST(curr, dm, ch -> next -> next -> next);
+			
+			/* add siblings in reverse order, to regenerate correct order */
+			addChild(curr, om2);
+			addChild(curr, dm);
+			addChild(curr, om1);
+			addChild(curr, md);
+			curr -> type = AST_NODE_PROGRAM;	
+			return curr;
+		}
 			
 		case 1: {// moduleDeclarations : moduleDeclaration moduleDeclarations1
 			moduleDeclarationNode* mdNode = (moduleDeclarationNode *) malloc(sizeof(moduleDeclarationNode));

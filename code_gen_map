@@ -189,7 +189,7 @@ traverseAST(): {
             actRecSize = sum of width of output_plist + input_plist + local variables + temporary variables
 
             ----
-            add esp, actRecSize
+            sub esp, actRecSize
             ----
             [ebp + offset_a]
 

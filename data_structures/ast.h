@@ -56,4 +56,12 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* pt);
 //     return p1;
 // }
 
+static inline int getASTSize() {
+    return ASTSize;
+}
+
+static inline int getASTnumNodes() {
+    return numASTnodes;
+}
+
 #endif

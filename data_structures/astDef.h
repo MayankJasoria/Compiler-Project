@@ -568,4 +568,7 @@ typedef struct symTableVar {
 	SymTableFunc * table;
 } SymTableVar;
 
+int numASTnodes;
+int ASTSize;
+
 #endif
