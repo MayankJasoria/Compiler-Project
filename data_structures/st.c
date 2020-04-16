@@ -11,8 +11,8 @@
 #include "hash_map.h"
 #include "st.h"
 
-#define PRINT_FUNC_HEADINGS "%-15s%-15s%-15s%-15s\n"
-#define PRINT_FUNC_DATA "%-15s%-15d%-15d%-15d"
+#define PRINT_FUNC_HEADINGS "%-25s%-25s\n"
+#define PRINT_FUNC_DATA "%-25s%-25d\n"
 
 #define PRINT_VARIABLE_HEADINGS "%-25s%-25s%-20s%-10s%-10s%-15s%-25s%-20s%-10s%-15s\n"
 #define PRINT_VARIABLE_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s%-25s%-20s%-10d%-15d\n" 
@@ -421,8 +421,8 @@ void printListVar(FILE* fp, void* data) {
 }
 
 void printFunc(FILE* fp, void* data) {
-	SymTableFunc* funcData = (SymTableFunc*) data;
-	fprintf(fp, PRINT_FUNC_DATA, funcData->name, funcData->type, funcData->isDeclared, funcData->isDefined);
+	SymTableFunc* funcData = (SymTableFunc*) ((hashElement*) data)->data;
+	fprintf(fp, PRINT_FUNC_DATA, funcData->name, funcData->actRecSize);
 }
 
 
@@ -444,7 +444,7 @@ B      switch_var_demo1       		36- 56      43     yes      static array    	 [1
 */
 void printSymbolTable(FILE* fp, SymbolTable st, void (printElement)(FILE*, void*)) {
 	if(printElement == printFunc) {
-		fprintf(fp, PRINT_FUNC_HEADINGS, "Function Name", "Type", "Is Declared", "Is Defined");
+		fprintf(fp, PRINT_FUNC_HEADINGS, "Function Name", "Activation Record Size");
 	}
 	printHashTable(fp, st, printElement);
 }

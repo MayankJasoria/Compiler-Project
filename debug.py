@@ -168,10 +168,10 @@ class SimpleCommand(gdb.Command):
 		# print(text ,file = self.f)
 		#if sys.version_info[0] < 3:
 			# python 2
-		print >> self.f, text
+		# print >> self.f, text
 		#else:
 			#python 3
-			#print(text ,file = self.f)
+	    print(text ,file = self.f)
 
 # This registers our class to the gdb runtime at "source" time.
 SimpleCommand()

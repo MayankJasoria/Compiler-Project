@@ -27,27 +27,26 @@ int getIDOffset(ASTNode * idNode) {
 }
 
 int getExprOffset(ASTNode * expr) {
-	
 	if(expr -> type == AST_NODE_LEAF)
-		return rhs -> nodeData.leaf -> temporaryOffset;
+		return expr -> nodeData.leaf -> temporaryOffset;
 	else if(expr -> type == AST_NODE_VARIDNUM)
-		return rhs -> nodeData.var -> temporaryOffset;
+		return expr -> nodeData.var -> temporaryOffset;
 	else if(expr -> type == AST_NODE_AOBEXPR)
-		return rhs -> nodeData.AOBExpr -> temporaryOffset;
+		return expr -> nodeData.AOBExpr -> temporaryOffset;
 	else if(expr -> type == AST_NODE_UNARY)
-		return rhs -> nodeData.unary -> temporaryOffset;
+		return expr -> nodeData.unary -> temporaryOffset;
 }
 
 int getExprType(ASTNode * expr) {
 	
 	if(expr -> type == AST_NODE_LEAF)
-		return rhs -> nodeData.leaf -> dataType;
+		return expr -> nodeData.leaf -> dataType;
 	else if(expr -> type == AST_NODE_VARIDNUM)
-		return rhs -> nodeData.var -> dataType;
+		return expr -> nodeData.var -> dataType;
 	else if(expr -> type == AST_NODE_AOBEXPR)
-		return rhs -> nodeData.AOBExpr -> dataType;
+		return expr -> nodeData.AOBExpr -> dataType;
 	else if(expr -> type == AST_NODE_UNARY)
-		return rhs -> nodeData.unary -> dataType;
+		return expr -> nodeData.unary -> dataType;
 }
 
 /*
@@ -523,7 +522,7 @@ void giveOutput(ASTNode * curr) {
 			if(id -> isAssigned == 0) {
 				rte();
 			}
-			fprintf(fp, "mov r9, %dd\n", (id -> offset) + typeSize[id -> dataType];
+			fprintf(fp, "mov r9, %dd\n", (id -> offset) + typeSize[id -> dataType]);
 			fprintf(fp, "mov rdx, rbp\n");
 			outputArrayElement(id);
 			return;
@@ -710,7 +709,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_ASSIGN: {
 			ASTNode* ch = curr -> child;
-			emitCodeChildren(ch);
+			emitCodeChildren(ch, fname);
 			ch = curr -> child;
 			if(ch -> next -> type == AST_NODE_LVALARRSTMT) {
 				SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
@@ -720,7 +719,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ASTNode * rhs = ch -> next -> child -> next;
 				int rhsOff = getExprOffset(rhs);
 				astDataType type = getExprType(rhs);
-				moveOffsetToOffset(-1, rhsOff, type)
+				moveOffsetToOffset(-1, rhsOff, type);
 			}
 			else {
 				int lhsOff = getIDOffset(ch);
@@ -791,7 +790,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_AOBEXPR: {
 			ASTNode * ch = curr -> child;
-			emitCodeChildren(ch);
+			emitCodeChildren(ch, fname);
 			ch = curr -> child;
 			int leftOpTemp, rightOpTemp;
 			leftOpTemp = getExprOffset(ch);

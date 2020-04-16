@@ -31,10 +31,22 @@ int main(int argc, char* argv[]) {
 
 	traverseAST(root, "");
 	pass2AST(root, "");
-	// FILE* fp = fopen("SymOut.txt", "w");
-	// printSymbolTable(fp, fetchFuncData("var_demo_array") -> dataTable, printVar);
-	// fclose(fp);
+	
+	/* Printing function activation record sizes */
+	FILE* fp = fopen("actRecSize.txt", "w");
+	printSymbolTable(fp, globalST, printFunc);
+	fclose(fp);
 
 	outputSymbolTable(NULL, root);
-	printf("Hooray!!");
+	
+	int parseTreeSize = getParseTreeSize();
+	int astSize = getASTSize();
+	int numParseTreeNodes = getParseTreeNumNodes();
+	int astNodesCount = getASTnumNodes();
+
+	printf("\nParse Tree size: %d\n", parseTreeSize);
+	printf("AST size: %d\n", astSize);
+	printf("Number of parse tree nodes: %d\n", numParseTreeNodes);
+	printf("Number of AST nodes: %d\n", astNodesCount);
+	printf("Hooray!!\n");
 }
