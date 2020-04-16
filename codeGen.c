@@ -406,12 +406,14 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	operator -> parent -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
-		fprintf(fp, "sub rsp, 2\n");
-		fprintf(fp, "mov word [rsp], r8w\n");
+		fprintf(fp, "mov rax, rsp\n");
+		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "mov word [rax], r8w\n");
 	}
 	else if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_BOOLEAN) {
-		fprintf(fp, "sub rsp, 1\n");
-		fprintf(fp, "mov byte [rsp], r8b\n");
+		fprintf(fp, "mov rax, rsp\n");
+		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "mov byte [rax], r8b\n");
 	}
 }
 
@@ -775,7 +777,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = ch -> nodeData.leaf -> dataType;
 				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
-			fprintf(fp, "add rsp, %dd\n", curr -> localST -> dynamicRecSize);
+			// fprintf(fp, "add rsp, %dd\n", curr -> localST -> dynamicRecSize);
 			curr -> localST -> dynamicRecSize = 0;
 		}
 		break;
@@ -909,7 +911,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ch = ch -> next -> next;
 				if(ch != NULL) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
-					emitCodeAST(ch);
+					emitCodeAST(ch, fname);
 				}
 			}
 		}
@@ -917,15 +919,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_UNARY: {
 			ASTNode* ch = curr -> child;
-			ch = ch -> next;
-			ch -> localST = curr -> localST;
-			emitCodeAST(ch, fname);
-			if(ch -> type == AST_NODE_LEAF)
-				curr -> nodeData.unary -> dataType = ch -> nodeData.leaf ->dataType;
-			if(ch -> type == AST_NODE_AOBEXPR)
-				curr -> nodeData.unary -> dataType = ch -> nodeData.AOBExpr ->dataType;
-			if(ch -> type == AST_NODE_VARIDNUM)
-				curr -> nodeData.unary -> dataType = ch -> nodeData.var ->dataType;
+			int tempOff = 
 		}
 		break;
 		
