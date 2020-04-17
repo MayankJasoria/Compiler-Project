@@ -872,7 +872,6 @@ void codegenInit() {
 	fprintf(fp, "\tglobal main\n");
 	fprintf(fp, "\textern printf\n");
 	fprintf(fp, "\textern scanf\n");
-
 	fprintf(fp, "; --- END: init code and data --- \n");
 }
 
@@ -882,7 +881,6 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_PROGRAM: {
 
 			codegenInit();
-			fprintf(fp, "mov word [dynamic], 0\n");
             ASTNode* ch = curr -> child;
             emitCodeChildren(ch, fname);
 		}
@@ -901,6 +899,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				SymTableFunc * driver = fetchFuncData("driver");
 				asmComment("Begining of the driver program.");
 				fprintf(fp, "main:\n");
+				fprintf(fp, "mov rbp, rsp\n");
+
 				int actRecSize = driver -> actRecSize;
 				fprintf(fp, "sub rsp, %dd\n", actRecSize);
 				fprintf(fp, "mov word [dynamic], 0\n");
