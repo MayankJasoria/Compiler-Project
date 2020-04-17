@@ -693,6 +693,7 @@ void giveOutput(ASTNode * curr) {
 		}
 	}
 	if(ch -> type == AST_NODE_VARIDNUM) {
+		fprintf(fp, " type: AST_NODE_LEAF, ");
 
 		/* non array variable */
 		ASTNode * idNode = ch -> child;
