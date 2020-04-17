@@ -315,7 +315,7 @@ void if0else1() {
 	fprintf(fp, "\tjmp label_%d\n", label_num++);
 	fprintf(fp, "label_%d:\n", label_num - 2);
 	fprintf(fp, "\tmov r8b, 1\n");
-	fprintf(fp, "label_%d\n", label_num - 1);
+	fprintf(fp, "label_%d:\n", label_num - 1);
 	fprintf(fp, "; --- END: if0else1() --- \n");
 }
 
