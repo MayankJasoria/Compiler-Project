@@ -48,15 +48,16 @@ void asmComment(char * str) {
 }
 
 void alignStack() {
-
-	fprintf(fp, "mov qword [rspreserve], rsp\n");
-	fprintf(fp, "and rsp, 0xfffffffffffffff0\n");
-	fprintf(fp, "sub rsp, 10000B\n");
+	fprintf(fp, "; --- START: ALIGN STACK---\n");
+	fprintf(fp, "\tmov qword [rspreserve], rsp\n");
+	fprintf(fp, "\tand rsp, 0xfffffffffffffff0\n");
+	fprintf(fp, "\tsub rsp, 10000B\n");
+	fprintf(fp, "; --- END: ALIGN STACK ---\n");
 }
 
 void getBackStack() {
 
-	fprintf(fp, "mov rsp, qword [rspreserve]\n");
+	fprintf(fp, "\tmov rsp, qword [rspreserve]\n");
 }
 
 int getIDOffset(ASTNode * idNode) {
@@ -902,8 +903,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				asmComment("Begining of the driver program.");
 				fprintf(fp, "main:\n");
 				int actRecSize = driver -> actRecSize;
-				fprintf(fp, "sub rsp, %dd\n", actRecSize);
-				fprintf(fp, "mov word [dynamic], 0\n");
+				fprintf(fp, "\tsub rsp, %dd\n", actRecSize);
+				fprintf(fp, "\tmov word [dynamic], 0\n");
 				
 				emitCodeAST(ch, "driver");
 				
