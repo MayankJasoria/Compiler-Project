@@ -786,8 +786,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				
 				asmComment("Resetting(aligning) the rsp.");
 				fprintf(fp, "movsx rax, [word] dynamic\n");
-				fprintf(fp, "sub rsp, rax\n");
-				fprintf(fp, "sub rsp, %dd\n", driver -> actRecSize);
+				fprintf(fp, "add rsp, rax\n");
+				fprintf(fp, "add rsp, %dd\n", driver -> actRecSize);
 				fprintf(fp, "ret\n");
 				asmComment("End of driver function.");
 			}
@@ -833,10 +833,12 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "add rax, %dd\n", typeSize[id -> dataType] + id -> offset);
 				ret = ret -> child -> next -> next;
 			}
+			fprintf(fp, "movsx rax, [word] dynamic\n");
+			fprintf(fp, "add rsp, rax\n");
+			fprintf(fp, "ret\n");
 			fprintf(fp, "sub rbp, 8\n");
 			fprintf(fp, "mov rsp, rbp\n");
 			fprintf(fp, "mov rbp, rax\n");
-			fprintf(fp, "ret\n");
 		}
 		break;
 
