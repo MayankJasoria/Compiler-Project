@@ -65,8 +65,9 @@ int getExprType(ASTNode * expr) {
  * Populates  	r10w : left index
  * 				r11w : right index 
  */
-void getLeftRightIndex(SymTableVar * id) {
+void getLeftRightIndex(SymTableVar * id) { 
 	
+	fprintf(fp, "; --- START: get left and right index of %s ---\n", id->name);
 	int lft, right;
 	if(strcmp(id -> sdt.r -> lowId, "") == 0) {
 		lft = id -> sdt.r -> low;
@@ -94,10 +95,12 @@ void getLeftRightIndex(SymTableVar * id) {
 		fprintf(fp, "sub rax, %dd\n", typeSize[AST_TYPE_INT] + r -> offset);
 		fprintf(fp, "mov r11w, word[rax]\n");
 	}
+
+	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w ---\n", id->name);
 }
 
 void getInputElement() {
-
+	fprintf(fp, "; START: --- getInputElement() ---\n");
 	fprintf(fp, "push rbp\n");
 	fprintf(fp, "mov rdi, fmt_int\n");
 	fprintf(fp, "mov rax, rbp\n");
@@ -105,6 +108,7 @@ void getInputElement() {
 	fprintf(fp, "mov rsi, rax\n");
 	fprintf(fp, "call scanf\n");
 	fprintf(fp, "pop rbp\n");
+	fprintf(fp, "; --- END: getInputElement() --- \n")
 }
 
 /**
@@ -113,6 +117,8 @@ void getInputElement() {
  * @param index	AST Node specifying index
  */
 void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
+
+	fprintf(fp, "; --- START: fetchArraybyIndex() for array %s: base: rdx, offset: r9  --- \n", arr -> nodeData.leaf -> tn -> lex);
 
 	/* Array index */
 	ASTNode * i = index;
@@ -160,6 +166,8 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	fprintf(fp, "dec rcx\n");
 	fprintf(fp, "jnz label_%d\n", label_num - 1);
 	fprintf(fp, "movsz r9, r9w\n");
+
+	fprintf(fp, "; --- END: fetchArraybyIndex() for array %s: base: rdx, offset: r9 --- \n", arr -> nodeData.leaf -> tn -> lex);
 }
 
 /**
@@ -169,6 +177,8 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
  */
 void outputArrayElement(SymTableVar * id) {
 	
+	fprintf(fp, "; --- START: outputArrayElement() for %s--- \n", id -> name);
+	fprintf(fp, "; Function is used for both Arrays and non-Array types, don't go by the name! \n");
 	astDataType type = id -> sdt.r -> dataType;
 
 	fprintf(fp, "push rbp\n");
@@ -199,6 +209,8 @@ void outputArrayElement(SymTableVar * id) {
 	}
 	fprintf(fp, "call printf\n");
 	fprintf(fp, "pop rbp\n");
+
+	fprintf(fp, "; --- END: outputArrayElement() for %s--- \n", id -> name);
 }
 
 /**
@@ -211,6 +223,7 @@ void outputArrayElement(SymTableVar * id) {
  */ 
 void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
+	fprintf(fp, "; --- START: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 	/* offset of rhs is in rax */
 	fprintf(fp, "mov rax, rbp\n");
 	fprintf(fp, "sub rax, %dd\n", rhsOff + typeSize[type]);
@@ -252,18 +265,22 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 		}
 		fprintf(fp, "mov byte [rax], r8b\n");
 	}
+
+	fprintf(fp, "; --- END: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 }
 
 void if0else1() {
+	fprintf(fp, "; --- START: if0else1() --- \n");
 	fprintf(fp, "mov r8b, 0\n");
 	fprintf(fp, "jmp label_%d\n", label_num++);
 	fprintf(fp, "label_%d:\n", label_num - 2);
 	fprintf(fp, "mov r8b, 1\n");
 	fprintf(fp, "label_%d\n", label_num - 1);
+	fprintf(fp, "; --- END: if0else1() --- \n");
 }
 
 void pushTemporary(astDataType type) {
-	
+	fprintf(fp, "; --- START: pushTemporary(): type = %s ---\n", typeName[type]);
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "mov dx, word [rax]\n");
 		fprintf(fp, "mov rax, rsp\n");
@@ -282,6 +299,8 @@ void pushTemporary(astDataType type) {
 		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
 		fprintf(fp, "mov byte [rax], dl\n");
 	}
+
+	fprintf(fp, "; --- END: pushTemporary(): type = %s ---\n", typeName[type]);
 }
 
 
@@ -296,6 +315,8 @@ void pushTemporary(astDataType type) {
 
  */
 void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type) {
+
+	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type], ;
 
 	fprintf(fp, "mov rax, rsp\n");
 	fprintf(fp, "sub rax, %dd\n", leftOp + typeSize[type]);
@@ -478,27 +499,38 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
 		fprintf(fp, "mov byte [rax], r8b\n");
 	}
+
+	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type], ;
 }
 
 void scopeBegin() {
+	fprintf(fp, "; --- START: scopeBegin() --- \n");
 
 	fprintf(fp, "sub rsp, 2d\n");
 	fprintf(fp, "mov ax, word [dynamic]\n");
 	fprintf(fp, "mov word [rsp], ax\n");
 	fprintf(fp, "mov ax, 0\n");
 	fprintf(fp, "mov word [dynamic], ax\n");
+
+	fprintf(fp, "; --- END: scopeBegin() --- \n")
 }
 
 void scopeEnd() {
+
+	fprintf(fp, "; --- START: scopeEnd() --- \n");
 
 	fprintf(fp, "movsx rax, word [dynamic]\n");
 	fprintf(fp, "add rsp, rax\n");
 	fprintf(fp, "mov ax, word [rsp]\n");
 	fprintf(fp, "mov word [dynamic], ax\n");
 	fprintf(fp, "add rsp, 2d\n");
+
+	fprintf(fp, "; --- END: scopeEnd() --- \n");
 }
 
 void takeInput(astDataType t, SymTableVar * idNode) {
+
+	fprintf(fp, "; --- START: takeInput(): type: %s, Name: %s --- \n", typeName[t], idNode->name);
 
 	fprintf(fp, "push rbp\n");
 	int offset = idNode -> offset;
@@ -543,7 +575,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			// }
 			astDataType type = idNode -> sdt.r -> dataType;
 
-			fprintf(fp, "\n; ### Asking for user input for Array ###\n");
+			fprintf(fp, "\n; --- Asking for user input for Array ---\n");
 			fprintf(fp, "mov rdi, op2\n");
 			fprintf(fp, "movsx rsi, r11w\n");
 			fprintf(fp, "sub rsi, r10w\n");
@@ -559,12 +591,12 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "call printf\n");
 			fprintf(fp, "pop rbp\n");
 			
-			fprintf(fp, "\n; ### rdx will be the address of the first element of the array ###\n");
+			fprintf(fp, "\n; --- rdx will be the address of the first element of the array ---\n");
 			fprintf(fp, "mov rax, rbp\n");
 			fprintf(fp, "sub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
 			fprintf(fp, "mov rdx, qword [rax]\n");
 
-			fprintf(fp, "\n; ### Loop for scanning each element of the array ### \n");
+			fprintf(fp, "\n; --- Loop for scanning each element of the array --- \n");
 
 			fprintf(fp, "mov rcx, r11w\n");
 			fprintf(fp, "sub rcx, r10w\n");
@@ -576,7 +608,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "push rcx\n");
 			fprintf(fp, "push rbp\n");
 			
-			fprintf(fp, "\n; ### Scanning input ###\n");
+			fprintf(fp, "\n; --- Scanning input ---\n");
 			if(type == AST_TYPE_INT) 
 				fprintf(fp, "mov rdi, fmt_int\n");
 			else if(type == AST_TYPE_REAL) 
@@ -597,13 +629,21 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		}
 		break;
 	}
+
+	fprintf(fp, "; --- END: takeInput(): type: %s, Name: %s --- \n", typeName[t], idNode->name);
 }
 
 void giveOutput(ASTNode * curr) {
+	fprintf(fp, "; --- START: giveInput()");
+
 	ASTNode * ch = curr;
 	if(ch -> type == AST_NODE_LEAF) {
+		fprintf(fp, " type: AST_NODE_LEAF, ");
 		switch(ch -> nodeData.leaf -> type) {
 			case AST_LEAF_VARIDNUM_NUM: {
+
+				fprintf(fp, " leaf-type: AST_LEAF_VARIDNUM_NUM --- \n");
+
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
 				fprintf(fp, "push rbp\n");
 				fprintf(fp, "mov rdi, output_fmt_int\n");
@@ -614,6 +654,8 @@ void giveOutput(ASTNode * curr) {
 			break;
 			case AST_LEAF_VARIDNUM_RNUM: {
 				float val = ch -> nodeData.leaf -> tn -> value.val_float;
+				fprintf(fp, " leaf-type: AST_LEAF_VARIDNUM_RNUM, value: %f --- \n", val);
+
 				fprintf(fp, "push rbp\n");
 				fprintf(fp, "mov rdi, output_fmt_float\n");
 				fprintf(fp, "sub rsp, 4\n");
@@ -626,6 +668,8 @@ void giveOutput(ASTNode * curr) {
 			}
 			break;
 			case AST_LEAF_BOOLTRUE: {
+				fprintf(fp, " leaf-type: AST_LEAF_BOOLTRUE --- \n");
+
 				fprintf(fp, "push rbp\n");
 				fprintf(fp, "mov rdi, bool_true\n" );
 				fprintf(fp, "call printf\n");
@@ -633,6 +677,8 @@ void giveOutput(ASTNode * curr) {
 			}
 			break;
 			case AST_LEAF_BOOLFALSE: {
+				fprintf(fp, " leaf-type: AST_LEAF_BOOLFALSE --- \n");
+
 				fprintf(fp, "push rbp\n");
 				fprintf(fp, "mov rdi, bool_false\n" );
 				fprintf(fp, "call printf\n");
@@ -640,6 +686,7 @@ void giveOutput(ASTNode * curr) {
 			}
 			break;
 			default: {
+				fprintf(fp, " leaf-type: default case hit --- \n");
 				/* do nothing */
 			}
 			break;
@@ -930,7 +977,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			/* Setting up stack frame. Set the current stack pointer as the starting 
 			   of the base of stack frame of the function being called, and storing 
 			   current base pointer in stack */
-			fprintf(fp, "; ### Setting up the stack frame ###");
+			fprintf(fp, "; --- Setting up the stack frame ---");
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rbp, rsp\n");
 
@@ -953,7 +1000,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				inputSize += typeSize[id -> dataType];
 				if(id -> dataType == AST_TYPE_INT) {
 					fprintf(fp, "mov ax, word [rcx]\n");
-					fprintf(fp, "push ax\n");
+					fprintf(fp, "push ax\n");	
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
 					fprintf(fp, "mov eax, dword [rcx]\n");
