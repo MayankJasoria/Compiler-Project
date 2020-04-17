@@ -197,11 +197,11 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	fprintf(fp, "\tsub r8w, r10w\n");
 	fprintf(fp, "\tinc r8w\n");
 	fprintf(fp, "\tmov rcx, %dd\n", typeSize[type]);
-	fprintf(fp, "\tlabel_%d:\n", label_num++);
+	fprintf(fp, "label_%d:\n", label_num++);
 	fprintf(fp, "\tadd r9w, r8w\n");		
 	fprintf(fp, "\tdec rcx\n");
 	fprintf(fp, "\tjnz label_%d\n", label_num - 1);
-	fprintf(fp, "\tmovsz r9, r9w\n");
+	fprintf(fp, "\tmovsx r9, r9w\n");
 
 	fprintf(fp, "; --- END: fetchArraybyIndex() for array %s: base: rdx, offset: r9 --- \n", arr -> nodeData.leaf -> tn -> lex);
 }
@@ -1152,7 +1152,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tmov rcx, r11w\n");
 					fprintf(fp, "\tsub rcx, r10w\n");
 					fprintf(fp, "\tinc rcx\n");
-					fprintf(fp, "label_%d\n", label_num++);
+					fprintf(fp, "label_%d:\n", label_num++);
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[type]);
 					fprintf(fp, "\tdec rcx\n");
 					fprintf(fp, "\tjnz label_%d\n", label_num - 1);
@@ -1283,7 +1283,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 				fprintf(fp, "\tmov cx, %d\n", num1);
 
-				fprintf(fp, "label_%d\n", label_num++);
+				fprintf(fp, "label_%d:\n", label_num++);
 				
 				scopeBegin();
 				
