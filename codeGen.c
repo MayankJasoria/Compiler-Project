@@ -859,6 +859,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				SymTableFunc * driver = fetchFuncData("driver");
 				asmComment("Begining of the driver program.");
 				fprintf(fp, "main:\n");
+				int actRecSize = driver -> actRecSize;
+				fprintf(fp, "add rsp, %dd\n", actRecSize);
 				
 				emitCodeAST(ch, "driver");
 				

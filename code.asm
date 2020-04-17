@@ -29,6 +29,7 @@ section .text
 
 ; ### Begining of the driver program. ### 
 main:
+add rsp, 7d
 ; --- START: takeInput(): type: Integer, Name: x --- 
 	push rbp
 	mov rdi, op1
