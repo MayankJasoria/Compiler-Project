@@ -238,9 +238,12 @@ void outputArrayElement(SymTableVar * id) {
 		fprintf(fp, "\tmov al, byte[rax]\n");
 		fprintf(fp, "\tcmp al, 0\n");
 		fprintf(fp, "\tjz label_%d\n", label_num++);
-		fprintf(fp, "\tmov rdi, bool_true\n");
+		fprintf(fp, "\tmov rdi, output_fmt_string\n");
+		fprintf(fp, "\tmov rsi, bool_true\n");
 		fprintf(fp, "\tjmp label_%d\n", label_num++);
 		fprintf(fp, "label_%d:\n", label_num - 2);
+		fprintf(fp, "\tmov rdi, output_fmt_string\n");
+		fprintf(fp, "\tmov rsi, bool_false\n");
 		fprintf(fp, "\tmov rdi, bool_false\n");
 		fprintf(fp, "label_%d:\n", label_num - 1);
 	}
@@ -384,7 +387,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		case AST_LEAF_LT:
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "\tcmp r8w, r9w\n");
-				fprintf(fp, "\tjlt label_%d\n", label_num++);				
+				fprintf(fp, "\tjl label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
@@ -416,7 +419,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		case AST_LEAF_GT:
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "\tcmp r8w, r9w\n");
-				fprintf(fp, "\tjgt label_%d\n", label_num++);				
+				fprintf(fp, "\tjg label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
@@ -859,8 +862,8 @@ void codegenInit() {
 	fprintf(fp, "\toutput_fmt_string: db \"Output: %%s\", 0xA, 0\n");
 	fprintf(fp, "\toutput_fmt_plain: db \"Output: \", 0\n"); 
 
-	fprintf(fp, "\tbool_true: db \"true\", 0xA, 0\n");
-	fprintf(fp, "\tbool_false: db \"false\", 0xA, 0\n");
+	fprintf(fp, "\tbool_true: db \"true\", 0\n");
+	fprintf(fp, "\tbool_false: db \"false\", 0\n");
 
 	fprintf(fp, "\texcept_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %%d.\"\n");
 	
@@ -1143,7 +1146,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tmov qword [rax], rsp\n");
 					getLeftRightIndex(id);
 					fprintf(fp, "\tcmp r10w, r11w\n");
-					fprintf(fp, "\tjgt rte\n");
+					fprintf(fp, "\tjg rte\n");
 					fprintf(fp, "\tmov rcx, r11w\n");
 					fprintf(fp, "\tsub rcx, r10w\n");
 					fprintf(fp, "\tinc rcx\n");

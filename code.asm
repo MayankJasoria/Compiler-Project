@@ -15,8 +15,8 @@ section .data
 	output_fmt_int: db "Output: %hd", 0xA, 0
 	output_fmt_string: db "Output: %s", 0xA, 0
 	output_fmt_plain: db "Output: ", 0
-	bool_true: db "true", 0xA, 0
-	bool_false: db "false", 0xA, 0
+	bool_true: db "true", 0
+	bool_false: db "false", 0
 	except_fmt: db "RUN TIME ERROR: Array index out of bounds at line %d."
 section .bss
 	buffer: resb 64
@@ -339,7 +339,7 @@ mov rsp, qword [rspreserve]
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	cmp r8w, r9w
-	jgt label_0
+	jg label_0
 ; --- START: if0else1() --- 
 	mov r8b, 0
 	jmp label_1
@@ -423,7 +423,7 @@ label_3:
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	cmp r8w, r9w
-	jlt label_4
+	jl label_4
 ; --- START: if0else1() --- 
 	mov r8b, 0
 	jmp label_5
@@ -503,9 +503,12 @@ mov rsp, qword [rspreserve]
 	mov al, byte[rax]
 	cmp al, 0
 	jz label_6
-	mov rdi, bool_true
+	mov rdi, output_fmt_string
+	mov rsi, bool_true
 	jmp label_7
 label_6:
+	mov rdi, output_fmt_string
+	mov rsi, bool_false
 	mov rdi, bool_false
 label_7:
 mov qword [rspreserve], rsp
