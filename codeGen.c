@@ -811,12 +811,12 @@ void codegenInit() {
 	fprintf(fp, "\ttype_float: db \"Real Number\", 0\n");
 	fprintf(fp, "\ttype_bool: db \"Boolean\", 0\n");
 	
-	fprintf(fp, "\top1: db \"Input: Enter an %%s Value\\n\", 0\n");
+	fprintf(fp, "\top1: db \"Input: Enter an %%s Value\", 0xA, 0\n");
 	fprintf(fp, "\top2: db \"Input: Enter %%d array elements of %%s type for range %%d to %%d\", 0\n");
 
-	fprintf(fp, "\toutput_fmt_float: db \"Output: %%f\\n\", 0xA, 0\n");
-	fprintf(fp, "\toutput_fmt_int: db \"Output: %%hd\\n\", 0xA, 0\n");
-	fprintf(fp, "\toutput_fmt_string: db \"Output: %%s\\n\", 0xA, 0\n");
+	fprintf(fp, "\toutput_fmt_float: db \"Output: %%f\", 0xA, 0\n");
+	fprintf(fp, "\toutput_fmt_int: db \"Output: %%hd\", 0xA, 0\n");
+	fprintf(fp, "\toutput_fmt_string: db \"Output: %%s\", 0xA, 0\n");
 	fprintf(fp, "\toutput_fmt_plain: db \"Output: \", 0\n"); 
 
 	fprintf(fp, "\tbool_true: db \"true\", 0xA, 0\n");
