@@ -14,7 +14,7 @@ void rte(/* char* errorMsg */) {
 	 * TODO: Print error message
 	 * RUN TIME ERROR:  Array index out of bound
 	 */ 
-	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors\n'");
+	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
 	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
 	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
 
@@ -45,6 +45,18 @@ void emitCodeChildren(ASTNode * head, char * fname) {
 void asmComment(char * str) {
 
 	fprintf(fp, "\n; ### %s ### \n", str);
+}
+
+void alignStack() {
+
+	fprintf(fp, "mov qword [rspreserve], rsp\n");
+	fprintf(fp, "and rsp, 0xfffffffffffffff0\n");
+	fprintf(fp, "sub rsp, 10000B\n");
+}
+
+void getBackStack() {
+
+	fprintf(fp, "mov rsp, qword [rspreserve]\n");
 }
 
 int getIDOffset(ASTNode * idNode) {
@@ -127,7 +139,9 @@ void getInputElement() {
 	fprintf(fp, "\tmov rax, rbp\n");
 	fprintf(fp, "\tsub rax, r9\n");
 	fprintf(fp, "\tmov rsi, rax\n");
+	alignStack();
 	fprintf(fp, "\tcall scanf\n");
+	getBackStack();
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "; --- END: getInputElement() --- \n");
 }
@@ -230,7 +244,9 @@ void outputArrayElement(SymTableVar * id) {
 		fprintf(fp, "\tmov rdi, bool_false\n");
 		fprintf(fp, "label_%d:\n", label_num - 1);
 	}
+	alignStack();
 	fprintf(fp, "\tcall printf\n");
+	getBackStack();
 	fprintf(fp, "\tpop rbp\n");
 
 	fprintf(fp, "; --- END: outputArrayElement() for %s--- \n", id -> name);
@@ -562,7 +578,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		case AST_TYPE_INT: {
 			fprintf(fp, "\tmov rdi, op1\n");
 			fprintf(fp, "\tmov rsi, type_int\n");
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
@@ -572,7 +590,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		case AST_TYPE_REAL: {
 			fprintf(fp, "\tmov rdi, op1\n");
 			fprintf(fp, "\tmov rsi, type_float\n");
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
@@ -582,7 +602,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		case AST_TYPE_BOOLEAN: {
 			fprintf(fp, "\tmov rdi, op1\n");
 			fprintf(fp, "\tmov rsi, type_bool\n");
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
@@ -611,7 +633,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				fprintf(fp, "\tmov rdx, type_bool\n");
 			fprintf(fp, "\tmov rcx, r10w\n");
 			fprintf(fp, "\tmov r8, r11w\n");
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 			
 			fprintf(fp, "\n; --- rdx will be the address of the first element of the array ---\n");
@@ -641,7 +665,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 
 			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "\tmov rsi, rdx\n");
+			alignStack();
 			fprintf(fp, "\tcall scanf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 			fprintf(fp, "\tpop rcx\n");
 			fprintf(fp, "\tpop rdx\n");
@@ -671,7 +697,9 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, "\tpush rbp\n");
 				fprintf(fp, "\tmov rdi, output_fmt_int\n");
 				fprintf(fp, "\tmov rsi, %d\n", val);
+				alignStack();
 				fprintf(fp, "\tcall printf\n");
+				getBackStack();
 				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
@@ -686,7 +714,9 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, "\tcvtss2sd xmm0, [rsp]\n");
 				fprintf(fp, "\tadd rsp, 4\n");
 				fprintf(fp, "\tmov rax, 1\n");
+				alignStack();
 				fprintf(fp, "\tcall printf\n");
+				getBackStack();
 				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
@@ -695,7 +725,9 @@ void giveOutput(ASTNode * curr) {
 
 				fprintf(fp, "\tpush rbp\n");
 				fprintf(fp, "\tmov rdi, bool_true\n" );
+				alignStack();
 				fprintf(fp, "\tcall printf\n");
+				getBackStack();
 				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
@@ -704,7 +736,9 @@ void giveOutput(ASTNode * curr) {
 
 				fprintf(fp, "\tpush rbp\n");
 				fprintf(fp, "\tmov rdi, bool_false\n" );
+				alignStack();
 				fprintf(fp, "\tcall printf\n");
+				getBackStack();
 				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
@@ -742,7 +776,9 @@ void giveOutput(ASTNode * curr) {
 			int offset = id -> offset;
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rdi, output_fmt_plain\n" );
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov rax, rbp\n");
@@ -768,7 +804,9 @@ void giveOutput(ASTNode * curr) {
 
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rdi, single_space\n" );
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
@@ -778,7 +816,9 @@ void giveOutput(ASTNode * curr) {
 
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rdi, end_line\n" );
+			alignStack();
 			fprintf(fp, "\tcall printf\n");
+			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
 		}
 		else {
@@ -827,6 +867,7 @@ void codegenInit() {
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
 	fprintf(fp, "\tdynamic: resw 1\n");
+	fprintf(fp, "\trspreserve: resq 1\n");
 	fprintf(fp, "section .text\n");
 	fprintf(fp, "\tglobal main\n");
 	fprintf(fp, "\textern printf\n");
@@ -841,6 +882,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_PROGRAM: {
 
 			codegenInit();
+			fprintf(fp, "mov word [dynamic], 0\n");
             ASTNode* ch = curr -> child;
             emitCodeChildren(ch, fname);
 		}
@@ -860,7 +902,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				asmComment("Begining of the driver program.");
 				fprintf(fp, "main:\n");
 				int actRecSize = driver -> actRecSize;
-				fprintf(fp, "add rsp, %dd\n", actRecSize);
+				fprintf(fp, "sub rsp, %dd\n", actRecSize);
+				fprintf(fp, "mov word [dynamic], 0\n");
 				
 				emitCodeAST(ch, "driver");
 				
@@ -868,6 +911,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tmovsx rax, word [dynamic]\n");
 				fprintf(fp, "\tadd rsp, rax\n");
 				fprintf(fp, "\tadd rsp, %dd\n", driver -> actRecSize);
+				rte();
 				fprintf(fp, "\tret\n");
 				asmComment("End of driver function.");
 			}
@@ -884,6 +928,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			SymTableFunc * func = fetchFuncData(fn);
 			asmComment("Begin of a moduledef.");
 			fprintf(fp, "%s:\n", fn);
+			fprintf(fp, "mov word [dynamic], 0\n");
 			emitCodeChildren(ch, fname);
 
 			asmComment("Copying back the output parameters.");

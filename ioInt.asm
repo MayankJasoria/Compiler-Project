@@ -13,10 +13,10 @@ section .text
 
 main:
 	
-	sub rsp, 2
+	sub rsp, 12
 	mov ax, [var1]
 	mov word [rsp], ax
-	sub rsp, 22
+	;sub rsp, 4
 	;add rsp, 2
 
 	push rbp
@@ -25,7 +25,7 @@ main:
 	mov rdx, var2
 	call scanf
 	pop rbp
-	add rsp, 24
+	add rsp, 16
 
 
 

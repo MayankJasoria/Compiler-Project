@@ -21,20 +21,27 @@ section .data
 section .bss
 	buffer: resb 64
 	dynamic: resw 1
+	rspreserve: resq 1
 section .text
 	global main
 	extern printf
 	extern scanf
 ; --- END: init code and data --- 
+mov word [dynamic], 0
 
 ; ### Begining of the driver program. ### 
 main:
-add rsp, 7d
+sub rsp, 7d
+mov word [dynamic], 0
 ; --- START: takeInput(): type: Integer, Name: x --- 
 	push rbp
 	mov rdi, op1
 	mov rsi, type_int
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call printf
+mov rsp, qword [rspreserve]
 	pop rbp
 	mov r9, 2d
 ; START: --- getInputElement() ---
@@ -43,7 +50,11 @@ add rsp, 7d
 	mov rax, rbp
 	sub rax, r9
 	mov rsi, rax
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call scanf
+mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: getInputElement() --- 
 ; --- END: takeInput(): type: Integer, Name: x --- 
@@ -147,7 +158,11 @@ add rsp, 7d
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call printf
+mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
 	jmp label_0
@@ -221,7 +236,11 @@ label_1:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call printf
+mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
 	jmp label_0
@@ -236,7 +255,11 @@ label_2:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call printf
+mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: outputArrayElement() for x--- 
 ; --- START: scopeEnd() --- 
@@ -257,7 +280,11 @@ label_0:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call printf
+mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
@@ -270,7 +297,11 @@ label_0:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+mov qword [rspreserve], rsp
+and rsp, 0xfffffffffffffff0
+sub rsp, 10000B
 	call printf
+mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
 
@@ -278,6 +309,11 @@ label_0:
 	movsx rax, word [dynamic]
 	add rsp, rax
 	add rsp, 7d
+; --- START: rte() --- 
+	mov ebx, 0	 ;return 0 status on exit - 'No errors'
+	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
+	int 80h		 ;generate interrupt
+; --- END: rte() --- 
 	ret
 
 ; ### End of driver function. ### 
