@@ -1000,12 +1000,14 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			fprintf(fp, "mov rax, rbp\n");
 			fprintf(fp, "add rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
-				fprintf(fp, "mov eax, word [rax]\n");
+				fprintf(fp, "mov ax, word [rax]\n");
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
-				fprintf(fp, "cmp eax, %dd\n", val);
+				fprintf(fp, "cmp ax, %dd\n", val);
 				fprintf(fp, "jnz label_%d\n", label_num++);
 				fprintf(fp, "label_%d:\n", label_num - 2);
+				
 				emitCodeAST(ch -> next, fname);
+				
 				fprintf(fp, "jmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
 				ch = ch -> next -> next;
 				if(ch != NULL) {
@@ -1014,8 +1016,21 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				}
 			}
 			else if(switchvar -> dataType == AST_TYPE_BOOLEAN) {
-
-
+				
+				fprintf(fp, "mov aL, byte [rax]\n");
+				int val = (ch -> nodeData.leaf -> tn -> sym.T == TRUE);
+				fprintf(fp, "cmp al, %dd\n", val);
+				fprintf(fp, "jnz label_%d\n", label_num++);
+				fprintf(fp, "label_%d:\n", label_num - 2);
+				
+				emitCodeAST(ch -> next, fname);
+				
+				fprintf(fp, "jmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
+				ch = ch -> next -> next;
+				if(ch != NULL) {
+					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
+					emitCodeAST(ch, fname);
+				}
 			}
 		}
 		break;
