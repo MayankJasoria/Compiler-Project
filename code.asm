@@ -27,10 +27,10 @@ section .text
 	extern printf
 	extern scanf
 ; --- END: init code and data --- 
-mov word [dynamic], 0
 
 ; ### Begining of the driver program. ### 
 main:
+mov rbp, rsp
 sub rsp, 7d
 mov word [dynamic], 0
 ; --- START: takeInput(): type: Integer, Name: x --- 
