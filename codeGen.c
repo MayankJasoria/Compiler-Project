@@ -209,7 +209,7 @@ void outputArrayElement(SymTableVar * id) {
 		fprintf(fp, "mov rdi, output_fmt_int\n");
 		fprintf(fp, "mov rax, rdx\n");
 		fprintf(fp, "sub rax, r9\n");
-		fprintf(fp, "mov si, word[rax]");
+		fprintf(fp, "mov si, word[rax]\n");
 	}
 	else if(type == AST_TYPE_REAL) {
 		fprintf(fp, "mov rdi, output_fmt_float\n");
@@ -863,7 +863,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				emitCodeAST(ch, "driver");
 				
 				asmComment("Resetting(aligning) the rsp.");
-				fprintf(fp, "movsx rax, [word] dynamic\n");
+				fprintf(fp, "movsx rax, word [dynamic]\n");
 				fprintf(fp, "add rsp, rax\n");
 				fprintf(fp, "add rsp, %dd\n", driver -> actRecSize);
 				fprintf(fp, "ret\n");
@@ -1127,7 +1127,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
-			fprintf(fp, "label_%d:\n", label_num - 1);
+			if(curr -> parent -> type == AST_NODE_CASESTMT)
+				fprintf(fp, "label_%d:\n", label_num - 1);
 			fprintf(fp, "mov rax, rbp\n");
 			fprintf(fp, "add rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
@@ -1135,7 +1136,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
 				fprintf(fp, "cmp ax, %dd\n", val);
 				fprintf(fp, "jnz label_%d\n", label_num++);
-				fprintf(fp, "label_%d:\n", label_num - 2);
+				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
 				
