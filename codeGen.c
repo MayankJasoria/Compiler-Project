@@ -481,9 +481,9 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			break;
 		case AST_LEAF_MUL: 
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "mov eax, r8w\n");
+				fprintf(fp, "mov ax, r8w\n");
 				fprintf(fp, "mul r9w\n");
-				fprintf(fp, "mov r8w, eax\n");
+				fprintf(fp, "mov r8w, ax\n");
 			}
 			if(type == AST_TYPE_REAL) {
 				fprintf(fp, "fmul\n");
@@ -493,12 +493,12 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			break;
 		case AST_LEAF_DIV:
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "mov edx, 0\n");
-				fprintf(fp, "mov eax, r8w\n");
+				fprintf(fp, "mov dx, 0\n");
+				fprintf(fp, "mov ax, r8w\n");
 				fprintf(fp, "cmp r9w, 0\n");
 				fprintf(fp, "jz rte\n");
 				fprintf(fp, "div r9w\n");
-				fprintf(fp, "mov r8w, eax\n");
+				fprintf(fp, "mov r8w, ax\n");
 			}
 			if(type == AST_TYPE_REAL) {
 				fprintf(fp, "fdiv\n");
@@ -1115,9 +1115,14 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			SymTableVar * switchVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			ch -> next -> nodeData.caseStmt -> breakLabel = label_num++;
 			int tmp = label_num - 1;
+			scopeBegin();
+
 			emitCodeAST(ch -> next, fname);
 			fprintf(fp, "label_%d:\n", label_num - 1);
 			emitCodeAST(ch -> next -> next, fname);
+
+			scopeEnd();
+			
 			fprintf(fp, "label_%d:\n", tmp);
 			/* Check: defualt will automatically be handled(statements) */
 		}

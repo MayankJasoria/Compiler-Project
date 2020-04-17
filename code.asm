@@ -70,6 +70,13 @@ mov rax, rbp
 sub rbp, 6d
 mov word [rax], r8w
 ; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
+; --- START: scopeBegin() --- 
+sub rsp, 2d
+mov ax, word [dynamic]
+mov word [rsp], ax
+mov ax, 0
+mov word [dynamic], ax
+; --- END: scopeBegin() --- 
 mov rax, rbp
 add rax, 2d
 mov ax, word [rax]
@@ -94,9 +101,9 @@ mov r10, rsp
 sub r10, 4d
 mov r8w, word [rax]
 mov r9w, word [r10]
-mov eax, r8w
+mov ax, r8w
 mul r9w
-mov r8w, eax
+mov r8w, ax
 mov rax, rsp
 sub rax, 6d
 mov word [rax], r8w
@@ -168,9 +175,9 @@ mov r10, rsp
 sub r10, 14d
 mov r8w, word [rax]
 mov r9w, word [r10]
-mov eax, r8w
+mov ax, r8w
 mul r9w
-mov r8w, eax
+mov r8w, ax
 mov rax, rsp
 sub rax, 16d
 mov word [rax], r8w
@@ -231,6 +238,13 @@ mov si, word[rax]
 call printf
 pop rbp
 ; --- END: outputArrayElement() for x--- 
+; --- START: scopeEnd() --- 
+movsx rax, word [dynamic]
+add rsp, rax
+mov ax, word [rsp]
+mov word [dynamic], ax
+add rsp, 2d
+; --- END: scopeEnd() --- 
 label_0:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 mov r9, 4d
