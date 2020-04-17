@@ -776,7 +776,7 @@ void giveOutput(ASTNode * curr) {
 		astDataType type = id -> sdt.r -> dataType;
 
 		if(idNode -> next == NULL) {
-			fprintf(fp, " --- idNode->next is NULL --- \n");
+			fprintf(fp, "; --- idNode->next is NULL --- \n");
 			int offset = id -> offset;
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rdi, output_fmt_plain\n" );
