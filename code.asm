@@ -90,7 +90,7 @@ mov rsp, qword [rspreserve]
 	mov word [dynamic], ax
 ; --- END: scopeBegin() --- 
 	mov rax, rbp
-	add rax, 2d
+	sub rax, 2d
 	mov ax, word [rax]
 	cmp ax, 1d
 	jnz label_1
@@ -168,7 +168,7 @@ mov rsp, qword [rspreserve]
 	jmp label_0
 label_1:
 	mov rax, rbp
-	add rax, 2d
+	sub rax, 2d
 	mov ax, word [rax]
 	cmp ax, 2d
 	jnz label_2
