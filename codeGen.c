@@ -245,7 +245,6 @@ void outputArrayElement(SymTableVar * id) {
 		fprintf(fp, "label_%d:\n", label_num - 2);
 		fprintf(fp, "\tmov rdi, output_fmt_string\n");
 		fprintf(fp, "\tmov rsi, bool_false\n");
-		fprintf(fp, "\tmov rdi, bool_false\n");
 		fprintf(fp, "label_%d:\n", label_num - 1);
 	}
 	alignStack();
@@ -728,7 +727,8 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, " leaf-type: AST_LEAF_BOOLTRUE --- \n");
 
 				fprintf(fp, "\tpush rbp\n");
-				fprintf(fp, "\tmov rdi, bool_true\n" );
+				fprintf(fp, "\tmov rdi, output_fmt_string\n");
+				fprintf(fp, "\tmov rsi, bool_true\n");
 				alignStack();
 				fprintf(fp, "\tcall printf\n");
 				getBackStack();
@@ -739,7 +739,8 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, " leaf-type: AST_LEAF_BOOLFALSE --- \n");
 
 				fprintf(fp, "\tpush rbp\n");
-				fprintf(fp, "\tmov rdi, bool_false\n" );
+				fprintf(fp, "\tmov rdi, output_fmt_string\n");
+				fprintf(fp, "\tmov rsi, bool_false\n");
 				alignStack();
 				fprintf(fp, "\tcall printf\n");
 				getBackStack();

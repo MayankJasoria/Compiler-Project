@@ -509,7 +509,6 @@ mov rsp, qword [rspreserve]
 label_6:
 	mov rdi, output_fmt_string
 	mov rsi, bool_false
-	mov rdi, bool_false
 label_7:
 mov qword [rspreserve], rsp
 and rsp, 0xfffffffffffffff0
