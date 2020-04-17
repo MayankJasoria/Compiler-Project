@@ -63,7 +63,7 @@ mov rsp, qword [rspreserve]
 	sub rdx, 2d
 	mov word [rdx], ax
 ; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
-	mov rax, rbp
+	mov rax, rsp
 	sub rax, 2d
 	mov r8w, word [rax]
 	mov rax, rbp
@@ -75,7 +75,7 @@ mov rsp, qword [rspreserve]
 	sub rdx, 2d
 	mov word [rdx], ax
 ; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
-	mov rax, rbp
+	mov rax, rsp
 	sub rax, 2d
 	mov r8w, word [rax]
 	mov rax, rbp
@@ -141,7 +141,7 @@ mov rsp, qword [rspreserve]
 	mov word [rax], r8w
 ; --- START: applyOperator(): leftOp: 4, rightOp: 6, operator: MINUS, type: Integer --- 
 ; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 8, type = Integer ---
-	mov rax, rbp
+	mov rax, rsp
 	sub rax, 10d
 	mov r8w, word [rax]
 	mov rax, rbp
@@ -219,7 +219,7 @@ label_1:
 	mov word [rax], r8w
 ; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MINUS, type: Integer --- 
 ; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 18, type = Integer ---
-	mov rax, rbp
+	mov rax, rsp
 	sub rax, 20d
 	mov r8w, word [rax]
 	mov rax, rbp

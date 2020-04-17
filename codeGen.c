@@ -264,7 +264,7 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
 	fprintf(fp, "; --- START: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 	/* offset of rhs is in rax */
-	fprintf(fp, "\tmov rax, rbp\n");
+	fprintf(fp, "\tmov rax, rsp\n");
 	fprintf(fp, "\tsub rax, %dd\n", rhsOff + typeSize[type]);
 	
 	/*  */
