@@ -276,7 +276,7 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 		}
 		else {
 			fprintf(fp, "\tmov rax, rbp\n");
-			fprintf(fp, "\tsub rbp, %dd\n", typeSize[type] + lhsOff);
+			fprintf(fp, "\tsub rax, %dd\n", typeSize[type] + lhsOff);
 		}
 		fprintf(fp, "\tmov word [rax], r8w\n");
 	}
@@ -288,7 +288,7 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 		}
 		else {
 			fprintf(fp, "\tmov rax, rbp\n");
-			fprintf(fp, "\tsub rbp, %dd\n", typeSize[type] + lhsOff);
+			fprintf(fp, "\tsub rax, %dd\n", typeSize[type] + lhsOff);
 		}
 		fprintf(fp, "\tmov dword [rax], r8d\n");
 	}
@@ -300,7 +300,7 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 		}
 		else {
 			fprintf(fp, "\tmov rax, rbp\n");
-			fprintf(fp, "\tsub rbp, %dd\n", typeSize[type] + lhsOff);
+			fprintf(fp, "\tsub rax, %dd\n", typeSize[type] + lhsOff);
 		}
 		fprintf(fp, "\tmov byte [rax], r8b\n");
 	}
@@ -911,7 +911,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tmovsx rax, word [dynamic]\n");
 				fprintf(fp, "\tadd rsp, rax\n");
 				fprintf(fp, "\tadd rsp, %dd\n", driver -> actRecSize);
-				rte();
+				// rte();
 				fprintf(fp, "\tret\n");
 				asmComment("End of driver function.");
 			}

@@ -67,7 +67,7 @@ mov rsp, qword [rspreserve]
 	sub rax, 2d
 	mov r8w, word [rax]
 	mov rax, rbp
-	sub rbp, 4d
+	sub rax, 4d
 	mov word [rax], r8w
 ; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
 	mov ax, 56d
@@ -79,7 +79,7 @@ mov rsp, qword [rspreserve]
 	sub rax, 2d
 	mov r8w, word [rax]
 	mov rax, rbp
-	sub rbp, 6d
+	sub rax, 6d
 	mov word [rax], r8w
 ; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
 ; --- START: scopeBegin() --- 
@@ -145,7 +145,7 @@ mov rsp, qword [rspreserve]
 	sub rax, 10d
 	mov r8w, word [rax]
 	mov rax, rbp
-	sub rbp, 4d
+	sub rax, 4d
 	mov word [rax], r8w
 ; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 8, type = Integer ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
@@ -223,7 +223,7 @@ label_1:
 	sub rax, 20d
 	mov r8w, word [rax]
 	mov rax, rbp
-	sub rbp, 6d
+	sub rax, 6d
 	mov word [rax], r8w
 ; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 18, type = Integer ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
@@ -309,11 +309,6 @@ mov rsp, qword [rspreserve]
 	movsx rax, word [dynamic]
 	add rsp, rax
 	add rsp, 7d
-; --- START: rte() --- 
-	mov ebx, 0	 ;return 0 status on exit - 'No errors'
-	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
-	int 80h		 ;generate interrupt
-; --- END: rte() --- 
 	ret
 
 ; ### End of driver function. ### 
