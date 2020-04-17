@@ -1103,7 +1103,38 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_VARIDNUM: {
 			ASTNode* ch = curr -> child;
-			
+			SymTableFunc * par = getParentFunc(curr -> localST);
+			SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			if(ch -> next == NULL) {
+				fprintf(fp, "mov rax, rbp\n");
+				fprintf(fp, "sub rax, %dd\n", id -> offset + typeSize[id -> dataType]);
+				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
+				par -> dynamicRecSize += typeSize[id -> dataType];
+				if(id -> dataType == AST_TYPE_INT) {
+					fprintf(fp, "mov dx, word [rax]\n");
+					fprintf(fp, "mov rax, rsp\n");
+					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov word [rax], dx\n");
+				}
+				else if(id -> dataType == AST_TYPE_REAL) {
+					fprintf(fp, "mov edx, dword [rax]\n");
+					fprintf(fp, "mov rax, rsp\n");
+					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov dword [rax], edx\n");
+				}
+				else if(id -> dataType == AST_TYPE_BOOLEAN) {
+					fprintf(fp, "mov dl, byte [rax]\n");
+					fprintf(fp, "mov rax, rsp\n");
+					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov byte [rax], dl\n");
+				}
+				else if(id -> dataType == AST_TYPE_ARRAY) {
+					fprintf(fp, "mov rdx, qword [rax]\n");
+					fprintf(fp, "mov rax, rsp\n");
+					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov qword [rax], rdx\n");
+				}
+			}
 		}
 		break;
 
