@@ -992,6 +992,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		}
 		break;
 		
+		/* todo: complete it */
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
@@ -1011,6 +1012,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
 					emitCodeAST(ch, fname);
 				}
+			}
+			else if(switchvar -> dataType == AST_TYPE_BOOLEAN) {
+
+
 			}
 		}
 		break;
@@ -1151,255 +1156,56 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_LEAF: {
 			switch(curr -> nodeData.leaf -> type) {
-				case AST_LEAF_ID: {
-					char str[30];
-					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
-					switch(curr -> parent -> type) {
-						case AST_NODE_VARIDNUM: {
-							if(curr -> prev != NULL) {
-								SymTableVar* idx = fetchVarData(curr -> localST, str);
-								if(idx == NULL) {
-									fprintf(stderr, 
-									"Index variable('%s') is not defined on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
-									return;
-								}
-								if(idx -> dataType != AST_TYPE_INT) {
-									fprintf(stderr, 
-									"Index variable('%s') is not Integer on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
-								}
-								curr -> nodeData.leaf -> dataType = idx -> dataType;
-							}
-							else {
-								SymTableVar* tmp = fetchVarData(curr -> localST, str);
-								if(tmp == NULL) {
-									// fprintf(stderr, 
-									// "The identifier('%s') not declared on line %d.\n", str, 
-									// curr -> nodeData.leaf -> tn -> line_num);
-									return;
-								}
-								curr -> nodeData.leaf -> dataType = tmp -> dataType;
-							}
-						}
-						break;
-						case AST_NODE_LVALARRSTMT: {
-							SymTableVar* idx = fetchVarData(curr -> localST, str);
-							if(idx == NULL) {
-								fprintf(stderr, 
-								"Index variable('%s') is not defined on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
-								return;
-							}
-							if(idx -> dataType != AST_TYPE_INT) {
-								fprintf(stderr, 
-								"Range Arrays variable('%s') is not Integer on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
-							}
-						}
-						break;
-						case AST_NODE_ASSIGN: {
-							// SymTableVar* idx = fetchVarData(curr -> localST, str);
-							// if(idx == NULL) {
-							// 	fprintf(stderr, 
-							// 	"The variable to be assigned is not declared.\n");
-								return;
-							// }
-							/* No need */
-						}
-						break;
-						case AST_NODE_MODULEREUSE: {
-							SymTableFunc* func = fetchFuncData(str);
-							if(func == NULL) {
-								fprintf(stderr, 
-								"The function used('%s') is not declared and defined on line %d.\n", str, curr -> nodeData.leaf -> tn -> line_num);
-								return;
-							}
-							if(func -> isDefined == 0) {
-								func -> isDeclared++;
-							}
-						}
-						break;
-						case AST_NODE_IDLIST: {
-							/* handled above in typelistmatch()*/
-						}
-						break;
-						case AST_NODE_CONDSTMT: {
-							SymTableVar* idx = fetchVarData(curr -> localST, str);
-							if(idx == NULL) {
-								fprintf(stderr, 
-								"Switch variable('%s') is not defined line %d.\n",
-								str, curr -> nodeData.leaf -> tn -> line_num);
-								return;
-							}
-							else {
-								curr -> nodeData.leaf -> dataType = idx -> dataType;
-							}
-						}
-						break;
-						case AST_NODE_ITERSTMT: {
-							SymTableVar* idx = fetchVarData(curr -> localST, str);
-							if(idx == NULL) {
-								fprintf(stderr, 
-								"Loop variable('%s') is not defined line %d.\n",
-								str, curr -> nodeData.leaf -> tn -> line_num);
-								/* not declared, still giving it a type*/
-								curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
-								return;
-							}
-							else {
-								curr -> nodeData.leaf -> dataType = idx -> dataType;
-							}
-						}
-						break;
-					}
-				}
-				break;
-				case AST_LEAF_NUM: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
-				}
-				break;
-				case AST_LEAF_IDXNUM: {
-					
-					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
-					if(curr -> parent -> type == AST_NODE_VARIDNUM) {
-						SymTableVar* arr = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex);
-						if(arr == NULL) {
-							// fprintf(stderr, 
-							// "The array variable is not defined.\n");
-							return;
-						}
-						boundChecking(arr, curr -> parent);
-					}
-					return;
-				}
-				break;
-				case AST_LEAF_IDXID: {
-					char str[30];
-					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
-					SymTableVar* idx = fetchVarData(curr -> localST, str);
-					if(idx == NULL) {
-						fprintf(stderr, 
-						"Index variable is not defined on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
-						return;
-					}
-					if(idx -> dataType != AST_TYPE_INT) {
-						fprintf(stderr, 
-						"Index variable in range arrays is not Integer on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
-					}
-				}
-				break;
-				case AST_LEAF_PLUS: {
-					curr -> nodeData.leaf -> op = AST_AOP;
-				}
-				break;
-				case AST_LEAF_MINUS: { 
-					curr -> nodeData.leaf -> op = AST_AOP;
-				}
-				break;
-				case AST_LEAF_MUL: { 
-					curr -> nodeData.leaf -> op = AST_AOP;
-				}
-				break;
-				case AST_LEAF_DIV: { 
-					curr -> nodeData.leaf -> op = AST_AOP;
-				}
-				break;
-				case AST_LEAF_OR: { 
-					curr -> nodeData.leaf -> op = AST_LOP;
-				}
-				break;
-				case AST_LEAF_AND: {
-					curr -> nodeData.leaf -> op = AST_LOP;
-				}
-				break;
-				case AST_LEAF_LT: {
-					curr -> nodeData.leaf -> op = AST_RELOP;
-				}
-				break;
-				case AST_LEAF_LE: {
-					curr -> nodeData.leaf -> op = AST_RELOP;
-				}
-				break;
-				case AST_LEAF_GT: {
-					curr -> nodeData.leaf -> op = AST_RELOP;
-				}
-				break;
-				case AST_LEAF_GE: {
-					curr -> nodeData.leaf -> op = AST_RELOP;
-				}
-				break;
-				case AST_LEAF_EQ: {
-					curr -> nodeData.leaf -> op = AST_RELOP;
-				}
-				break;
-				case AST_LEAF_NE: {
-					curr -> nodeData.leaf -> op = AST_RELOP;
-				}
-				break;
-				case AST_LEAF_TRUE: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
-				}
-				break;
-				case AST_LEAF_FALSE: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
-				}
-				break;
-				case AST_LEAF_VALNUM: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
-				}
-				break;
-				case AST_LEAF_VALTRUE: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
-				}
-				break;
-				case AST_LEAF_VALFALSE: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
-				}
-				break;
 				case AST_LEAF_VARIDNUM_NUM: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
-				}
-				break;
-				case AST_LEAF_VARIDNUM_ID: {
-					char str[30];
-					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
-					SymTableVar* tmp = fetchVarData(curr -> localST, str);
-					if(tmp == NULL) {
-						fprintf(stderr, 
-						"The identifier not declared.\n");
-					}
-					curr -> nodeData.leaf -> dataType = tmp -> dataType;
+					SymTableFunc * par = getParentFunc(curr -> localST);
+					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
+					par -> dynamicRecSize += typeSize[AST_TYPE_INT];
+					int val = curr -> nodeData.leaf -> tn -> value.val_int;
+					fprintf(fp, "mov ax, %dd\n", val);
+					fprintf(fp, "mov rdx, rsp\n");
+					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov word [rdx], ax\n");
 				}
 				break;
 				case AST_LEAF_VARIDNUM_RNUM: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_REAL;
+					SymTableFunc * par = getParentFunc(curr -> localST);
+					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
+					par -> dynamicRecSize += typeSize[AST_TYPE_REAL];
+					float val = curr -> nodeData.leaf -> tn -> value.val_float;
+					fprintf(fp, "mov rdx, rsp\n");
+					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov word [rdx], __float32__(%f)\n", val);
 				}
 				break;
 				case AST_LEAF_BOOLTRUE: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
+					SymTableFunc * par = getParentFunc(curr -> localST);
+					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
+					par -> dynamicRecSize += typeSize[AST_TYPE_BOOLEAN];
+					fprintf(fp, "mov al, 1d\n");
+					fprintf(fp, "mov rdx, rsp\n");
+					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov byte [rdx], al\n");
 				}
 				break;
 				case AST_LEAF_BOOLFALSE: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
-				}
-				break;
-				case AST_LEAF_UOPPLUS: {
-					/* nothing required as of now*/
-				}
-				break;
-				case AST_LEAF_UOPMINUS: {
-					/* nothing required as of now*/
+					SymTableFunc * par = getParentFunc(curr -> localST);
+					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
+					par -> dynamicRecSize += typeSize[AST_TYPE_BOOLEAN];
+					fprintf(fp, "mov al, 0\n");
+					fprintf(fp, "mov rdx, rsp\n");
+					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "mov byte [rdx], al\n");				}
 				}
 				break;
 				default: {
-					/* nothing required as of now*/
+					/* nothing required as of now */
 				}
 			}
 		}
 		break;
 		default: {
-			fprintf(stderr, "Default error!\n");
+			/* do nothing */
+			// fprintf(stderr, "Default error!\n");
 		}
 	}
 }
