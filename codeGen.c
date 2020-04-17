@@ -27,6 +27,11 @@ void emitCodeInit(const char* fname) {
 }
 
 void emitCodeFinalize() {
+
+	fprintf(fp, "rte:\n");
+	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
+	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
+	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
@@ -625,8 +630,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 
 			fprintf(fp, "\n; --- Asking for user input for Array ---\n");
 			fprintf(fp, "\tmov rdi, op2\n");
-			fprintf(fp, "\tmovsx rsi, r11w\n");
-			fprintf(fp, "\tsub rsi, r10w\n");
+			fprintf(fp, "\tmov si, r11w\n");
+			fprintf(fp, "\tsub si, r10w\n");
+			fprintf(fp, "\tmovsx rsi, si\n");
 			fprintf(fp, "\tinc rsi\n");
 			if(type == AST_TYPE_INT)
 				fprintf(fp, "\tmov rdx, type_int\n");
@@ -634,8 +640,8 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 				fprintf(fp, "\tmov rdx, type_float\n");
 			else if(type == AST_TYPE_BOOLEAN)
 				fprintf(fp, "\tmov rdx, type_bool\n");
-			fprintf(fp, "\tmov rcx, r10w\n");
-			fprintf(fp, "\tmov r8, r11w\n");
+			fprintf(fp, "\tmovsx rcx, r10w\n");
+			fprintf(fp, "\tmovsx r8, r11w\n");
 			alignStack();
 			fprintf(fp, "\tcall printf\n");
 			getBackStack();
@@ -648,8 +654,9 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 
 			fprintf(fp, "\n; --- Loop for scanning each element of the array --- \n");
 
-			fprintf(fp, "\tmov rcx, r11w\n");
-			fprintf(fp, "\tsub rcx, r10w\n");
+			fprintf(fp, "\tmov cx, r11w\n");
+			fprintf(fp, "\tsub cx, r10w\n");
+			fprintf(fp, "\tmovsx rcx, cx\n");
 			fprintf(fp, "\tinc rcx\n");			
 
 			fprintf(fp, "label_%d:\n", label_num++);
@@ -790,8 +797,9 @@ void giveOutput(ASTNode * curr) {
 			fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
 			fprintf(fp, "\tmov rdx, qword [rax]\n");
 
-			fprintf(fp, "\tmov rcx, r11w\n");
-			fprintf(fp, "\tsub rcx, r10w\n");
+			fprintf(fp, "\tmov cx, r11w\n");
+			fprintf(fp, "\tsub cx, r10w\n");
+			fprintf(fp, "\tmovsx rcx, cx\n");
 			fprintf(fp, "\tinc rcx\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", typeSize[type]);
@@ -1149,8 +1157,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					getLeftRightIndex(id);
 					fprintf(fp, "\tcmp r10w, r11w\n");
 					fprintf(fp, "\tjg rte\n");
-					fprintf(fp, "\tmov rcx, r11w\n");
-					fprintf(fp, "\tsub rcx, r10w\n");
+					fprintf(fp, "\tmov cx, r11w\n");
+					fprintf(fp, "\tsub cx, r10w\n");
+					fprintf(fp, "\tmovsx rcx, cx\n");
 					fprintf(fp, "\tinc rcx\n");
 					fprintf(fp, "label_%d:\n", label_num++);
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[type]);

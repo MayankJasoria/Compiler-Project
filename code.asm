@@ -42,8 +42,9 @@ mov rbp, rsp
 ; --- END: got left and right index of A in r10w and r11w --- 
 	cmp r10w, r11w
 	jg rte
-	mov rcx, r11w
-	sub rcx, r10w
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
 	inc rcx
 label_0:
 	sub rsp, 2d
@@ -554,12 +555,13 @@ label_8:
 
 ; --- Asking for user input for Array ---
 	mov rdi, op2
-	movsx rsi, r11w
-	sub rsi, r10w
+	mov si, r11w
+	sub si, r10w
+	movsx rsi, si
 	inc rsi
 	mov rdx, type_int
-	mov rcx, r10w
-	mov r8, r11w
+	movsx rcx, r10w
+	movsx r8, r11w
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -575,8 +577,9 @@ label_8:
 	mov rdx, qword [rax]
 
 ; --- Loop for scanning each element of the array --- 
-	mov rcx, r11w
-	sub rcx, r10w
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
 	inc rcx
 label_9:
 	push rdx
@@ -643,7 +646,7 @@ label_9:
 	sub r8w, r10w
 	inc r8w
 	mov rcx, 2d
-	label_10:
+label_10:
 	add r9w, r8w
 	dec rcx
 	jnz label_10
@@ -700,7 +703,7 @@ label_9:
 	sub r8w, r10w
 	inc r8w
 	mov rcx, 2d
-	label_11:
+label_11:
 	add r9w, r8w
 	dec rcx
 	jnz label_11
@@ -757,7 +760,7 @@ label_9:
 	sub r8w, r10w
 	inc r8w
 	mov rcx, 2d
-	label_12:
+label_12:
 	add r9w, r8w
 	dec rcx
 	jnz label_12
@@ -829,8 +832,9 @@ label_9:
 	mov rax, rbp
 	sub rax, 22d
 	mov rdx, qword [rax]
-	mov rcx, r11w
-	sub rcx, r10w
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
 	inc rcx
 	mov r9, 2d
 label_13:
@@ -887,3 +891,7 @@ label_13:
 	ret
 
 ; ### End of driver function. ### 
+rte:
+	mov ebx, 0	 ;return 0 status on exit - 'No errors'
+	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
+	int 80h		 ;generate interrupt
