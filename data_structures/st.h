@@ -49,6 +49,12 @@ SymTableFunc * insertFuncRecord(char* name);
  */
 SymTableVar * fetchVarData(SymTableFunc * func, char* name);
 
+/**
+ * Returns the Record for the parent function of a nested scope
+ * @param local	The local symbol table of a function
+ */
+SymTableFunc * getParentFunc(SymTableFunc * local);
+
 int lookupDependentVar(SymTableFunc * func, char* name);
 /**
  * Returns the record for a function from the symbol table,

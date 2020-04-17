@@ -14,3 +14,8 @@ void emitCodeInit(const char* fname);
  * 				in the caller function
  */
 void emitCodeAST(ASTNode* curr, char* fname);
+
+/**
+ * Finalizes Code generation operation and terminates it
+ */
+void emitCodeFinalize();

@@ -575,6 +575,4 @@ typedef struct symTableVar {
 int numASTnodes;
 int ASTSize;
 
-#endifTSize;
-
 #endif

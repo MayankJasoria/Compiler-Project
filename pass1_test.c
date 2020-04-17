@@ -9,10 +9,11 @@
 #include "lexer.h"
 #include "parser.h"
 #include "data_structures/pass1.h"
+#include "codeGen.h"
 
 int main(int argc, char* argv[]) {
 
-	char* inputfile = "mytest.txt";
+	char* inputfile = "CodeGeneration_testcases/c1.txt";
 
 	/* initializing lexer and parser */
 	lexerinit();
@@ -39,14 +40,21 @@ int main(int argc, char* argv[]) {
 
 	outputSymbolTable(NULL, root);
 	
-	int parseTreeSize = getParseTreeSize();
-	int astSize = getASTSize();
-	int numParseTreeNodes = getParseTreeNumNodes();
-	int astNodesCount = getASTnumNodes();
+	// int parseTreeSize = getParseTreeSize();
+	// int astSize = getASTSize();
+	// int numParseTreeNodes = getParseTreeNumNodes();
+	// int astNodesCount = getASTnumNodes();
 
-	printf("\nParse Tree size: %d\n", parseTreeSize);
-	printf("AST size: %d\n", astSize);
-	printf("Number of parse tree nodes: %d\n", numParseTreeNodes);
-	printf("Number of AST nodes: %d\n", astNodesCount);
+	// printf("\nParse Tree size: %d\n", parseTreeSize);
+	// printf("AST size: %d\n", astSize);
+	// printf("Number of parse tree nodes: %d\n", numParseTreeNodes);
+	// printf("Number of AST nodes: %d\n", astNodesCount);
+
+	/**
+	 * CODE GENERATION!
+	 */
+	emitCodeInit("code.asm");
+	emitCodeAST(root, NULL);
+	emitCodeFinalize();
 	printf("Hooray!!\n");
 }

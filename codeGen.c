@@ -7,16 +7,37 @@
 #include "codeGen.h"
 #include "codeGenDef.h"
 
+void rte(/* char* errorMsg */) {
+	
+	fprintf(fp, "; --- START: rte() --- \n");
+	/**
+	 * TODO: Print error message
+	 * RUN TIME ERROR:  Array index out of bound
+	 */ 
+	fprintf(fp, "mov ebx, 0	 ;return 0 status on exit - 'No errors\n'");
+	fprintf(fp, "mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
+	fprintf(fp, "int 80h		 ;generate interrupt\n");
+
+	fprintf(fp, "; --- END: rte() --- \n");
+}
+
 void emitCodeInit(const char* fname) {
     /* Open fname */
-    fp = open(fname, "w");
+    fp = fopen(fname, "w");
+}
+
+void emitCodeFinalize() {
+	if (fp) {
+		fclose(fp);
+		fp = NULL;
+	}
 }
 
 void emitCodeChildren(ASTNode * head, char * fname) {
 	
     ASTNode* ch = head;
     while(ch != NULL) {
-        traverseAST(ch, fname);
+        emitCodeAST(ch, fname);
         ch = ch -> next;
     }
 }
@@ -27,7 +48,7 @@ void asmComment(char * str) {
 }
 
 int getIDOffset(ASTNode * idNode) {
-	SymTableVar * tmp = fetchVarData(idNode -> localST, idNode -> nodeData.leaf -> tn -> lex);
+	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex);
 	return tmp -> offset;
 }
 
@@ -96,7 +117,7 @@ void getLeftRightIndex(SymTableVar * id) {
 		fprintf(fp, "mov r11w, word[rax]\n");
 	}
 
-	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w ---\n", id->name);
+	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w --- \n", id->name);
 }
 
 void getInputElement() {
@@ -108,7 +129,7 @@ void getInputElement() {
 	fprintf(fp, "mov rsi, rax\n");
 	fprintf(fp, "call scanf\n");
 	fprintf(fp, "pop rbp\n");
-	fprintf(fp, "; --- END: getInputElement() --- \n")
+	fprintf(fp, "; --- END: getInputElement() --- \n");
 }
 
 /**
@@ -179,7 +200,9 @@ void outputArrayElement(SymTableVar * id) {
 	
 	fprintf(fp, "; --- START: outputArrayElement() for %s--- \n", id -> name);
 	fprintf(fp, "; Function is used for both Arrays and non-Array types, don't go by the name! \n");
-	astDataType type = id -> sdt.r -> dataType;
+	astDataType type = id -> dataType;
+	if(type == AST_TYPE_ARRAY)
+		type = id -> sdt.r -> dataType;
 
 	fprintf(fp, "push rbp\n");
 	if(type == AST_TYPE_INT) {
@@ -279,7 +302,7 @@ void if0else1() {
 	fprintf(fp, "; --- END: if0else1() --- \n");
 }
 
-void pushTemporary(astDataType type) {
+void pushTemporary(astDataType type, SymTableFunc* par) {
 	fprintf(fp, "; --- START: pushTemporary(): type = %s ---\n", typeName[type]);
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "mov dx, word [rax]\n");
@@ -316,7 +339,7 @@ void pushTemporary(astDataType type) {
  */
 void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type) {
 
-	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type], ;
+	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type]);
 
 	fprintf(fp, "mov rax, rsp\n");
 	fprintf(fp, "sub rax, %dd\n", leftOp + typeSize[type]);
@@ -500,7 +523,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		fprintf(fp, "mov byte [rax], r8b\n");
 	}
 
-	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type], ;
+	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type]);
 }
 
 void scopeBegin() {
@@ -512,7 +535,7 @@ void scopeBegin() {
 	fprintf(fp, "mov ax, 0\n");
 	fprintf(fp, "mov word [dynamic], ax\n");
 
-	fprintf(fp, "; --- END: scopeBegin() --- \n")
+	fprintf(fp, "; --- END: scopeBegin() --- \n");
 }
 
 void scopeEnd() {
@@ -693,7 +716,7 @@ void giveOutput(ASTNode * curr) {
 		}
 	}
 	if(ch -> type == AST_NODE_VARIDNUM) {
-		fprintf(fp, " type: AST_NODE_LEAF, ");
+		fprintf(fp, " type: AST_NODE_VARIDNUM --- \n");
 
 		/* non array variable */
 		ASTNode * idNode = ch -> child;
@@ -715,6 +738,7 @@ void giveOutput(ASTNode * curr) {
 		astDataType type = id -> sdt.r -> dataType;
 
 		if(idNode -> next == NULL) {
+			fprintf(fp, " --- idNode->next is NULL --- \n");
 			int offset = id -> offset;
 			fprintf(fp, "push rbp\n");
 			fprintf(fp, "mov rdi, output_fmt_plain\n" );
@@ -758,10 +782,14 @@ void giveOutput(ASTNode * curr) {
 			fprintf(fp, "pop rbp\n");
 		}
 		else {
+			fprintf(fp, " --- idNode->next is not NULL --- \n");
 			fetchArraybyIndex(ch -> child, ch -> child -> next);
 			outputArrayElement(id);
 		}
 	}
+
+	fprintf(fp, "; --- END: giveInput() --- \n");
+
 }
 
 void codegenInit() {
@@ -770,12 +798,12 @@ void codegenInit() {
 		global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
     */
 		   
-	fprintf(fp, ";init code and data\n");
+	fprintf(fp, "; --- START: init code and data --- \n");
 	fprintf(fp, "section .data\n");
-	fprintf(fp, "fmt_float: db \"%f\", 0\n");
-	fprintf(fp, "fmt_int: db \"%hd\", 0\n");
-	fprintf(fp, "fmt_string: db \"%s\", 0\n");
-	fprintf(fp, "fmt_bool: db \"%c\", 0\n");
+	fprintf(fp, "fmt_float: db \"%%f\", 0\n");
+	fprintf(fp, "fmt_int: db \"%%hd\", 0\n");
+	fprintf(fp, "fmt_string: db \"%%s\", 0\n");
+	fprintf(fp, "fmt_bool: db \"%%c\", 0\n");
 	fprintf(fp, "single_space: db \" \", 0\n");
 	fprintf(fp, "end_line: db \"\", 0xA, 0\n");	
 
@@ -783,18 +811,18 @@ void codegenInit() {
 	fprintf(fp, "type_float: db \"Real Number\", 0\n");
 	fprintf(fp, "type_bool: db \"Boolean\", 0\n");
 	
-	fprintf(fp, "op1: db \"Input: Enter an %s Value\n\", 0\n");
-	fprintf(fp, "op2: db \"Input: Enter %d array elements of %s type for range %d to %d\", 0\n");
+	fprintf(fp, "op1: db \"Input: Enter an %%s Value\\n\", 0\n");
+	fprintf(fp, "op2: db \"Input: Enter %%d array elements of %%s type for range %%d to %%d\", 0\n");
 
-	fprintf(fp, "output_fmt_float: db \"Output: %f\n\", 0xA, 0\n");
-	fprintf(fp, "output_fmt_int: db \"Output: %hd\n\", 0xA, 0\n");
-	fprintf(fp, "output_fmt_string: db \"Output: %s\n\", 0xA, 0\n");
+	fprintf(fp, "output_fmt_float: db \"Output: %%f\\n\", 0xA, 0\n");
+	fprintf(fp, "output_fmt_int: db \"Output: %%hd\\n\", 0xA, 0\n");
+	fprintf(fp, "output_fmt_string: db \"Output: %%s\\n\", 0xA, 0\n");
 	fprintf(fp, "output_fmt_plain: db \"Output: \", 0\n"); 
 
 	fprintf(fp, "bool_true: db \"true\", 0xA, 0\n");
 	fprintf(fp, "bool_false: db \"false\", 0xA, 0\n");
 
-	fprintf(fp, "except_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %d.\n\"");
+	fprintf(fp, "except_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %%d.\"\n");
 	
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
@@ -803,6 +831,8 @@ void codegenInit() {
 	fprintf(fp, "\tglobal main\n");
 	fprintf(fp, "\textern printf\n");
 	fprintf(fp, "\textern scanf\n");
+
+	fprintf(fp, "; --- END: init code and data --- \n");
 }
 
 void emitCodeAST(ASTNode* curr, char* fname) {
@@ -850,7 +880,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			char fn[30];
 			strcpy(fn, ch -> nodeData.leaf -> tn -> lex);
 			SymTableFunc * func = fetchFuncData(fn);
-			asmComment("Begin of a moduledef.")
+			asmComment("Begin of a moduledef.");
 			fprintf(fp, "\t%s:\n", fn);
 			emitCodeChildren(ch, fname);
 
@@ -1232,9 +1262,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "sub rax, %dd\n", tmpOff);
 				fprintf(fp, "mov dl, byte [rax]\n");
 				fprintf(fp, "cmp dl, 0\n");
-				fprintf(fp, "jz label_\n", last);
+				fprintf(fp, "jz label_%d\n", last);
 
-				emitCodeAST(ch -> next);
+				emitCodeAST(ch -> next, fname);
 				scopeEnd();
 
 				fprintf(fp, "jmp label_%d\n", tmp);
@@ -1255,7 +1285,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
 				par -> dynamicRecSize += typeSize[id -> dataType];
 				astDataType type = id -> dataType;
-				pushTemporary(type);
+				pushTemporary(type, par);
 			}
 			else {
 				getLeftRightIndex(id);
@@ -1265,7 +1295,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = id -> sdt.r -> dataType;
 				fprintf(fp, "mov rax, rdx\n");
 				fprintf(fp, "sub rax, r9\n");
-				pushTemporary(type);
+				pushTemporary(type, par);
 			}
 		}
 		break;
@@ -1310,7 +1340,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "mov al, 0\n");
 					fprintf(fp, "mov rdx, rsp\n");
 					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov byte [rdx], al\n");				}
+					fprintf(fp, "mov byte [rdx], al\n");				
 				}
 				break;
 				default: {

@@ -1,30 +1,7 @@
 Variable Name            Module Name              Scope Line No.      Width     Is Array  Static/Dynamic Range                    Type of element     Offset    Nesting Level  
-a                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             0         0              
-b                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             50        0              
-c                        f1                       4 - 59              4         No        ---            ---                      Real                100       0              
-A                        f1                       4 - 59              8         Yes       Dynamic        [5, y1]                  Integer             287       0              
-B                        f1                       4 - 59              8         Yes       Dynamic        [5, y1]                  Integer             295       0              
-C                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             497       0              
-D                        f1                       4 - 59              50        Yes       Static         [10, 30]                 Integer             447       0              
-E                        f1                       4 - 59              46        Yes       Static         [2, 20]                  Integer             123       0              
-k                        f1                       4 - 59              2         No        ---            ---                      Integer             119       0              
-m                        f1                       4 - 59              1         No        ---            ---                      Boolean             104       0              
-n                        f1                       4 - 59              2         No        ---            ---                      Integer             105       0              
-p                        f1                       4 - 59              4         No        ---            ---                      Real                115       0              
-x                        f1                       4 - 59              4         No        ---            ---                      Real                107       0              
-y                        f1                       4 - 59              4         No        ---            ---                      Real                111       0              
-var4                     f1                       4 - 59              59        Yes       Static         [100, 150]               Boolean             228       0              
-Var1                     f1                       4 - 59              72        Yes       Static         [35, 50]                 Real                303       0              
-Var2                     f1                       4 - 59              72        Yes       Static         [35, 50]                 Real                375       0              
-Var3                     f1                       4 - 59              59        Yes       Static         [100, 150]               Boolean             169       0              
-y1                       f1                       4 - 59              2         No        ---            ---                      Integer             121       0              
-u                        f1                       25 - 52             4         No        ---            ---                      Real                547       1              
-v                        f1                       25 - 52             4         No        ---            ---                      Real                551       1              
-int1                     f1                       25 - 52             2         No        ---            ---                      Integer             555       1              
-A                        f1                       33 - 50             4         No        ---            ---                      Real                557       2              
-B                        f1                       33 - 50             50        Yes       Static         [10, 30]                 Integer             563       2              
-E                        f1                       33 - 50             22        Yes       Static         [4, 10]                  Integer             613       2              
-Q                        f1                       33 - 50             2         No        ---            ---                      Integer             561       2              
-a                        function3                66 - 68             4         No        ---            ---                      Real                0         0              
-b                        function3                66 - 68             4         No        ---            ---                      Real                4         0              
-c                        function3                66 - 68             4         No        ---            ---                      Real                8         0              
+a                        driver                   6 - 15              2         No        ---            ---                      Integer             6         0              
+b                        driver                   6 - 15              2         No        ---            ---                      Integer             8         0              
+c                        driver                   6 - 15              2         No        ---            ---                      Integer             10        0              
+x                        driver                   6 - 15              2         No        ---            ---                      Integer             0         0              
+y                        driver                   6 - 15              2         No        ---            ---                      Integer             2         0              
+z                        driver                   6 - 15              2         No        ---            ---                      Integer             4         0              

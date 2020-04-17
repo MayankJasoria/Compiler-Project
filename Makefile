@@ -31,6 +31,9 @@ OUT_NAME=stage1exe
 driver: $(DEPS_PROG)
 	$(CC) $(CFLAGS) $(OUT_NAME) $(DEPS_PROG)
 
+codegen: pass1_test.c
+	gcc -g -o ghot pass1_test.c codeGen.c parser.c lexer.c data_structures/pass1.c data_structures/pass2.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c
+
 pass1Pun: pass1_test.c
 	gcc -g -o ghot pass1_test.c parser.c lexer.c data_structures/pass1.c data_structures/pass2.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c
 

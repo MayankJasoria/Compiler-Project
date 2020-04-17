@@ -24,7 +24,7 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 
 	/* Compute size for AST here */
 	numASTnodes++;
-	printf("%d\n", numASTnodes);
+	// printf("%d\n", numASTnodes);
 	ASTSize += sizeof(ASTNode);
 
 	switch (t) {
