@@ -145,7 +145,7 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	ASTNode * i = index;
 
 	/* Fetch array from symbol table */ 
-	SymTableVar * id = fetchVarData(arr -> localST, arr -> nodeData.leaf -> tn -> lex);
+	SymTableVar * id = fetchVarData(arr -> parent -> localST, arr -> nodeData.leaf -> tn -> lex);
 	
 	/* DataType of elements of array */
 	astDataType type = id -> sdt.r -> dataType;
@@ -160,7 +160,7 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	}
 	else {
 		/* index is of type ID */
-		SymTableVar * tmp = fetchVarData(arr -> localST, i -> nodeData.leaf -> tn -> lex);
+		SymTableVar * tmp = fetchVarData(arr -> parent -> localST, i -> nodeData.leaf -> tn -> lex);
 		if(tmp -> isAssigned == 0) {
 			rte();
 		}
@@ -1113,7 +1113,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_CONDSTMT: {
 			ASTNode* ch = curr -> child;
 			SymTableVar * switchVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
-			ch -> child -> next -> nodeData.caseStmt -> breakLabel = label_num++;
+			ch -> next -> nodeData.caseStmt -> breakLabel = label_num++;
 			int tmp = label_num - 1;
 			emitCodeAST(ch -> next, fname);
 			fprintf(fp, "label_%d:\n", label_num - 1);

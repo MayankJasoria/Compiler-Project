@@ -1,7 +1,5 @@
 Variable Name            Module Name              Scope Line No.      Width     Is Array  Static/Dynamic Range                    Type of element     Offset    Nesting Level  
-a                        driver                   6 - 15              2         No        ---            ---                      Integer             6         0              
-b                        driver                   6 - 15              2         No        ---            ---                      Integer             8         0              
-c                        driver                   6 - 15              2         No        ---            ---                      Integer             10        0              
-x                        driver                   6 - 15              2         No        ---            ---                      Integer             0         0              
-y                        driver                   6 - 15              2         No        ---            ---                      Integer             2         0              
-z                        driver                   6 - 15              2         No        ---            ---                      Integer             4         0              
+b                        driver                   10 - 29             1         No        ---            ---                      Boolean             6         0              
+x                        driver                   10 - 29             2         No        ---            ---                      Integer             0         0              
+y                        driver                   10 - 29             2         No        ---            ---                      Integer             2         0              
+z                        driver                   10 - 29             2         No        ---            ---                      Integer             4         0              
