@@ -166,6 +166,8 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> scope = SCOPE_DEFAULT;
 	data -> level = 0;
 	data -> dynamicRecSize = 0;
+	data -> inputSize = 0;
+	data -> outputSize = 0;
 	strcpy(data -> dependentVar, "");
 	strcpy(data -> nextJump, "");
 	insertToTable(globalST, name, data, stringHash);
@@ -186,6 +188,8 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	data -> scope = SCOPE_DEFAULT;
 	data -> level = par -> level + 1;
 	data -> dynamicRecSize = 0;
+	data -> inputSize = 0;
+	data -> outputSize = 0;
 	strcpy(data -> name, "");
 	strcpy(data -> dependentVar, "");
 	strcpy(data -> nextJump, "");

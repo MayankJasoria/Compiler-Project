@@ -553,6 +553,8 @@ typedef struct SymTableFunc {
 	int level;
 	int start_line_num;
 	int end_line_num;
+	int inputSize;
+	int outputSize;
 	char nextJump[30];
 } SymTableFunc;
 

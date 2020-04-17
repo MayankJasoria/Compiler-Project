@@ -21,6 +21,11 @@ void emitCodeChildren(ASTNode * head, char * fname) {
     }
 }
 
+void asmComment(char * str) {
+
+	fprintf(fp, "\n; ### %s ### \n", str);
+}
+
 int getIDOffset(ASTNode * idNode) {
 	SymTableVar * tmp = fetchVarData(idNode -> localST, idNode -> nodeData.leaf -> tn -> lex);
 	return tmp -> offset;
@@ -773,7 +778,18 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			if(curr -> nodeData.moduleList -> type == AST_MODULE_DRIVER) {
 				if(ch == NULL)
 					return;
+				SymTableFunc * driver = fetchFuncData("driver");
+				asmComment("Begining of the driver program.");
+				fprintf(fp, "main:\n");
+				
 				emitCodeAST(ch, "driver");
+				
+				asmComment("Resetting(aligning) the rsp.");
+				fprintf(fp, "movsx rax, [word] dynamic\n");
+				fprintf(fp, "sub rsp, rax\n");
+				fprintf(fp, "sub rsp, %dd\n", driver -> actRecSize);
+				fprintf(fp, "ret\n");
+				asmComment("End of driver function.");
 			}
 			else
 				emitCodeChildren(ch, fname);
@@ -782,10 +798,45 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_MODULE: {
 			ASTNode* ch = curr -> child;
+			ASTNode * ret = ch -> next -> next;
 			char fn[30];
 			strcpy(fn, ch -> nodeData.leaf -> tn -> lex);
+			SymTableFunc * func = fetchFuncData(fn);
+			asmComment("Begin of a moduledef.")
 			fprintf(fp, "\t%s:\n", fn);
 			emitCodeChildren(ch, fname);
+
+			asmComment("Copying back the output parameters.");
+			fprintf(fp, "mov rax, qword [rbp]\n");
+			while(ret != NULL) {
+				ASTNode * idNode = ret -> child;
+				SymTableVar * id = fetchVarData(func, idNode -> nodeData.leaf -> tn -> lex);
+				fprintf(fp, "mov rdx, rbp\n");
+				fprintf(fp, "sub rdx, %dd\n", typeSize[id -> dataType] + id -> offset);
+				fprintf(fp, "sub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
+				if(id -> dataType == AST_TYPE_INT) {
+					fprintf(fp, "mov cx, word [rdx]\n");
+					fprintf(fp, "mov word [rax], cx\n");
+				}
+				if(id -> dataType == AST_TYPE_REAL) {
+					fprintf(fp, "mov ecx, dword [rdx]\n");
+					fprintf(fp, "mov word [rax], ecx\n");
+				}
+				if(id -> dataType == AST_TYPE_BOOLEAN) {
+					fprintf(fp, "mov cl, byte [rdx]\n");
+					fprintf(fp, "mov byte [rax], cl\n");
+				}
+				if(id -> dataType == AST_TYPE_ARRAY) {
+					fprintf(fp, "mov rcx, qword [rdx]\n");
+					fprintf(fp, "mov qword [rax], rcx\n");
+				}
+				fprintf(fp, "add rax, %dd\n", typeSize[id -> dataType] + id -> offset);
+				ret = ret -> child -> next -> next;
+			}
+			fprintf(fp, "sub rbp, 8\n");
+			fprintf(fp, "mov rsp, rbp\n");
+			fprintf(fp, "mov rbp, rax\n");
+			fprintf(fp, "ret\n");
 		}
 		break;
 
