@@ -452,6 +452,24 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	}
 }
 
+void scopeBegin() {
+
+	fprintf(fp, "sub rsp, 2d\n");
+	fprintf(fp, "mov ax, word [dynamic]\n");
+	fprintf(fp, "mov word [rsp], ax\n");
+	fprintf(fp, "mov ax, 0\n");
+	fprintf(fp, "mov word [dynamic], ax\n");
+}
+
+void scopeEnd() {
+
+	fprintf(fp, "movsx rax, word [dynamic]\n");
+	fprintf(fp, "add rsp, rax\n");
+	fprintf(fp, "mov ax, word [rsp]\n");
+	fprintf(fp, "mov word [dynamic], ax\n");
+	fprintf(fp, "add rsp, 2d\n");
+}
+
 void takeInput(astDataType t, SymTableVar * idNode) {
 
 	fprintf(fp, "push rbp\n");
@@ -704,6 +722,7 @@ void codegenInit() {
 	
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
+	fprintf(fp, "\tdynamic: resw 1\n");
 	fprintf(fp, "section .text\n");
 	fprintf(fp, "\tglobal main\n");
 	fprintf(fp, "\textern printf\n");
@@ -1021,7 +1040,6 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			ASTNode * ch = curr -> child;
 			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
 
-				int tmp = label_num - 1;
 				SymTableVar * loopVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 				
 				int num1 = ch -> next -> child -> nodeData.leaf -> tn -> value.val_int;
@@ -1034,46 +1052,58 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "mov cx, %d\n", num1);
 
 				fprintf(fp, "label_%d\n", label_num++);
+				
+				scopeBegin();
+				
+				int tmp = label_num - 1;
 				fprintf(fp, "mov rax, rbp\n");
 				fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
 				fprintf(fp, "mov word [rax], cx\n");
 
 				emitCodeAST(ch -> next -> next, fname);
-
+				scopeEnd();
+				
+				fprintf(fp, "mov rax, rbp\n");
+				fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
 				fprintf(fp, "mov cx, word[rax]\n");
 				fprintf(fp, "inc cx\n");
 				fprintf(fp, "cmp cx, %d", num2);
-				fprintf(fp, "jnz label_%d", label_num - 1);
+				fprintf(fp, "jnz label_%d", tmp);
+
+			}
+			else {
+				SymTableFunc * par = getParentFunc(curr -> localST);
+				par -> dynamicRecSize = 0;
+
+				fprintf(fp, "label_%d:\n", label_num++);
+				
+				scopeBegin();
+
+				int tmp = label_num - 1;
+				int last = label_num++;
+
+				emitCodeAST(ch, fname);
+				int tmpOff = par -> dynamicRecSize;
+				fprintf(fp, "mov rax, rsp\n");
+				fprintf(fp, "sub rax, %dd\n", tmpOff);
+				fprintf(fp, "mov dl, byte [rax]\n");
+				fprintf(fp, "cmp dl, 0\n");
+				fprintf(fp, "jz label_\n", last);
+
+				emitCodeAST(ch -> next);
+				scopeEnd();
+
+				fprintf(fp, "jmp label_%d\n", tmp);
+				fprintf(fp, "label_%d:\n", last);
+
+				par -> dynamicRecSize = 0;
 			}
 		}
 		break;
 
 		case AST_NODE_VARIDNUM: {
 			ASTNode* ch = curr -> child;
-			emitCodeChildren(ch, fname);
-			ch = curr -> child;
-			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
-			if(idNode == NULL) {
-				fprintf(stderr, 
-				"VarIdNum id('%s') not declared before %d\n", ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
-				return;
-			}
-			curr -> nodeData.var -> dataType = idNode -> dataType;
-			if(curr -> nodeData.var -> dataType == AST_TYPE_ARRAY && ch-> next == NULL && curr -> parent -> type != AST_NODE_ASSIGN) {
-				fprintf(stderr, 
-				"Array variable('%s') used without index on line %d.\n",
-				idNode -> name, ch -> nodeData.leaf -> tn -> line_num);
-				return;
-			}
-			if(curr -> nodeData.var -> dataType != AST_TYPE_ARRAY && ch-> next != NULL) {
-				fprintf(stderr, 
-				"Non Array variable('%s') used with index line %d.\n", 
-				idNode -> name,
-				ch -> nodeData.leaf -> tn -> line_num);
-			}
-			if(ch -> next != NULL) {
-				curr -> nodeData.var -> dataType = idNode -> sdt.r -> dataType;
-			}
+			
 		}
 		break;
 

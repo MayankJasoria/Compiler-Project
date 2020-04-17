@@ -19,6 +19,11 @@ main:
 	call scanf
 	pop rbp
 
+	sub rsp, 2
+	mov ax, [var1]
+	mov word [rsp], ax
+	
+
 	push rbp
 	mov rdi, p_fmt
 	mov si, word [var1]
