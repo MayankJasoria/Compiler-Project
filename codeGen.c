@@ -1144,11 +1144,20 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_DECLARESTMT: {
 			ASTNode * ch = curr -> child;
 			if(ch -> next -> type == AST_NODE_ARRAY) {
-				ASTNode * arr = ch -> next;
-				if(arr -> nodeData.dataType -> is_static == 0)
-					return;
 				ASTNode * idNode = ch;
+				ASTNode * arr = ch -> next;
 				astDataType type = arr -> nodeData.dataType -> dataType;
+				if(arr -> nodeData.dataType -> is_static == 1) {
+					while(idNode != NULL) {
+						SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex);
+						fprintf(fp, "\tmov rax, rbp\n");
+						fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
+						fprintf(fp, "\tmov qword[rax], rax\n");
+						idNode = idNode -> child -> next;
+					}
+					return;
+				}
+
 				while(idNode != NULL) {
 					SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex); 
 					fprintf(fp, "\tmov rax, rbp\n");

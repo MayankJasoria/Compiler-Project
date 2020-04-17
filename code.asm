@@ -35,21 +35,7 @@ mov rbp, rsp
 	mov word [dynamic], 0
 	mov rax, rbp
 	sub rax, 22d
-	mov qword [rax], rsp
-; --- START: get left and right index of A ---
-	mov r10w, 10d
-	mov r11w, 15d
-; --- END: got left and right index of A in r10w and r11w --- 
-	cmp r10w, r11w
-	jg rte
-	mov cx, r11w
-	sub cx, r10w
-	movsx rcx, cx
-	inc rcx
-label_0:
-	sub rsp, 2d
-	dec rcx
-	jnz label_0
+	mov qword[rax], rax
 	mov al, 1d
 	mov rdx, rsp
 	sub rdx, 1d
@@ -364,13 +350,13 @@ label_0:
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	cmp r8w, r9w
-	jg label_1
+	jg label_0
 ; --- START: if0else1() --- 
 	mov r8b, 0
-	jmp label_2
-label_1:
+	jmp label_1
+label_0:
 	mov r8b, 1
-label_2:
+label_1:
 ; --- END: if0else1() --- 
 	mov rax, rsp
 	sub rax, 5d
@@ -400,13 +386,13 @@ label_2:
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	cmp r8w, r9w
-	jle label_3
+	jle label_2
 ; --- START: if0else1() --- 
 	mov r8b, 0
-	jmp label_4
-label_3:
+	jmp label_3
+label_2:
 	mov r8b, 1
-label_4:
+label_3:
 ; --- END: if0else1() --- 
 	mov rax, rsp
 	sub rax, 10d
@@ -448,13 +434,13 @@ label_4:
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	cmp r8w, r9w
-	jl label_5
+	jl label_4
 ; --- START: if0else1() --- 
 	mov r8b, 0
-	jmp label_6
-label_5:
+	jmp label_5
+label_4:
 	mov r8b, 1
-label_6:
+label_5:
 ; --- END: if0else1() --- 
 	mov rax, rsp
 	sub rax, 16d
@@ -529,14 +515,14 @@ label_6:
 	sub rax, r9
 	mov al, byte[rax]
 	cmp al, 0
-	jz label_7
+	jz label_6
 	mov rdi, output_fmt_string
 	mov rsi, bool_true
-	jmp label_8
-label_7:
+	jmp label_7
+label_6:
 	mov rdi, output_fmt_string
 	mov rsi, bool_false
-label_8:
+label_7:
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -581,7 +567,7 @@ label_8:
 	sub cx, r10w
 	movsx rcx, cx
 	inc rcx
-label_9:
+label_8:
 	push rdx
 	push rcx
 	push rbp
@@ -602,7 +588,7 @@ label_9:
 	pop rdx
 	sub rdx, 2d
 	dec rcx
-	jnz label_9
+	jnz label_8
 	pop rbp
 ; --- END: takeInput(): type: Array, Name: A --- 
 	mov rax, rbp
@@ -646,10 +632,10 @@ label_9:
 	sub r8w, r10w
 	inc r8w
 	mov rcx, 2d
-label_10:
+label_9:
 	add r9w, r8w
 	dec rcx
-	jnz label_10
+	jnz label_9
 	movsx r9, r9w
 ; --- END: fetchArraybyIndex() for array A: base: rdx, offset: r9 --- 
 	mov rax, rdx
@@ -703,10 +689,10 @@ label_10:
 	sub r8w, r10w
 	inc r8w
 	mov rcx, 2d
-label_11:
+label_10:
 	add r9w, r8w
 	dec rcx
-	jnz label_11
+	jnz label_10
 	movsx r9, r9w
 ; --- END: fetchArraybyIndex() for array A: base: rdx, offset: r9 --- 
 	mov rax, rdx
@@ -760,10 +746,10 @@ label_11:
 	sub r8w, r10w
 	inc r8w
 	mov rcx, 2d
-label_12:
+label_11:
 	add r9w, r8w
 	dec rcx
-	jnz label_12
+	jnz label_11
 	movsx r9, r9w
 ; --- END: fetchArraybyIndex() for array A: base: rdx, offset: r9 --- 
 	mov rax, rdx
@@ -837,7 +823,7 @@ label_12:
 	movsx rcx, cx
 	inc rcx
 	mov r9, 2d
-label_13:
+label_12:
 	push rdx
 	push rcx
 ; --- START: outputArrayElement() for A --- 
@@ -870,7 +856,7 @@ label_13:
 	pop rbp
 	sub rdx, 2d
 	dec rcx
-	jnz label_13
+	jnz label_12
 	pop rbp
 	push rbp
 	mov rdi, end_line
