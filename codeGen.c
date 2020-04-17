@@ -1168,10 +1168,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			emitCodeAST(ch -> next, fname);
 			fprintf(fp, "label_%d:\n", label_num - 1);
 			emitCodeAST(ch -> next -> next, fname);
-
-			scopeEnd();
 			
 			fprintf(fp, "label_%d:\n", tmp);
+			
+			scopeEnd();
 			/* Check: defualt will automatically be handled(statements) */
 		}
 		break;

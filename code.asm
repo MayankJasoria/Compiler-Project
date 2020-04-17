@@ -262,6 +262,7 @@ sub rsp, 10000B
 mov rsp, qword [rspreserve]
 	pop rbp
 ; --- END: outputArrayElement() for x--- 
+label_0:
 ; --- START: scopeEnd() --- 
 	movsx rax, word [dynamic]
 	add rsp, rax
@@ -269,7 +270,6 @@ mov rsp, qword [rspreserve]
 	mov word [dynamic], ax
 	add rsp, 2d
 ; --- END: scopeEnd() --- 
-label_0:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 4d
 	mov rdx, rbp
