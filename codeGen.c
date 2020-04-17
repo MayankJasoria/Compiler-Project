@@ -1152,7 +1152,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 						SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex);
 						fprintf(fp, "\tmov rax, rbp\n");
 						fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
-						fprintf(fp, "\tmov qword[rax], rax\n");
+						fprintf(fp, "\tmov rcx, rax\n");
+						fprintf(fp, "\tmov qword[rcx], rax\n");
 						idNode = idNode -> child -> next;
 					}
 					return;

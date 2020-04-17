@@ -35,7 +35,8 @@ mov rbp, rsp
 	mov word [dynamic], 0
 	mov rax, rbp
 	sub rax, 22d
-	mov qword[rax], rax
+	mov rcx, rax
+	mov qword[rcx], rax
 	mov al, 1d
 	mov rdx, rsp
 	sub rdx, 1d
