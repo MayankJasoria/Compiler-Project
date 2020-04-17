@@ -110,7 +110,7 @@ void getLeftRightIndex(SymTableVar * id) {
 	int lft, right;
 	if(strcmp(id -> sdt.r -> lowId, "") == 0) {
 		lft = id -> sdt.r -> low;
-		fprintf(fp, "\tmov rbx, %dd\n", lft);		
+		fprintf(fp, "\tmov r10w, %dd\n", lft);		
 	}
 	else {
 		SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId);
@@ -123,7 +123,7 @@ void getLeftRightIndex(SymTableVar * id) {
 	}
 	if(strcmp(id -> sdt.r -> highId, "") == 0) { 
 		right = id -> sdt.r -> high;
-		fprintf(fp, "\tmov rbx, %dd\n", right);	
+		fprintf(fp, "\tmov r11w, %dd\n", right);	
 	}
 	else {
 		SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId);
@@ -865,7 +865,7 @@ void codegenInit() {
 	fprintf(fp, "\ttype_bool: db \"Boolean\", 0\n");
 	
 	fprintf(fp, "\top1: db \"Input: Enter an %%s Value\", 0xA, 0\n");
-	fprintf(fp, "\top2: db \"Input: Enter %%d array elements of %%s type for range %%d to %%d\", 0\n");
+	fprintf(fp, "\top2: db \"Input: Enter %%d array elements of %%s type for range %%d to %%d\", 0xA, 0\n");
 
 	fprintf(fp, "\toutput_fmt_float: db \"Output: %%f\", 0xA, 0\n");
 	fprintf(fp, "\toutput_fmt_int: db \"Output: %%hd\", 0xA, 0\n");

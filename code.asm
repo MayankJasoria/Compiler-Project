@@ -10,7 +10,7 @@ section .data
 	type_float: db "Real Number", 0
 	type_bool: db "Boolean", 0
 	op1: db "Input: Enter an %s Value", 0xA, 0
-	op2: db "Input: Enter %d array elements of %s type for range %d to %d", 0
+	op2: db "Input: Enter %d array elements of %s type for range %d to %d", 0xA, 0
 	output_fmt_float: db "Output: %f", 0xA, 0
 	output_fmt_int: db "Output: %hd", 0xA, 0
 	output_fmt_string: db "Output: %s", 0xA, 0
@@ -37,8 +37,8 @@ mov rbp, rsp
 	sub rax, 22d
 	mov qword [rax], rsp
 ; --- START: get left and right index of A ---
-	mov rbx, 10d
-	mov rbx, 15d
+	mov r10w, 10d
+	mov r11w, 15d
 ; --- END: got left and right index of A in r10w and r11w --- 
 	cmp r10w, r11w
 	jg rte
@@ -549,8 +549,8 @@ label_8:
 ; --- START: takeInput(): type: Array, Name: A --- 
 	push rbp
 ; --- START: get left and right index of A ---
-	mov rbx, 10d
-	mov rbx, 15d
+	mov r10w, 10d
+	mov r11w, 15d
 ; --- END: got left and right index of A in r10w and r11w --- 
 
 ; --- Asking for user input for Array ---
@@ -634,8 +634,8 @@ label_9:
 	mov word [rax], r8w
 ; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: PLUS, type: Integer --- 
 ; --- START: get left and right index of A ---
-	mov rbx, 10d
-	mov rbx, 15d
+	mov r10w, 10d
+	mov r11w, 15d
 ; --- END: got left and right index of A in r10w and r11w --- 
 ; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
 	mov r8w, 13d
@@ -691,8 +691,8 @@ label_10:
 	mov word [rax], r8w
 ; --- START: applyOperator(): leftOp: 4, rightOp: 16, operator: PLUS, type: Integer --- 
 ; --- START: get left and right index of A ---
-	mov rbx, 10d
-	mov rbx, 15d
+	mov r10w, 10d
+	mov r11w, 15d
 ; --- END: got left and right index of A in r10w and r11w --- 
 ; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
 	mov r8w, 14d
@@ -748,8 +748,8 @@ label_11:
 	mov word [rax], r8w
 ; --- START: applyOperator(): leftOp: 18, rightOp: 30, operator: PLUS, type: Integer --- 
 ; --- START: get left and right index of A ---
-	mov rbx, 10d
-	mov rbx, 15d
+	mov r10w, 10d
+	mov r11w, 15d
 ; --- END: got left and right index of A in r10w and r11w --- 
 ; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
 	mov r8w, 15d
@@ -815,8 +815,8 @@ label_12:
 ; --- END: outputArrayElement() for y--- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 ; --- START: get left and right index of A ---
-	mov rbx, 10d
-	mov rbx, 15d
+	mov r10w, 10d
+	mov r11w, 15d
 ; --- END: got left and right index of A in r10w and r11w --- 
 ; --- idNode->next is NULL --- 
 	push rbp
