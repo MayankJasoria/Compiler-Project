@@ -257,6 +257,29 @@ void if0else1() {
 	fprintf(fp, "label_%d\n", label_num - 1);
 }
 
+void pushTemporary(astDataType type) {
+	
+	if(type == AST_TYPE_INT) {
+		fprintf(fp, "mov dx, word [rax]\n");
+		fprintf(fp, "mov rax, rsp\n");
+		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "mov word [rax], dx\n");
+	}
+	else if(type == AST_TYPE_REAL) {
+		fprintf(fp, "mov edx, dword [rax]\n");
+		fprintf(fp, "mov rax, rsp\n");
+		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "mov dword [rax], edx\n");
+	}
+	else if(type == AST_TYPE_BOOLEAN) {
+		fprintf(fp, "mov dl, byte [rax]\n");
+		fprintf(fp, "mov rax, rsp\n");
+		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "mov byte [rax], dl\n");
+	}
+}
+
+
 /**
  * Floating point operations source: https://gist.github.com/nikAizuddin/0e307cac142792dcdeba
  *	cmp    eax, 0000000000000000B ;is st0 > source ?
@@ -1110,102 +1133,28 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "sub rax, %dd\n", id -> offset + typeSize[id -> dataType]);
 				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
 				par -> dynamicRecSize += typeSize[id -> dataType];
-				if(id -> dataType == AST_TYPE_INT) {
-					fprintf(fp, "mov dx, word [rax]\n");
-					fprintf(fp, "mov rax, rsp\n");
-					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov word [rax], dx\n");
-				}
-				else if(id -> dataType == AST_TYPE_REAL) {
-					fprintf(fp, "mov edx, dword [rax]\n");
-					fprintf(fp, "mov rax, rsp\n");
-					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov dword [rax], edx\n");
-				}
-				else if(id -> dataType == AST_TYPE_BOOLEAN) {
-					fprintf(fp, "mov dl, byte [rax]\n");
-					fprintf(fp, "mov rax, rsp\n");
-					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov byte [rax], dl\n");
-				}
-				else if(id -> dataType == AST_TYPE_ARRAY) {
-					fprintf(fp, "mov rdx, qword [rax]\n");
-					fprintf(fp, "mov rax, rsp\n");
-					fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov qword [rax], rdx\n");
-				}
+				astDataType type = id -> dataType;
+				pushTemporary(type);
+			}
+			else {
+				getLeftRightIndex(id);
+				fetchArraybyIndex(ch, ch -> next);
+				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
+				par -> dynamicRecSize += typeSize[id -> dataType];
+				astDataType type = id -> sdt.r -> dataType;
+				fprintf(fp, "mov rax, rdx\n");
+				fprintf(fp, "sub rax, r9\n");
+				pushTemporary(type);
 			}
 		}
 		break;
 
 		case AST_NODE_LEAF: {
-			/* 
-				For ID: (As in ast.c)
-				CASE: 3, 7, 10, 13, 16, 17, 18 
-			*/
 			switch(curr -> nodeData.leaf -> type) {
-				case AST_LEAF_INT: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
-					return;
-				}
-				break;
-				case AST_LEAF_RNUM: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_REAL;
-					return;	
-				}
-				break;
-				case AST_LEAF_BOOL: {
-					curr -> nodeData.leaf -> dataType = AST_TYPE_BOOLEAN;
-					return;	
-				}
-				break;
 				case AST_LEAF_ID: {
 					char str[30];
 					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
 					switch(curr -> parent -> type) {
-						case AST_NODE_MODULEDECLARATION: {
-							SymTableFunc * tmp = insertFuncRecord(str);
-							if(tmp == NULL) {
-								fprintf(stderr, "A record with the given already exists within the symbol table on line %d.", curr -> nodeData.leaf -> tn -> line_num);
-							}
-							return;
-						}
-						break;
-						case AST_NODE_MODULE: {
-							SymTableFunc* tmp = fetchFuncData(str);
-							if(tmp != NULL && tmp -> isDeclared == 1) {
-								fprintf(stderr, 
-								"Redundant declaration of the function '%s' on line %d.\n", str, curr -> nodeData.leaf -> tn -> line_num);
-							}
-							if(tmp != NULL && tmp -> isDefined == 1) {
-								fprintf(stderr, 
-								"Multiple definitions for the function '%s' on line %d.\n", str,
-								curr -> nodeData.leaf -> tn -> line_num);
-								return;
-							}
-							if(tmp == NULL) {
-								tmp = insertFuncRecord(str);
-								tmp -> isDeclared = 0;
-								tmp -> isDefined = 1;
-							}
-							tmp -> isDefined = 1;
-							curr -> localST = tmp;
-							insertplist(curr -> next, str);
-							insertplist(curr -> next -> next, str);
-						}
-						break;
-						case AST_NODE_INPUTLIST: {
-							/* handled in insertinputplist();*/
-						}
-						break;
-						case AST_NODE_OUTPUTLIST: {
-							/* handled in insertoutputplist();*/
-						}
-						break;
-						case AST_NODE_IO: {
-							/* handles above*/
-						}
-						break;
 						case AST_NODE_VARIDNUM: {
 							if(curr -> prev != NULL) {
 								SymTableVar* idx = fetchVarData(curr -> localST, str);
