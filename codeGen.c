@@ -956,7 +956,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tmov rcx, qword [rdx]\n");
 					fprintf(fp, "\tmov qword [rax], rcx\n");
 				}
-				fprintf(fp, "\tadd rax, %dd\n", typeSize[id -> dataType] + id -> offset);
+				fprintf(fp, "\tsub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
 				ret = ret -> child -> next -> next;
 			}
 			fprintf(fp, "\tmovsx rax, [word] dynamic\n");
@@ -1140,7 +1140,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				while(idNode != NULL) {
 					SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex); 
 					fprintf(fp, "\tmov rax, rbp\n");
-					fprintf(fp, "\tadd rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
+					fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
 					fprintf(fp, "\tmov qword [rax], rsp\n");
 					getLeftRightIndex(id);
 					fprintf(fp, "\tcmp r10w, r11w\n");
@@ -1183,7 +1183,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			if(curr -> parent -> type == AST_NODE_CASESTMT)
 				fprintf(fp, "label_%d:\n", label_num - 1);
 			fprintf(fp, "\tmov rax, rbp\n");
-			fprintf(fp, "\tadd rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
+			fprintf(fp, "\tsub rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
 				fprintf(fp, "\tmov ax, word [rax]\n");
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
@@ -1229,7 +1229,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			par -> dynamicRecSize += typeSize[type];
 			if(type == AST_TYPE_INT) {
 				fprintf(fp, "\tmov rax, rsp\n");
-				fprintf(fp, "\tadd rax, %dd\n", typeSize[type] + tempOff);
+				fprintf(fp, "\tsub rax, %dd\n", typeSize[type] + tempOff);
 				fprintf(fp, "\tmov ax, word [rax]\n");
 
 				if(ch -> nodeData.leaf -> type == AST_LEAF_UOPMINUS) {
@@ -1244,7 +1244,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 			else {
 				fprintf(fp, "\tmov rax, rsp\n");
-				fprintf(fp, "\tadd rax, %dd\n", typeSize[type] + tempOff);
+				fprintf(fp, "\tsub rax, %dd\n", typeSize[type] + tempOff);
 				
 				if(ch -> nodeData.leaf -> type == AST_LEAF_UOPMINUS) {
 					fprintf(fp, "\tfinit\n");
@@ -1285,14 +1285,14 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				
 				int tmp = label_num - 1;
 				fprintf(fp, "\tmov rax, rbp\n");
-				fprintf(fp, "\tadd rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
+				fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
 				fprintf(fp, "\tmov word [rax], cx\n");
 
 				emitCodeAST(ch -> next -> next, fname);
 				scopeEnd();
 				
 				fprintf(fp, "\tmov rax, rbp\n");
-				fprintf(fp, "\tadd rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
+				fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
 				fprintf(fp, "\tmov cx, word[rax]\n");
 				fprintf(fp, "\tinc cx\n");
 				fprintf(fp, "\tcmp cx, %d", num2);
