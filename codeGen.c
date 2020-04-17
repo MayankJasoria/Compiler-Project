@@ -14,9 +14,9 @@ void rte(/* char* errorMsg */) {
 	 * TODO: Print error message
 	 * RUN TIME ERROR:  Array index out of bound
 	 */ 
-	fprintf(fp, "mov ebx, 0	 ;return 0 status on exit - 'No errors\n'");
-	fprintf(fp, "mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
-	fprintf(fp, "int 80h		 ;generate interrupt\n");
+	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors\n'");
+	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
+	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
 
 	fprintf(fp, "; --- END: rte() --- \n");
 }
@@ -92,29 +92,29 @@ void getLeftRightIndex(SymTableVar * id) {
 	int lft, right;
 	if(strcmp(id -> sdt.r -> lowId, "") == 0) {
 		lft = id -> sdt.r -> low;
-		fprintf(fp, "mov rbx, %dd\n", lft);		
+		fprintf(fp, "\tmov rbx, %dd\n", lft);		
 	}
 	else {
 		SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId);
 		if(l -> isAssigned == 0) {
 			rte();
 		}
-		fprintf(fp, "mov rax, rbp\n");
-		fprintf(fp, "sub rax, %dd\n", typeSize[AST_TYPE_INT] + l -> offset);
-		fprintf(fp, "mov r10w, word[rax]\n");
+		fprintf(fp, "\tmov rax, rbp\n");
+		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + l -> offset);
+		fprintf(fp, "\tmov r10w, word[rax]\n");
 	}
 	if(strcmp(id -> sdt.r -> highId, "") == 0) { 
 		right = id -> sdt.r -> high;
-		fprintf(fp, "mov rbx, %dd\n", right);	
+		fprintf(fp, "\tmov rbx, %dd\n", right);	
 	}
 	else {
 		SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId);
 		if(r -> isAssigned == 0) {
 			rte();
 		}
-		fprintf(fp, "mov rax, rbp\n");
-		fprintf(fp, "sub rax, %dd\n", typeSize[AST_TYPE_INT] + r -> offset);
-		fprintf(fp, "mov r11w, word[rax]\n");
+		fprintf(fp, "\tmov rax, rbp\n");
+		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + r -> offset);
+		fprintf(fp, "\tmov r11w, word[rax]\n");
 	}
 
 	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w --- \n", id->name);
@@ -122,13 +122,13 @@ void getLeftRightIndex(SymTableVar * id) {
 
 void getInputElement() {
 	fprintf(fp, "; START: --- getInputElement() ---\n");
-	fprintf(fp, "push rbp\n");
-	fprintf(fp, "mov rdi, fmt_int\n");
-	fprintf(fp, "mov rax, rbp\n");
-	fprintf(fp, "sub rax, r9\n");
-	fprintf(fp, "mov rsi, rax\n");
-	fprintf(fp, "call scanf\n");
-	fprintf(fp, "pop rbp\n");
+	fprintf(fp, "\tpush rbp\n");
+	fprintf(fp, "\tmov rdi, fmt_int\n");
+	fprintf(fp, "\tmov rax, rbp\n");
+	fprintf(fp, "\tsub rax, r9\n");
+	fprintf(fp, "\tmov rsi, rax\n");
+	fprintf(fp, "\tcall scanf\n");
+	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "; --- END: getInputElement() --- \n");
 }
 
@@ -156,7 +156,7 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	if(i -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 		/* index is of type NUM */
 		idx = i -> nodeData.leaf -> tn -> value.val_int;
-		fprintf(fp, "mov r8w, %dd\n", idx);
+		fprintf(fp, "\tmov r8w, %dd\n", idx);
 	}
 	else {
 		/* index is of type ID */
@@ -164,29 +164,29 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 		if(tmp -> isAssigned == 0) {
 			rte();
 		}
-		fprintf(fp, "mov rax, rbp\n");
-		fprintf(fp, "sub rax, %dd\n", typeSize[AST_TYPE_INT] + tmp -> offset);
-		fprintf(fp, "mov r8w, word [rax]\n");
+		fprintf(fp, "\tmov rax, rbp\n");
+		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + tmp -> offset);
+		fprintf(fp, "\tmov r8w, word [rax]\n");
 	}
 	/* TODO: write this in assembly */
 	// if(idx < lft || idx > right) {
 	// 	rte();
 	// }
 	/* Move base address of array to r8x */
-	fprintf(fp, "mov rax, rbp\n");
-	fprintf(fp, "sub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
-	fprintf(fp, "mov rdx, qword [rax]\n");
+	fprintf(fp, "\tmov rax, rbp\n");
+	fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
+	fprintf(fp, "\tmov rdx, qword [rax]\n");
 
 	/* compute element address as: [rdx - (r8w - r10w + 1) * width] */
-	fprintf(fp, "mov r9w, 0\n");
-	fprintf(fp, "sub r8w, r10w\n");
-	fprintf(fp, "inc r8w\n");
-	fprintf(fp, "mov rcx, %dd\n", typeSize[type]);
-	fprintf(fp, "label_%d:\n", label_num++);
-	fprintf(fp, "add r9w, r8w\n");		
-	fprintf(fp, "dec rcx\n");
-	fprintf(fp, "jnz label_%d\n", label_num - 1);
-	fprintf(fp, "movsz r9, r9w\n");
+	fprintf(fp, "\tmov r9w, 0\n");
+	fprintf(fp, "\tsub r8w, r10w\n");
+	fprintf(fp, "\tinc r8w\n");
+	fprintf(fp, "\tmov rcx, %dd\n", typeSize[type]);
+	fprintf(fp, "\tlabel_%d:\n", label_num++);
+	fprintf(fp, "\tadd r9w, r8w\n");		
+	fprintf(fp, "\tdec rcx\n");
+	fprintf(fp, "\tjnz label_%d\n", label_num - 1);
+	fprintf(fp, "\tmovsz r9, r9w\n");
 
 	fprintf(fp, "; --- END: fetchArraybyIndex() for array %s: base: rdx, offset: r9 --- \n", arr -> nodeData.leaf -> tn -> lex);
 }
@@ -198,40 +198,40 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
  */
 void outputArrayElement(SymTableVar * id) {
 	
-	fprintf(fp, "; --- START: outputArrayElement() for %s--- \n", id -> name);
+	fprintf(fp, "; --- START: outputArrayElement() for %s --- \n", id -> name);
 	fprintf(fp, "; Function is used for both Arrays and non-Array types, don't go by the name! \n");
 	astDataType type = id -> dataType;
 	if(type == AST_TYPE_ARRAY)
 		type = id -> sdt.r -> dataType;
 
-	fprintf(fp, "push rbp\n");
+	fprintf(fp, "\tpush rbp\n");
 	if(type == AST_TYPE_INT) {
-		fprintf(fp, "mov rdi, output_fmt_int\n");
-		fprintf(fp, "mov rax, rdx\n");
-		fprintf(fp, "sub rax, r9\n");
-		fprintf(fp, "mov si, word[rax]\n");
+		fprintf(fp, "\tmov rdi, output_fmt_int\n");
+		fprintf(fp, "\tmov rax, rdx\n");
+		fprintf(fp, "\tsub rax, r9\n");
+		fprintf(fp, "\tmov si, word[rax]\n");
 	}
 	else if(type == AST_TYPE_REAL) {
-		fprintf(fp, "mov rdi, output_fmt_float\n");
-		fprintf(fp, "mov rax, rdx\n");
-		fprintf(fp, "sub rax, r9\n");
-		fprintf(fp, "cvtss2sd xmm0, dword[rax]\n");
-		fprintf(fp, "mov rax, 1\n");
+		fprintf(fp, "\tmov rdi, output_fmt_float\n");
+		fprintf(fp, "\tmov rax, rdx\n");
+		fprintf(fp, "\tsub rax, r9\n");
+		fprintf(fp, "\tcvtss2sd xmm0, dword[rax]\n");
+		fprintf(fp, "\tmov rax, 1\n");
 	}
 	else if(type == AST_TYPE_BOOLEAN) {
-		fprintf(fp, "mov rax, rdx\n");
-		fprintf(fp, "sub rax, r9\n");
-		fprintf(fp, "mov al, byte[rax]\n");
-		fprintf(fp, "cmp al, 0\n");
-		fprintf(fp, "jz label_%d\n", label_num++);
-		fprintf(fp, "mov rdi, bool_true\n");
-		fprintf(fp, "jmp label_%d\n", label_num++);
+		fprintf(fp, "\tmov rax, rdx\n");
+		fprintf(fp, "\tsub rax, r9\n");
+		fprintf(fp, "\tmov al, byte[rax]\n");
+		fprintf(fp, "\tcmp al, 0\n");
+		fprintf(fp, "\tjz label_%d\n", label_num++);
+		fprintf(fp, "\tmov rdi, bool_true\n");
+		fprintf(fp, "\tjmp label_%d\n", label_num++);
 		fprintf(fp, "label_%d:\n", label_num - 2);
-		fprintf(fp, "mov rdi, bool_false\n");
+		fprintf(fp, "\tmov rdi, bool_false\n");
 		fprintf(fp, "label_%d:\n", label_num - 1);
 	}
-	fprintf(fp, "call printf\n");
-	fprintf(fp, "pop rbp\n");
+	fprintf(fp, "\tcall printf\n");
+	fprintf(fp, "\tpop rbp\n");
 
 	fprintf(fp, "; --- END: outputArrayElement() for %s--- \n", id -> name);
 }
@@ -248,45 +248,45 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
 	fprintf(fp, "; --- START: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 	/* offset of rhs is in rax */
-	fprintf(fp, "mov rax, rbp\n");
-	fprintf(fp, "sub rax, %dd\n", rhsOff + typeSize[type]);
+	fprintf(fp, "\tmov rax, rbp\n");
+	fprintf(fp, "\tsub rax, %dd\n", rhsOff + typeSize[type]);
 	
 	/*  */
 	if(type == AST_TYPE_INT) {
-		fprintf(fp, "mov r8w, word [rax]\n");
+		fprintf(fp, "\tmov r8w, word [rax]\n");
 		if(lhsOff == -1) {
-			fprintf(fp, "mov rax, rdx\n");
-			fprintf(fp, "sub rax, r9\n");
+			fprintf(fp, "\tmov rax, rdx\n");
+			fprintf(fp, "\tsub rax, r9\n");
 		}
 		else {
-			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "sub rbp, %dd\n", typeSize[type] + lhsOff);
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rbp, %dd\n", typeSize[type] + lhsOff);
 		}
-		fprintf(fp, "mov word [rax], r8w\n");
+		fprintf(fp, "\tmov word [rax], r8w\n");
 	}
 	if(type == AST_TYPE_REAL) {
-		fprintf(fp, "mov r8d, dword [rax]\n");
+		fprintf(fp, "\tmov r8d, dword [rax]\n");
 		if(lhsOff == -1) {
-			fprintf(fp, "mov rax, rdx\n");
-			fprintf(fp, "sub rax, r9\n");
+			fprintf(fp, "\tmov rax, rdx\n");
+			fprintf(fp, "\tsub rax, r9\n");
 		}
 		else {
-			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "sub rbp, %dd\n", typeSize[type] + lhsOff);
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rbp, %dd\n", typeSize[type] + lhsOff);
 		}
-		fprintf(fp, "mov dword [rax], r8d\n");
+		fprintf(fp, "\tmov dword [rax], r8d\n");
 	}
 	if(type == AST_TYPE_BOOLEAN) {
-		fprintf(fp, "mov r8b, byte [rax]\n");
+		fprintf(fp, "\tmov r8b, byte [rax]\n");
 		if(lhsOff == -1) {
-			fprintf(fp, "mov rax, rdx\n");
-			fprintf(fp, "sub rax, r9\n");
+			fprintf(fp, "\tmov rax, rdx\n");
+			fprintf(fp, "\tsub rax, r9\n");
 		}
 		else {
-			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "sub rbp, %dd\n", typeSize[type] + lhsOff);
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rbp, %dd\n", typeSize[type] + lhsOff);
 		}
-		fprintf(fp, "mov byte [rax], r8b\n");
+		fprintf(fp, "\tmov byte [rax], r8b\n");
 	}
 
 	fprintf(fp, "; --- END: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
@@ -294,10 +294,10 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
 void if0else1() {
 	fprintf(fp, "; --- START: if0else1() --- \n");
-	fprintf(fp, "mov r8b, 0\n");
-	fprintf(fp, "jmp label_%d\n", label_num++);
+	fprintf(fp, "\tmov r8b, 0\n");
+	fprintf(fp, "\tjmp label_%d\n", label_num++);
 	fprintf(fp, "label_%d:\n", label_num - 2);
-	fprintf(fp, "mov r8b, 1\n");
+	fprintf(fp, "\tmov r8b, 1\n");
 	fprintf(fp, "label_%d\n", label_num - 1);
 	fprintf(fp, "; --- END: if0else1() --- \n");
 }
@@ -305,22 +305,22 @@ void if0else1() {
 void pushTemporary(astDataType type, SymTableFunc* par) {
 	fprintf(fp, "; --- START: pushTemporary(): type = %s ---\n", typeName[type]);
 	if(type == AST_TYPE_INT) {
-		fprintf(fp, "mov dx, word [rax]\n");
-		fprintf(fp, "mov rax, rsp\n");
-		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-		fprintf(fp, "mov word [rax], dx\n");
+		fprintf(fp, "\tmov dx, word [rax]\n");
+		fprintf(fp, "\tmov rax, rsp\n");
+		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "\tmov word [rax], dx\n");
 	}
 	else if(type == AST_TYPE_REAL) {
-		fprintf(fp, "mov edx, dword [rax]\n");
-		fprintf(fp, "mov rax, rsp\n");
-		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-		fprintf(fp, "mov dword [rax], edx\n");
+		fprintf(fp, "\tmov edx, dword [rax]\n");
+		fprintf(fp, "\tmov rax, rsp\n");
+		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "\tmov dword [rax], edx\n");
 	}
 	else if(type == AST_TYPE_BOOLEAN) {
-		fprintf(fp, "mov dl, byte [rax]\n");
-		fprintf(fp, "mov rax, rsp\n");
-		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-		fprintf(fp, "mov byte [rax], dl\n");
+		fprintf(fp, "\tmov dl, byte [rax]\n");
+		fprintf(fp, "\tmov rax, rsp\n");
+		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "\tmov byte [rax], dl\n");
 	}
 
 	fprintf(fp, "; --- END: pushTemporary(): type = %s ---\n", typeName[type]);
@@ -341,169 +341,169 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 
 	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type]);
 
-	fprintf(fp, "mov rax, rsp\n");
-	fprintf(fp, "sub rax, %dd\n", leftOp + typeSize[type]);
-	fprintf(fp, "mov r10, rsp\n");
-	fprintf(fp, "sub r10, %dd\n", rightOp + typeSize[type]);
+	fprintf(fp, "\tmov rax, rsp\n");
+	fprintf(fp, "\tsub rax, %dd\n", leftOp + typeSize[type]);
+	fprintf(fp, "\tmov r10, rsp\n");
+	fprintf(fp, "\tsub r10, %dd\n", rightOp + typeSize[type]);
 	if(type == AST_TYPE_INT) {
-		fprintf(fp, "mov r8w, word [rax]\n");
-		fprintf(fp, "mov r9w, word [r10]\n");
+		fprintf(fp, "\tmov r8w, word [rax]\n");
+		fprintf(fp, "\tmov r9w, word [r10]\n");
 	}
 	if(type == AST_TYPE_REAL) {
-		fprintf(fp, "finit\n");
-		fprintf(fp, "fld dword [r10]\n");
-		fprintf(fp, "fld dword [rax]\n");
+		fprintf(fp, "\tfinit\n");
+		fprintf(fp, "\tfld dword [r10]\n");
+		fprintf(fp, "\tfld dword [rax]\n");
 	}
 	if(type == AST_TYPE_BOOLEAN) {
-		fprintf(fp, "mov r8b, byte [rax]\n");
-		fprintf(fp, "mov r9b, byte [r10]\n");
+		fprintf(fp, "\tmov r8b, byte [rax]\n");
+		fprintf(fp, "\tmov r9b, byte [r10]\n");
 	}
 	switch(operator -> nodeData.leaf -> type) {
 		case AST_LEAF_AND:
-			fprintf(fp, "and r8b, r9b\n");
+			fprintf(fp, "\tand r8b, r9b\n");
 			break;
 		case AST_LEAF_OR:
-			fprintf(fp, "or r8b, r9b\n");
+			fprintf(fp, "\tor r8b, r9b\n");
 			break;
 		case AST_LEAF_LT:
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "cmp r8w, r9w\n");
-				fprintf(fp, "jlt label_%d\n", label_num++);				
+				fprintf(fp, "\tcmp r8w, r9w\n");
+				fprintf(fp, "\tjlt label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0000000100000000B\n");
-				fprintf(fp, "je label_%d\n", label_num++);
+				fprintf(fp, "\tfcom st0, st1\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tand eax, 0100011100000000B\n");
+				fprintf(fp, "\tcmp eax, 0000000100000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num++);
 				if0else1();
 			}
 			break;
 		case AST_LEAF_LE: 
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "cmp r8w, r9w\n");
-				fprintf(fp, "jle label_%d\n", label_num++);				
+				fprintf(fp, "\tcmp r8w, r9w\n");
+				fprintf(fp, "\tjle label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0000000100000000B\n");
-				fprintf(fp, "je label_%d\n", label_num++);
-				fprintf(fp, "cmp eax, 0100000000000000B\n");
-				fprintf(fp, "je label_%d\n", label_num - 1);
+				fprintf(fp, "\tfcom st0, st1\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tand eax, 0100011100000000B\n");
+				fprintf(fp, "\tcmp eax, 0000000100000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num++);
+				fprintf(fp, "\tcmp eax, 0100000000000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num - 1);
 				if0else1();
 			}
 			break;
 		case AST_LEAF_GT:
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "cmp r8w, r9w\n");
-				fprintf(fp, "jgt label_%d\n", label_num++);				
+				fprintf(fp, "\tcmp r8w, r9w\n");
+				fprintf(fp, "\tjgt label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0000000000000000B\n");
-				fprintf(fp, "je label_%d\n", label_num++);
+				fprintf(fp, "\tfcom st0, st1\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tand eax, 0100011100000000B\n");
+				fprintf(fp, "\tcmp eax, 0000000000000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num++);
 				if0else1();
 			}
 			break;
 		case AST_LEAF_GE: 
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "cmp r8w, r9w\n");
-				fprintf(fp, "jge label_%d\n", label_num++);				
+				fprintf(fp, "\tcmp r8w, r9w\n");
+				fprintf(fp, "\tjge label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0000000000000000B\n");
-				fprintf(fp, "je label_%d\n", label_num++);
-				fprintf(fp, "cmp eax, 0100000000000000B\n");
-				fprintf(fp, "je label_%d\n", label_num - 1);
+				fprintf(fp, "\tfcom st0, st1\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tand eax, 0100011100000000B\n");
+				fprintf(fp, "\tcmp eax, 0000000000000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num++);
+				fprintf(fp, "\tcmp eax, 0100000000000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num - 1);
 				if0else1();
 			}
 			break;
 		case AST_LEAF_EQ: 
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "cmp r8w, r9w\n");
-				fprintf(fp, "je label_%d\n", label_num++);				
+				fprintf(fp, "\tcmp r8w, r9w\n");
+				fprintf(fp, "\tje label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0100000000000000B\n");
-				fprintf(fp, "je label_%d\n", label_num - 1);
+				fprintf(fp, "\tfcom st0, st1\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tand eax, 0100011100000000B\n");
+				fprintf(fp, "\tcmp eax, 0100000000000000B\n");
+				fprintf(fp, "\tje label_%d\n", label_num - 1);
 				if0else1();
 			}
 			break;
 		case AST_LEAF_NE: 
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "cmp r8w, r9w\n");
-				fprintf(fp, "jne label_%d\n", label_num++);				
+				fprintf(fp, "\tcmp r8w, r9w\n");
+				fprintf(fp, "\tjne label_%d\n", label_num++);				
 				if0else1();
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fcom st0, st1\n");
-				fprintf(fp, "fstsw ax\n");
-				fprintf(fp, "and eax, 0100011100000000B\n");
-				fprintf(fp, "cmp eax, 0100000000000000B\n");
-				fprintf(fp, "jne label_%d\n", label_num - 1);
+				fprintf(fp, "\tfcom st0, st1\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tand eax, 0100011100000000B\n");
+				fprintf(fp, "\tcmp eax, 0100000000000000B\n");
+				fprintf(fp, "\tjne label_%d\n", label_num - 1);
 				if0else1();
 			}
 			break;
 		case AST_LEAF_PLUS: 
 			if(type == AST_TYPE_INT) 
-				fprintf(fp, "add r8w, r9w\n");
+				fprintf(fp, "\tadd r8w, r9w\n");
 		
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fadd\n");
-				fprintf(fp, "sub rsp, 4\n");
-				fprintf(fp, "fstp dword [rsp]\n");
+				fprintf(fp, "\tfadd\n");
+				fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rsp]\n");
 			}
 			break;
 		case AST_LEAF_MINUS: 
 			if(type == AST_TYPE_INT) 
-				fprintf(fp, "sub r8w, r9w\n");
+				fprintf(fp, "\tsub r8w, r9w\n");
 		
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fsub\n");
-				fprintf(fp, "sub rsp, 4\n");
-				fprintf(fp, "fstp dword [rsp]\n");
+				fprintf(fp, "\tfsub\n");
+				fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rsp]\n");
 			}
 			break;
 		case AST_LEAF_MUL: 
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "mov ax, r8w\n");
-				fprintf(fp, "mul r9w\n");
-				fprintf(fp, "mov r8w, ax\n");
+				fprintf(fp, "\tmov ax, r8w\n");
+				fprintf(fp, "\tmul r9w\n");
+				fprintf(fp, "\tmov r8w, ax\n");
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fmul\n");
-				fprintf(fp, "sub rsp, 4\n");
-				fprintf(fp, "fstp dword [rsp]\n");
+				fprintf(fp, "\tfmul\n");
+				fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rsp]\n");
 			}
 			break;
 		case AST_LEAF_DIV:
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "mov dx, 0\n");
-				fprintf(fp, "mov ax, r8w\n");
-				fprintf(fp, "cmp r9w, 0\n");
-				fprintf(fp, "jz rte\n");
-				fprintf(fp, "div r9w\n");
-				fprintf(fp, "mov r8w, ax\n");
+				fprintf(fp, "\tmov dx, 0\n");
+				fprintf(fp, "\tmov ax, r8w\n");
+				fprintf(fp, "\tcmp r9w, 0\n");
+				fprintf(fp, "\tjz rte\n");
+				fprintf(fp, "\tdiv r9w\n");
+				fprintf(fp, "\tmov r8w, ax\n");
 			}
 			if(type == AST_TYPE_REAL) {
-				fprintf(fp, "fdiv\n");
-				fprintf(fp, "sub rsp, 4\n");
-				fprintf(fp, "fstp dword [rsp]\n");
+				fprintf(fp, "\tfdiv\n");
+				fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rsp]\n");
 			}
 			break;
 		default:
@@ -513,14 +513,14 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
-		fprintf(fp, "mov rax, rsp\n");
-		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-		fprintf(fp, "mov word [rax], r8w\n");
+		fprintf(fp, "\tmov rax, rsp\n");
+		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "\tmov word [rax], r8w\n");
 	}
 	else if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_BOOLEAN) {
-		fprintf(fp, "mov rax, rsp\n");
-		fprintf(fp, "sub rax, %dd\n", par -> dynamicRecSize);
-		fprintf(fp, "mov byte [rax], r8b\n");
+		fprintf(fp, "\tmov rax, rsp\n");
+		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "\tmov byte [rax], r8b\n");
 	}
 
 	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type]);
@@ -529,11 +529,11 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 void scopeBegin() {
 	fprintf(fp, "; --- START: scopeBegin() --- \n");
 
-	fprintf(fp, "sub rsp, 2d\n");
-	fprintf(fp, "mov ax, word [dynamic]\n");
-	fprintf(fp, "mov word [rsp], ax\n");
-	fprintf(fp, "mov ax, 0\n");
-	fprintf(fp, "mov word [dynamic], ax\n");
+	fprintf(fp, "\tsub rsp, 2d\n");
+	fprintf(fp, "\tmov ax, word [dynamic]\n");
+	fprintf(fp, "\tmov word [rsp], ax\n");
+	fprintf(fp, "\tmov ax, 0\n");
+	fprintf(fp, "\tmov word [dynamic], ax\n");
 
 	fprintf(fp, "; --- END: scopeBegin() --- \n");
 }
@@ -542,11 +542,11 @@ void scopeEnd() {
 
 	fprintf(fp, "; --- START: scopeEnd() --- \n");
 
-	fprintf(fp, "movsx rax, word [dynamic]\n");
-	fprintf(fp, "add rsp, rax\n");
-	fprintf(fp, "mov ax, word [rsp]\n");
-	fprintf(fp, "mov word [dynamic], ax\n");
-	fprintf(fp, "add rsp, 2d\n");
+	fprintf(fp, "\tmovsx rax, word [dynamic]\n");
+	fprintf(fp, "\tadd rsp, rax\n");
+	fprintf(fp, "\tmov ax, word [rsp]\n");
+	fprintf(fp, "\tmov word [dynamic], ax\n");
+	fprintf(fp, "\tadd rsp, 2d\n");
 
 	fprintf(fp, "; --- END: scopeEnd() --- \n");
 }
@@ -555,37 +555,37 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 
 	fprintf(fp, "; --- START: takeInput(): type: %s, Name: %s --- \n", typeName[t], idNode->name);
 
-	fprintf(fp, "push rbp\n");
+	fprintf(fp, "\tpush rbp\n");
 	int offset = idNode -> offset;
 	// unsigned long long int addr =  
 	switch(t) {
 		case AST_TYPE_INT: {
-			fprintf(fp, "mov rdi, op1\n");
-			fprintf(fp, "mov rsi, type_int\n");
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tmov rdi, op1\n");
+			fprintf(fp, "\tmov rsi, type_int\n");
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 
-			fprintf(fp, "mov r9, %dd\n", offset + typeSize[t]);
+			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
 			getInputElement();
 		}
 		break;
 		case AST_TYPE_REAL: {
-			fprintf(fp, "mov rdi, op1\n");
-			fprintf(fp, "mov rsi, type_float\n");
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tmov rdi, op1\n");
+			fprintf(fp, "\tmov rsi, type_float\n");
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 
-			fprintf(fp, "mov r9, %dd\n", offset + typeSize[t]);
+			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
 			getInputElement();
 		}
 		break;
 		case AST_TYPE_BOOLEAN: {
-			fprintf(fp, "mov rdi, op1\n");
-			fprintf(fp, "mov rsi, type_bool\n");
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tmov rdi, op1\n");
+			fprintf(fp, "\tmov rsi, type_bool\n");
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 
-			fprintf(fp, "mov r9, %dd\n", offset + typeSize[t]);
+			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
 			getInputElement();
 		}
 		break;
@@ -599,56 +599,56 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			astDataType type = idNode -> sdt.r -> dataType;
 
 			fprintf(fp, "\n; --- Asking for user input for Array ---\n");
-			fprintf(fp, "mov rdi, op2\n");
-			fprintf(fp, "movsx rsi, r11w\n");
-			fprintf(fp, "sub rsi, r10w\n");
-			fprintf(fp, "inc rsi\n");
+			fprintf(fp, "\tmov rdi, op2\n");
+			fprintf(fp, "\tmovsx rsi, r11w\n");
+			fprintf(fp, "\tsub rsi, r10w\n");
+			fprintf(fp, "\tinc rsi\n");
 			if(type == AST_TYPE_INT)
-				fprintf(fp, "mov rdx, type_int\n");
+				fprintf(fp, "\tmov rdx, type_int\n");
 			else if(type == AST_TYPE_REAL)
-				fprintf(fp, "mov rdx, type_float\n");
+				fprintf(fp, "\tmov rdx, type_float\n");
 			else if(type == AST_TYPE_BOOLEAN)
-				fprintf(fp, "mov rdx, type_bool\n");
-			fprintf(fp, "mov rcx, r10w\n");
-			fprintf(fp, "mov r8, r11w\n");
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+				fprintf(fp, "\tmov rdx, type_bool\n");
+			fprintf(fp, "\tmov rcx, r10w\n");
+			fprintf(fp, "\tmov r8, r11w\n");
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 			
 			fprintf(fp, "\n; --- rdx will be the address of the first element of the array ---\n");
-			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "sub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
-			fprintf(fp, "mov rdx, qword [rax]\n");
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
+			fprintf(fp, "\tmov rdx, qword [rax]\n");
 
 			fprintf(fp, "\n; --- Loop for scanning each element of the array --- \n");
 
-			fprintf(fp, "mov rcx, r11w\n");
-			fprintf(fp, "sub rcx, r10w\n");
-			fprintf(fp, "inc rcx\n");			
+			fprintf(fp, "\tmov rcx, r11w\n");
+			fprintf(fp, "\tsub rcx, r10w\n");
+			fprintf(fp, "\tinc rcx\n");			
 
 			fprintf(fp, "label_%d:\n", label_num++);
 			
-			fprintf(fp, "push rdx\n");
-			fprintf(fp, "push rcx\n");
-			fprintf(fp, "push rbp\n");
+			fprintf(fp, "\tpush rdx\n");
+			fprintf(fp, "\tpush rcx\n");
+			fprintf(fp, "\tpush rbp\n");
 			
 			fprintf(fp, "\n; --- Scanning input ---\n");
 			if(type == AST_TYPE_INT) 
-				fprintf(fp, "mov rdi, fmt_int\n");
+				fprintf(fp, "\tmov rdi, fmt_int\n");
 			else if(type == AST_TYPE_REAL) 
-				fprintf(fp, "mov rdi, fmt_float\n");
+				fprintf(fp, "\tmov rdi, fmt_float\n");
 			else if(type == AST_TYPE_BOOLEAN) 
-				fprintf(fp, "mov rdi, fmt_bool\n");
+				fprintf(fp, "\tmov rdi, fmt_bool\n");
 
-			fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
-			fprintf(fp, "mov rsi, rdx\n");
-			fprintf(fp, "call scanf\n");
-			fprintf(fp, "pop rbp\n");
-			fprintf(fp, "pop rcx\n");
-			fprintf(fp, "pop rdx\n");
-			fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
-			fprintf(fp, "dec rcx\n");
-			fprintf(fp, "jnz label_%d\n", label_num - 1);
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
+			fprintf(fp, "\tmov rsi, rdx\n");
+			fprintf(fp, "\tcall scanf\n");
+			fprintf(fp, "\tpop rbp\n");
+			fprintf(fp, "\tpop rcx\n");
+			fprintf(fp, "\tpop rdx\n");
+			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
+			fprintf(fp, "\tdec rcx\n");
+			fprintf(fp, "\tjnz label_%d\n", label_num - 1);
+			fprintf(fp, "\tpop rbp\n");
 		}
 		break;
 	}
@@ -668,44 +668,44 @@ void giveOutput(ASTNode * curr) {
 				fprintf(fp, " leaf-type: AST_LEAF_VARIDNUM_NUM --- \n");
 
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
-				fprintf(fp, "push rbp\n");
-				fprintf(fp, "mov rdi, output_fmt_int\n");
-				fprintf(fp, "mov rsi, %d\n", val);
-				fprintf(fp, "call printf\n");
-				fprintf(fp, "pop rbp\n");
+				fprintf(fp, "\tpush rbp\n");
+				fprintf(fp, "\tmov rdi, output_fmt_int\n");
+				fprintf(fp, "\tmov rsi, %d\n", val);
+				fprintf(fp, "\tcall printf\n");
+				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
 			case AST_LEAF_VARIDNUM_RNUM: {
 				float val = ch -> nodeData.leaf -> tn -> value.val_float;
 				fprintf(fp, " leaf-type: AST_LEAF_VARIDNUM_RNUM, value: %f --- \n", val);
 
-				fprintf(fp, "push rbp\n");
-				fprintf(fp, "mov rdi, output_fmt_float\n");
-				fprintf(fp, "sub rsp, 4\n");
-				fprintf(fp, "mov dword [rsp], __float32__(%f)\n", val);
-				fprintf(fp, "cvtss2sd xmm0, [rsp]\n");
-				fprintf(fp, "add rsp, 4\n");
-				fprintf(fp, "mov rax, 1\n");
-				fprintf(fp, "call printf\n");
-				fprintf(fp, "pop rbp\n");
+				fprintf(fp, "\tpush rbp\n");
+				fprintf(fp, "\tmov rdi, output_fmt_float\n");
+				fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tmov dword [rsp], __float32__(%f)\n", val);
+				fprintf(fp, "\tcvtss2sd xmm0, [rsp]\n");
+				fprintf(fp, "\tadd rsp, 4\n");
+				fprintf(fp, "\tmov rax, 1\n");
+				fprintf(fp, "\tcall printf\n");
+				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
 			case AST_LEAF_BOOLTRUE: {
 				fprintf(fp, " leaf-type: AST_LEAF_BOOLTRUE --- \n");
 
-				fprintf(fp, "push rbp\n");
-				fprintf(fp, "mov rdi, bool_true\n" );
-				fprintf(fp, "call printf\n");
-				fprintf(fp, "pop rbp\n");
+				fprintf(fp, "\tpush rbp\n");
+				fprintf(fp, "\tmov rdi, bool_true\n" );
+				fprintf(fp, "\tcall printf\n");
+				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
 			case AST_LEAF_BOOLFALSE: {
 				fprintf(fp, " leaf-type: AST_LEAF_BOOLFALSE --- \n");
 
-				fprintf(fp, "push rbp\n");
-				fprintf(fp, "mov rdi, bool_false\n" );
-				fprintf(fp, "call printf\n");
-				fprintf(fp, "pop rbp\n");
+				fprintf(fp, "\tpush rbp\n");
+				fprintf(fp, "\tmov rdi, bool_false\n" );
+				fprintf(fp, "\tcall printf\n");
+				fprintf(fp, "\tpop rbp\n");
 			}
 			break;
 			default: {
@@ -725,8 +725,8 @@ void giveOutput(ASTNode * curr) {
 			if(id -> isAssigned == 0) {
 				rte();
 			}
-			fprintf(fp, "mov r9, %dd\n", (id -> offset) + typeSize[id -> dataType]);
-			fprintf(fp, "mov rdx, rbp\n");
+			fprintf(fp, "\tmov r9, %dd\n", (id -> offset) + typeSize[id -> dataType]);
+			fprintf(fp, "\tmov rdx, rbp\n");
 			outputArrayElement(id);
 			return;
 		}
@@ -740,46 +740,46 @@ void giveOutput(ASTNode * curr) {
 		if(idNode -> next == NULL) {
 			fprintf(fp, " --- idNode->next is NULL --- \n");
 			int offset = id -> offset;
-			fprintf(fp, "push rbp\n");
-			fprintf(fp, "mov rdi, output_fmt_plain\n" );
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tpush rbp\n");
+			fprintf(fp, "\tmov rdi, output_fmt_plain\n" );
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 
-			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "sub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
-			fprintf(fp, "mov rdx, qword [rax]\n");
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
+			fprintf(fp, "\tmov rdx, qword [rax]\n");
 
-			fprintf(fp, "mov rcx, r11w\n");
-			fprintf(fp, "sub rcx, r10w\n");
-			fprintf(fp, "inc rcx\n");
+			fprintf(fp, "\tmov rcx, r11w\n");
+			fprintf(fp, "\tsub rcx, r10w\n");
+			fprintf(fp, "\tinc rcx\n");
 
-			fprintf(fp, "mov r9, %dd\n", typeSize[type]);
+			fprintf(fp, "\tmov r9, %dd\n", typeSize[type]);
 
 			fprintf(fp, "label_%d:\n", label_num++);
 			int loopLabel = label_num - 1;
 		
-			fprintf(fp, "push rdx\n");
-			fprintf(fp, "push rcx\n");
+			fprintf(fp, "\tpush rdx\n");
+			fprintf(fp, "\tpush rcx\n");
 
 			outputArrayElement(id);
 			
-			fprintf(fp, "pop rcx\n");
-			fprintf(fp, "pop rdx\n");
+			fprintf(fp, "\tpop rcx\n");
+			fprintf(fp, "\tpop rdx\n");
 
-			fprintf(fp, "push rbp\n");
-			fprintf(fp, "mov rdi, single_space\n" );
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tpush rbp\n");
+			fprintf(fp, "\tmov rdi, single_space\n" );
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 
-			fprintf(fp, "sub rdx, %dd\n", typeSize[type]);
-			fprintf(fp, "dec rcx\n");
-			fprintf(fp, "jnz label_%d\n", loopLabel);
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
+			fprintf(fp, "\tdec rcx\n");
+			fprintf(fp, "\tjnz label_%d\n", loopLabel);
+			fprintf(fp, "\tpop rbp\n");
 
-			fprintf(fp, "push rbp\n");
-			fprintf(fp, "mov rdi, end_line\n" );
-			fprintf(fp, "call printf\n");
-			fprintf(fp, "pop rbp\n");
+			fprintf(fp, "\tpush rbp\n");
+			fprintf(fp, "\tmov rdi, end_line\n" );
+			fprintf(fp, "\tcall printf\n");
+			fprintf(fp, "\tpop rbp\n");
 		}
 		else {
 			fprintf(fp, " --- idNode->next is not NULL --- \n");
@@ -800,29 +800,29 @@ void codegenInit() {
 		   
 	fprintf(fp, "; --- START: init code and data --- \n");
 	fprintf(fp, "section .data\n");
-	fprintf(fp, "fmt_float: db \"%%f\", 0\n");
-	fprintf(fp, "fmt_int: db \"%%hd\", 0\n");
-	fprintf(fp, "fmt_string: db \"%%s\", 0\n");
-	fprintf(fp, "fmt_bool: db \"%%c\", 0\n");
-	fprintf(fp, "single_space: db \" \", 0\n");
-	fprintf(fp, "end_line: db \"\", 0xA, 0\n");	
+	fprintf(fp, "\tfmt_float: db \"%%f\", 0\n");
+	fprintf(fp, "\tfmt_int: db \"%%hd\", 0\n");
+	fprintf(fp, "\tfmt_string: db \"%%s\", 0\n");
+	fprintf(fp, "\tfmt_bool: db \"%%c\", 0\n");
+	fprintf(fp, "\tsingle_space: db \" \", 0\n");
+	fprintf(fp, "\tend_line: db \"\", 0xA, 0\n");	
 
-	fprintf(fp, "type_int: db \"Integer\", 0\n");
-	fprintf(fp, "type_float: db \"Real Number\", 0\n");
-	fprintf(fp, "type_bool: db \"Boolean\", 0\n");
+	fprintf(fp, "\ttype_int: db \"Integer\", 0\n");
+	fprintf(fp, "\ttype_float: db \"Real Number\", 0\n");
+	fprintf(fp, "\ttype_bool: db \"Boolean\", 0\n");
 	
-	fprintf(fp, "op1: db \"Input: Enter an %%s Value\\n\", 0\n");
-	fprintf(fp, "op2: db \"Input: Enter %%d array elements of %%s type for range %%d to %%d\", 0\n");
+	fprintf(fp, "\top1: db \"Input: Enter an %%s Value\\n\", 0\n");
+	fprintf(fp, "\top2: db \"Input: Enter %%d array elements of %%s type for range %%d to %%d\", 0\n");
 
-	fprintf(fp, "output_fmt_float: db \"Output: %%f\\n\", 0xA, 0\n");
-	fprintf(fp, "output_fmt_int: db \"Output: %%hd\\n\", 0xA, 0\n");
-	fprintf(fp, "output_fmt_string: db \"Output: %%s\\n\", 0xA, 0\n");
-	fprintf(fp, "output_fmt_plain: db \"Output: \", 0\n"); 
+	fprintf(fp, "\toutput_fmt_float: db \"Output: %%f\\n\", 0xA, 0\n");
+	fprintf(fp, "\toutput_fmt_int: db \"Output: %%hd\\n\", 0xA, 0\n");
+	fprintf(fp, "\toutput_fmt_string: db \"Output: %%s\\n\", 0xA, 0\n");
+	fprintf(fp, "\toutput_fmt_plain: db \"Output: \", 0\n"); 
 
-	fprintf(fp, "bool_true: db \"true\", 0xA, 0\n");
-	fprintf(fp, "bool_false: db \"false\", 0xA, 0\n");
+	fprintf(fp, "\tbool_true: db \"true\", 0xA, 0\n");
+	fprintf(fp, "\tbool_false: db \"false\", 0xA, 0\n");
 
-	fprintf(fp, "except_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %%d.\"\n");
+	fprintf(fp, "\texcept_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %%d.\"\n");
 	
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
@@ -863,10 +863,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				emitCodeAST(ch, "driver");
 				
 				asmComment("Resetting(aligning) the rsp.");
-				fprintf(fp, "movsx rax, word [dynamic]\n");
-				fprintf(fp, "add rsp, rax\n");
-				fprintf(fp, "add rsp, %dd\n", driver -> actRecSize);
-				fprintf(fp, "ret\n");
+				fprintf(fp, "\tmovsx rax, word [dynamic]\n");
+				fprintf(fp, "\tadd rsp, rax\n");
+				fprintf(fp, "\tadd rsp, %dd\n", driver -> actRecSize);
+				fprintf(fp, "\tret\n");
 				asmComment("End of driver function.");
 			}
 			else
@@ -881,42 +881,42 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			strcpy(fn, ch -> nodeData.leaf -> tn -> lex);
 			SymTableFunc * func = fetchFuncData(fn);
 			asmComment("Begin of a moduledef.");
-			fprintf(fp, "\t%s:\n", fn);
+			fprintf(fp, "%s:\n", fn);
 			emitCodeChildren(ch, fname);
 
 			asmComment("Copying back the output parameters.");
-			fprintf(fp, "mov rax, qword [rbp]\n");
+			fprintf(fp, "\tmov rax, qword [rbp]\n");
 			while(ret != NULL) {
 				ASTNode * idNode = ret -> child;
 				SymTableVar * id = fetchVarData(func, idNode -> nodeData.leaf -> tn -> lex);
-				fprintf(fp, "mov rdx, rbp\n");
-				fprintf(fp, "sub rdx, %dd\n", typeSize[id -> dataType] + id -> offset);
-				fprintf(fp, "sub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
+				fprintf(fp, "\tmov rdx, rbp\n");
+				fprintf(fp, "\tsub rdx, %dd\n", typeSize[id -> dataType] + id -> offset);
+				fprintf(fp, "\tsub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
 				if(id -> dataType == AST_TYPE_INT) {
-					fprintf(fp, "mov cx, word [rdx]\n");
-					fprintf(fp, "mov word [rax], cx\n");
+					fprintf(fp, "\tmov cx, word [rdx]\n");
+					fprintf(fp, "\tmov word [rax], cx\n");
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
-					fprintf(fp, "mov ecx, dword [rdx]\n");
-					fprintf(fp, "mov word [rax], ecx\n");
+					fprintf(fp, "\tmov ecx, dword [rdx]\n");
+					fprintf(fp, "\tmov word [rax], ecx\n");
 				}
 				if(id -> dataType == AST_TYPE_BOOLEAN) {
-					fprintf(fp, "mov cl, byte [rdx]\n");
-					fprintf(fp, "mov byte [rax], cl\n");
+					fprintf(fp, "\tmov cl, byte [rdx]\n");
+					fprintf(fp, "\tmov byte [rax], cl\n");
 				}
 				if(id -> dataType == AST_TYPE_ARRAY) {
-					fprintf(fp, "mov rcx, qword [rdx]\n");
-					fprintf(fp, "mov qword [rax], rcx\n");
+					fprintf(fp, "\tmov rcx, qword [rdx]\n");
+					fprintf(fp, "\tmov qword [rax], rcx\n");
 				}
-				fprintf(fp, "add rax, %dd\n", typeSize[id -> dataType] + id -> offset);
+				fprintf(fp, "\tadd rax, %dd\n", typeSize[id -> dataType] + id -> offset);
 				ret = ret -> child -> next -> next;
 			}
-			fprintf(fp, "movsx rax, [word] dynamic\n");
-			fprintf(fp, "add rsp, rax\n");
-			fprintf(fp, "ret\n");
-			fprintf(fp, "sub rbp, 8\n");
-			fprintf(fp, "mov rsp, rbp\n");
-			fprintf(fp, "mov rbp, rax\n");
+			fprintf(fp, "\tmovsx rax, [word] dynamic\n");
+			fprintf(fp, "\tadd rsp, rax\n");
+			fprintf(fp, "\tret\n");
+			fprintf(fp, "\tsub rbp, 8\n");
+			fprintf(fp, "\tmov rsp, rbp\n");
+			fprintf(fp, "\tmov rbp, rax\n");
 		}
 		break;
 
@@ -999,7 +999,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = ch -> nodeData.leaf -> dataType;
 				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
-			// fprintf(fp, "add rsp, %dd\n", curr -> localST -> dynamicRecSize);
+			// fprintf(fp, "\tadd rsp, %dd\n", curr -> localST -> dynamicRecSize);
 			curr -> localST -> dynamicRecSize = 0;
 		}
 		break;
@@ -1011,8 +1011,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			   of the base of stack frame of the function being called, and storing 
 			   current base pointer in stack */
 			fprintf(fp, "; --- Setting up the stack frame ---");
-			fprintf(fp, "push rbp\n");
-			fprintf(fp, "mov rbp, rsp\n");
+			fprintf(fp, "\tpush rbp\n");
+			fprintf(fp, "\tmov rbp, rsp\n");
 
 			/* Actual parameters */
 			ASTNode * inParam = ch -> next;
@@ -1027,25 +1027,25 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
 				if(id -> isAssigned == 0)
 					rte();
-				fprintf(fp, "mov rcx, qword [rbp]\n");
-				// fprintf(fp, "mov rcx, [rax]\n");
-				fprintf(fp, "sub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
+				fprintf(fp, "\tmov rcx, qword [rbp]\n");
+				// fprintf(fp, "\tmov rcx, [rax]\n");
+				fprintf(fp, "\tsub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				inputSize += typeSize[id -> dataType];
 				if(id -> dataType == AST_TYPE_INT) {
-					fprintf(fp, "mov ax, word [rcx]\n");
-					fprintf(fp, "push ax\n");	
+					fprintf(fp, "\tmov ax, word [rcx]\n");
+					fprintf(fp, "\tpush ax\n");	
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
-					fprintf(fp, "mov eax, dword [rcx]\n");
-					fprintf(fp, "push eax\n");
+					fprintf(fp, "\tmov eax, dword [rcx]\n");
+					fprintf(fp, "\tpush eax\n");
 				}
 				if(id -> dataType == AST_TYPE_BOOLEAN) {
-					fprintf(fp, "mov al, byte [rcx]\n");
-					fprintf(fp, "push al\n");
+					fprintf(fp, "\tmov al, byte [rcx]\n");
+					fprintf(fp, "\tpush al\n");
 				}
 				if(id -> dataType == AST_TYPE_ARRAY) {
-					fprintf(fp, "mov rax, qword [rcx]\n");
-					fprintf(fp, "push rax\n");
+					fprintf(fp, "\tmov rax, qword [rcx]\n");
+					fprintf(fp, "\tpush rax\n");
 				}
 				inParam = inParam -> child -> next;
 			}
@@ -1054,8 +1054,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ch = ch -> next;
 			SymTableFunc * fun = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
 			int actRecSize = fun -> actRecSize;
-			fprintf(fp, "add rsp, %dd\n", actRecSize - inputSize);
-			fprintf(fp, "call %s\n", ch -> nodeData.leaf -> tn -> lex);
+			fprintf(fp, "\tadd rsp, %dd\n", actRecSize - inputSize);
+			fprintf(fp, "\tcall %s\n", ch -> nodeData.leaf -> tn -> lex);
 		}
 		break;
 
@@ -1091,19 +1091,19 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = arr -> nodeData.dataType -> dataType;
 				while(idNode != NULL) {
 					SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex); 
-					fprintf(fp, "mov rax, rbp\n");
-					fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
-					fprintf(fp, "mov qword [rax], rsp\n");
+					fprintf(fp, "\tmov rax, rbp\n");
+					fprintf(fp, "\tadd rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
+					fprintf(fp, "\tmov qword [rax], rsp\n");
 					getLeftRightIndex(id);
-					fprintf(fp, "cmp r10w, r11w\n");
-					fprintf(fp, "jgt rte\n");
-					fprintf(fp, "mov rcx, r11w\n");
-					fprintf(fp, "sub rcx, r10w\n");
-					fprintf(fp, "inc rcx\n");
+					fprintf(fp, "\tcmp r10w, r11w\n");
+					fprintf(fp, "\tjgt rte\n");
+					fprintf(fp, "\tmov rcx, r11w\n");
+					fprintf(fp, "\tsub rcx, r10w\n");
+					fprintf(fp, "\tinc rcx\n");
 					fprintf(fp, "label_%d\n", label_num++);
-					fprintf(fp, "sub rsp, %dd\n", typeSize[type]);
-					fprintf(fp, "dec rcx\n");
-					fprintf(fp, "jnz label_%d\n", label_num - 1);
+					fprintf(fp, "\tsub rsp, %dd\n", typeSize[type]);
+					fprintf(fp, "\tdec rcx\n");
+					fprintf(fp, "\tjnz label_%d\n", label_num - 1);
 					idNode = idNode -> child -> next;
 				}
 			}
@@ -1134,18 +1134,18 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
 			if(curr -> parent -> type == AST_NODE_CASESTMT)
 				fprintf(fp, "label_%d:\n", label_num - 1);
-			fprintf(fp, "mov rax, rbp\n");
-			fprintf(fp, "add rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tadd rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
-				fprintf(fp, "mov ax, word [rax]\n");
+				fprintf(fp, "\tmov ax, word [rax]\n");
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
-				fprintf(fp, "cmp ax, %dd\n", val);
-				fprintf(fp, "jnz label_%d\n", label_num++);
+				fprintf(fp, "\tcmp ax, %dd\n", val);
+				fprintf(fp, "\tjnz label_%d\n", label_num++);
 				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
 				
-				fprintf(fp, "jmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
+				fprintf(fp, "\tjmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
 				ch = ch -> next -> next;
 				if(ch != NULL) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
@@ -1154,10 +1154,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			}
 			else if(switchvar -> dataType == AST_TYPE_BOOLEAN) {
 				
-				fprintf(fp, "mov aL, byte [rax]\n");
+				fprintf(fp, "\tmov aL, byte [rax]\n");
 				int val = (ch -> nodeData.leaf -> tn -> sym.T == TRUE);
-				fprintf(fp, "cmp al, %dd\n", val);
-				fprintf(fp, "jnz label_%d\n", label_num++);
+				fprintf(fp, "\tcmp al, %dd\n", val);
+				fprintf(fp, "\tjnz label_%d\n", label_num++);
 				fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
@@ -1180,33 +1180,33 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			curr -> nodeData.unary -> temporaryOffset = par -> dynamicRecSize;
 			par -> dynamicRecSize += typeSize[type];
 			if(type == AST_TYPE_INT) {
-				fprintf(fp, "mov rax, rsp\n");
-				fprintf(fp, "add rax, %dd\n", typeSize[type] + tempOff);
-				fprintf(fp, "mov ax, word [rax]\n");
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tadd rax, %dd\n", typeSize[type] + tempOff);
+				fprintf(fp, "\tmov ax, word [rax]\n");
 
 				if(ch -> nodeData.leaf -> type == AST_LEAF_UOPMINUS) {
-					fprintf(fp, "xor ax, 0xffff\n");
-					fprintf(fp, "inc ax\n");
+					fprintf(fp, "\txor ax, 0xffff\n");
+					fprintf(fp, "\tinc ax\n");
 				}
 
-				fprintf(fp, "mov rdx, rsp\n");
-				fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-				fprintf(fp, "mov word [rdx], ax\n");
+				fprintf(fp, "\tmov rdx, rsp\n");
+				fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
+				fprintf(fp, "\tmov word [rdx], ax\n");
 			}
 
 			else {
-				fprintf(fp, "mov rax, rsp\n");
-				fprintf(fp, "add rax, %dd\n", typeSize[type] + tempOff);
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tadd rax, %dd\n", typeSize[type] + tempOff);
 				
 				if(ch -> nodeData.leaf -> type == AST_LEAF_UOPMINUS) {
-					fprintf(fp, "finit\n");
-					fprintf(fp, "fld dword [rax]\n");
-					fprintf(fp, "fchs\n");
+					fprintf(fp, "\tfinit\n");
+					fprintf(fp, "\tfld dword [rax]\n");
+					fprintf(fp, "\tfchs\n");
 				}
 
-				fprintf(fp, "mov rdx, rsp\n");
-				fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-				fprintf(fp, "fstp word [rdx]\n");
+				fprintf(fp, "\tmov rdx, rsp\n");
+				fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
+				fprintf(fp, "\tfstp word [rdx]\n");
 			}
 		}
 		break;
@@ -1229,26 +1229,26 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					return;
 				// optimized
 
-				fprintf(fp, "mov cx, %d\n", num1);
+				fprintf(fp, "\tmov cx, %d\n", num1);
 
 				fprintf(fp, "label_%d\n", label_num++);
 				
 				scopeBegin();
 				
 				int tmp = label_num - 1;
-				fprintf(fp, "mov rax, rbp\n");
-				fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
-				fprintf(fp, "mov word [rax], cx\n");
+				fprintf(fp, "\tmov rax, rbp\n");
+				fprintf(fp, "\tadd rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
+				fprintf(fp, "\tmov word [rax], cx\n");
 
 				emitCodeAST(ch -> next -> next, fname);
 				scopeEnd();
 				
-				fprintf(fp, "mov rax, rbp\n");
-				fprintf(fp, "add rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
-				fprintf(fp, "mov cx, word[rax]\n");
-				fprintf(fp, "inc cx\n");
-				fprintf(fp, "cmp cx, %d", num2);
-				fprintf(fp, "jnz label_%d", tmp);
+				fprintf(fp, "\tmov rax, rbp\n");
+				fprintf(fp, "\tadd rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
+				fprintf(fp, "\tmov cx, word[rax]\n");
+				fprintf(fp, "\tinc cx\n");
+				fprintf(fp, "\tcmp cx, %d", num2);
+				fprintf(fp, "\tjnz label_%d", tmp);
 
 			}
 			else {
@@ -1264,16 +1264,16 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 				emitCodeAST(ch, fname);
 				int tmpOff = par -> dynamicRecSize;
-				fprintf(fp, "mov rax, rsp\n");
-				fprintf(fp, "sub rax, %dd\n", tmpOff);
-				fprintf(fp, "mov dl, byte [rax]\n");
-				fprintf(fp, "cmp dl, 0\n");
-				fprintf(fp, "jz label_%d\n", last);
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tsub rax, %dd\n", tmpOff);
+				fprintf(fp, "\tmov dl, byte [rax]\n");
+				fprintf(fp, "\tcmp dl, 0\n");
+				fprintf(fp, "\tjz label_%d\n", last);
 
 				emitCodeAST(ch -> next, fname);
 				scopeEnd();
 
-				fprintf(fp, "jmp label_%d\n", tmp);
+				fprintf(fp, "\tjmp label_%d\n", tmp);
 				fprintf(fp, "label_%d:\n", last);
 
 				par -> dynamicRecSize = 0;
@@ -1286,8 +1286,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			SymTableFunc * par = getParentFunc(curr -> localST);
 			SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			if(ch -> next == NULL) {
-				fprintf(fp, "mov rax, rbp\n");
-				fprintf(fp, "sub rax, %dd\n", id -> offset + typeSize[id -> dataType]);
+				fprintf(fp, "\tmov rax, rbp\n");
+				fprintf(fp, "\tsub rax, %dd\n", id -> offset + typeSize[id -> dataType]);
 				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
 				par -> dynamicRecSize += typeSize[id -> dataType];
 				astDataType type = id -> dataType;
@@ -1299,8 +1299,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
 				par -> dynamicRecSize += typeSize[id -> dataType];
 				astDataType type = id -> sdt.r -> dataType;
-				fprintf(fp, "mov rax, rdx\n");
-				fprintf(fp, "sub rax, r9\n");
+				fprintf(fp, "\tmov rax, rdx\n");
+				fprintf(fp, "\tsub rax, r9\n");
 				pushTemporary(type, par);
 			}
 		}
@@ -1313,10 +1313,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
 					par -> dynamicRecSize += typeSize[AST_TYPE_INT];
 					int val = curr -> nodeData.leaf -> tn -> value.val_int;
-					fprintf(fp, "mov ax, %dd\n", val);
-					fprintf(fp, "mov rdx, rsp\n");
-					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov word [rdx], ax\n");
+					fprintf(fp, "\tmov ax, %dd\n", val);
+					fprintf(fp, "\tmov rdx, rsp\n");
+					fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "\tmov word [rdx], ax\n");
 				}
 				break;
 				case AST_LEAF_VARIDNUM_RNUM: {
@@ -1324,29 +1324,29 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
 					par -> dynamicRecSize += typeSize[AST_TYPE_REAL];
 					float val = curr -> nodeData.leaf -> tn -> value.val_float;
-					fprintf(fp, "mov rdx, rsp\n");
-					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov word [rdx], __float32__(%f)\n", val);
+					fprintf(fp, "\tmov rdx, rsp\n");
+					fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "\tmov word [rdx], __float32__(%f)\n", val);
 				}
 				break;
 				case AST_LEAF_BOOLTRUE: {
 					SymTableFunc * par = getParentFunc(curr -> localST);
 					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
 					par -> dynamicRecSize += typeSize[AST_TYPE_BOOLEAN];
-					fprintf(fp, "mov al, 1d\n");
-					fprintf(fp, "mov rdx, rsp\n");
-					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov byte [rdx], al\n");
+					fprintf(fp, "\tmov al, 1d\n");
+					fprintf(fp, "\tmov rdx, rsp\n");
+					fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "\tmov byte [rdx], al\n");
 				}
 				break;
 				case AST_LEAF_BOOLFALSE: {
 					SymTableFunc * par = getParentFunc(curr -> localST);
 					curr -> nodeData.leaf -> temporaryOffset = par -> dynamicRecSize;
 					par -> dynamicRecSize += typeSize[AST_TYPE_BOOLEAN];
-					fprintf(fp, "mov al, 0\n");
-					fprintf(fp, "mov rdx, rsp\n");
-					fprintf(fp, "sub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "mov byte [rdx], al\n");				
+					fprintf(fp, "\tmov al, 0\n");
+					fprintf(fp, "\tmov rdx, rsp\n");
+					fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
+					fprintf(fp, "\tmov byte [rdx], al\n");				
 				}
 				break;
 				default: {
