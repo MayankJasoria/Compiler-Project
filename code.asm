@@ -70,13 +70,11 @@ main:
 	sub rbp, 6d
 	mov word [rax], r8w
 ; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
-label_0:
 	mov rax, rbp
 	add rax, 2d
 	mov ax, word [rax]
 	cmp ax, 1d
 	jnz label_1
-label_0:
 	mov rax, rbp
 	sub rax, 2d
 ; --- START: pushTemporary(): type = Integer ---
@@ -134,13 +132,14 @@ label_0:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 4d
 	mov rdx, rbp
-; --- START: outputArrayElement() for y--- 
+; --- START: outputArrayElement() for y --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
 	mov rdi, output_fmt_int
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]	call printf
+	mov si, word[rax]
+	call printf
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
 	jmp label_0
@@ -150,7 +149,6 @@ label_1:
 	mov ax, word [rax]
 	cmp ax, 2d
 	jnz label_2
-label_1:
 	mov rax, rbp
 	sub rax, 2d
 ; --- START: pushTemporary(): type = Integer ---
@@ -208,13 +206,14 @@ label_1:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 6d
 	mov rdx, rbp
-; --- START: outputArrayElement() for z--- 
+; --- START: outputArrayElement() for z --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
 	mov rdi, output_fmt_int
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]	call printf
+	mov si, word[rax]
+	call printf
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
 	jmp label_0
@@ -222,43 +221,46 @@ label_2:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 2d
 	mov rdx, rbp
-; --- START: outputArrayElement() for x--- 
+; --- START: outputArrayElement() for x --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
 	mov rdi, output_fmt_int
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]	call printf
+	mov si, word[rax]
+	call printf
 	pop rbp
 ; --- END: outputArrayElement() for x--- 
 label_0:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 4d
 	mov rdx, rbp
-; --- START: outputArrayElement() for y--- 
+; --- START: outputArrayElement() for y --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
 	mov rdi, output_fmt_int
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]	call printf
+	mov si, word[rax]
+	call printf
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 6d
 	mov rdx, rbp
-; --- START: outputArrayElement() for z--- 
+; --- START: outputArrayElement() for z --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
 	mov rdi, output_fmt_int
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]	call printf
+	mov si, word[rax]
+	call printf
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
 
 ; ### Resetting(aligning) the rsp. ### 
-	movsx rax, [word] dynamic
+	movsx rax, word [dynamic]
 	add rsp, rax
 	add rsp, 7d
 	ret
