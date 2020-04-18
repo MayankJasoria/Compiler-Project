@@ -41,14 +41,14 @@ mov rbp, rsp
 	mov rdx, rsp
 	sub rdx, 1d
 	mov byte [rdx], al
-; --- START: moveOffsetToOffset(): lhsoff = 12, rhsoff = 0, type = Integer ---
+; --- START: moveOffsetToOffset(): lhsoff = 12, rhsoff = 0, type = Boolean ---
 	mov rax, rsp
-	sub rax, 2d
-	mov r8w, word [rax]
+	sub rax, 1d
+	mov r8b, byte [rax]
 	mov rax, rbp
-	sub rax, 14d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 12, rhsoff = 0, type = Integer ---
+	sub rax, 13d
+	mov byte [rax], r8b
+; --- END: moveOffsetToOffset(): lhsoff = 12, rhsoff = 0, type = Boolean ---
 	mov ax, 5d
 	mov rdx, rsp
 	sub rdx, 2d
@@ -479,14 +479,14 @@ label_5:
 	sub rax, 19d
 	mov byte [rax], r8b
 ; --- START: applyOperator(): leftOp: 16, rightOp: 17, operator: AND, type: Boolean --- 
-; --- START: moveOffsetToOffset(): lhsoff = 13, rhsoff = 18, type = Integer ---
+; --- START: moveOffsetToOffset(): lhsoff = 13, rhsoff = 18, type = Boolean ---
 	mov rax, rsp
-	sub rax, 20d
-	mov r8w, word [rax]
+	sub rax, 19d
+	mov r8b, byte [rax]
 	mov rax, rbp
-	sub rax, 15d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 13, rhsoff = 18, type = Integer ---
+	sub rax, 14d
+	mov byte [rax], r8b
+; --- END: moveOffsetToOffset(): lhsoff = 13, rhsoff = 18, type = Boolean ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 6d
 	mov rdx, rbp
@@ -590,7 +590,6 @@ label_8:
 	sub rdx, 2d
 	dec rcx
 	jnz label_8
-	pop rbp
 ; --- END: takeInput(): type: Array, Name: A --- 
 	mov rax, rbp
 	sub rax, 8d

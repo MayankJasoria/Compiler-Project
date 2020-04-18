@@ -684,7 +684,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "\tdec rcx\n");
 			fprintf(fp, "\tjnz label_%d\n", label_num - 1);
-			fprintf(fp, "\tpop rbp\n");
+			// fprintf(fp, "\tpop rbp\n");
 		}
 		break;
 	}
@@ -1056,7 +1056,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				/* LVALUE_ID_STMT */
 				int lhsOff = getIDOffset(ch);
 				int rhsOff = getExprOffset(ch -> next);
-				astDataType type = ch -> nodeData.leaf -> dataType;
+				SymTableVar * tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				astDataType type = tmp -> dataType;
 				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
 			// fprintf(fp, "\tadd rsp, %dd\n", curr -> localST -> dynamicRecSize);
