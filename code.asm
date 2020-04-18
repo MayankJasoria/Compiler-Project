@@ -340,6 +340,14 @@ label_4:
 	pop rsi
 	pop rbp
 ; --- END: outputArrayElement() for temp--- 
+	mov rax, rbp
+	sub rax, 4d
+; --- START: pushTemporary(): type = Integer ---
+	mov dx, word [rax]
+	mov rax, rsp
+	sub rax, 8d
+	mov word [rax], dx
+; --- END: pushTemporary(): type = Integer ---
 ; --- START: get left and right index of C ---
 	mov r10w, 6d
 	mov r11w, 10d
@@ -361,14 +369,14 @@ label_5:
 	jnz label_5
 	movsx r9, r9w
 ; --- END: fetchArraybyIndex() for array C: base: rdx, offset: r9 --- 
-; --- START: moveOffsetToOffset(): lhsoff = -1, rhsoff = 0, type = Integer ---
+; --- START: moveOffsetToOffset(): lhsoff = -1, rhsoff = 6, type = Integer ---
 	mov rax, rsp
-	sub rax, 2d
+	sub rax, 8d
 	mov r8w, word [rax]
 	mov rax, rdx
 	sub rax, r9
 	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = -1, rhsoff = 0, type = Integer ---
+; --- END: moveOffsetToOffset(): lhsoff = -1, rhsoff = 6, type = Integer ---
 ; --- START: scopeEnd() --- 
 	movsx rax, word [dynamic]
 	add rsp, rax

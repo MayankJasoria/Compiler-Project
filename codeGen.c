@@ -1324,6 +1324,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		
 		case AST_NODE_LVALARRSTMT: {
 			/* do nothing */
+			ASTNode * ch = curr -> child;
+			emitCodeChildren(ch, fname);
 		}
 		break;
 
