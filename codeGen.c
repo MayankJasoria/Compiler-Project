@@ -852,7 +852,7 @@ void giveOutput(ASTNode * curr) {
 			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "\tdec rcx\n");
 			fprintf(fp, "\tjnz label_%d\n", loopLabel);
-			fprintf(fp, "\tpop rbp\n");
+			// fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rdi, end_line\n" );
