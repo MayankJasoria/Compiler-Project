@@ -1,22 +1,14 @@
-
-<<module compute_expr>>
-takes input[ a: integer, b:integer, c:boolean];
-returns [u:integer, v:boolean];
+<<module array_parameter_demo>>
+takes input[ B: array[10..14] of integer];
+returns [sum1:integer];
 start
-	u := a;
-	v := c;
+	print(B);
 end
 
 <<<driver program>>>
 start
-	declare x, y, z:integer;
-	get_value(x);
-	get_value(y);
-	declare k, h:boolean;
-	h:= false;
-	[z, k]:= use module compute_expr with parameters x, y, h;				
-	print(x);
-	print(y);
-	print(z);
-	print(k);
+	declare array_A: array[10..14] of integer;
+	get_value(array_A);
+	[s1, s2, s3]:= use module array_parameter_demo with parameters array_A;	
+**formal parameter C of the callee function array_parameter_demo receives the range values from the actual parameter array_B**		
 end

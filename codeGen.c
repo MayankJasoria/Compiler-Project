@@ -1185,7 +1185,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				if(id -> dataType == AST_TYPE_INT) {
 					fprintf(fp, "\tmov ax, word [rcx]\n");
 					// fprintf(fp, "\tpush ax\n");
-					fprintf(fp, "\tmov word [rsp], ax\n");	
+					fprintf(fp, "\tmov word [rsp], ax\n");
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
 					fprintf(fp, "\tmov eax, dword [rcx]\n");
@@ -1198,9 +1198,14 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tmov byte [rsp], al\n");
 				}
 				if(id -> dataType == AST_TYPE_ARRAY) {
+					getLeftRightIndex(id);
 					fprintf(fp, "\tmov rax, qword [rcx]\n");
 					// fprintf(fp, "\tpush rax\n");
 					fprintf(fp, "\tmov qword [rsp], rax\n");
+					fprintf(fp, "\tsub rsp, %dd\n", typeSize[AST_TYPE_INT]);
+					fprintf(fp, "\tmov word[rsp], r10w\n");
+					fprintf(fp, "\tsub rsp, %dd\n", typeSize[AST_TYPE_INT]);
+					fprintf(fp, "\tmov word[rsp], r10w\n");
 				}
 				inParam = inParam -> child -> next;
 			}
@@ -1365,7 +1370,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				int val = (ch -> nodeData.leaf -> tn -> sym.T == TRUE);
 				fprintf(fp, "\tcmp al, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
-				fprintf(fp, "label_%d:\n", label_num - 2);
+				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
 				
