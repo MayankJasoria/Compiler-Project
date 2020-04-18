@@ -221,9 +221,10 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 
 	/* update activation record size */
 	funcData -> actRecSize += varData -> width;
-	
+
 	/* populate correct list */
 	if(paramType == 0) {
+		funcData -> inputSize += varData -> width;
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
 	} 
 	else {
@@ -260,6 +261,8 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 		varWidth = typeSize[varDataType]*(a -> high - a -> low + 1) + typeSize[AST_TYPE_POINTER];
 	else
 		varWidth = typeSize[AST_TYPE_POINTER];
+	varWidth += 2*typeSize[AST_TYPE_INT];
+
 	SymTableVar * varData = (SymTableVar *)malloc(sizeof(SymTableVar));
 	strcpy(varData -> name, varName);
 	varData -> type = SYM_VARIABLE;
@@ -269,6 +272,7 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	varData -> sdt = s;
 	varData -> table = funcData;
 	if(paramType == 0) {
+		funcData -> inputSize += varWidth;
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
 	} else {
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);

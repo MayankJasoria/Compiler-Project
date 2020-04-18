@@ -41,10 +41,10 @@ int main(int argc, char* argv[]) {
 	
 	/* Printing function activation record sizes */
 	// FILE* fp = fopen("actRecSize.txt", "w");
-	printSymbolTable(globalST, printFunc);
+	// printSymbolTable(globalST, printFunc);
 	// fclose(fp);
 
-	outputSymbolTable(root);
+	// outputSymbolTable(root);
 	
 	// int parseTreeSize = getParseTreeSize();
 	// int astSize = getASTSize();

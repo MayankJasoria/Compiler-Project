@@ -38,7 +38,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* pt);
  * Prints the complete AST, in a breadth first manner
  * @param root  The root of the current subtree of AST
  */ 
-void printAST(ASTNode* root, Queue queue);
+// void printAST(ASTNode* root, Queue queue);
 
 // write after this line
 

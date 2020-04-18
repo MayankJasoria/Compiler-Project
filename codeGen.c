@@ -153,6 +153,20 @@ int getExprType(ASTNode * expr) {
  */
 void getLeftRightIndex(SymTableVar * id) { 
 	
+	SymTableFunc * local = id -> table;
+	SymTableFunc * func = getParentFunc(local);
+	if(id -> offset < func -> inputSize) {
+		int offset = id -> offset;
+		fprintf(fp, "\tmov rax, rbp\n");
+		fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER] + typeSize[AST_TYPE_INT]);
+		fprintf(fp, "\tmov r10w, word [rax]\n");
+
+		fprintf(fp, "\tmov rax, rbp\n");
+		fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER] + 2*typeSize[AST_TYPE_INT]);
+		fprintf(fp, "\tmov r11w, word [rax]\n");
+		return;
+	}
+
 	fprintf(fp, "; --- START: get left and right index of %s ---\n", id->name);
 	int lft, right;
 	if(strcmp(id -> sdt.r -> lowId, "") == 0) {
@@ -1311,7 +1325,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 			emitCodeAST(ch -> next, fname);
 			fprintf(fp, "label_%d:\n", label_num - 1);
-			emitCodeAST(ch -> next -> next, fname);
+			if(ch -> next -> next != NULL)
+				emitCodeAST(ch -> next -> next, fname);
 			
 			fprintf(fp, "label_%d:\n", tmp);
 			

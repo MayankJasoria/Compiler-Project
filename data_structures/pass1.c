@@ -1,9 +1,3 @@
-/*  GROUP 48:
-	PUNEET ANAND    2016B4A70487P
-	MAYANK JASORIA  2016B1A70703P
-	SHUBHAM TIWARI  2016B4A70935P
-	VIBHAV OSWAL    2016B4A70594P */
-	
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -146,14 +140,20 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 
 			if(tmp -> sdt.r -> dataType != curr -> sdt.r -> dataType)
 				return 0;
-			if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(tmp -> sdt.r -> highId, "") == 0) {
-				if(strcmp(curr -> sdt.r -> lowId, "") == 0 && strcmp(curr -> sdt.r -> highId, "") == 0) {
-					if(tmp -> sdt.r -> low != curr -> sdt.r -> low)
-						return 0;
-					if(tmp -> sdt.r -> high != curr -> sdt.r -> high)
-						return 0;	
-				}
-			}
+
+			if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(curr -> sdt.r -> lowId, "") == 0 && (tmp -> sdt.r -> low != curr -> sdt.r -> low))
+				return 0;
+
+			if(strcmp(tmp -> sdt.r -> highId, "") == 0 && strcmp(curr -> sdt.r -> highId, "") == 0 && (tmp -> sdt.r -> high != curr -> sdt.r -> high))
+				return 0;
+				// {
+				// if(strcmp(curr -> sdt.r -> lowId, "") == 0 && strcmp(curr -> sdt.r -> highId, "") == 0) {
+				// 	if(tmp -> sdt.r -> low != curr -> sdt.r -> low)
+				// 		return 0;
+				// 	if(tmp -> sdt.r -> high != curr -> sdt.r -> high)
+				// 		return 0;	
+				// }
+			// }
 		}
 		node = node -> child -> next;
 		head = head -> next;
@@ -938,11 +938,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 					char str[30];
 					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
 					SymTableVar* idx = fetchVarData(curr -> localST, str);
-					if(idx == NULL) {
+					ASTNode * tmp = curr -> parent;
+					if(tmp != NULL)
+						tmp = tmp -> parent;
+					if(tmp != NULL)
+						tmp = tmp -> parent;
+					if(idx == NULL && tmp != NULL && tmp -> type != AST_NODE_INPUTLIST) {
 						fprintf(stderr, 
 						"Index variable is not defined on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
 						return;
 					}
+					if(idx == NULL)
+						return;
 					if(idx -> dataType != AST_TYPE_INT) {
 						fprintf(stderr, 
 						"Index variable in range arrays is not Integer on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
