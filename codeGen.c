@@ -817,12 +817,16 @@ void giveOutput(ASTNode * curr) {
 			fprintf(fp, "\tpop rcx\n");
 			fprintf(fp, "\tpop rdx\n");
 
+			fprintf(fp, "\tpush rdx\n");
+			fprintf(fp, "\tpush rcx\n");
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rdi, single_space\n" );
 			alignStack();
 			fprintf(fp, "\tcall printf\n");
 			getBackStack();
 			fprintf(fp, "\tpop rbp\n");
+			fprintf(fp, "\tpop rcx\n");
+			fprintf(fp, "\tpop rdx\n");
 
 			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "\tdec rcx\n");
