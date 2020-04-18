@@ -657,27 +657,9 @@ label_7:
 	pop rsi
 	pop rbp
 ; --- END: outputArrayElement() for v--- 
-
-; ### Copying back the output parameters. ### 
-	mov rax, qword [rbp]
-	mov rdx, rbp
-	sub rdx, 7d
-	sub rax, 7d
-	mov cx, word [rdx]
-	mov word [rax], cx
-	sub rax, 7d
-	mov rdx, rbp
-	sub rdx, 8d
-	sub rax, 8d
-	mov cl, byte [rdx]
-	mov byte [rax], cl
-	sub rax, 8d
 	movsx rax, word [dynamic]
 	add rsp, rax
 	ret
-	sub rbp, 8
-	mov rsp, rbp
-	mov rbp, rax
 
 ; ### Begining of the driver program. ### 
 main:
@@ -803,7 +785,8 @@ mov rbp, rsp
 	mov byte [rax], r8b
 ; --- END: moveOffsetToOffset(): lhsoff = 7, rhsoff = 0, type = Boolean ---
 ; --- Setting up the stack frame ---
-	push rbp
+	sub rsp, 8
+	mov qword [rsp], rbp
 	mov rbp, rsp
 	mov rcx, qword [rbp]
 	sub rcx, 2d
@@ -822,6 +805,24 @@ mov rbp, rsp
 	mov byte [rsp], al
 	sub rsp, 10d
 	call compute_expr
+	mov rax, qword [rbp]
+	add rbp, 8
+	mov rsp, rbp
+	mov rbp, rax
+	mov rdx, rbp
+	sub rdx, 6d
+	mov rax, rsp
+	sub rax, 8
+	sub rax, 7d
+	mov cx, word [rax]
+	mov word [rdx], cx
+	mov rdx, rbp
+	sub rdx, 7d
+	mov rax, rsp
+	sub rax, 8
+	sub rax, 8d
+	mov cl, byte [rax]
+	mov byte [rdx], cl
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 2d
 	mov rdx, rbp
