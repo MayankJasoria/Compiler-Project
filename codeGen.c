@@ -1037,7 +1037,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tsub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
 				ret = ret -> child -> next -> next;
 			}
-			fprintf(fp, "\tmovsx rax, [word] dynamic\n");
+			fprintf(fp, "\tmovsx rax, word [dynamic]\n");
 			fprintf(fp, "\tadd rsp, rax\n");
 			fprintf(fp, "\tret\n");
 			fprintf(fp, "\tsub rbp, 8\n");
@@ -1137,7 +1137,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			/* Setting up stack frame. Set the current stack pointer as the starting 
 			   of the base of stack frame of the function being called, and storing 
 			   current base pointer in stack */
-			fprintf(fp, "; --- Setting up the stack frame ---");
+			fprintf(fp, "; --- Setting up the stack frame ---\n");
 			fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rbp, rsp\n");
 
@@ -1158,21 +1158,27 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				// fprintf(fp, "\tmov rcx, [rax]\n");
 				fprintf(fp, "\tsub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				inputSize += typeSize[id -> dataType];
+
+				fprintf(fp, "\tsub rsp, %dd\n", typeSize[id -> dataType]);
 				if(id -> dataType == AST_TYPE_INT) {
 					fprintf(fp, "\tmov ax, word [rcx]\n");
-					fprintf(fp, "\tpush ax\n");	
+					// fprintf(fp, "\tpush ax\n");
+					fprintf(fp, "\tmov word [rsp], ax\n");	
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
 					fprintf(fp, "\tmov eax, dword [rcx]\n");
-					fprintf(fp, "\tpush eax\n");
+					// fprintf(fp, "\tpush eax\n");
+					fprintf(fp, "\tmov dword [rsp], eax\n");
 				}
 				if(id -> dataType == AST_TYPE_BOOLEAN) {
 					fprintf(fp, "\tmov al, byte [rcx]\n");
-					fprintf(fp, "\tpush al\n");
+					// fprintf(fp, "\tpush al\n");
+					fprintf(fp, "\tmov byte [rsp], al\n");
 				}
 				if(id -> dataType == AST_TYPE_ARRAY) {
 					fprintf(fp, "\tmov rax, qword [rcx]\n");
-					fprintf(fp, "\tpush rax\n");
+					// fprintf(fp, "\tpush rax\n");
+					fprintf(fp, "\tmov qword [rsp], rax\n");
 				}
 				inParam = inParam -> child -> next;
 			}
