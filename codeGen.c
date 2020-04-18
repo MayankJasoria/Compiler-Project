@@ -1187,7 +1187,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ch = ch -> next;
 			SymTableFunc * fun = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
 			int actRecSize = fun -> actRecSize;
-			fprintf(fp, "\tadd rsp, %dd\n", actRecSize - inputSize);
+			fprintf(fp, "\tsub rsp, %dd\n", actRecSize - inputSize);
 			fprintf(fp, "\tcall %s\n", ch -> nodeData.leaf -> tn -> lex);
 		}
 		break;

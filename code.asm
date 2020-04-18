@@ -820,7 +820,7 @@ mov rbp, rsp
 	sub rsp, 1d
 	mov al, byte [rcx]
 	mov byte [rsp], al
-	add rsp, 10d
+	sub rsp, 10d
 	call compute_expr
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 2d
