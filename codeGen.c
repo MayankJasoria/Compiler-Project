@@ -835,7 +835,7 @@ void giveOutput(ASTNode * curr) {
 			fprintf(fp, "\tpop rbp\n");
 		}
 		else {
-			fprintf(fp, " --- idNode->next is not NULL --- \n");
+			fprintf(fp, "; --- idNode->next is not NULL --- \n");
 			fetchArraybyIndex(ch -> child, ch -> child -> next);
 			outputArrayElement(id);
 		}

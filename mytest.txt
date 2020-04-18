@@ -1,73 +1,12 @@
-<<module f1>>
-takes input[a: array[10..30] of integer, b:array[10..30] of integer, c:real];
-returns [m:boolean, n:integer];
-start
-	declare x,y, p: real;
-	declare k, y1: integer;
-	declare E: array[2..20] of integer;
-	declare Var3, var4: array[100..150] of boolean;
-	get_value(y);
-	get_value(x);
-	declare A,B: array[5..y1] of integer;
-	declare Var1, Var2: array[35..50] of real;
-	get_value(B);
-	use module function2 with parameters k, y1;  **Do not report this as an error because of redundant declaration of function2. This declaration has been genuinely needed in function var_demo_array**
-	declare D,C: array[10..30] of integer;
-	A:=B;
-	[ y1, m]:=use module var_demo_array with parameters k,E,x;	 **not an error**					 
-	C:=a;
-	[x, y1, m, k]:=use module function1 with parameters Var3, c, k, Var2, k;	**no error**			
-	D:=C;	
+**Code Generation test case 3: Computing expressions using integer, boolean and static array data types**
 
- 
-	[ k, m]:=use module var_demo_array with parameters k,B,p;       **ERROR: Input parameter type of B does not match with formal parameter type**						 
-	for (k in 15..40)
-	start
-		x:=x+k*y;				    **ERROR: Type mismatch error**
-		declare u, v:real;
-		declare int1: integer;
-		u := y+c*34.2;
-		v:= u-c*p-20.5E+2;
-		[x, int1, m, k]:=use module function1 with parameters Var3, c, k, Var4, k; **ERROR: Input parameter type of Var4 does not match with formal parameter type**		
-		switch(k)
-		start
-			case 10: declare A:real;
-				 declare Q: integer;
-				 declare B: array[10..30] of integer;
-				 declare E: array[4..10] of integer;
-				 B[9]:= k*20; 	              **ERROR: element of array B is out of bound**         	
-				 B:=C;           	      **not an error**
-				 E:= Q;                       **ERROR: variables E and Q are of different types	**	 
-				 break;
-			case 20: A:= 12.90 + u*y - c; 
-				 [A, Q, u, y1]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Output parameter type of u does not match with formal parameter type**      
-				 get_value(Q);
-				 E[7]:= k+12 - Q*10+u;        **ERROR: Type mismatch error**    
-				 break;
-			default: E[9]:= B[15]+Q;	      **not an error**	
-				 [A, Q]:=use module function1 with parameters Var3, c, k, Var1, int1; **ERROR: Number of output parametters does not match with that of formal parameters**       
-				 break;			 	
-		end
-		x:=x + u*v- u<=v;                             **ERROR: Type mismatch error**
-	end
-	x:=c+y;	
-	[p]:= use module function3 with parameters x,y;       **ERROR: module function3 is not defined**
-	C[18]:= a[18]+ b[18];
-	A[5]:= B[6]- 10;
-	m:= A[5]< C[18] + A[11];			      **ERROR: element of array A is out of bound** 
-	y1:= 20*8-5;	
-end							      ** ERROR: Output parameter n is not assigned any value **
-
-
-
-<<module function3>>
-takes input [a: real, b:real];
-returns [c:real];
-start
-	c:= a+b;
-end
+**Single driver module with single level nesting **
 
 <<<driver program>>>
 start
-      
+	declare A: array[10..15] of integer;
+	get_value(A); 
+	print(A[11]);
+                      
 end
+
