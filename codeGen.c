@@ -237,7 +237,7 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
  * but later found out that this can be reused for non array types as well.
  * don't go by the name
  */
-void outputArrayElement(SymTableVar * id) {
+void outputArrayElement(SymTableVar * id, int op) {
 	
 	fprintf(fp, "; --- START: outputArrayElement() for %s --- \n", id -> name);
 	fprintf(fp, "; Function is used for both Arrays and non-Array types, don't go by the name! \n");
@@ -247,13 +247,19 @@ void outputArrayElement(SymTableVar * id) {
 
 	fprintf(fp, "\tpush rbp\n");
 	if(type == AST_TYPE_INT) {
-		fprintf(fp, "\tmov rdi, output_fmt_int\n");
+		if(op == 1)
+			fprintf(fp, "\tmov rdi, fmt_int\n");
+		else
+			fprintf(fp, "\tmov rdi, output_fmt_int\n");
 		fprintf(fp, "\tmov rax, rdx\n");
 		fprintf(fp, "\tsub rax, r9\n");
 		fprintf(fp, "\tmov si, word[rax]\n");
 	}
 	else if(type == AST_TYPE_REAL) {
-		fprintf(fp, "\tmov rdi, output_fmt_float\n");
+		if(op == 1)
+			fprintf(fp, "\tmov rdi, fmt_float\n");
+		else
+			fprintf(fp, "\tmov rdi, output_fmt_float\n");
 		fprintf(fp, "\tmov rax, rdx\n");
 		fprintf(fp, "\tsub rax, r9\n");
 		fprintf(fp, "\tcvtss2sd xmm0, dword[rax]\n");
@@ -265,11 +271,17 @@ void outputArrayElement(SymTableVar * id) {
 		fprintf(fp, "\tmov al, byte[rax]\n");
 		fprintf(fp, "\tcmp al, 0\n");
 		fprintf(fp, "\tjz label_%d\n", label_num++);
-		fprintf(fp, "\tmov rdi, output_fmt_string\n");
+		if(op == 1)
+			fprintf(fp, "\tmov rdi, fmt_string\n");
+		else
+			fprintf(fp, "\tmov rdi, output_fmt_string\n");
 		fprintf(fp, "\tmov rsi, bool_true\n");
 		fprintf(fp, "\tjmp label_%d\n", label_num++);
 		fprintf(fp, "label_%d:\n", label_num - 2);
-		fprintf(fp, "\tmov rdi, output_fmt_string\n");
+		if(op == 1)
+			fprintf(fp, "\tmov rdi, fmt_string\n");	
+		else
+			fprintf(fp, "\tmov rdi, output_fmt_string\n");
 		fprintf(fp, "\tmov rsi, bool_false\n");
 		fprintf(fp, "label_%d:\n", label_num - 1);
 	}
@@ -796,7 +808,7 @@ void giveOutput(ASTNode * curr) {
 			}
 			fprintf(fp, "\tmov r9, %dd\n", (id -> offset) + typeSize[id -> dataType]);
 			fprintf(fp, "\tmov rdx, rbp\n");
-			outputArrayElement(id);
+			outputArrayElement(id, 0);
 			return;
 		}
 
@@ -833,7 +845,7 @@ void giveOutput(ASTNode * curr) {
 			fprintf(fp, "\tpush rdx\n");
 			fprintf(fp, "\tpush rcx\n");
 
-			outputArrayElement(id);
+			outputArrayElement(id, 1);
 			
 			fprintf(fp, "\tpop rcx\n");
 			fprintf(fp, "\tpop rdx\n");
@@ -864,7 +876,7 @@ void giveOutput(ASTNode * curr) {
 		else {
 			fprintf(fp, "; --- idNode->next is not NULL --- \n");
 			fetchArraybyIndex(ch -> child, ch -> child -> next);
-			outputArrayElement(id);
+			outputArrayElement(id, 0);
 		}
 	}
 
@@ -1346,8 +1358,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
 				fprintf(fp, "\tmov cx, word[rax]\n");
 				fprintf(fp, "\tinc cx\n");
-				fprintf(fp, "\tcmp cx, %d", num2);
-				fprintf(fp, "\tjnz label_%d", tmp);
+				fprintf(fp, "\tcmp cx, %d\n", num2);
+				fprintf(fp, "\tjnz label_%d\n", tmp);
 
 			}
 			else {
