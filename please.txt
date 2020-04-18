@@ -1,6 +1,13 @@
 Variable Name            Module Name              Scope Line No.      Width     Is Array  Static/Dynamic Range                    Type of element     Offset    Nesting Level  
-A                        driver                   8 - 20              18        Yes       Static         [6, 10]                  Integer             4         0              
-B                        driver                   8 - 20              18        Yes       Static         [6, 10]                  Integer             22        0              
-C                        driver                   8 - 20              18        Yes       Static         [6, 10]                  Integer             40        0              
-m                        driver                   8 - 20              2         No        ---            ---                      Integer             0         0              
-temp                     driver                   8 - 20              2         No        ---            ---                      Integer             2         0              
+A                        driver                   10 - 30             8         Yes       Dynamic        [low, high]              Integer             18        0              
+B                        driver                   10 - 30             8         Yes       Dynamic        [low, high]              Integer             26        0              
+C                        driver                   10 - 30             8         Yes       Dynamic        [low, high]              Integer             34        0              
+k                        driver                   10 - 30             2         No        ---            ---                      Integer             6         0              
+m                        driver                   10 - 30             2         No        ---            ---                      Integer             0         0              
+n                        driver                   10 - 30             2         No        ---            ---                      Integer             2         0              
+p                        driver                   10 - 30             2         No        ---            ---                      Integer             4         0              
+x                        driver                   10 - 30             2         No        ---            ---                      Integer             8         0              
+y                        driver                   10 - 30             2         No        ---            ---                      Integer             10        0              
+z                        driver                   10 - 30             2         No        ---            ---                      Integer             12        0              
+low                      driver                   10 - 30             2         No        ---            ---                      Integer             14        0              
+high                     driver                   10 - 30             2         No        ---            ---                      Integer             16        0              

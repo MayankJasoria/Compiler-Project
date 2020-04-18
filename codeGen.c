@@ -7,49 +7,23 @@
 #include "codeGen.h"
 #include "codeGenDef.h"
 
-void rte(/* char* errorMsg */) {
+// void rte(/* char* errorMsg */) {
 	
-	fprintf(fp, "; --- START: rte() --- \n");
-	/**
-	 * TODO: Print error message
-	 * RUN TIME ERROR:  Array index out of bound
-	 */ 
-	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
-	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
-	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
+// 	fprintf(fp, "; --- START: rte() --- \n");
+// 	/**
+// 	 * TODO: Print error message
+// 	 * RUN TIME ERROR:  Array index out of bound
+// 	 */ 
+// 	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
+// 	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
+// 	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
 
-	fprintf(fp, "; --- END: rte() --- \n");
-}
+// 	fprintf(fp, "; --- END: rte() --- \n");
+// }
 
 void emitCodeInit(const char* fname) {
     /* Open fname */
     fp = fopen(fname, "w");
-}
-
-void emitCodeFinalize() {
-
-	fprintf(fp, "rte:\n");
-	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
-	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
-	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
-	if (fp) {
-		fclose(fp);
-		fp = NULL;
-	}
-}
-
-void emitCodeChildren(ASTNode * head, char * fname) {
-	
-    ASTNode* ch = head;
-    while(ch != NULL) {
-        emitCodeAST(ch, fname);
-        ch = ch -> next;
-    }
-}
-
-void asmComment(char * str) {
-
-	fprintf(fp, "\n; ### %s ### \n", str);
 }
 
 void pushRegs() {
@@ -85,6 +59,52 @@ void getBackStack() {
 	fprintf(fp, "\tmov rsp, qword [rspreserve]\n");
 	popRegs();
 }
+
+void emitCodeFinalize() {
+
+	fprintf(fp, "rte:\n");
+	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
+	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
+	fprintf(fp, "\tint 80h		 ;generate interrupt\n");
+	fprintf(fp, "\noob:\n");
+	fprintf(fp, "\tpush rbp\n");
+	fprintf(fp, "\tmov rdi, rte_oob\n");
+	alignStack();
+	fprintf(fp, "\tcall printf\n");
+	getBackStack();
+	fprintf(fp, "\tpop rbp\n");
+	fprintf(fp, "\tjmp rte\n");
+	if (fp) {
+		fclose(fp);
+		fp = NULL;
+	}
+}
+
+void emitCodeChildren(ASTNode * head, char * fname) {
+	
+    ASTNode* ch = head;
+    while(ch != NULL) {
+        emitCodeAST(ch, fname);
+        ch = ch -> next;
+    }
+}
+
+void asmComment(char * str) {
+
+	fprintf(fp, "\n; ### %s ### \n", str);
+}
+
+// void rte(char * str, int line_num) {
+
+// 	fprintf(fp, "\tpush rbp\n");
+// 	fprintf(fp, "\tmov rdi, %s\n", str);
+// 	fprintf(fp, "\tmov si, %dd\n", line_num);
+// 	alignStack();
+// 	fprintf(fp, "\tcall printf\n");
+// 	getBackStack();
+// 	fprintf(fp, "\tpop rbp\n");
+// 	fprintf(fp, "\tjmp rte\n");
+// }
 
 int getIDOffset(ASTNode * idNode) {
 	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex);
@@ -135,9 +155,9 @@ void getLeftRightIndex(SymTableVar * id) {
 	}
 	else {
 		SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId);
-		if(l -> isAssigned == 0) {
-			rte();
-		}
+		// if(l -> isAssigned == 0) {
+		// 	rte();
+		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + l -> offset);
 		fprintf(fp, "\tmov r10w, word[rax]\n");
@@ -148,9 +168,9 @@ void getLeftRightIndex(SymTableVar * id) {
 	}
 	else {
 		SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId);
-		if(r -> isAssigned == 0) {
-			rte();
-		}
+		// if(r -> isAssigned == 0) {
+		// 	rte();
+		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + r -> offset);
 		fprintf(fp, "\tmov r11w, word[rax]\n");
@@ -209,6 +229,13 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + tmp -> offset);
 		fprintf(fp, "\tmov r8w, word [rax]\n");
 	}
+
+	fprintf(fp, "\tmov rsi, %dd\n", i -> nodeData.leaf -> tn -> line_num);
+	fprintf(fp, "\tcmp r8w, r10w\n");
+	fprintf(fp, "\tjl oob\n");
+	fprintf(fp, "\tcmp r8w, r11w\n");
+	fprintf(fp, "\tjg oob\n");
+
 	/* TODO: write this in assembly */
 	// if(idx < lft || idx > right) {
 	// 	rte();
@@ -803,9 +830,9 @@ void giveOutput(ASTNode * curr) {
 		ASTNode * idNode = ch -> child;
 		SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
 		if(id -> dataType != AST_TYPE_ARRAY) {
-			if(id -> isAssigned == 0) {
-				rte();
-			}
+			// if(id -> isAssigned == 0) {
+			// 	rte();
+			// }
 			fprintf(fp, "\tmov r9, %dd\n", (id -> offset) + typeSize[id -> dataType]);
 			fprintf(fp, "\tmov rdx, rbp\n");
 			outputArrayElement(id, 0);
@@ -914,8 +941,8 @@ void codegenInit() {
 	fprintf(fp, "\tbool_true: db \"true\", 0\n");
 	fprintf(fp, "\tbool_false: db \"false\", 0\n");
 
-	fprintf(fp, "\texcept_fmt: db \"RUN TIME ERROR: Array index out of bounds at line %%d.\"\n");
-	
+	fprintf(fp, "\trte_oob: db \"RUN TIME ERROR: Array index out of bounds at line %%hd.\", 0xA, 0\n");
+
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
 	fprintf(fp, "\tdynamic: resw 1\n");
@@ -1125,8 +1152,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ASTNode * idNode = inParam -> child;
 				/* Fetch current ID from symbol table */
 				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
-				if(id -> isAssigned == 0)
-					rte();
+				// if(id -> isAssigned == 0)
+				// 	rte();
 				fprintf(fp, "\tmov rcx, qword [rbp]\n");
 				// fprintf(fp, "\tmov rcx, [rax]\n");
 				fprintf(fp, "\tsub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
