@@ -1113,12 +1113,12 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			leafNode* lf2 = (leafNode *) malloc(sizeof(leafNode));
 			nd2.leaf = lf2;
 			ASTNode * n2 = getASTNode(nd2, AST_NODE_LEAF);
-			lf2 -> tn = ch -> next;
+			lf2 -> tn = ch -> next -> next;
 			lf2 -> type = AST_LEAF_NUM;
 			// TODO: add data for leaf
 
-			addChild(curr, n1);
 			addChild(curr, n2);
+			addChild(curr, n1);
 			return curr;
 		}
 		

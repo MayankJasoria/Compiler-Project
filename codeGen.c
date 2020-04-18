@@ -1340,7 +1340,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					return;
 				// optimized
 
-				fprintf(fp, "\tmov cx, %d\n", num1);
+				fprintf(fp, "\tmov cx, %dd\n", num1);
 
 				fprintf(fp, "label_%d:\n", label_num++);
 				
@@ -1358,7 +1358,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + loopVar -> offset);
 				fprintf(fp, "\tmov cx, word[rax]\n");
 				fprintf(fp, "\tinc cx\n");
-				fprintf(fp, "\tcmp cx, %d\n", num2);
+				fprintf(fp, "\tcmp cx, %d\n", num2 + 1);
 				fprintf(fp, "\tjnz label_%d\n", tmp);
 
 			}
