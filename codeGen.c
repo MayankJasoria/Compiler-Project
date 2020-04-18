@@ -654,6 +654,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 
 			fprintf(fp, "\n; --- Loop for scanning each element of the array --- \n");
 
+			getLeftRightIndex(idNode);
 			fprintf(fp, "\tmov cx, r11w\n");
 			fprintf(fp, "\tsub cx, r10w\n");
 			fprintf(fp, "\tmovsx rcx, cx\n");
@@ -683,6 +684,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "\tpop rdx\n");
 			fprintf(fp, "\tsub rdx, %dd\n", typeSize[type]);
 			fprintf(fp, "\tdec rcx\n");
+			fprintf(fp, "\tcmp rcx, 0x0\n");
 			fprintf(fp, "\tjnz label_%d\n", label_num - 1);
 			// fprintf(fp, "\tpop rbp\n");
 		}

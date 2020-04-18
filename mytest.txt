@@ -7,6 +7,6 @@ start
 	declare A: array[10..15] of integer;
 	get_value(A); 
 	print(A[11]);
-                      
+    print(A[15]);   
 end
 
