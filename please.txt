@@ -1,15 +1,20 @@
 Variable Name            Module Name              Scope Line No.      Width     Is Array  Static/Dynamic Range                    Type of element     Offset    Nesting Level  
-a                        compute_expr             11 - 28             2         No        ---            ---                      Integer             0         0              
-b                        compute_expr             11 - 28             2         No        ---            ---                      Integer             2         0              
-c                        compute_expr             11 - 28             1         No        ---            ---                      Boolean             4         0              
-d                        compute_expr             11 - 28             2         No        ---            ---                      Integer             12        0              
-m                        compute_expr             11 - 28             1         No        ---            ---                      Boolean             14        0              
-p                        compute_expr             11 - 28             2         No        ---            ---                      Integer             8         0              
-q                        compute_expr             11 - 28             2         No        ---            ---                      Integer             10        0              
-u                        compute_expr             11 - 28             2         No        ---            ---                      Integer             5         0              
-v                        compute_expr             11 - 28             1         No        ---            ---                      Boolean             7         0              
-h                        driver                   31 - 42             1         No        ---            ---                      Boolean             7         0              
-k                        driver                   31 - 42             1         No        ---            ---                      Boolean             6         0              
-x                        driver                   31 - 42             2         No        ---            ---                      Integer             0         0              
-y                        driver                   31 - 42             2         No        ---            ---                      Integer             2         0              
-z                        driver                   31 - 42             2         No        ---            ---                      Integer             4         0              
+B                        array_parameter_demo     11 - 63             18        Yes       Static         [10, 14]                 Integer             0         0              
+C                        array_parameter_demo     11 - 63             8         Yes       Dynamic        [low, high]              Integer             18        0              
+A                        array_parameter_demo     11 - 63             18        Yes       Static         [10, 14]                 Integer             40        0              
+D                        array_parameter_demo     11 - 63             18        Yes       Static         [10, 14]                 Integer             58        0              
+E                        array_parameter_demo     11 - 63             8         Yes       Dynamic        [p, q]                   Integer             76        0              
+i                        array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             34        0              
+k                        array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             32        0              
+p                        array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             36        0              
+q                        array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             38        0              
+sum1                     array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             26        0              
+sum2                     array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             28        0              
+sum3                     array_parameter_demo     11 - 63             2         No        ---            ---                      Integer             30        0              
+m                        driver                   66 - 80             2         No        ---            ---                      Integer             0         0              
+n                        driver                   66 - 80             2         No        ---            ---                      Integer             2         0              
+array_A                  driver                   66 - 80             18        Yes       Static         [10, 14]                 Integer             10        0              
+array_B                  driver                   66 - 80             8         Yes       Dynamic        [m, n]                   Integer             28        0              
+s1                       driver                   66 - 80             2         No        ---            ---                      Integer             4         0              
+s2                       driver                   66 - 80             2         No        ---            ---                      Integer             6         0              
+s3                       driver                   66 - 80             2         No        ---            ---                      Integer             8         0              
