@@ -10,7 +10,6 @@
 
 #include "hash_map.h"
 #include "linked_list.h"
-#include "astUtil.h"
 #include "astDef.h"
 
 /* defining a symbol table */

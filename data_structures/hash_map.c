@@ -135,13 +135,13 @@ int numberHash(void *y) {
 /**
  * Prints the 'valid entries' of hash table for debugging purposes 
  */  
-void printHashTable(FILE* fp, HashTable hashtable, void (*printHash)(FILE* fp, void* data)) {
+void printHashTable(HashTable hashtable, void (*printHash)(void* data)) {
 	for (int i=0; i < HASH_TABLE_SIZE; i++) {
 		if(hashtable[i] != NULL) {
 		// 	printf("[NULL]\n");
 		// } else {
 			// printf("[%d] --> ", i);
-			printList(fp, hashtable[i], printHash);
+			printList(hashtable[i], printHash);
 		}
 	}
 }

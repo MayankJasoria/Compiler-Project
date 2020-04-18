@@ -152,7 +152,7 @@ void destroyList(List list) {
 	list = NULL;
 }
 
-void printList(FILE* fp, List list, void (*printElement)(FILE* fp, void* data)) {
+void printList(List list, void (*printElement)(void* data)) {
 	if(list == NULL) {
 		fprintf(stderr, "The given list is undefined\n");
 		return;
@@ -161,7 +161,7 @@ void printList(FILE* fp, List list, void (*printElement)(FILE* fp, void* data)) 
 	Node* curr = list->head;
 	while(curr != NULL) {
 		// printf("{");
-		printElement(fp, curr->data);
+		printElement(curr->data);
 		// printf("} --> ");
 		curr = curr->next;
 	}

@@ -304,6 +304,8 @@ token * getNextToken(FILE * fp) {
 				else if(ch == '#') {
 					flag = 1;
 					break;
+				} else if(ch == '\r') {
+					// do nothing
 				}
 				else {	
 					error();

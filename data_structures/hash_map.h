@@ -80,6 +80,6 @@ int stringHash(void* y);
  * @param printelement  The function specifying how each 
  *                      hashed element should be printed
  */
-void printHashTable(FILE* fp, HashTable hashtable, void (*printElement)(FILE*, void*));
+void printHashTable(HashTable hashtable, void (*printElement)(void*));
 
 #endif
