@@ -1,2 +1,3 @@
 Function Name            Activation Record Size   
-driver                   42                       
+driver                   8                        
+compute_expr             15                       

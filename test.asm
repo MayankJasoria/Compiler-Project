@@ -14,32 +14,7 @@ section .text
 
 main:
 	
-	sub rsp, 12
-	mov ax, [var1]
-	mov word [rsp], ax
-
-	;mov r11, rsp
-	mov qword [forrsp], rsp
-	and rsp, 0xfffffffffffffff0
-	add rsp, 10000B
-
-
-	;push rdx
-	;push rbp
-	mov rdi, fmt
-	mov rsi, var1
-	mov rdx, var2
-	mov rax, 0
-	call scanf
-	;pop rbp
-	;pop rdx
-	mov rsp, qword [forrsp]
-	add rsp, 12
-
-	push rbp
-	mov rdi, p_fmt
-	mov si, word [var1]
-	mov dx, word [var2]
-	call printf
-	pop rbp
+	mov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
+	mov eax, 1
+	int 80h		 ;generate interrupt\n");
 	ret
