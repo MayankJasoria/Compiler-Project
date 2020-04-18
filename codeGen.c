@@ -1371,7 +1371,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				getLeftRightIndex(id);
 				fetchArraybyIndex(ch, ch -> next);
 				curr -> nodeData.var -> temporaryOffset = par -> dynamicRecSize;
-				par -> dynamicRecSize += typeSize[id -> dataType];
+				par -> dynamicRecSize += typeSize[id -> sdt.r -> dataType];
 				astDataType type = id -> sdt.r -> dataType;
 				fprintf(fp, "\tmov rax, rdx\n");
 				fprintf(fp, "\tsub rax, r9\n");

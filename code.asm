@@ -648,39 +648,39 @@ label_9:
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
 	mov rax, rsp
-	sub rax, 14d
+	sub rax, 8d
 	mov word [rax], dx
 ; --- END: pushTemporary(): type = Integer ---
 	mov ax, 2d
 	mov rdx, rsp
-	sub rdx, 16d
+	sub rdx, 10d
 	mov word [rdx], ax
-; --- START: applyOperator(): leftOp: 6, rightOp: 14, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 6, rightOp: 8, operator: MUL, type: Integer --- 
 	mov rax, rsp
 	sub rax, 8d
 	mov r10, rsp
-	sub r10, 16d
+	sub r10, 10d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	mov ax, r8w
 	mul r9w
 	mov r8w, ax
 	mov rax, rsp
-	sub rax, 18d
+	sub rax, 12d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 6, rightOp: 14, operator: MUL, type: Integer --- 
-; --- START: applyOperator(): leftOp: 4, rightOp: 16, operator: PLUS, type: Integer --- 
+; --- START: applyOperator(): leftOp: 6, rightOp: 8, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 4, rightOp: 10, operator: PLUS, type: Integer --- 
 	mov rax, rsp
 	sub rax, 6d
 	mov r10, rsp
-	sub r10, 18d
+	sub r10, 12d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	add r8w, r9w
 	mov rax, rsp
-	sub rax, 20d
+	sub rax, 14d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 4, rightOp: 16, operator: PLUS, type: Integer --- 
+; --- START: applyOperator(): leftOp: 4, rightOp: 10, operator: PLUS, type: Integer --- 
 ; --- START: get left and right index of A ---
 	mov r10w, 10d
 	mov r11w, 15d
@@ -705,39 +705,39 @@ label_10:
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
 	mov rax, rsp
-	sub rax, 28d
+	sub rax, 16d
 	mov word [rax], dx
 ; --- END: pushTemporary(): type = Integer ---
 	mov ax, 3d
 	mov rdx, rsp
-	sub rdx, 30d
+	sub rdx, 18d
 	mov word [rdx], ax
-; --- START: applyOperator(): leftOp: 20, rightOp: 28, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MUL, type: Integer --- 
 	mov rax, rsp
-	sub rax, 22d
+	sub rax, 16d
 	mov r10, rsp
-	sub r10, 30d
+	sub r10, 18d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	mov ax, r8w
 	mul r9w
 	mov r8w, ax
 	mov rax, rsp
-	sub rax, 32d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 20, rightOp: 28, operator: MUL, type: Integer --- 
-; --- START: applyOperator(): leftOp: 18, rightOp: 30, operator: PLUS, type: Integer --- 
-	mov rax, rsp
 	sub rax, 20d
+	mov word [rax], r8w
+; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 12, rightOp: 18, operator: PLUS, type: Integer --- 
+	mov rax, rsp
+	sub rax, 14d
 	mov r10, rsp
-	sub r10, 32d
+	sub r10, 20d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	add r8w, r9w
 	mov rax, rsp
-	sub rax, 34d
+	sub rax, 22d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 18, rightOp: 30, operator: PLUS, type: Integer --- 
+; --- START: applyOperator(): leftOp: 12, rightOp: 18, operator: PLUS, type: Integer --- 
 ; --- START: get left and right index of A ---
 	mov r10w, 10d
 	mov r11w, 15d
@@ -762,29 +762,29 @@ label_11:
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
 	mov rax, rsp
-	sub rax, 42d
+	sub rax, 24d
 	mov word [rax], dx
 ; --- END: pushTemporary(): type = Integer ---
-; --- START: applyOperator(): leftOp: 32, rightOp: 34, operator: PLUS, type: Integer --- 
+; --- START: applyOperator(): leftOp: 20, rightOp: 22, operator: PLUS, type: Integer --- 
 	mov rax, rsp
-	sub rax, 34d
+	sub rax, 22d
 	mov r10, rsp
-	sub r10, 36d
+	sub r10, 24d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
 	add r8w, r9w
 	mov rax, rsp
-	sub rax, 44d
+	sub rax, 26d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 32, rightOp: 34, operator: PLUS, type: Integer --- 
-; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 42, type = Integer ---
+; --- START: applyOperator(): leftOp: 20, rightOp: 22, operator: PLUS, type: Integer --- 
+; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 24, type = Integer ---
 	mov rax, rsp
-	sub rax, 44d
+	sub rax, 26d
 	mov r8w, word [rax]
 	mov rax, rbp
 	sub rax, 4d
 	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 42, type = Integer ---
+; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 24, type = Integer ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 4d
 	mov rdx, rbp
