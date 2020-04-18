@@ -52,7 +52,27 @@ void asmComment(char * str) {
 	fprintf(fp, "\n; ### %s ### \n", str);
 }
 
+void pushRegs() {
+	fprintf(fp, "\tpush rsi\n");
+	fprintf(fp, "\tpush rdx\n");
+	fprintf(fp, "\tpush rcx\n");
+	fprintf(fp, "\tpush r8\n");
+	fprintf(fp, "\tpush r9\n");
+	fprintf(fp, "\tpush rax\n");
+}
+
+void popRegs() {
+	fprintf(fp, "\tpop rax\n");
+	fprintf(fp, "\tpop r9\n");
+	fprintf(fp, "\tpop r8\n");
+	fprintf(fp, "\tpop rcx\n");
+	fprintf(fp, "\tpop rdx\n");
+	fprintf(fp, "\tpop rsi\n");
+}
+
 void alignStack() {
+
+	pushRegs();
 	fprintf(fp, "; --- START: ALIGN STACK---\n");
 	fprintf(fp, "\tmov qword [rspreserve], rsp\n");
 	fprintf(fp, "\tand rsp, 0xfffffffffffffff0\n");
@@ -63,6 +83,7 @@ void alignStack() {
 void getBackStack() {
 
 	fprintf(fp, "\tmov rsp, qword [rspreserve]\n");
+	popRegs();
 }
 
 int getIDOffset(ASTNode * idNode) {

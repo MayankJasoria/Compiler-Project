@@ -77,6 +77,12 @@ mov rbp, rsp
 	push rbp
 	mov rdi, op1
 	mov rsi, type_int
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -84,6 +90,12 @@ mov rbp, rsp
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 	mov r9, 2d
 ; START: --- getInputElement() ---
@@ -92,6 +104,12 @@ mov rbp, rsp
 	mov rax, rbp
 	sub rax, r9
 	mov rsi, rax
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -99,6 +117,12 @@ mov rbp, rsp
 ; --- END: ALIGN STACK ---
 	call scanf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: getInputElement() --- 
 ; --- END: takeInput(): type: Integer, Name: x --- 
@@ -106,6 +130,12 @@ mov rbp, rsp
 	push rbp
 	mov rdi, op1
 	mov rsi, type_int
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -113,6 +143,12 @@ mov rbp, rsp
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 	mov r9, 4d
 ; START: --- getInputElement() ---
@@ -121,6 +157,12 @@ mov rbp, rsp
 	mov rax, rbp
 	sub rax, r9
 	mov rsi, rax
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -128,6 +170,12 @@ mov rbp, rsp
 ; --- END: ALIGN STACK ---
 	call scanf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: getInputElement() --- 
 ; --- END: takeInput(): type: Integer, Name: y --- 
@@ -497,6 +545,12 @@ label_5:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -504,6 +558,12 @@ label_5:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
@@ -524,6 +584,12 @@ label_6:
 	mov rdi, output_fmt_string
 	mov rsi, bool_false
 label_7:
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -531,6 +597,12 @@ label_7:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: outputArrayElement() for u--- 
 ; --- START: takeInput(): type: Array, Name: A --- 
@@ -549,6 +621,12 @@ label_7:
 	mov rdx, type_int
 	movsx rcx, r10w
 	movsx r8, r11w
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -556,6 +634,12 @@ label_7:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 
 ; --- rdx will be the address of the first element of the array ---
@@ -581,6 +665,12 @@ label_8:
 	mov rdi, fmt_int
 	sub rdx, 2d
 	mov rsi, rdx
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -588,6 +678,12 @@ label_8:
 ; --- END: ALIGN STACK ---
 	call scanf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 	pop rcx
 	pop rdx
@@ -795,6 +891,12 @@ label_11:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -802,6 +904,12 @@ label_11:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
@@ -812,6 +920,12 @@ label_11:
 ; --- idNode->next is NULL --- 
 	push rbp
 	mov rdi, output_fmt_plain
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -819,6 +933,12 @@ label_11:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 	mov rax, rbp
 	sub rax, 22d
@@ -838,6 +958,12 @@ label_12:
 	mov rax, rdx
 	sub rax, r9
 	mov si, word[rax]
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -845,6 +971,12 @@ label_12:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: outputArrayElement() for A--- 
 	pop rcx
@@ -853,6 +985,12 @@ label_12:
 	push rcx
 	push rbp
 	mov rdi, single_space
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -860,6 +998,12 @@ label_12:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 	pop rcx
 	pop rdx
@@ -869,6 +1013,12 @@ label_12:
 	pop rbp
 	push rbp
 	mov rdi, end_line
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
 ; --- START: ALIGN STACK---
 	mov qword [rspreserve], rsp
 	and rsp, 0xfffffffffffffff0
@@ -876,6 +1026,12 @@ label_12:
 ; --- END: ALIGN STACK ---
 	call printf
 	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
 	pop rbp
 ; --- END: giveInput() --- 
 
