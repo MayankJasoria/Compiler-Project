@@ -1,16 +1,16 @@
-**Code Generation test case 4: Computing expressions using integer, boolean and static array data types**
+**Code Generation test case 5: Loops for static arrays
 
-**Single driver module with two levels of nesting 
-Variant of test case 3**
+Single driver module with multiple levels of nesting
+
+Assuming run time bound checking of array elements A[m] and B[m] in the background for each value of m during the execution of for loop**
 
 <<<driver program>>>
 start
-	declare x, y, z, k:integer;
-	z := 0;
-	for(k in 10..15)
-        start
-              get_value(x);
-              z := z + x + k;
-              print(z);
-        end
+	declare m, temp:integer;
+	declare C: array[6..10] of integer;
+	for(m in 6..10)
+		start
+        C[m] :=  m;
+	end
+	print(C[7]);
 end
