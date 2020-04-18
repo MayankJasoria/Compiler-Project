@@ -257,8 +257,10 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	s.r = a;
 
 	int varWidth;
-	if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM && right -> nodeData.leaf -> type == AST_LEAF_IDXNUM)
-		varWidth = typeSize[varDataType]*(a -> high - a -> low + 1) + typeSize[AST_TYPE_POINTER];
+	if(lft -> nodeData.leaf -> type == AST_LEAF_IDXNUM && right -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
+		// varWidth = typeSize[varDataType]*(a -> high - a -> low + 1) + typeSize[AST_TYPE_POINTER];
+		varWidth = typeSize[AST_TYPE_POINTER];
+	}
 	else
 		varWidth = typeSize[AST_TYPE_POINTER];
 	varWidth += 2*typeSize[AST_TYPE_INT];

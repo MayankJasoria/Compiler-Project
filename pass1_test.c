@@ -19,7 +19,7 @@
 
 int main(int argc, char* argv[]) {
 
-	char* inputfile = "CodeGeneration_testcases/c11.txt";
+	char* inputfile = "mytest.txt";
 
 	/* initializing lexer and parser */
 	lexerinit();

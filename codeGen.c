@@ -392,6 +392,12 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 		}
 		fprintf(fp, "\tmov byte [rax], r8b\n");
 	}
+	if(type == AST_TYPE_ARRAY) {
+		fprintf(fp, "\tmov r8, qword [rax]\n");
+		fprintf(fp, "\tmov rax, rbp\n");
+		fprintf(fp, "\tsub rax, %dd\n", typeSize[type] + lhsOff);
+		fprintf(fp, "\tmov qword [rax], r8\n");
+	}
 
 	fprintf(fp, "; --- END: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 }
@@ -425,6 +431,12 @@ void pushTemporary(astDataType type, SymTableFunc* par) {
 		fprintf(fp, "\tmov rax, rsp\n");
 		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
 		fprintf(fp, "\tmov byte [rax], dl\n");
+	}
+	else if(type == AST_TYPE_ARRAY) {
+		fprintf(fp, "\tmov rdx, qword [rax]\n");
+		fprintf(fp, "\tmov rax, rsp\n");
+		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+		fprintf(fp, "\tmov qword [rax], rdx\n");
 	}
 
 	fprintf(fp, "; --- END: pushTemporary(): type = %s ---\n", typeName[type]);
@@ -1158,8 +1170,12 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			   of the base of stack frame of the function being called, and storing 
 			   current base pointer in stack */
 			fprintf(fp, "; --- Setting up the stack frame ---\n");
+			fprintf(fp, "\tsub rsp, 2\n");
+			fprintf(fp, "\tmov ax, word [dynamic]\n");
+			fprintf(fp, "\tmov word [rsp], ax\n");
 			fprintf(fp, "\tsub rsp, 8\n");
 			fprintf(fp, "\tmov qword [rsp], rbp\n");
+			
 			// fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rbp, rsp\n");
 
@@ -1180,6 +1196,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				// fprintf(fp, "\tmov rcx, [rax]\n");
 				fprintf(fp, "\tsub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				inputSize += typeSize[id -> dataType];
+				if(id -> dataType == AST_TYPE_ARRAY)
+					inputSize += 2*typeSize[AST_TYPE_INT];
 
 				fprintf(fp, "\tsub rsp, %dd\n", typeSize[id -> dataType]);
 				if(id -> dataType == AST_TYPE_INT) {
@@ -1198,14 +1216,17 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tmov byte [rsp], al\n");
 				}
 				if(id -> dataType == AST_TYPE_ARRAY) {
+					fprintf(fp, "\tmov r9, rbp\n");
+					fprintf(fp, "\tmov rbp, qword [rbp]\n");
 					getLeftRightIndex(id);
+					fprintf(fp, "\tmov rbp, r9\n");
 					fprintf(fp, "\tmov rax, qword [rcx]\n");
 					// fprintf(fp, "\tpush rax\n");
 					fprintf(fp, "\tmov qword [rsp], rax\n");
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[AST_TYPE_INT]);
 					fprintf(fp, "\tmov word[rsp], r10w\n");
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[AST_TYPE_INT]);
-					fprintf(fp, "\tmov word[rsp], r10w\n");
+					fprintf(fp, "\tmov word[rsp], r11w\n");
 				}
 				inParam = inParam -> child -> next;
 			}
@@ -1220,7 +1241,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			/* Function has returned here after */
 
 			fprintf(fp, "\tmov rax, qword [rbp]\n");
-			fprintf(fp, "\tadd rbp, 8\n");
+			fprintf(fp, "\tadd rbp, 8d\n");
+			fprintf(fp, "\tmov dx, word [rbp]\n");
+			fprintf(fp, "\tmov word [dynamic], dx\n");
+			fprintf(fp, "\tadd rbp, 2d\n");
 			fprintf(fp, "\tmov rsp, rbp\n");
 			fprintf(fp, "\tmov rbp, rax\n");
 
@@ -1235,6 +1259,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tsub rdx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				fprintf(fp, "\tmov rax, rsp\n");
 				fprintf(fp, "\tsub rax, 8\n");
+				fprintf(fp, "\tsub rax, 2\n");
 				fprintf(fp, "\tsub rax, %dd\n", inputSize + typeSize[id -> dataType]);
 
 				if(id -> dataType == AST_TYPE_INT) {
@@ -1311,10 +1336,13 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tsub cx, r10w\n");
 					fprintf(fp, "\tmovsx rcx, cx\n");
 					fprintf(fp, "\tinc rcx\n");
+					fprintf(fp, "\tmov r9w, word [dynamic]\n");
 					fprintf(fp, "label_%d:\n", label_num++);
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[type]);
+					fprintf(fp, "\tadd r9w, %dd\n", typeSize[type]);
 					fprintf(fp, "\tdec rcx\n");
 					fprintf(fp, "\tjnz label_%d\n", label_num - 1);
+					fprintf(fp, "\tmov word [dynamic], r9w\n");
 					idNode = idNode -> child -> next;
 				}
 			}
