@@ -1,3 +1,9 @@
+/*  GROUP 48:
+	PUNEET ANAND    2016B4A70487P
+	MAYANK JASORIA  2016B1A70703P
+	SHUBHAM TIWARI  2016B4A70935P
+	VIBHAV OSWAL    2016B4A70594P */
+	
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -34,11 +40,11 @@ int main(int argc, char* argv[]) {
 	pass2AST(root, "");
 	
 	/* Printing function activation record sizes */
-	FILE* fp = fopen("actRecSize.txt", "w");
-	printSymbolTable(fp, globalST, printFunc);
-	fclose(fp);
+	// FILE* fp = fopen("actRecSize.txt", "w");
+	printSymbolTable(globalST, printFunc);
+	// fclose(fp);
 
-	outputSymbolTable(NULL, root);
+	outputSymbolTable(root);
 	
 	// int parseTreeSize = getParseTreeSize();
 	// int astSize = getASTSize();

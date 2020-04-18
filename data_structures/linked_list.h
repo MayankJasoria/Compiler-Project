@@ -85,6 +85,6 @@ void destroyList(List list);
  * @param list  		The list to be printed
  * @param printElement 	Function to print an element of the given list
  */
-void printList(FILE* fp, List list, void (*printElement)(FILE*, void*));
+void printList(List list, void (*printElement)(void*));
 
 #endif

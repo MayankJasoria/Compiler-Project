@@ -41,9 +41,9 @@ void parseInputSourceCode(char *testcaseFile);
 
 /**
  * Writes the inorder traversal of the parse tree to a given file
- * @param outfile   The file into which the inorder traversal is to be written
+ * @param PT    The root of the generated parse tree 
  */
-void printParseTree(Tree PT, char *outfile);
+void printParseTree(Tree PT);
 
 /**
  * Computes and returns the size of the Parse Tree

@@ -22,10 +22,10 @@ CC=gcc
 CFLAGS=-g -o
 
 #set dependencies for the program
-DEPS_PROG=driver.c parser.c lexer.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c
+DEPS_PROG=driver.c codeGen.c parser.c lexer.c data_structures/pass1.c data_structures/pass2.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c
 
 #set executable name
-OUT_NAME=stage1exe
+OUT_NAME=compiler
 
 # TODO: Complete the compilation dependencies etc..
 driver: $(DEPS_PROG)
