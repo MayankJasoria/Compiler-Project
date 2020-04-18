@@ -20,6 +20,72 @@
 *           ASTNode. 
 * Naming convention: Construct name in all uppercase letters
 */
+char* astNodeTypeList[] = {
+	"PROGRAM",
+	"MODULE DECLARATION",
+	"MODULE LIST",
+	"MODULE",
+	"INPUT LIST",
+	"OUTPUT  LIST",
+	"ARRAY",
+	"RANGE ARRAYS",
+	"STATEMENT",
+	"IO",
+	"SIMPLE STMT",
+	"ASSIGN",
+	"WHICH STMT",
+	"MODULE REUSE",
+	"ID LIST",
+	"EXPR",
+	"AOB EXPR",
+	"DECLARE STMT",
+	"COND STMT",
+	"CASE  STMT",
+	"UNARY",
+	"LVAL ARR STMT",
+	"ITER STMT",
+	"FOR",
+	"WHILE",
+	"VARIDNUM",
+	"LEAF",
+	"\0"
+};
+
+char* leafTypeList[] = {
+	"INT",
+	"RNUM",
+	"NUM",
+	"BOOL",
+	"ID",
+	"IDXNUM",
+	"IDXID",
+	"PLUS",
+	"MINUS",
+	"MUL",
+	"DIV",
+	"OR",
+	"AND",
+	"LT",
+	"LE",
+	"GT",
+	"GE",
+	"EQ",
+	"NE",
+	"TRUE",
+	"FALSE",
+	"VALNUM",
+	"VALTRUE",
+	"VALFALSE",
+	"VARIDNUM_NUM",
+	"VARIDNUM_ID",
+	"VARIDNUM_RNUM",
+	"BOOLTRUE",
+	"BOOLFALSE",
+	"UOPPLUS",
+	"UOPMINUS",
+	"\0"
+};
+
 
 typedef enum {
 	BOUND_RUNTIME,

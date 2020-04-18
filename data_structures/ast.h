@@ -8,6 +8,7 @@
 #define _AST
 
 #include "astDef.h"
+#include "queue.h"
 
 /**
  * Creates and returns a blank Abstract Syntax Tree root
@@ -32,6 +33,12 @@ ASTNode* addChild(ASTNode* parent, ASTNode* child);
  * @param prev_sibling	The previous sibling of the current node
  */
 ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* pt);
+
+/**
+ * Prints the complete AST, in a breadth first manner
+ * @param root  The root of the current subtree of AST
+ */ 
+void printAST(ASTNode* root, Queue queue);
 
 // write after this line
 
