@@ -236,11 +236,6 @@ label_2:
 	mov r11w, 10d
 ; --- END: got left and right index of A in r10w and r11w --- 
 ; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
-; --- START: rte() --- 
-	mov ebx, 0	 ;return 0 status on exit - 'No errors'
-	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
-	int 80h		 ;generate interrupt
-; --- END: rte() --- 
 	mov rax, rbp
 	sub rax, 2d
 	mov r8w, word [rax]
@@ -270,11 +265,6 @@ label_3:
 	mov r11w, 10d
 ; --- END: got left and right index of B in r10w and r11w --- 
 ; --- START: fetchArraybyIndex() for array B: base: rdx, offset: r9  --- 
-; --- START: rte() --- 
-	mov ebx, 0	 ;return 0 status on exit - 'No errors'
-	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
-	int 80h		 ;generate interrupt
-; --- END: rte() --- 
 	mov rax, rbp
 	sub rax, 2d
 	mov r8w, word [rax]
@@ -355,11 +345,6 @@ label_4:
 	mov r11w, 10d
 ; --- END: got left and right index of C in r10w and r11w --- 
 ; --- START: fetchArraybyIndex() for array C: base: rdx, offset: r9  --- 
-; --- START: rte() --- 
-	mov ebx, 0	 ;return 0 status on exit - 'No errors'
-	mov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)
-	int 80h		 ;generate interrupt
-; --- END: rte() --- 
 	mov rax, rbp
 	sub rax, 2d
 	mov r8w, word [rax]

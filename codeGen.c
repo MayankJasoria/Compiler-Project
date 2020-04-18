@@ -202,9 +202,9 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	else {
 		/* index is of type ID */
 		SymTableVar * tmp = fetchVarData(arr -> parent -> localST, i -> nodeData.leaf -> tn -> lex);
-		if(tmp -> isAssigned == 0) {
-			rte();
-		}
+		// if(tmp -> isAssigned == 0) {
+		// 	rte();
+		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + tmp -> offset);
 		fprintf(fp, "\tmov r8w, word [rax]\n");
