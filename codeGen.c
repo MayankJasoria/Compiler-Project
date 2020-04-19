@@ -986,7 +986,7 @@ void codegenInit() {
 	fprintf(fp, "\tfmt_float: db \"%%f\", 0\n");
 	fprintf(fp, "\tfmt_int: db \"%%hd\", 0\n");
 	fprintf(fp, "\tfmt_string: db \"%%s\", 0\n");
-	fprintf(fp, "\tfmt_bool: db \"%%c\", 0\n");
+	fprintf(fp, "\tfmt_bool: db \"%%hhu\", 0\n");
 	fprintf(fp, "\tsingle_space: db \" \", 0\n");
 	fprintf(fp, "\tend_line: db \"\", 0xA, 0\n");	
 
