@@ -208,10 +208,16 @@ void getLeftRightIndex(SymTableVar * id) {
 	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w --- \n", id->name);
 }
 
-void getInputElement() {
+void getInputElement(astDataType t) {
 	fprintf(fp, "; START: --- getInputElement() ---\n");
+	
 	fprintf(fp, "\tpush rbp\n");
-	fprintf(fp, "\tmov rdi, fmt_int\n");
+	if(t == AST_TYPE_INT) 
+		fprintf(fp, "\tmov rdi, fmt_int\n");
+	else if(t == AST_TYPE_REAL)
+		fprintf(fp, "\tmov rdi, fmt_float\n");
+	else if(t == AST_TYPE_BOOLEAN)
+		fprintf(fp, "\tmov rdi, fmt_bool\n");
 	fprintf(fp, "\tmov rax, rbp\n");
 	fprintf(fp, "\tsub rax, r9\n");
 	fprintf(fp, "\tmov rsi, rax\n");
@@ -693,7 +699,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
-			getInputElement();
+			getInputElement(t);
 		}
 		break;
 		case AST_TYPE_REAL: {
@@ -705,7 +711,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
-			getInputElement();
+			getInputElement(t);
 		}
 		break;
 		case AST_TYPE_BOOLEAN: {
@@ -717,7 +723,7 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "\tpop rbp\n");
 
 			fprintf(fp, "\tmov r9, %dd\n", offset + typeSize[t]);
-			getInputElement();
+			getInputElement(t);
 		}
 		break;
 		case AST_TYPE_ARRAY: {

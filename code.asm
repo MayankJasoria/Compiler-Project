@@ -31,12 +31,34 @@ section .text
 ; ### Begining of the driver program. ### 
 main:
 mov rbp, rsp
-	sub rsp, 7d
+	sub rsp, 24d
 	mov word [dynamic], 0
-; --- START: takeInput(): type: Integer, Name: x --- 
+	mov rdx, rsp
+	sub rdx, 4d
+	mov dword [rdx], __float32__(5.000000)
+; --- START: moveOffsetToOffset(): lhsoff = 12, rhsoff = 0, type = Real ---
+	mov rax, rsp
+	sub rax, 4d
+	mov r8d, dword [rax]
+	mov rax, rbp
+	sub rax, 16d
+	mov dword [rax], r8d
+; --- END: moveOffsetToOffset(): lhsoff = 12, rhsoff = 0, type = Real ---
+	mov rdx, rsp
+	sub rdx, 4d
+	mov dword [rdx], __float32__(9.000000)
+; --- START: moveOffsetToOffset(): lhsoff = 16, rhsoff = 0, type = Real ---
+	mov rax, rsp
+	sub rax, 4d
+	mov r8d, dword [rax]
+	mov rax, rbp
+	sub rax, 20d
+	mov dword [rax], r8d
+; --- END: moveOffsetToOffset(): lhsoff = 16, rhsoff = 0, type = Real ---
+; --- START: takeInput(): type: Real, Name: x --- 
 	push rbp
 	mov rdi, op1
-	mov rsi, type_int
+	mov rsi, type_float
 	push rsi
 	push rdx
 	push rcx
@@ -57,10 +79,10 @@ mov rbp, rsp
 	pop rdx
 	pop rsi
 	pop rbp
-	mov r9, 2d
+	mov r9, 4d
 ; START: --- getInputElement() ---
 	push rbp
-	mov rdi, fmt_int
+	mov rdi, fmt_float
 	mov rax, rbp
 	sub rax, r9
 	mov rsi, rax
@@ -85,302 +107,262 @@ mov rbp, rsp
 	pop rsi
 	pop rbp
 ; --- END: getInputElement() --- 
-; --- END: takeInput(): type: Integer, Name: x --- 
-	mov ax, 19d
-	mov rdx, rsp
-	sub rdx, 2d
-	mov word [rdx], ax
-; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
-	mov rax, rsp
-	sub rax, 2d
-	mov r8w, word [rax]
+; --- END: takeInput(): type: Real, Name: x --- 
+; --- START: takeInput(): type: Real, Name: y --- 
+	push rbp
+	mov rdi, op1
+	mov rsi, type_float
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+	mov r9, 8d
+; START: --- getInputElement() ---
+	push rbp
+	mov rdi, fmt_float
+	mov rax, rbp
+	sub rax, r9
+	mov rsi, rax
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: getInputElement() --- 
+; --- END: takeInput(): type: Real, Name: y --- 
 	mov rax, rbp
 	sub rax, 4d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
-	mov ax, 56d
-	mov rdx, rsp
-	sub rdx, 2d
-	mov word [rdx], ax
-; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
 	mov rax, rsp
-	sub rax, 2d
-	mov r8w, word [rax]
-	mov rax, rbp
-	sub rax, 6d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
-; --- START: scopeBegin() --- 
-	sub rsp, 2d
-	mov ax, word [dynamic]
-	mov word [rsp], ax
-	mov ax, 0
-	mov word [dynamic], ax
-; --- END: scopeBegin() --- 
-	mov rax, rbp
-	sub rax, 2d
-	mov ax, word [rax]
-	cmp ax, 1d
-	jnz label_1
-	mov rax, rbp
-	sub rax, 2d
-; --- START: pushTemporary(): type = Integer ---
-	mov dx, word [rax]
-	mov rax, rsp
-	sub rax, 2d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-	mov ax, 2d
-	mov rdx, rsp
-	sub rdx, 4d
-	mov word [rdx], ax
-; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: MUL, type: Integer --- 
-	mov rax, rsp
-	sub rax, 2d
-	mov r10, rsp
-	sub r10, 4d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
-	mov ax, r8w
-	mul r9w
-	mov r8w, ax
-	mov rax, rsp
-	sub rax, 6d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: MUL, type: Integer --- 
-	mov rax, rbp
 	sub rax, 4d
-; --- START: pushTemporary(): type = Integer ---
-	mov dx, word [rax]
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rax, rbp
+	sub rax, 8d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
 	mov rax, rsp
 	sub rax, 8d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-; --- START: applyOperator(): leftOp: 4, rightOp: 6, operator: MINUS, type: Integer --- 
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rax, rbp
+	sub rax, 20d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
 	mov rax, rsp
-	sub rax, 6d
+	sub rax, 12d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 4, rightOp: 8, operator: MUL, type: Real --- 
+	mov rax, rsp
+	sub rax, 8d
 	mov r10, rsp
-	sub r10, 8d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
-	sub r8w, r9w
+	sub r10, 12d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fmul
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 4, rightOp: 8, operator: MUL, type: Real --- 
+; --- START: applyOperator(): leftOp: 0, rightOp: 12, operator: PLUS, type: Real --- 
 	mov rax, rsp
-	sub rax, 10d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 4, rightOp: 6, operator: MINUS, type: Integer --- 
-; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 8, type = Integer ---
+	sub rax, 4d
+	mov r10, rsp
+	sub r10, 16d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fadd
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 0, rightOp: 12, operator: PLUS, type: Real --- 
+	mov rax, rbp
+	sub rax, 16d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
 	mov rax, rsp
-	sub rax, 10d
-	mov r8w, word [rax]
+	sub rax, 24d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rax, rbp
+	sub rax, 20d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 28d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 20, rightOp: 24, operator: MINUS, type: Real --- 
+	mov rax, rsp
+	sub rax, 24d
+	mov r10, rsp
+	sub r10, 28d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fsub
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 20, rightOp: 24, operator: MINUS, type: Real --- 
+	mov rax, rbp
+	sub rax, 8d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 36d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 28, rightOp: 32, operator: MUL, type: Real --- 
+	mov rax, rsp
+	sub rax, 32d
+	mov r10, rsp
+	sub r10, 36d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fmul
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 28, rightOp: 32, operator: MUL, type: Real --- 
+; --- START: applyOperator(): leftOp: 16, rightOp: 36, operator: PLUS, type: Real --- 
+	mov rax, rsp
+	sub rax, 20d
+	mov r10, rsp
+	sub r10, 40d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fadd
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 16, rightOp: 36, operator: PLUS, type: Real --- 
+	mov rax, rbp
+	sub rax, 16d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 48d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rdx, rsp
+	sub rdx, 52d
+	mov dword [rdx], __float32__(2.000000)
+; --- START: applyOperator(): leftOp: 44, rightOp: 48, operator: MUL, type: Real --- 
+	mov rax, rsp
+	sub rax, 48d
+	mov r10, rsp
+	sub r10, 52d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fmul
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 44, rightOp: 48, operator: MUL, type: Real --- 
+; --- START: applyOperator(): leftOp: 40, rightOp: 52, operator: PLUS, type: Real --- 
+	mov rax, rsp
+	sub rax, 44d
+	mov r10, rsp
+	sub r10, 56d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fadd
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 40, rightOp: 52, operator: PLUS, type: Real --- 
+	mov rax, rbp
+	sub rax, 20d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 64d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
 	mov rax, rbp
 	sub rax, 4d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 8, type = Integer ---
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 4d
-	mov rdx, rbp
-; --- START: outputArrayElement() for y --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for y--- 
-	jmp label_0
-label_1:
-	mov rax, rbp
-	sub rax, 2d
-	mov ax, word [rax]
-	cmp ax, 2d
-	jnz label_2
-	mov rax, rbp
-	sub rax, 2d
-; --- START: pushTemporary(): type = Integer ---
-	mov dx, word [rax]
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
 	mov rax, rsp
-	sub rax, 12d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-	mov ax, 3d
-	mov rdx, rsp
-	sub rdx, 14d
-	mov word [rdx], ax
-; --- START: applyOperator(): leftOp: 10, rightOp: 12, operator: MUL, type: Integer --- 
+	sub rax, 68d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 60, rightOp: 64, operator: MUL, type: Real --- 
 	mov rax, rsp
-	sub rax, 12d
+	sub rax, 64d
 	mov r10, rsp
-	sub r10, 14d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
-	mov ax, r8w
-	mul r9w
-	mov r8w, ax
+	sub r10, 68d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fmul
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 60, rightOp: 64, operator: MUL, type: Real --- 
+; --- START: applyOperator(): leftOp: 56, rightOp: 68, operator: MINUS, type: Real --- 
 	mov rax, rsp
-	sub rax, 16d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 10, rightOp: 12, operator: MUL, type: Integer --- 
-	mov rax, rbp
-	sub rax, 6d
-; --- START: pushTemporary(): type = Integer ---
-	mov dx, word [rax]
-	mov rax, rsp
-	sub rax, 18d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MINUS, type: Integer --- 
-	mov rax, rsp
-	sub rax, 16d
+	sub rax, 60d
 	mov r10, rsp
-	sub r10, 18d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
-	sub r8w, r9w
+	sub r10, 72d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fsub
+	sub rsp, 4
+	fstp dword [rsp]
+; --- START: applyOperator(): leftOp: 56, rightOp: 68, operator: MINUS, type: Real --- 
+; --- START: moveOffsetToOffset(): lhsoff = 8, rhsoff = 72, type = Real ---
 	mov rax, rsp
-	sub rax, 20d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MINUS, type: Integer --- 
-; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 18, type = Integer ---
-	mov rax, rsp
-	sub rax, 20d
-	mov r8w, word [rax]
+	sub rax, 76d
+	mov r8d, dword [rax]
 	mov rax, rbp
-	sub rax, 6d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 18, type = Integer ---
+	sub rax, 12d
+	mov dword [rax], r8d
+; --- END: moveOffsetToOffset(): lhsoff = 8, rhsoff = 72, type = Real ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 6d
+	mov r9, 12d
 	mov rdx, rbp
 ; --- START: outputArrayElement() for z --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
-	mov rdi, output_fmt_int
+	mov rdi, output_fmt_float
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for z--- 
-	jmp label_0
-label_2:
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 2d
-	mov rdx, rbp
-; --- START: outputArrayElement() for x --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for x--- 
-label_0:
-; --- START: scopeEnd() --- 
-	movsx rax, word [dynamic]
-	add rsp, rax
-	mov ax, word [rsp]
-	mov word [dynamic], ax
-	add rsp, 2d
-; --- END: scopeEnd() --- 
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 4d
-	mov rdx, rbp
-; --- START: outputArrayElement() for y --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for y--- 
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 6d
-	mov rdx, rbp
-; --- START: outputArrayElement() for z --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
+	cvtss2sd xmm0, dword[rax]
+	mov rax, 1
 	push rsi
 	push rdx
 	push rcx
@@ -406,7 +388,7 @@ label_0:
 ; ### Resetting(aligning) the rsp. ### 
 	movsx rax, word [dynamic]
 	add rsp, rax
-	add rsp, 7d
+	add rsp, 24d
 	ret
 
 ; ### End of driver function. ### 

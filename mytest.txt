@@ -1,40 +1,29 @@
-**Code Generation test case 8: Switch Case statement
+**Code Generation test case 1: Computing expressions using integer data type**
 
-Single driver module with multiple levels of nesting 
-
-
-
-**
+**Single driver module with single level nesting **
 
 <<<driver program>>>
 start
-	declare x, y, z:integer;
-	declare b: boolean;
+	declare x, y, z:real;
+	declare a, b, c:real;
+	a:= 5.0;
+	b:= 9.0;
 	get_value(x);
-	y:= 19;
-	z:= 56;
-	switch(x)
-	start
-		case 1: y:= x*2-y;
-			print(y);
-                        break;
-		case 2: z:= x*3-z;
-			print(z);
-                        break;
-		default:print(x);
-			break;
-	end
-	print(y);
-	print(z);
+	get_value(y);
+	z:= x + y*b +(a-b)*y+ a*2.0 - b*x;	
+        print(z);
 end
 
-** On the console 
+** On the console
 
-Input: Enter an integer value  
-2
-Output: -50
-Output: 19
-Output: -50                       
-	
+Input: Enter an integer value
+2.0
+Input: Enter an integer value
+3.0
+Output: 9
+
 Similarly run the generated assembly code for other input values and verify.
+
 **
+
+
