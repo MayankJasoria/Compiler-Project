@@ -7,6 +7,7 @@
 #include "astDef.h"
 #include "n_ary_tree.h"
 #include "queue.h"
+#include <string.h>
 
 #define AST_FMT_HEADERS "%-20s%-20s%-9s%-23s%-12s%-22s%-10s%-10s%-8s%-12s\n"
 #define AST_FMT_LEAF_NUM "%-20s%-20sYes      %-23s%-12d%-22s%-10s----      %-8d%-12d\n"
@@ -1429,6 +1430,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 	val_if_number (int/real)
 	ruleNum (int)
 */
+
 void printNode(ASTNode* curr) {
 	
   
@@ -1517,7 +1519,7 @@ void printNode(ASTNode* curr) {
 // #define AST_FMT_NON_LEAF_NODATA_OP "%-20s%-20sNo      %-22s%-12s----                  ----      %-10s----    %-8d"
 // #define AST_FMT_NON_LEAF_NODATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  ----      ----      ----    %-8d"
 
-	// fprintf(fp,"Is Leaf?: %s Line number: %s Lexeme: %s Data Type: %s",is_leaf,linenum,lexeme,datatype);
+// 	// fprintf(fp,"Is Leaf?: %s Line number: %s Lexeme: %s Data Type: %s",is_leaf,linenum,lexeme,datatype);
 
 	if(is_leaf) {
 		if(t == AST_LEAF_BOOLTRUE ||

@@ -662,6 +662,12 @@ void outputSymbolTable(ASTNode * curr, int operation) {
 		}
 		break;
 
+		case AST_NODE_CASESTMT: {
+			ASTNode * ch = curr -> child;
+			outputChildren(ch);
+		}
+		break;
+
 		case AST_NODE_ITERSTMT: {
 			ASTNode * ch = curr -> child -> next;
 			if(ch == NULL)
