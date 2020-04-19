@@ -31,6 +31,8 @@
 
 int typeSize[] = {2, 4, 1, 8, 8};
 
+int listType;
+
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.
 	2. make an array typeSize, after seeing the MASM doc. (done)
@@ -171,7 +173,7 @@ SymTableFunc* insertFuncRecord(char* name) {
 	data -> input_plist = getList();
 	data -> output_plist = getList();
 	data -> scope = SCOPE_DEFAULT;
-	data -> level = 0;
+	data -> level = 1;
 	data -> dynamicRecSize = 0;
 	data -> inputSize = 0;
 	data -> outputSize = 0;
@@ -235,8 +237,8 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
 	} 
 	else {
+		funcData -> outputSize += varData -> width;
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);
-
 		insertVarRecord(funcData, varName, varData->width, varData->offset, varData->dataType, new);
 	}
 }
@@ -329,6 +331,14 @@ void printVar(void* data) {
 		tmp = tmp -> parent;
 	char modName[30];
 	strcpy(modName, tmp -> name);
+	
+	int offset = varData -> offset;
+
+	if(offset < tmp -> inputSize + tmp -> outputSize)
+		return;
+	else
+		offset -= tmp -> inputSize + tmp -> outputSize;
+
 	int startline = tab -> start_line_num;
 	int endline = tab -> end_line_num;
 	int varWidth = varData -> width;
@@ -344,7 +354,7 @@ void printVar(void* data) {
 	strcpy(type, typeName[varData -> dataType]);
 	if(isArray)
 		strcpy(type, typeName[varData -> sdt.r -> dataType]);
-	int offset = varData -> offset;
+	
 	int nestLevel = tab -> level;
 	/* TODO: left index, right index. Need if else in the print itself */
 	if(!isArray) {
@@ -407,7 +417,7 @@ void printListVar( void* data) {
 	if(isArray)
 		strcpy(type, typeName[varData -> sdt.r -> dataType]);
 	int offset = varData -> offset;
-	int nestLevel = tab -> level;
+	int nestLevel = 0;
 	/* TODO: left index, right index. Need if else in the print itself */
 	if(!isArray) {
 		int leftWidth = intlen(startline);
@@ -447,7 +457,7 @@ void printListVar( void* data) {
 
 void printFunc(void* data) {
 	SymTableFunc* funcData = (SymTableFunc*) ((hashElement*) data)->data;
-	printf(PRINT_FUNC_DATA, funcData->name, funcData->actRecSize);
+	printf(PRINT_FUNC_DATA, funcData->name, funcData->actRecSize - funcData -> inputSize - funcData -> outputSize);
 }
 
 void printListArr(void* data) {
@@ -634,11 +644,15 @@ void outputSymbolTable(ASTNode * curr, int operation) {
 			strcpy(name, ch -> nodeData.leaf -> tn -> lex);
 			tmp = fetchFuncData(name);
 			if(operation == 0) {
+				listType = 0;
 				printList(tmp->input_plist, printListVar);
+				listType = 1;
+				printList(tmp->output_plist, printListVar);
 				printSymbolTable(tmp -> dataTable, printVar);
 			}
 			else {
 				printList(tmp->input_plist, printListArr);
+				printList(tmp->output_plist, printListArr);
 				printSymbolTable(tmp -> dataTable, printArr);
 			}
 			outputChildren(ch, operation);
@@ -664,7 +678,7 @@ void outputSymbolTable(ASTNode * curr, int operation) {
 
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
-			outputChildren(ch);
+			outputChildren(ch, operation);
 		}
 		break;
 
