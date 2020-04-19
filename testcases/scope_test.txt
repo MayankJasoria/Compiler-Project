@@ -1,0 +1,75 @@
+<<<driver program>>>
+start
+	declare a, b, c: integer;
+	declare x, y, z: boolean;
+	get_value(a);
+	get_value(b);
+	get_value(c);
+	get_value(x);
+	get_value(y);
+	get_value(z);
+	switch(a)
+	start
+		case 1: ** testing of 'nested' switch **
+			switch(x)
+			start
+				case true:
+					print(a);
+					break;
+				case false:
+					print(b);
+					break;
+			end
+			break;
+		case 2: ** Testing of for loop **
+			for(b in 2..7)
+			start
+				c := c + b;
+				print(c);
+				switch(y)
+				start
+					case true:
+						print(y)
+						print(b)
+					case false:
+						print(y)
+				end
+			end
+			break;
+		case 3: ** Testing for while loop **
+			while(a + b - c > 0)
+			start
+				c := c + 2;
+				switch(z)
+				start
+					case true:
+						print(z);
+						declare p: integer;
+						p := a + b - c;
+						print(p);
+					case false:
+						print(z);
+						declare q: integer;
+						q := a + b - c;
+						print(q);
+				end
+			end
+			break;
+		default: ** Testing for dynamic arrays **
+			declare A: array[a..b] of real;
+			declare B: array[b..c] of integer;
+			declare c: boolean;
+			get_value(A);
+			get_value(B);
+			get_value(c);
+			print(A);
+			declare i: integer;
+			for(i in 1..4)
+			start
+				declare z: integer;
+				z := a + i;
+				print(A[z]);
+			end
+			break;
+	break;
+end
