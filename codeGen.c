@@ -1557,6 +1557,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 				fprintf(fp, "\tjmp label_%d\n", tmp);
 				fprintf(fp, "label_%d:\n", last);
+				scopeEnd();
 
 				par -> dynamicRecSize = 0;
 			}
