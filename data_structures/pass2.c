@@ -222,6 +222,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 		case AST_NODE_DECLARESTMT: {
 			/* no need */
 			ASTNode* ch = curr -> child;
+			pass2Children(ch, fname);
 			ASTNode* tmp = ch;
 			while(tmp != NULL) {
 				ASTNode* idNode = tmp -> child;
@@ -233,6 +234,33 @@ void pass2AST(ASTNode* curr, char* fname) {
 				}
 				tmp = tmp -> child;
 				tmp = tmp -> next;
+			}
+			SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+			if(var == NULL || var -> dataType !=AST_TYPE_ARRAY)
+				return;
+			if(strcmp(var -> sdt.r -> lowId, "")) {
+				SymTableVar * lft = fetchVarData(curr -> localST, var -> sdt.r -> lowId);
+				if(lft == NULL) {
+					return;
+				}
+				else if(lft -> isAssigned == 0) {
+					fprintf(stderr, 
+					"Range variable('%s') may not have been initialized on line %d.\n",
+					var -> sdt.r -> lowId,
+					ch -> child -> nodeData.leaf -> tn -> line_num);
+				}
+			}
+			if(strcmp(var -> sdt.r -> highId, "")) {
+				SymTableVar * right = fetchVarData(curr -> localST, var -> sdt.r -> highId);
+				if(right == NULL) {
+					return;
+				}
+				if(right -> isAssigned == 0) {
+					fprintf(stderr, 
+					"Range variable('%s') may not have been initialized on line %d.\n",
+					var -> sdt.r -> highId,
+					ch -> child -> nodeData.leaf -> tn -> line_num);
+				}
 			}
 		}
 		break;
@@ -247,7 +275,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 			if((ch -> nodeData).leaf -> dataType == AST_TYPE_REAL) {
 				return;
 			}
-			
+
 			if((ch -> nodeData).leaf -> dataType == AST_TYPE_ARRAY) {
 				return;
 			}
