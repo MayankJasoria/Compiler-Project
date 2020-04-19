@@ -33,14 +33,14 @@ void* frontElement(Queue queue) {
 		fprintf(stderr, "The given queue is empty\n");
 		return NULL;
 	}
-	return queue->head;
+	return queue->head->data;
 }
 
 void* backElement(Queue queue) {
 	if(queue == NULL || queue->end == NULL) {
 		fprintf(stderr, "The given queue is empty\n");
 	}
-	return queue->end;
+	return queue->end->data;
 }
 
 boolean isQueueEmpty(Queue queue) {

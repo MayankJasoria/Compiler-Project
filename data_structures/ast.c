@@ -11,6 +11,73 @@
 /**
 * @see ast.h
  */
+
+char* astNodeTypeList[] = {
+	"PROGRAM",
+	"MODULE DECLARATION",
+	"MODULE LIST",
+	"MODULE",
+	"INPUT LIST",
+	"OUTPUT  LIST",
+	"ARRAY",
+	"RANGE ARRAYS",
+	"STATEMENT",
+	"IO",
+	"SIMPLE STMT",
+	"ASSIGN",
+	"WHICH STMT",
+	"MODULE REUSE",
+	"ID LIST",
+	"EXPR",
+	"AOB EXPR",
+	"DECLARE STMT",
+	"COND STMT",
+	"CASE  STMT",
+	"UNARY",
+	"LVAL ARR STMT",
+	"ITER STMT",
+	"FOR",
+	"WHILE",
+	"VARIDNUM",
+	"LEAF",
+	"\0"
+};
+
+char* leafTypeList[] = {
+	"INT",
+	"RNUM",
+	"NUM",
+	"BOOL",
+	"ID",
+	"IDXNUM",
+	"IDXID",
+	"PLUS",
+	"MINUS",
+	"MUL",
+	"DIV",
+	"OR",
+	"AND",
+	"LT",
+	"LE",
+	"GT",
+	"GE",
+	"EQ",
+	"NE",
+	"TRUE",
+	"FALSE",
+	"VALNUM",
+	"VALTRUE",
+	"VALFALSE",
+	"VARIDNUM_NUM",
+	"VARIDNUM_ID",
+	"VARIDNUM_RNUM",
+	"BOOLTRUE",
+	"BOOLFALSE",
+	"UOPPLUS",
+	"UOPMINUS",
+	"\0"
+};
+
 ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	ASTNode* node = (ASTNode*) malloc(sizeof(ASTNode));
 
@@ -1276,39 +1343,44 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 	}
 }
 
-// void printNode(ASTNode* curr) {
-// 	if(curr->type == AST_NODE_LEAF) {
-// 		/* lexeme associated with a leaf */
-// 		printf("%s\t",curr->nodeData.leaf->tn->lex);
-// 		printf("%s",leafTypeList[curr->nodeData.leaf->type]);
-// 		printf("\n");
-// 	} else {
-// 		/* Something to identify the appropriate non-terminal */
-// 		printf("%s",astNodeTypeList[curr->type]);
-// 		printf("\n");
-// 	}
-// }
 
-// /**
-//  * @see ast.h
-//  */
-// void printAST(ASTNode* root) {
-// 	Queue queue = getQueue();
-// 	enqueue(queue, root);
+void printNode(ASTNode* curr) {
+	if(curr->type == AST_NODE_LEAF) { /* Leaf Node */
+		/* Print Lexeme */
+		printf("%s %s",curr->nodeData.leaf->tn->lex,leafTypeList[curr->nodeData.leaf->type]);
+		
+		/* Print Type */
+		//printf(" ",leafTypeList[curr->nodeData.leaf->type]);
 
-// 	while(!isQueueEmpty(queue)) {
-// 		ASTNode* node = dequeue(queue);
-// 		while(node != NULL) {
-// 			/* print current node */
-// 			printNode(node);
-// 			if(node->child != NULL) {
-// 				/* add first child of current node to queue */
-// 				enqueue(queue, node->child);
-// 			}
 
-// 			/* Traverse to next node of the linked list of nodes */
-// 			node = node->next;
-// 		}
-// 	}
-// }
+		printf("\n");
+	} else {
+		/* Print Type */
+		printf("%s",astNodeTypeList[curr->type]);
+		printf("\n");
+	}
+}
+
+void printAST(ASTNode* root) {
+	Queue q = getQueue();
+	q = enqueue(q, root);
+
+	while(!isQueueEmpty(q)) {
+		ASTNode* curr = (ASTNode *) frontElement(q);
+		q = dequeue(q);
+		while(curr != NULL) {
+			/* print current node */
+
+			printNode(curr);
+			if(curr->child != NULL) {
+				/* add first child of current node to queue */
+				q = enqueue(q, curr->child);
+			}
+			/* Traverse to next node of the linked list of nodes */
+			curr = curr->next;
+		}
+		if(isQueueEmpty(q))
+			printf("emptttty\n");
+	}
+}
 

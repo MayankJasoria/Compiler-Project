@@ -28,7 +28,7 @@ ASTNode* getASTNode(astNodeType type);
 ASTNode* addChild(ASTNode* parent, ASTNode* child);
 
 /**
- * Constructs an AST downward form a given root (parent node)
+ * Constructs an AST downward from a given root (parent node)
  * @param parent		The parent node, for which the AST is being constructed
  * @param prev_sibling	The previous sibling of the current node
  */
@@ -38,7 +38,14 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* pt);
  * Prints the complete AST, in a breadth first manner
  * @param root  The root of the current subtree of AST
  */ 
-// void printAST(ASTNode* root, Queue queue);
+void printAST(ASTNode* root);
+
+/**
+* Prints all the details of an AST Node
+* @param curr The current AST Node
+*/ 
+void printNode(ASTNode* curr);
+
 
 // write after this line
 
