@@ -31,8 +31,6 @@
 
 int typeSize[] = {2, 4, 1, 8, 8};
 
-int listType;
-
 /* Doubts regarding the hash table implementation:
 	1. if item not there in table, does getDataFromTable return NULL.
 	2. make an array typeSize, after seeing the MASM doc. (done)
@@ -644,9 +642,7 @@ void outputSymbolTable(ASTNode * curr, int operation) {
 			strcpy(name, ch -> nodeData.leaf -> tn -> lex);
 			tmp = fetchFuncData(name);
 			if(operation == 0) {
-				listType = 0;
 				printList(tmp->input_plist, printListVar);
-				listType = 1;
 				printList(tmp->output_plist, printListVar);
 				printSymbolTable(tmp -> dataTable, printVar);
 			}
