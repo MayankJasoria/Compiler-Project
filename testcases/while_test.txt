@@ -16,7 +16,7 @@ start
 	get_value(x);
 	get_value(y);
   
-	while(z - 2 < x + y * a)
+	while(z < x)
 	start
 		** get_value(z);
 		y := x + 1; **
