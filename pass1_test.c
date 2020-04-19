@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 	// printSymbolTable(globalST, printFunc);
 	// fclose(fp);
 
-	// outputSymbolTable(root);
+	outputSymbolTable(root);
 	
 	// int parseTreeSize = getParseTreeSize();
 	// int astSize = getASTSize();

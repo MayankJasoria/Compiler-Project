@@ -494,6 +494,7 @@ void outputSymbolTable(ASTNode * curr) {
 			if(curr -> nodeData.moduleList -> type == AST_MODULE_DRIVER) {
 				SymTableFunc * dr = fetchFuncData("driver");
 				printSymbolTable(dr -> dataTable, printVar);
+				outputChildren(ch);
 			}
 			else 
 				outputChildren(ch);
@@ -525,6 +526,11 @@ void outputSymbolTable(ASTNode * curr) {
 			outputChildren(ch);
 		}
 		break;
+
+		case AST_NODE_CASESTMT: {
+			ASTNode * ch = curr -> child;
+			outputChildren(ch);
+		}
 
 		case AST_NODE_ITERSTMT: {
 			ASTNode * ch = curr -> child -> next;
