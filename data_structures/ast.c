@@ -35,33 +35,33 @@
  */
 
 char* astNodeTypeList[] = {
-	"PROGRAM",
-	"MODULE DECLARATION",
-	"MODULE LIST",
-	"MODULE",
-	"INPUT LIST",
-	"OUTPUT  LIST",
-	"ARRAY",
-	"RANGE ARRAYS",
-	"STATEMENT",
+	"Program",
+	"Module Declaration",
+	"Module List",
+	"Module",
+	"Input List",
+	"Output List",
+	"Array",
+	"Range Arrays",
+	"Statement",
 	"IO",
-	"SIMPLE STMT",
-	"ASSIGN",
-	"WHICH STMT",
-	"MODULE REUSE",
-	"ID LIST",
-	"EXPR",
-	"AOB EXPR",
-	"DECLARE STMT",
-	"COND STMT",
-	"CASE  STMT",
-	"UNARY",
-	"LVAL ARR STMT",
-	"ITER STMT",
-	"FOR",
-	"WHILE",
-	"VARIDNUM",
-	"LEAF",
+	"Simple Statement",
+	"Assign",
+	"Which Statement",
+	"Module Reuse",
+	"ID List",
+	"Expression",
+	"AOB Expression",
+	"Declare Statement",
+	"Conditional Statement",
+	"Case Statement",
+	"Unary",
+	"LVAL Arr Statement",
+	"Iterative Statement",
+	"For",
+	"While",
+	"Var ID Num",
+	"Leaf",
 	"\0"
 };
 
@@ -100,10 +100,13 @@ char* leafTypeList[] = {
 	"\0"
 };
 
+/* 
+ * Creates and returns a blank AST root 
+ */
 ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	ASTNode* node = (ASTNode*) malloc(sizeof(ASTNode));
 
-	/* define all pointers as NULL */
+	/* Initialize all pointers to NULL */
 	node -> parent = NULL;
 	node -> child = NULL;
 	node -> next = NULL;
@@ -112,11 +115,17 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 	node -> type = t;
 	node -> nodeData = nodeData;
 
-	/* Compute size for AST here */
+	/*
+	 * Increment number of AST Nodes by 1 
+	 * Add the current size of AST Node to the total AST Size
+	 */
 	numASTnodes++;
-	// printf("%d\n", numASTnodes);
 	ASTSize += sizeof(ASTNode);
 
+	/*
+	 * Construct AST Node of the type specified in the function argument 
+	 * Also update the AST size
+	 */
 	switch (t) {
 		case AST_NODE_PROGRAM: {
 			ASTSize += sizeof(programNode);

@@ -12,7 +12,7 @@
 
 /**
  * Creates and returns a blank Abstract Syntax Tree root
- * @param type	The type fo a given AST node
+ * @param type	The type for a given AST node
  * 
  * @return a new AST node of specified type
  */
