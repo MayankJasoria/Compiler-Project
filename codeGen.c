@@ -487,8 +487,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	}
 	if(type == AST_TYPE_REAL) {
 		fprintf(fp, "\tfinit\n");
-		fprintf(fp, "\tfld dword [r10]\n");
 		fprintf(fp, "\tfld dword [rax]\n");
+		fprintf(fp, "\tfld dword [r10]\n");
 	}
 	if(type == AST_TYPE_BOOLEAN) {
 		fprintf(fp, "\tmov r8b, byte [rax]\n");
