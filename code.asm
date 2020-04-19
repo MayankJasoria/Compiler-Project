@@ -31,7 +31,7 @@ section .text
 ; ### Begining of the driver program. ### 
 main:
 mov rbp, rsp
-	sub rsp, 24d
+	sub rsp, 27d
 	mov word [dynamic], 0
 	mov rdx, rsp
 	sub rdx, 4d
@@ -55,6 +55,267 @@ mov rbp, rsp
 	sub rax, 20d
 	mov dword [rax], r8d
 ; --- END: moveOffsetToOffset(): lhsoff = 16, rhsoff = 0, type = Real ---
+	mov rax, rbp
+	sub rax, 16d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 4d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rax, rbp
+	sub rax, 20d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 8d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: LT, type: Real --- 
+	mov rax, rsp
+	sub rax, 4d
+	mov r10, rsp
+	sub r10, 8d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fcom st0, st1
+	fstsw ax
+	and eax, 0100011100000000B
+	cmp eax, 0000000100000000B
+	je label_0
+; --- START: if0else1() --- 
+	mov r8b, 0
+	jmp label_1
+label_0:
+	mov r8b, 1
+label_1:
+; --- END: if0else1() --- 
+	mov rax, rsp
+	sub rax, 9d
+	mov byte [rax], r8b
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: LT, type: Real --- 
+; --- START: moveOffsetToOffset(): lhsoff = 24, rhsoff = 8, type = Boolean ---
+	mov rax, rsp
+	sub rax, 9d
+	mov r8b, byte [rax]
+	mov rax, rbp
+	sub rax, 25d
+	mov byte [rax], r8b
+; --- END: moveOffsetToOffset(): lhsoff = 24, rhsoff = 8, type = Boolean ---
+	mov rax, rbp
+	sub rax, 16d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 4d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rax, rbp
+	sub rax, 20d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 8d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: GT, type: Real --- 
+	mov rax, rsp
+	sub rax, 4d
+	mov r10, rsp
+	sub r10, 8d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fcom st0, st1
+	fstsw ax
+	and eax, 0100011100000000B
+	cmp eax, 0000000000000000B
+	je label_2
+; --- START: if0else1() --- 
+	mov r8b, 0
+	jmp label_3
+label_2:
+	mov r8b, 1
+label_3:
+; --- END: if0else1() --- 
+	mov rax, rsp
+	sub rax, 9d
+	mov byte [rax], r8b
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: GT, type: Real --- 
+; --- START: moveOffsetToOffset(): lhsoff = 25, rhsoff = 8, type = Boolean ---
+	mov rax, rsp
+	sub rax, 9d
+	mov r8b, byte [rax]
+	mov rax, rbp
+	sub rax, 26d
+	mov byte [rax], r8b
+; --- END: moveOffsetToOffset(): lhsoff = 25, rhsoff = 8, type = Boolean ---
+	mov rax, rbp
+	sub rax, 16d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 4d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+	mov rax, rbp
+	sub rax, 20d
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 8d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: NE, type: Real --- 
+	mov rax, rsp
+	sub rax, 4d
+	mov r10, rsp
+	sub r10, 8d
+	finit
+	fld dword [r10]
+	fld dword [rax]
+	fcom st0, st1
+	fstsw ax
+	and eax, 0100011100000000B
+	cmp eax, 0100000000000000B
+	jne label_4
+; --- START: if0else1() --- 
+	mov r8b, 0
+	jmp label_5
+label_4:
+	mov r8b, 1
+label_5:
+; --- END: if0else1() --- 
+	mov rax, rsp
+	sub rax, 9d
+	mov byte [rax], r8b
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: NE, type: Real --- 
+; --- START: moveOffsetToOffset(): lhsoff = 26, rhsoff = 8, type = Boolean ---
+	mov rax, rsp
+	sub rax, 9d
+	mov r8b, byte [rax]
+	mov rax, rbp
+	sub rax, 27d
+	mov byte [rax], r8b
+; --- END: moveOffsetToOffset(): lhsoff = 26, rhsoff = 8, type = Boolean ---
+; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
+	mov r9, 25d
+	mov rdx, rbp
+; --- START: outputArrayElement() for t --- 
+; Function is used for both Arrays and non-Array types, don't go by the name! 
+	push rbp
+	mov rax, rdx
+	sub rax, r9
+	mov al, byte[rax]
+	cmp al, 0
+	jz label_6
+	mov rdi, output_fmt_string
+	mov rsi, bool_true
+	jmp label_7
+label_6:
+	mov rdi, output_fmt_string
+	mov rsi, bool_false
+label_7:
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: outputArrayElement() for t--- 
+; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
+	mov r9, 26d
+	mov rdx, rbp
+; --- START: outputArrayElement() for t1 --- 
+; Function is used for both Arrays and non-Array types, don't go by the name! 
+	push rbp
+	mov rax, rdx
+	sub rax, r9
+	mov al, byte[rax]
+	cmp al, 0
+	jz label_8
+	mov rdi, output_fmt_string
+	mov rsi, bool_true
+	jmp label_9
+label_8:
+	mov rdi, output_fmt_string
+	mov rsi, bool_false
+label_9:
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: outputArrayElement() for t1--- 
+; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
+	mov r9, 27d
+	mov rdx, rbp
+; --- START: outputArrayElement() for t2 --- 
+; Function is used for both Arrays and non-Array types, don't go by the name! 
+	push rbp
+	mov rax, rdx
+	sub rax, r9
+	mov al, byte[rax]
+	cmp al, 0
+	jz label_10
+	mov rdi, output_fmt_string
+	mov rsi, bool_true
+	jmp label_11
+label_10:
+	mov rdi, output_fmt_string
+	mov rsi, bool_false
+label_11:
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: outputArrayElement() for t2--- 
 ; --- START: takeInput(): type: Real, Name: x --- 
 	push rbp
 	mov rdi, op1
@@ -397,7 +658,7 @@ mov rbp, rsp
 ; ### Resetting(aligning) the rsp. ### 
 	movsx rax, word [dynamic]
 	add rsp, rax
-	add rsp, 24d
+	add rsp, 27d
 	ret
 
 ; ### End of driver function. ### 

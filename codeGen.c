@@ -487,8 +487,14 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	}
 	if(type == AST_TYPE_REAL) {
 		fprintf(fp, "\tfinit\n");
-		fprintf(fp, "\tfld dword [rax]\n");
-		fprintf(fp, "\tfld dword [r10]\n");
+		if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_BOOLEAN) {
+			fprintf(fp, "\tfld dword [r10]\n");
+			fprintf(fp, "\tfld dword [rax]\n");
+		}
+		else {
+			fprintf(fp, "\tfld dword [rax]\n");
+			fprintf(fp, "\tfld dword [r10]\n");
+		}
 	}
 	if(type == AST_TYPE_BOOLEAN) {
 		fprintf(fp, "\tmov r8b, byte [rax]\n");
@@ -576,7 +582,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "\tfstsw ax\n");
 				fprintf(fp, "\tand eax, 0100011100000000B\n");
 				fprintf(fp, "\tcmp eax, 0100000000000000B\n");
-				fprintf(fp, "\tje label_%d\n", label_num - 1);
+				fprintf(fp, "\tje label_%d\n", label_num++);
 				if0else1();
 			}
 			break;
@@ -591,7 +597,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "\tfstsw ax\n");
 				fprintf(fp, "\tand eax, 0100011100000000B\n");
 				fprintf(fp, "\tcmp eax, 0100000000000000B\n");
-				fprintf(fp, "\tjne label_%d\n", label_num - 1);
+				fprintf(fp, "\tjne label_%d\n", label_num++);
 				if0else1();
 			}
 			break;
