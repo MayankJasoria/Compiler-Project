@@ -576,6 +576,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				fprintf(stderr, 
 				"Switch variable('%s') is of real type on line %d.\n", ch -> nodeData.leaf -> tn -> lex,
 					ch -> nodeData.leaf -> tn -> line_num);
+				return;
 			}
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
 			newST -> start_line_num = curr -> nodeData.condStmt -> start_line_num;
@@ -689,18 +690,34 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
 			ch = curr -> child;
-			if(ch -> nodeData.leaf -> dataType != AST_TYPE_INT) {
-				fprintf(stderr, 
-				"For loop variable('%s') is not of int type on line %d.\n",
-				ch -> nodeData.leaf -> tn -> lex,
-				ch -> nodeData.leaf -> tn -> line_num);
-				return;
+			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
+				if(ch -> nodeData.leaf -> dataType != AST_TYPE_INT) {
+					fprintf(stderr, 
+					"For loop variable('%s') is not of int type on line %d.\n",
+					ch -> nodeData.leaf -> tn -> lex,
+					ch -> nodeData.leaf -> tn -> line_num);
+					return;
+				}
+			}
+			else {
+				astDataType t;
+				if(ch -> type == AST_NODE_VARIDNUM)
+					t = ch -> nodeData.var -> dataType;
+				else if(ch -> type == AST_NODE_AOBEXPR)
+					t = ch -> nodeData.AOBExpr -> dataType;
+				else if(ch -> type == AST_NODE_LEAF)
+					t = ch -> nodeData.leaf -> dataType;
+				if(t != AST_TYPE_BOOLEAN) {
+					fprintf(stderr, 
+					"While loop expression is not of boolean type on line %d.\n",
+					curr -> nodeData.iterStmt -> start_line_num);
+				}
 			}
 
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
 
-			newST -> start_line_num = curr -> nodeData.condStmt -> start_line_num;
-			newST -> end_line_num = curr -> nodeData.condStmt -> end_line_num;
+			newST -> start_line_num = curr -> nodeData.iterStmt -> start_line_num;
+			newST -> end_line_num = curr -> nodeData.iterStmt -> end_line_num;
 
 			ASTNode* ch1 = ch -> next;
 			if(ch1 == NULL) {

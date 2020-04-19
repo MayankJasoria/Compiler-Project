@@ -247,6 +247,11 @@ void pass2AST(ASTNode* curr, char* fname) {
 			if((ch -> nodeData).leaf -> dataType == AST_TYPE_REAL) {
 				return;
 			}
+			
+			if((ch -> nodeData).leaf -> dataType == AST_TYPE_ARRAY) {
+				return;
+			}
+
 			ASTNode* ch1 = ch -> next;
 			ASTNode* ch2 = ch1 -> next;
 			strcpy(ch1 -> localST -> dependentVar, (ch -> nodeData).leaf -> tn -> lex);

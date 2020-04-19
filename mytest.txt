@@ -1,83 +1,53 @@
-declare module readArr;
-declare module arraySum;
-<<module arraySum>>
-takes input[list:array[1..15] of    real, n:integer];
-returns  [sum:real];
-start
-	declare index:integer;
-	declare t:boolean;
-	declare temp: integer;
-	sum:=0.0;
-	for(index in  1..15)
-	start
-		t:= index<=n;
-		declare temp:integer;
-		switch(t)
-		start
-			case true: print(list[index]);
-				   declare p1:integer;
-				   p1:= 25;
-				   sum:=sum+list[index];
-				   break;
-			case false: print(sum);
-				    declare temp: integer;
-				    print(index);
-				    break;
-			default: print(p1);
-				 break;
-		end
-	end
-	print(sum);
-	declare temp:integer;
-	print(p1);
-	**observe that the variable temp is declared in different scopes **
-	** lines 14 and 23 do not have conflict of multiple declaration of temp but line 31 has**  
-	** variable p1 is declared in different scope and is used in another**
-	** at line 26 p1 is a valid identifier but at line 32 it is not**
-	** scopes are identified as start and blocks**
-end
+**Code Generation test case 3: Computing expressions using integer, boolean and static array data types**
+
+**Single driver module with single level nesting **
+
 <<<driver program>>>
 start
-	declare A:array[1..15] of real;
-	declare k:integer;
-	declare s:real;
-	declare vv:integer;
-	get_value(k);
-	[vv]:= use module readArr with parameters A,k;
-	[s]:= use module arraySum with parameters A;
-	print(s);
+	declare x, y, z:integer;
+	declare a, b, c:integer;
+	declare u, v: boolean;
+	declare A: array[10..15] of integer;
+	u:= true;
+	a:= 5;
+	b:= 9;
+	get_value(x);
+	get_value(y);
+	z:= x + y*b +(a-b)*y+ a*2 - b*x;
+	v:= z > 10 OR a<=b AND x<y AND u;	**follows left to right associativity**
+        print(z);
+	print(u);
+	get_value(A); 
+                          
+**Note: Implement get_value(A) using type information of A. Your code template should first inform user of the size, range indices and type of data and read accordingly to populate the memory locations allocated for elements of A**
+   
+        y:= a+x+A[13]*2 + A[14]*3 +A[15];                **bound checking at compile time must have been done before code generation**
+	print(y);	
+	print(A);
+
 end
 
-**The following module reads k  values one by one**
-** the array elements are populated with the read values**
-**The array variable is not returned as the translation will**
-**use the same locations for array elements**
+** Expected output
 
-<<module readArr>>
-takes input [arr1:array[1..15] of real,k:integer];
-start
-	declare tempvar:real;
-	declare i:integer;
-	i:=1;
-	while(i<=k)
-	start
-		get_value(tempvar);
-		arr1[i]:=tempvar;
-		switch(tempvar)
-		start
-			case 20: print(i);
-				 break;
-			default: print(tempvar);
-				 break;
-		end
-		i:=i+1;
-		** the semantics of while needs an increment and will be taken care of at the second phase**
-	end
-	declare m: integer;
-	switch(k)
-	start
-		case true: get_value(m);break;
-		case 1 : print(m);break;
-	end
-end
+For values of x = 2 and y = 3 as run time input, print z as 9.
+Then print u as true (use string true or false to print output of a variable of boolean type).
+Read array element values as 12, 4, -8, 9, 10, -18 as shown below and then print the values of A - all elements of A one after the other  
 
+On the console your output should appear in new line for each print as shown below
+
+Output: 9
+Output: true
+Input: Enter 6 array elements of integer type for range 10 to 15
+12
+4
+-8
+9
+10
+-18
+Output: 37
+Output: 12 4 -8 9 10 -18
+
+
+Similarly run the generated assembly code for other input values and verify.
+
+**

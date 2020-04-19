@@ -26,6 +26,7 @@ start
 	sum1:= 0;
 	for(k in 10..14)
         start
+        declare popp: integer;
 		print(A[k]);		**requires dynamic bound checking- value of k is available at run time**
 		sum1:= sum1+A[k];
 		print(sum1);
