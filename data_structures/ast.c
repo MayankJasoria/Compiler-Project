@@ -8,15 +8,13 @@
 #include "n_ary_tree.h"
 #include "queue.h"
 
-#define AST_FMT_HEADERS "%-20s%-20s%-9s%-22s%-12s%-22s%-10s%-10s%-8s%-8s"
-#define AST_FMT_LEAF_NUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8d%-8d"
-#define AST_FMT_LEAF_RNUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8f%-8d"
-#define AST_FMT_LEAF_ID "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      ----    %-8d"
-#define AST_FMT_LEAF_BOOL "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8s%-8d"
-#define AST_FMT_NON_LEAF_DATA_OP "%-20s%-20sNo       %-22s%-12s----                  %-10s%-10s----    %-8d"
-#define AST_FMT_NON_LEAF_DATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  %-10s----      ----    %-8d"
-#define AST_FMT_NON_LEAF_NODATA_OP "%-20s%-20sNo      %-22s%-12s----                  ----      %-10s----    %-8d"
-#define AST_FMT_NON_LEAF_NODATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  ----      ----      ----    %-8d"
+#define AST_FMT_HEADERS "%-20s%-20s%-9s%-23s%-12s%-22s%-10s%-10s%-8s%-12s\n"
+#define AST_FMT_LEAF_NUM "%-20s%-20sYes      %-23s%-12d%-22s%-10s----      %-8d%-12d\n"
+#define AST_FMT_LEAF_RNUM "%-20s%-20sYes      %-23s%-12d%-22s%-10s----      %-8f%-12d\n"
+#define AST_FMT_LEAF_ID "%-20s%-20sYes      %-23s%-12d%-22s%-10s----      ----    %-12d\n"
+#define AST_FMT_LEAF_BOOL "%-20s%-20sYes      %-23s%-12d%-22s%-10s----      %-8s%-12d\n"
+#define AST_FMT_NON_LEAF "%-20s%-20sNo       %-23s----        %-22s%-10s%-10s----    %-12d\n"
+
 
 /* 
 	type (string)
@@ -1433,35 +1431,63 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 */
 void printNode(ASTNode* curr) {
 	FILE* fp = fopen("AST_OUT.txt", "a");
-	astNodeType nodeType = curr -> type;
-	int is_leaf = curr -> type == AST_NODE_LEAF;
+  
+	//AST Node Type:
+	char nodeType[30];
+	strcpy(nodeType, astNodeTypeList[curr -> type]);
+
+
+	//Parent Type:
+	char parentType[30];
+	if(curr->parent != NULL) {
+		strcpy(parentType, astNodeTypeList[curr->parent->type]);
+	} else {
+		strcpy(parentType, "----                ");
+	}
 	
+	//isLeaf and Leaf Type:
+	int is_leaf = curr -> type == AST_NODE_LEAF;
 	char leafType[30];
 	strcpy(leafType, "----");
 	if(is_leaf)
 		strcpy(leafType, leafTypeList[curr -> nodeData.leaf -> type]);
 	
-	char line_num[10];	
-	strcpy(line_num, "----");
+	//Line Number:
+	int line_num = -1;
 	if(is_leaf)
-		strcpy(line_num, toString(curr -> nodeData.leaf -> tn -> lex));
+		line_num = curr -> nodeData.leaf -> tn -> line_num;
 	
+	//Lexeme:
 	char lexeme[30];
 	strcpy(lexeme, "----");
 	if(is_leaf)
 		strcpy(lexeme, curr -> nodeData.leaf -> tn -> lex);
 	
+	int data = 0; /* data false */
+	char op[20];
+	//Data Type:
 	char datatype[20];
 	strcpy(datatype, "----");
+	strcpy(op, "----");
+	int is_op = 0; /* is operator */
 	if(curr -> type == AST_NODE_AOBEXPR || curr -> type == AST_NODE_UNARY || 
-		curr -> type == AST_NODE_VARIDNUM)
-		strcpy(datatype, getExprType(curr));
+		curr -> type == AST_NODE_VARIDNUM) {
+		strcpy(datatype, typeName[getExprType(curr)]);
+		data = 1; /* data: true */
+		if (curr -> type == AST_NODE_AOBEXPR) {
+			is_op = 1; /* is operator */
+			strcpy(op, curr -> child -> next -> nodeData.leaf -> tn -> lex);
+		}
+	}
 
+
+	//Value of int, float or bool variable:
 	int int_val;
 	float float_val;
 	char bool_val[10];
+	leaf_type t;
 	if(curr -> type == AST_NODE_LEAF) {
-		leaf_type t = curr -> nodeData.leaf -> type;
+		t = curr -> nodeData.leaf -> type;
 		if(t == AST_LEAF_NUM || AST_LEAF_IDXNUM || AST_LEAF_VARIDNUM_NUM || AST_LEAF_VALNUM) {
 			int_val = curr -> nodeData.leaf -> tn -> value.val_int;
 		}
@@ -1473,6 +1499,7 @@ void printNode(ASTNode* curr) {
 			strcpy(bool_val, curr -> nodeData.leaf -> tn -> lex);
 	}
 	
+	
 	int associatedRule = curr -> associatedRule;
 	char associatedNT[20];
 	if(curr -> type == AST_NODE_LEAF) 
@@ -1480,11 +1507,72 @@ void printNode(ASTNode* curr) {
 	else
 		strcpy(associatedNT, nonterminals[G[associatedRule].left]);
 
-	// usage: fprintf(fp, AST_FMT_LEAF_NUM, type, parent, terminal, lineNum, lex, dataType, value, rule);
+// #define AST_FMT_HEADERS "%-20s%-20s%-9s%-22s%-12s%-22s%-10s%-10s%-8s%-8s"
+// #define AST_FMT_LEAF_NUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8d%-8d"
+// #define AST_FMT_LEAF_RNUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8f%-8d"
+// #define AST_FMT_LEAF_ID "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      ----    %-8d"
+// #define AST_FMT_LEAF_BOOL "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8s%-8d"
+// #define AST_FMT_NON_LEAF_DATA_OP "%-20s%-20sNo       %-22s%-12s----                  %-10s%-10s----    %-8d"
+// #define AST_FMT_NON_LEAF_DATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  %-10s----      ----    %-8d"
+// #define AST_FMT_NON_LEAF_NODATA_OP "%-20s%-20sNo      %-22s%-12s----                  ----      %-10s----    %-8d"
+// #define AST_FMT_NON_LEAF_NODATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  ----      ----      ----    %-8d"
 
 	// fprintf(fp,"Is Leaf?: %s Line number: %s Lexeme: %s Data Type: %s",is_leaf,linenum,lexeme,datatype);
 
-	
+	if(is_leaf) {
+		if(t == AST_LEAF_BOOLTRUE
+			|| AST_LEAF_BOOLFALSE
+			|| AST_LEAF_VALTRUE
+			|| AST_LEAF_VALFALSE
+			|| AST_LEAF_TRUE
+			|| AST_LEAF_FALSE) {
+			fprintf(fp, AST_FMT_LEAF_BOOL, nodeType,
+				parentType,
+				associatedNT,
+				line_num,
+				lexeme,
+				datatype,
+				bool_val,
+				associatedRule
+			);
+		} else if(t == AST_LEAF_VARIDNUM_RNUM) {
+			fprintf(fp, AST_FMT_LEAF_RNUM, nodeType,
+				parentType,
+				associatedNT,
+				line_num,
+				lexeme,
+				datatype,
+				float_val,
+				associatedRule
+			);
+		} else if(t == AST_LEAF_NUM 
+			|| AST_LEAF_IDXNUM 
+			|| AST_LEAF_VARIDNUM_NUM 
+			|| AST_LEAF_VALNUM) {
+			fprintf(fp, AST_FMT_LEAF_NUM, nodeType,
+				parentType,
+				associatedNT,
+				line_num,
+				lexeme,
+				datatype,
+				int_val,
+				associatedRule
+			);
+		} else {
+			fprintf(fp, AST_FMT_LEAF_ID, nodeType,
+				parentType,
+				associatedNT,
+				line_num,
+				lexeme,
+				datatype,
+				associatedRule
+			);
+		}
+	} else {
+		/* non-leaf */	
+		fprintf(fp, AST_FMT_NON_LEAF, nodeType, parentType, associatedNT, lexeme, datatype, op, associatedRule);
+		
+	}
 	fclose(fp);
 }
 
@@ -1492,7 +1580,16 @@ void printNode(ASTNode* curr) {
  * @see ast.h
  */
 void printAST(ASTNode* root){
-	printNode(root);
+	if(root->parent == NULL) {
+		FILE* fp = fopen("AST_OUT.txt", "a");
+		fprintf(fp, AST_FMT_HEADERS, "Type", "Parent", "Is Leaf", "Terminal/Non-Terminal", "Line Number", "Lexeme", "Data Type", "Operator", "Value", "Rule Number");
+		fclose(fp);
+	}
+	if(!(root->type == AST_NODE_LEAF 
+		&& root->parent->type == AST_NODE_AOBEXPR 
+		&& root->parent->child->next == root)) {
+		printNode(root);
+	}
 	ASTNode * ch = root -> child;
 	while(ch != NULL) {
 		printAST(ch);
