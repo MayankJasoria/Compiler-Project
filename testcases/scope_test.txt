@@ -29,10 +29,12 @@ start
 				switch(y)
 				start
 					case true:
-						print(y)
-						print(b)
+						print(y);
+						print(b);
+						break;
 					case false:
-						print(y)
+						print(y);
+						break;
 				end
 			end
 			break;
@@ -47,11 +49,13 @@ start
 						declare p: integer;
 						p := a + b - c;
 						print(p);
+						break;
 					case false:
 						print(z);
 						declare q: integer;
 						q := a + b - c;
 						print(q);
+						break;
 				end
 			end
 			break;
@@ -71,5 +75,5 @@ start
 				print(A[z]);
 			end
 			break;
-	break;
+	end
 end

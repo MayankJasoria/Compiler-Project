@@ -1,0 +1,27 @@
+<<module test>>
+takes input[a: integer];
+returns [b: integer];
+start
+	b := a + 2;
+	print(a);
+end
+
+** Case to check if variable of while is getting changed or not **
+<<<driver program>>>
+start
+	declare x, y, z:integer;
+	declare a, b, c:integer;
+	a:= 5;
+	b:= 9;
+	get_value(x);
+	get_value(y);
+  
+	while(z - 2 < x + y * a)
+	start
+		** get_value(z);
+		y := x + 1; **
+		[a] := use module test with parameters z;
+		b := 6;
+		print(c);
+	end
+end
