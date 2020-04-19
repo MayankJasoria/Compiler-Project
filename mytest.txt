@@ -1,73 +1,75 @@
-** Test case 3: Testing symbol table creation for variable declaration and redeclaration checks**
-** Multiple level nesting using primitive data types**
-**Variant of test case 1**
-
-
-<<module var_demo>>
-takes input [x:integer, w: boolean, p:real];
-returns [m:integer, n:integer, u: boolean];
-start
-	declare a,b:integer; 
-	m:= 56;
-        n:= 20;
-	declare m,n: boolean;
-	get_value(b);
-	declare value, q, r: real;
-	get_value(q);
-	r:= 23.67e+2;
-	for(a in 1..10)
-	start
-		declare b, q: integer;
-		declare r: boolean;		
-		get_value(b);
-		q:= 18;
-		r:= b+q*a+x < 100 AND w OR m;   	**not an error as r, w, m, a and x are found in the static parent scope**   
-		print(a);
-		declare q,r: real;			** ERROR: variables q and r are re-declared**
-		print(r);
-		q:= b-a*x+y*20;                 	** ERROR: variable y is not declared**
-	end
-	value:= p+q*r; 
-	m:=a <= x AND true;
-	u:= true AND false OR v;			** ERROR: variable v is not declared**
-	u:= a<=b;
-	declare w: integer;				** Not an error as a local variable can shadow the input parameter**
-	w:= 23;                                 	** not an error as type of w is integer now**
-	n:= a*25+100;
-	declare b, c: real;				**ERROR: variable b is re-declared**
-	c:= value-q+r;
-	w:= w + 5;					**No type error as well as type of w is now taken as integer;**
-end
-
-
-<<module compute>>
-takes input[a:integer, b:integer, s: real, c:integer];
-returns [res_1:boolean, res_2_a:integer, res_2__b:real];
-start
-	res_2__b:= 1.34
-	declare m,n: boolean;
-	while(m OR a>=b AND res_2__b<=129.54e+3)
-	start
-		declare w1, w2: integer;
-		declare abc_1: integer;
-		w1:= w2*a-s*k*c-pqr_2;                  	**ERROR: variable k is not declared**
-	end
-	m:= m OR (a <= b) AND (res_2 >= 30.65);
-	res_1:= (true AND c==b)OR(b>p AND (a<=d));		**ERROR: variable d is not declared**
-	declare new: integer;					**ERROR: variable new is re-declared**
-	new:= a<b;
-	print(res_1);
-end
-
-
 <<<driver program>>>
 start
-	declare v_1_2_3:integer;
-	get_value(v_1_2_43);					**ERROR: variable v_1_2_43 is not declared**		
-	declare result_, v7, v9:integer;
-	declare u1:boolean;
-	[u1, result_, k]:=use module compute with parameters v_1_2_3, v7, v9;	**ERROR: variable k is not declared**
-	print(result_);
-	declare u1: real;					**ERROR: variable u1 is re-declared**
+	declare a, b, c: integer;
+	declare x, y, z: boolean;
+	get_value(a);
+	get_value(b);
+	get_value(c);
+	get_value(x);
+	get_value(y);
+	get_value(z);
+	switch(a)
+	start
+		case 1: ** testing of 'nested' switch **
+			switch(x)
+			start
+				case true:
+					print(a);
+					break;
+				case false:
+					print(b);
+					break;
+			end
+			break;
+		case 2: ** Testing of for loop **
+			for(b in 2..7)
+			start
+				c := c + b;
+				print(c);
+				switch(y)
+				start
+					case true:
+						print(y)
+						print(b)
+					case false:
+						print(y)
+				end
+			end
+			break;
+		case 3: ** Testing for while loop **
+			while(a + b - c > 0)
+			start
+				c := c + 2;
+				switch(z)
+				start
+					case true:
+						print(z);
+						declare p: integer;
+						p := a + b - c;
+						print(p);
+					case false:
+						print(z);
+						declare q: integer;
+						q := a + b - c;
+						print(q);
+				end
+			end
+			break;
+		default: ** Testing for dynamic arrays **
+			declare A: array[a..b] of real;
+			declare B: array[b..c] of integer;
+			declare c: boolean;
+			get_value(A);
+			get_value(B);
+			get_value(c);
+			print(A);
+			declare i: integer;
+			for(i in 1..4)
+			start
+				declare z: integer;
+				z := a + i;
+				print(A[z]);
+			end
+			break;
+	break;
 end
-

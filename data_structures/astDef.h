@@ -426,6 +426,7 @@ typedef struct {
 	struct ASTNode* next; /* Points to next element of type caseStmtNode */
 	case_stmt_type type;
 	int breakLabel;
+	int label;
 	char switchVar[30];
 	astDataType dataType; /* for checking bool int etc */
 } caseStmtNode;

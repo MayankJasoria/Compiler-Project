@@ -1357,12 +1357,12 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			scopeBegin();
 
 			emitCodeAST(ch -> next, fname);
-			fprintf(fp, "label_%d:\n", label_num - 1);
+			if(tmp != label_num - 1)
+				fprintf(fp, "label_%d:\n", label_num - 1);
 			if(ch -> next -> next != NULL)
 				emitCodeAST(ch -> next -> next, fname);
 			
 			fprintf(fp, "label_%d:\n", tmp);
-			
 			scopeEnd();
 			/* Check: defualt will automatically be handled(statements) */
 		}
@@ -1372,8 +1372,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
+			
 			if(curr -> parent -> type == AST_NODE_CASESTMT)
-				fprintf(fp, "label_%d:\n", label_num - 1);
+				fprintf(fp, "label_%d:\n", curr -> nodeData.caseStmt -> label);
 			fprintf(fp, "\tmov rax, rbp\n");
 			fprintf(fp, "\tsub rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
@@ -1381,6 +1382,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
 				fprintf(fp, "\tcmp ax, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
+				int nextcase = label_num - 1;
 				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
@@ -1389,15 +1391,17 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ch = ch -> next -> next;
 				if(ch != NULL) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
+					ch -> nodeData.caseStmt -> label = nextcase;
 					emitCodeAST(ch, fname);
 				}
 			}
 			else if(switchvar -> dataType == AST_TYPE_BOOLEAN) {
 				
-				fprintf(fp, "\tmov aL, byte [rax]\n");
+				fprintf(fp, "\tmov al, byte [rax]\n");
 				int val = (ch -> nodeData.leaf -> tn -> sym.T == TRUE);
 				fprintf(fp, "\tcmp al, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
+				int nextcase = label_num - 1;
 				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
@@ -1406,6 +1410,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ch = ch -> next -> next;
 				if(ch != NULL) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
+					ch -> nodeData.caseStmt -> label = nextcase;
 					emitCodeAST(ch, fname);
 				}
 			}
@@ -1568,7 +1573,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					float val = curr -> nodeData.leaf -> tn -> value.val_float;
 					fprintf(fp, "\tmov rdx, rsp\n");
 					fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "\tmov word [rdx], __float32__(%f)\n", val);
+					fprintf(fp, "\tmov dword [rdx], __float32__(%f)\n", val);
 				}
 				break;
 				case AST_LEAF_BOOLTRUE: {
