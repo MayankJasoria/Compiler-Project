@@ -7,10 +7,10 @@
 # -- Detect OS for AST compilation --
 ifeq ($(OS),Windows_NT)
 	# Windows 
-	DS=data_structures\pass1.c data_structures\st.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c data_structures\hash_map.c
+	DS=data_structures\pass1.c data_structures\st.c data_structures\stack.c data_structures\linked_list.c data_structures\n_ary_tree.c data_structures\ast.c data_structures\hash_map.c data_structures\queue.c
 else
 	# Linux
-	DS=data_structures/pass1.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c
+	DS=data_structures/pass1.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c data_structures/queue.c
 	GDB_AUTO=gdb --batch --command=debug.gdb --args ./ast
 endif
 #-----------------------------------
@@ -22,7 +22,7 @@ CC=gcc
 CFLAGS=-g -o
 
 #set dependencies for the program
-DEPS_PROG=driver.c codeGen.c parser.c lexer.c data_structures/pass1.c data_structures/pass2.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c
+DEPS_PROG=driver.c codeGen.c parser.c lexer.c data_structures/pass1.c data_structures/pass2.c data_structures/st.c data_structures/stack.c data_structures/linked_list.c data_structures/n_ary_tree.c data_structures/ast.c data_structures/hash_map.c data_structures/queue.c
 
 #set executable name
 OUT_NAME=compiler

@@ -104,16 +104,19 @@ int main(int argc, char* argv[]) {
 				 * AST: For printing the Abstract Syntax Tree in appropriate format. 
 				 * Also specify the traversal order at the beginning. (On Console)
 				 */
-				/**
-				 * TODO: Verify order of traversal
-				 */
+			
 				printf("\nTraversal Order of AST: Preorder\n");
 				if(PT == NULL) {
 					// generate parse tree
 					parseInputSourceCode(argv[1]);
 				}
+
+				/* Construct the AST */
 				root = constructAST(NULL, NULL, PT);
+				
 				/* Print the AST */
+				printAST(root);
+
 			}
 			break;
 
