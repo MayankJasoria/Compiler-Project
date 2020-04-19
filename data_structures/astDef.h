@@ -630,6 +630,7 @@ typedef struct symTableVar {
 	int isAssigned;
 	int width; /* total memory space to be allocated */
 	int offset;
+	int whileNest;
 	/*
 	* datatype of variable -> INT, RNUM, BOOL, ARRAY
 	*/
@@ -638,6 +639,8 @@ typedef struct symTableVar {
 	SymTableFunc * table;
 } SymTableVar;
 
+int varPresent;
+int globalNest;
 int numASTnodes;
 int ASTSize;
 

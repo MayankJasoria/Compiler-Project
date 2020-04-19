@@ -56,6 +56,42 @@ void traverseChildren(ASTNode * head, char * fname) {
 	}
 }
 
+void processWhileExpression(ASTNode * wh, ASTNode * ch) {
+
+	if(ch -> type == AST_NODE_LEAF)
+		return;
+	else if(ch -> type == AST_NODE_VARIDNUM) {
+		ASTNode * idNode = ch -> child;
+		SymTableVar * id = fetchVarData(wh -> localST, idNode -> nodeData.leaf -> tn -> lex);
+		if(id != NULL)
+			id -> whileNest = globalNest;
+	}
+	else if(ch -> type == AST_NODE_AOBEXPR) {
+		processWhileExpression(wh, ch -> child);
+		processWhileExpression(wh, ch -> child -> next -> next);
+	}
+}
+
+int checkWhileAssignment(ASTNode * wh, ASTNode * ch) {
+
+	if(ch -> type == AST_NODE_LEAF)
+		return 0;
+	else if(ch -> type == AST_NODE_VARIDNUM) {
+		varPresent = 1;
+		ASTNode * idNode = ch -> child;
+		SymTableVar * id = fetchVarData(wh -> localST, idNode -> nodeData.leaf -> tn -> lex);
+		if(id != NULL && id -> whileNest > globalNest)
+			return 1;
+	}
+	else if(ch -> type == AST_NODE_AOBEXPR) {
+		if(checkWhileAssignment(wh, ch -> child))
+			return 1;
+		if(checkWhileAssignment(wh, ch -> child -> next -> next))
+			return 1;
+	}
+	return 0;
+}
+
 void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	astNodeType t = curr -> type;
 	ASTNode* ch = curr -> child;
@@ -188,6 +224,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				}
 				if(ch == NULL)
 					return;
+				globalNest = 0;
 				ch -> localST = tmp;
 				tmp -> start_line_num = curr -> nodeData.moduleList -> start_line_num;
 				tmp -> end_line_num = curr -> nodeData.moduleList -> end_line_num;
@@ -202,6 +239,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			SymTableFunc* tmp;
 			char name[30];
+			globalNest = 0;
 			while(ch != NULL) {
 				if(ch -> prev == NULL) {
 					ch -> localST = curr -> localST;
@@ -287,6 +325,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				}
 				else {
 					tmp -> isAssigned = 1;
+					tmp -> whileNest = globalNest;
 				}
 			}
 			else { // AST_IO_PRINT
@@ -323,7 +362,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 				ch -> nodeData.leaf -> tn -> lex,
 				ch -> nodeData.leaf -> tn -> line_num);
 			}
-
+			else
+				tmp -> whileNest = globalNest;
 			ch = ch -> next;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
@@ -396,8 +436,11 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseChildren(ch, fname);
 			ch = curr -> child;
 
-			if(ch -> type == AST_NODE_IDLIST)
+			if(ch -> type == AST_NODE_IDLIST) {
+				ch -> localST = curr -> localST;
+				traverseAST(ch, fname);
 				ch = ch -> next;
+			}
 
 			int line_num = ch -> nodeData.leaf -> tn -> line_num;
 			SymTableFunc* tmp = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
@@ -442,6 +485,16 @@ void traverseAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_IDLIST: {
+
+			if(curr -> parent -> type == AST_NODE_MODULEREUSE && curr -> prev == NULL) {
+				ASTNode * tmp = curr;
+				while(tmp != NULL) {
+					SymTableVar * id = fetchVarData(curr -> localST, tmp -> child -> nodeData.leaf -> tn -> lex);
+					if(id != NULL)
+						id -> whileNest = globalNest;
+					tmp = tmp -> child -> next;
+				}
+			}
 			/* no need*/
 		}
 		break;
@@ -688,6 +741,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 		case AST_NODE_ITERSTMT: {
 			ASTNode* ch = curr -> child;
 			ch -> localST = curr -> localST;
+			if(curr -> nodeData.iterStmt -> type == AST_ITER_WHILE) {
+				processWhileExpression(curr, ch);
+				globalNest++;
+			}
 			traverseAST(ch, fname);
 			ch = curr -> child;
 			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
@@ -718,6 +775,23 @@ void traverseAST(ASTNode* curr, char* fname) {
 
 			newST -> start_line_num = curr -> nodeData.iterStmt -> start_line_num;
 			newST -> end_line_num = curr -> nodeData.iterStmt -> end_line_num;
+
+			if(curr -> nodeData.iterStmt -> type == AST_ITER_WHILE) {
+
+				ASTNode * ch1 = ch -> next;
+				if(ch1 != NULL) {
+					ch1 -> localST = newST;
+					traverseAST(ch1, fname);
+				}
+				globalNest--;
+				varPresent = 0;
+				if(checkWhileAssignment(curr, ch) == 0 && varPresent > 0) {
+					fprintf(stderr, 
+					"None of while loop expression variables are assigned within the scope line %d.\n",
+					curr -> nodeData.iterStmt -> start_line_num);
+				}
+				return;
+			}
 
 			ASTNode* ch1 = ch -> next;
 			if(ch1 == NULL) {
