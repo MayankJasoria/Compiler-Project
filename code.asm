@@ -194,8 +194,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fmul
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 16d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 4, rightOp: 8, operator: MUL, type: Real --- 
 ; --- START: applyOperator(): leftOp: 0, rightOp: 12, operator: PLUS, type: Real --- 
 	mov rax, rsp
@@ -206,8 +207,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fadd
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 20d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 0, rightOp: 12, operator: PLUS, type: Real --- 
 	mov rax, rbp
 	sub rax, 16d
@@ -234,8 +236,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fsub
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 32d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 20, rightOp: 24, operator: MINUS, type: Real --- 
 	mov rax, rbp
 	sub rax, 8d
@@ -254,8 +257,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fmul
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 40d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 28, rightOp: 32, operator: MUL, type: Real --- 
 ; --- START: applyOperator(): leftOp: 16, rightOp: 36, operator: PLUS, type: Real --- 
 	mov rax, rsp
@@ -266,8 +270,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fadd
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 44d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 16, rightOp: 36, operator: PLUS, type: Real --- 
 	mov rax, rbp
 	sub rax, 16d
@@ -289,8 +294,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fmul
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 56d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 44, rightOp: 48, operator: MUL, type: Real --- 
 ; --- START: applyOperator(): leftOp: 40, rightOp: 52, operator: PLUS, type: Real --- 
 	mov rax, rsp
@@ -301,8 +307,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fadd
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 60d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 40, rightOp: 52, operator: PLUS, type: Real --- 
 	mov rax, rbp
 	sub rax, 20d
@@ -329,8 +336,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fmul
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 72d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 60, rightOp: 64, operator: MUL, type: Real --- 
 ; --- START: applyOperator(): leftOp: 56, rightOp: 68, operator: MINUS, type: Real --- 
 	mov rax, rsp
@@ -341,8 +349,9 @@ mov rbp, rsp
 	fld dword [r10]
 	fld dword [rax]
 	fsub
-	sub rsp, 4
-	fstp dword [rsp]
+	mov rax, rsp
+	sub rax, 76d
+	fstp dword [rax]
 ; --- START: applyOperator(): leftOp: 56, rightOp: 68, operator: MINUS, type: Real --- 
 ; --- START: moveOffsetToOffset(): lhsoff = 8, rhsoff = 72, type = Real ---
 	mov rax, rsp

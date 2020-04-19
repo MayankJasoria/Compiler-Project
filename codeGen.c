@@ -476,6 +476,11 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	fprintf(fp, "\tsub rax, %dd\n", leftOp + typeSize[type]);
 	fprintf(fp, "\tmov r10, rsp\n");
 	fprintf(fp, "\tsub r10, %dd\n", rightOp + typeSize[type]);
+	
+	SymTableFunc * par = getParentFunc(operator -> parent -> localST);
+	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
+	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
+
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "\tmov r8w, word [rax]\n");
 		fprintf(fp, "\tmov r9w, word [r10]\n");
@@ -596,8 +601,10 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		
 			if(type == AST_TYPE_REAL) {
 				fprintf(fp, "\tfadd\n");
-				fprintf(fp, "\tsub rsp, 4\n");
-				fprintf(fp, "\tfstp dword [rsp]\n");
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+				// fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rax]\n");
 			}
 			break;
 		case AST_LEAF_MINUS: 
@@ -606,8 +613,10 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 		
 			if(type == AST_TYPE_REAL) {
 				fprintf(fp, "\tfsub\n");
-				fprintf(fp, "\tsub rsp, 4\n");
-				fprintf(fp, "\tfstp dword [rsp]\n");
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+				// fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rax]\n");
 			}
 			break;
 		case AST_LEAF_MUL: 
@@ -618,8 +627,10 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			}
 			if(type == AST_TYPE_REAL) {
 				fprintf(fp, "\tfmul\n");
-				fprintf(fp, "\tsub rsp, 4\n");
-				fprintf(fp, "\tfstp dword [rsp]\n");
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+				// fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rax]\n");
 			}
 			break;
 		case AST_LEAF_DIV:
@@ -633,16 +644,16 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			}
 			if(type == AST_TYPE_REAL) {
 				fprintf(fp, "\tfdiv\n");
-				fprintf(fp, "\tsub rsp, 4\n");
-				fprintf(fp, "\tfstp dword [rsp]\n");
+				fprintf(fp, "\tmov rax, rsp\n");
+				fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+				// fprintf(fp, "\tsub rsp, 4\n");
+				fprintf(fp, "\tfstp dword [rax]\n");
 			}
 			break;
 		default:
 			break;
 	}
-	SymTableFunc * par = getParentFunc(operator -> parent -> localST);
-	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
-	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
+	
 	if(operator -> parent -> nodeData.AOBExpr -> dataType == AST_TYPE_INT) {
 		fprintf(fp, "\tmov rax, rsp\n");
 		fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
