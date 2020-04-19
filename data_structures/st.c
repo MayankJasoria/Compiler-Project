@@ -531,6 +531,7 @@ void outputSymbolTable(ASTNode * curr) {
 			ASTNode * ch = curr -> child;
 			outputChildren(ch);
 		}
+		break;
 
 		case AST_NODE_ITERSTMT: {
 			ASTNode * ch = curr -> child -> next;
