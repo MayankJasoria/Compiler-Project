@@ -1568,7 +1568,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					float val = curr -> nodeData.leaf -> tn -> value.val_float;
 					fprintf(fp, "\tmov rdx, rsp\n");
 					fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
-					fprintf(fp, "\tmov word [rdx], __float32__(%f)\n", val);
+					fprintf(fp, "\tmov dword [rdx], __float32__(%f)\n", val);
 				}
 				break;
 				case AST_LEAF_BOOLTRUE: {
