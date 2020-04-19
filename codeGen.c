@@ -100,6 +100,15 @@ void asmComment(char * str) {
 	fprintf(fp, "\n; ### %s ### \n", str);
 }
 
+int getLastCaseLabel(ASTNode * curr) {
+
+	ASTNode * tmp = curr -> child -> next;
+	while(tmp -> child -> next -> next != NULL) {
+		tmp = tmp -> child -> next -> next;
+	}
+	return tmp -> nodeData.caseStmt -> lastLabel;
+}
+
 // void rte(char * str, int line_num) {
 
 // 	fprintf(fp, "\tpush rbp\n");
@@ -1357,12 +1366,13 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			scopeBegin();
 
 			emitCodeAST(ch -> next, fname);
-			fprintf(fp, "label_%d:\n", label_num - 1);
+			int label = getLastCaseLabel(curr);
+			if(tmp != label)
+				fprintf(fp, "label_%d:\n", label);
 			if(ch -> next -> next != NULL)
 				emitCodeAST(ch -> next -> next, fname);
 			
 			fprintf(fp, "label_%d:\n", tmp);
-			
 			scopeEnd();
 			/* Check: defualt will automatically be handled(statements) */
 		}
@@ -1372,8 +1382,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
+			
 			if(curr -> parent -> type == AST_NODE_CASESTMT)
-				fprintf(fp, "label_%d:\n", label_num - 1);
+				fprintf(fp, "label_%d:\n", curr -> nodeData.caseStmt -> label);
 			fprintf(fp, "\tmov rax, rbp\n");
 			fprintf(fp, "\tsub rax, %dd\n", typeSize[switchvar -> dataType] + switchvar -> offset);
 			if(switchvar -> dataType == AST_TYPE_INT) {
@@ -1381,32 +1392,44 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				int val = ch -> nodeData.leaf -> tn -> value.val_int;
 				fprintf(fp, "\tcmp ax, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
+				int nextcase = label_num - 1;
 				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
 				
 				fprintf(fp, "\tjmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
+				ASTNode * chtmp = ch;
 				ch = ch -> next -> next;
 				if(ch != NULL) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
+					ch -> nodeData.caseStmt -> label = nextcase;
 					emitCodeAST(ch, fname);
+				}
+				else {
+					chtmp -> parent -> nodeData.caseStmt -> lastLabel = nextcase;
 				}
 			}
 			else if(switchvar -> dataType == AST_TYPE_BOOLEAN) {
 				
-				fprintf(fp, "\tmov aL, byte [rax]\n");
+				fprintf(fp, "\tmov al, byte [rax]\n");
 				int val = (ch -> nodeData.leaf -> tn -> sym.T == TRUE);
 				fprintf(fp, "\tcmp al, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
+				int nextcase = label_num - 1;
 				// fprintf(fp, "label_%d:\n", label_num - 2);
 				
 				emitCodeAST(ch -> next, fname);
 				
 				fprintf(fp, "jmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
+				ASTNode * chtmp = ch;
 				ch = ch -> next -> next;
 				if(ch != NULL) {
 					ch -> nodeData.caseStmt -> breakLabel = curr -> nodeData.caseStmt -> breakLabel;
+					ch -> nodeData.caseStmt -> label = nextcase;
 					emitCodeAST(ch, fname);
+				}
+				else {
+					chtmp -> parent -> nodeData.caseStmt -> lastLabel = nextcase;
 				}
 			}
 		}
