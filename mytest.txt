@@ -1,40 +1,34 @@
 <<<driver program>>>
 start
-	declare a, b, c: integer;
-	declare x, y, z: boolean;
-	get_value(a);
-	get_value(c);
-	get_value(x);
-	get_value(y);
-	get_value(z);
-	switch(a)
-	start
-		case 1: ** testing of 'nested' switch **
-			switch(x)
-			start
-				case true:
-					print(a);
-					break;
-				case false:
-					print(b);
-					break;
-			end
-			break;
-		default: ** Testing for dynamic arrays **
-			declare A: array[a..b] of real;
-			declare B: array[b..c] of integer;
-			**declare c: boolean;**
-			get_value(A);
-			get_value(B);
-			**get_value(c);**
-			print(A);
-			declare i: integer;
-			for(i in 1..4)
-			start
-				declare z: integer;
-				z := a + i;
-				print(A[z]);
-			end
-			break;
-	end
+	declare v_1_2_3, A:integer;
+	declare u1, k:boolean;
+		A:=12;
+	declare p: real;
+	p:= 23.56;
+	get_value(v_1_2_3);							 		
+	declare B, C: array [2..20] of integer;
+	declare L, H:integer;
+	declare M:array[L..H] of integer;
+	get_value(L);
+	get_value(H);
+	get_value(M);
+	[ v_1_2_3, u1]:=use module var_demo_array with parameters A,B,p,M;	**fourth parameter is a dynamic array**	
+	[ v_1_2_3, k]:=use module var_demo_array with parameters A,B,p,B;     	**fourth parameter is a static array**
+	declare a,b:integer;
+	a:= 5.89e-2;			        **ERROR: type mismatch error**
+	get_value(b);
+	declare value, q, r: real;
+	get_value(q);
+	r:= 23.67e+2;
+	value:= p+q*r-a*value; 			**ERROR: type mismatch error**
+	k:= true AND false OR q;		**ERROR: type mismatch error**
+	u1:= a<=b;
+	declare w: integer;			 
+	w:= 23+B[6];                                  
+	b:= a*25+100*C[1];		        **ERROR:element of array C is out of bound** 
+	declare D: array[20..40] of integer;			 
+	D:= value-q+r;				**ERROR: type mismatch error**
+	w:= w + 5;		 
+	B:= C;
+	C:= D;				        **ERROR: type mismatch error**        
 end

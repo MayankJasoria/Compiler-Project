@@ -21,6 +21,13 @@
 #define PRINT_VAR_RDYN_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%d, %s]%-*s%-20s%-10d%-15d\n"
 #define PRINT_VAR_LRDYN_ARRAY_DATA "%-25s%-25s%-*d - %-*d%-10d%-10s%-15s[%s, %s]%-*s%-20s%-10d%-15d\n"
 
+#define PRINT_ARR_HEADINGS "%-22s%-20s%-22s%-16s%-25s%-20s\n"
+#define PRINT_STAT_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%d, %d]%-*s%-20s\n"
+#define PRINT_LDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%s, %d]%-*s%-20s\n"
+#define PRINT_RDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%d, %s]%-*s%-20s\n"
+#define PRINT_LRDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%s, %s]%-*s%-20s\n"
+
+ 	
 
 int typeSize[] = {2, 4, 1, 8, 8};
 
@@ -443,6 +450,111 @@ void printFunc(void* data) {
 	printf(PRINT_FUNC_DATA, funcData->name, funcData->actRecSize);
 }
 
+void printListArr(void* data) {
+	SymTableVar* varData = (SymTableVar*) data;
+	int isArray = varData -> dataType == AST_TYPE_ARRAY;
+	if(isArray == 0)
+		return;
+	SymTableFunc* tab = varData -> table;
+	SymTableFunc* tmp = tab;
+	while(tmp -> parent != NULL)
+		tmp = tmp -> parent;
+	char modName[30];
+	strcpy(modName, tmp -> name);
+	int startline = tab -> start_line_num;
+	int endline = tab -> end_line_num;
+	int isDynamic = -1;
+	if(strcmp(varData -> sdt.r -> lowId, "") == 0 && strcmp(varData -> sdt.r -> highId, "") == 0)
+		isDynamic = 0;
+	else
+		isDynamic = 1;
+	char type[30];
+	strcpy(type, typeName[varData -> sdt.r -> dataType]);
+	
+	if(!isDynamic) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
+		printf(PRINT_STAT_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Static Array", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type);
+	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
+		printf(PRINT_LDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Dynamic Array", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type);
+	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
+		printf(PRINT_RDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Dynamic Array", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type);
+	} else {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + strlen(varData->sdt.r->highId));
+		printf(PRINT_LRDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Dynamic Array", varData->sdt.r->lowId, varData->sdt.r->highId, spaceWidth, " ", type);
+	}
+}
+
+void printArr(void* data) {
+	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
+	int isArray = varData -> dataType == AST_TYPE_ARRAY;
+	if(isArray == 0)
+		return;
+	SymTableFunc* tab = varData -> table;
+	SymTableFunc* tmp = tab;
+	while(tmp -> parent != NULL)
+		tmp = tmp -> parent;
+	char modName[30];
+	strcpy(modName, tmp -> name);
+	int startline = tab -> start_line_num;
+	int endline = tab -> end_line_num;
+
+	int isDynamic = -1;
+	if(strcmp(varData -> sdt.r -> lowId, "") == 0 && strcmp(varData -> sdt.r -> highId, "") == 0)
+		isDynamic = 0;
+	else
+		isDynamic = 1;
+	char type[30];
+	strcpy(type, typeName[varData -> sdt.r -> dataType]);
+
+	if(!isDynamic) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
+		printf(PRINT_STAT_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Static Array", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type);
+	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
+		printf(PRINT_LDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Dynamic Array", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type);
+	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
+		printf(PRINT_RDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Dynamic Array", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type);
+	} else {
+		int spaceWidth = 21;
+		int leftWidth = intlen(startline);
+		int rightWidth = 17 - leftWidth;
+		spaceWidth -= (strlen(varData->sdt.r->lowId) + strlen(varData->sdt.r->highId));
+		printf(PRINT_LRDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
+			"Dynamic Array", varData->sdt.r->lowId, varData->sdt.r->highId, spaceWidth, " ", type);
+	}
+}
+
 
 /**
  *  For printing the Symbol Table giving following information (ten in number) for each variable identifier at each line using formatted output.[ Use width of variables of type integer as 2, of real as 4 and of boolean as 1 for printing the symbol table] 
@@ -467,24 +579,36 @@ void printSymbolTable(SymbolTable st, void (printElement)(void*)) {
 	printHashTable(st, printElement);
 }
 
-void outputChildren(ASTNode * head) {
+/*	Scope - module name (string) -
+        scope - line number pairs of start and end of the scope -
+        Name of array variable -
+        whether static or dynamic - dynamic array - 
+        range variables or number lexemes - 
+        type of element */
+
+void outputChildren(ASTNode * head, int operation) {
 	ASTNode * ch = head;
 	while(ch != NULL) {
-		outputSymbolTable(ch);
+		outputSymbolTable(ch, operation);
 		ch = ch -> next;
 	}
 }
 
-void outputSymbolTable(ASTNode * curr) {
+void outputSymbolTable(ASTNode * curr, int operation) {
 	switch(curr -> type) {
 		case AST_NODE_PROGRAM: {
 			ASTNode* ch = curr -> child;
 			// if(fp == NULL) {
 			// 	fp = fopen("please.txt", "w");
 			// }
-			printf(PRINT_VARIABLE_HEADINGS, "Variable Name", "Module Name", "Scope Line No.","Width",
-				"Is Array", "Static/Dynamic", "Range", "Type of element", "Offset", "Nesting Level");
-			outputChildren(ch);
+			if(operation == 0) {
+				printf(PRINT_VARIABLE_HEADINGS, "Variable Name", "Module Name", "Scope Line No.","Width",
+					"Is Array", "Static/Dynamic", "Range", "Type of element", "Offset", "Nesting Level");
+			} else {
+				printf(PRINT_ARR_HEADINGS, "Module Name", "Scope Line No.", "Variable Name",
+					"Static/Dynamic", "Range", "Type of Element");
+			}
+			outputChildren(ch, operation);
 			//fclose(fp);
 		}
 		break;
@@ -493,10 +617,13 @@ void outputSymbolTable(ASTNode * curr) {
 			ASTNode* ch = curr -> child;
 			if(curr -> nodeData.moduleList -> type == AST_MODULE_DRIVER) {
 				SymTableFunc * dr = fetchFuncData("driver");
-				printSymbolTable(dr -> dataTable, printVar);
+				if(operation == 0)
+					printSymbolTable(dr -> dataTable, printVar);
+				else
+					printSymbolTable(dr -> dataTable, printArr);
 			}
 			else 
-				outputChildren(ch);
+				outputChildren(ch, operation);
 		}
 		break;
 
@@ -506,23 +633,32 @@ void outputSymbolTable(ASTNode * curr) {
 			char name[30];
 			strcpy(name, ch -> nodeData.leaf -> tn -> lex);
 			tmp = fetchFuncData(name);
-			printList(tmp->input_plist, printListVar);
-			printSymbolTable(tmp -> dataTable, printVar);
-			outputChildren(ch);
+			if(operation == 0) {
+				printList(tmp->input_plist, printListVar);
+				printSymbolTable(tmp -> dataTable, printVar);
+			}
+			else {
+				printList(tmp->input_plist, printListArr);
+				printSymbolTable(tmp -> dataTable, printArr);
+			}
+			outputChildren(ch, operation);
 		}
 		break;
 		
 		case AST_NODE_STATEMENT: {
 			ASTNode * ch = curr -> child;
-			outputChildren(ch);
+			outputChildren(ch, operation);
 		}
 		break;
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode * ch = curr -> child -> next;
-			printSymbolTable(ch -> localST -> dataTable, printVar);
+			if(operation == 0)
+				printSymbolTable(ch -> localST -> dataTable, printVar);
+			else
+				printSymbolTable(ch -> localST -> dataTable, printArr);
 			ch = curr -> child;
-			outputChildren(ch);
+			outputChildren(ch, operation);
 		}
 		break;
 
@@ -530,9 +666,12 @@ void outputSymbolTable(ASTNode * curr) {
 			ASTNode * ch = curr -> child -> next;
 			if(ch == NULL)
 				return;
-			printSymbolTable(ch -> localST -> dataTable, printVar);
+			if(operation == 0)	
+				printSymbolTable(ch -> localST -> dataTable, printVar);
+			else
+				printSymbolTable(ch -> localST -> dataTable, printArr);
 			ch = curr -> child;
-			outputChildren(ch);
+			outputChildren(ch, operation);
 		}
 		break;
 

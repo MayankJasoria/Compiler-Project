@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 		printf("6: Print Activation Record size of each function\n");
 		printf("7: Print type expressions and width of array variables\n");
 		printf("8: Print errors and time required\n");
-		printf("9: Produce NASM Code!\n");
+		printf("9: Produce NASM Assembly Code\n");
 		printf("0: Exit\n\n");
 		printf("Enter your choice:\n");
 		scanf("%d", &option);
@@ -112,8 +112,10 @@ int main(int argc, char* argv[]) {
 				}
 
 				/* Construct the AST */
-				root = constructAST(NULL, NULL, PT);
-				
+				if(root == NULL) {
+					root = constructAST(NULL, NULL, PT);
+				}
+
 				/* Print the AST */
 				printAST(root);
 
@@ -126,6 +128,14 @@ int main(int argc, char* argv[]) {
 				 * number of nodes to each of parse tree and abstract syntax 
 				 * tree for the test case used. 
 				 */
+				if(PT == NULL) {
+					// generate parse tree
+					parseInputSourceCode(argv[1]);
+				}
+
+				if(root == NULL) {
+					root = constructAST(NULL, NULL, PT);
+				}
 
 				int parseTreeSize = getParseTreeSize();
 				int astSize = getASTSize();
@@ -170,10 +180,10 @@ int main(int argc, char* argv[]) {
 				 */
 				if(globalST == NULL) {
 					globalST = getSymbolTable();
+					traverseAST(root, "");
+					pass2AST(root, "");
 				}
-				traverseAST(root, "");
-				pass2AST(root, "");
-				outputSymbolTable(root);
+				outputSymbolTable(root, 0);
 			}
 			break;
 			
@@ -207,8 +217,21 @@ int main(int argc, char* argv[]) {
 				 * Static and dynamic arrays: Printing the type expressions and 
 				 * width of array variables in a line for a test case
 				 */
-
-			
+				if(PT == NULL) {
+					parseInputSourceCode(argv[1]);
+				}
+				if(root == NULL) {
+					root = constructAST(NULL, NULL, PT);
+				}
+				/**
+				 * TODO: find a way to ensure no errors are reported here
+				 */
+				if(globalST == NULL) {
+					globalST = getSymbolTable();
+					traverseAST(root, "");
+					pass2AST(root, "");
+				}
+				outputSymbolTable(root, 1);
 			}
 			break;
 
@@ -218,6 +241,10 @@ int main(int argc, char* argv[]) {
 				 * If code is syntactically incorrect, only syntax errors are reported 
 				 * If the code is syntactically correct, then all type checking and semantic errors are reported
 				 */
+
+				PT = NULL;
+				root = NULL;
+				globalST = NULL;
 				
 				clock_t	start_time, end_time;
 

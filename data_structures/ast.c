@@ -1430,7 +1430,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 	ruleNum (int)
 */
 void printNode(ASTNode* curr) {
-	FILE* fp = fopen("AST_OUT.txt", "a");
+	
   
 	//AST Node Type:
 	char nodeType[30];
@@ -1488,14 +1488,14 @@ void printNode(ASTNode* curr) {
 	leaf_type t;
 	if(curr -> type == AST_NODE_LEAF) {
 		t = curr -> nodeData.leaf -> type;
-		if(t == AST_LEAF_NUM || AST_LEAF_IDXNUM || AST_LEAF_VARIDNUM_NUM || AST_LEAF_VALNUM) {
+		if(t == AST_LEAF_NUM || t == AST_LEAF_IDXNUM || t == AST_LEAF_VARIDNUM_NUM || t == AST_LEAF_VALNUM) {
 			int_val = curr -> nodeData.leaf -> tn -> value.val_int;
 		}
 		if(t == AST_LEAF_VARIDNUM_RNUM) {
 			float_val = curr -> nodeData.leaf -> tn -> value.val_float;
 		}
-		if(t == AST_LEAF_BOOLTRUE || AST_LEAF_BOOLFALSE || AST_LEAF_VALTRUE || AST_LEAF_VALFALSE
-			|| AST_LEAF_TRUE || AST_LEAF_FALSE)
+		if(t == AST_LEAF_BOOLTRUE || t == AST_LEAF_BOOLFALSE || t == AST_LEAF_VALTRUE || t == AST_LEAF_VALFALSE
+			|| t == AST_LEAF_TRUE || t == AST_LEAF_FALSE)
 			strcpy(bool_val, curr -> nodeData.leaf -> tn -> lex);
 	}
 	
@@ -1520,13 +1520,13 @@ void printNode(ASTNode* curr) {
 	// fprintf(fp,"Is Leaf?: %s Line number: %s Lexeme: %s Data Type: %s",is_leaf,linenum,lexeme,datatype);
 
 	if(is_leaf) {
-		if(t == AST_LEAF_BOOLTRUE
-			|| AST_LEAF_BOOLFALSE
-			|| AST_LEAF_VALTRUE
-			|| AST_LEAF_VALFALSE
-			|| AST_LEAF_TRUE
-			|| AST_LEAF_FALSE) {
-			fprintf(fp, AST_FMT_LEAF_BOOL, nodeType,
+		if(t == AST_LEAF_BOOLTRUE ||
+			t == AST_LEAF_BOOLFALSE ||
+			t == AST_LEAF_VALTRUE || 
+			t ==AST_LEAF_VALFALSE || 
+			t == AST_LEAF_TRUE || 
+			t == AST_LEAF_FALSE) {
+			printf(AST_FMT_LEAF_BOOL, nodeType,
 				parentType,
 				associatedNT,
 				line_num,
@@ -1536,7 +1536,7 @@ void printNode(ASTNode* curr) {
 				associatedRule
 			);
 		} else if(t == AST_LEAF_VARIDNUM_RNUM) {
-			fprintf(fp, AST_FMT_LEAF_RNUM, nodeType,
+			printf(AST_FMT_LEAF_RNUM, nodeType,
 				parentType,
 				associatedNT,
 				line_num,
@@ -1545,11 +1545,11 @@ void printNode(ASTNode* curr) {
 				float_val,
 				associatedRule
 			);
-		} else if(t == AST_LEAF_NUM 
-			|| AST_LEAF_IDXNUM 
-			|| AST_LEAF_VARIDNUM_NUM 
-			|| AST_LEAF_VALNUM) {
-			fprintf(fp, AST_FMT_LEAF_NUM, nodeType,
+		} else if(t == AST_LEAF_NUM || 
+			t == AST_LEAF_IDXNUM  || 
+			t == AST_LEAF_VARIDNUM_NUM || 
+			t == AST_LEAF_VALNUM) {
+			printf(AST_FMT_LEAF_NUM, nodeType,
 				parentType,
 				associatedNT,
 				line_num,
@@ -1559,7 +1559,7 @@ void printNode(ASTNode* curr) {
 				associatedRule
 			);
 		} else {
-			fprintf(fp, AST_FMT_LEAF_ID, nodeType,
+			printf(AST_FMT_LEAF_ID, nodeType,
 				parentType,
 				associatedNT,
 				line_num,
@@ -1570,10 +1570,9 @@ void printNode(ASTNode* curr) {
 		}
 	} else {
 		/* non-leaf */	
-		fprintf(fp, AST_FMT_NON_LEAF, nodeType, parentType, associatedNT, lexeme, datatype, op, associatedRule);
+		printf(AST_FMT_NON_LEAF, nodeType, parentType, associatedNT, lexeme, datatype, op, associatedRule);
 		
 	}
-	fclose(fp);
 }
 
 /**
@@ -1581,9 +1580,7 @@ void printNode(ASTNode* curr) {
  */
 void printAST(ASTNode* root){
 	if(root->parent == NULL) {
-		FILE* fp = fopen("AST_OUT.txt", "a");
-		fprintf(fp, AST_FMT_HEADERS, "Type", "Parent", "Is Leaf", "Terminal/Non-Terminal", "Line Number", "Lexeme", "Data Type", "Operator", "Value", "Rule Number");
-		fclose(fp);
+		printf(AST_FMT_HEADERS, "Type", "Parent", "Is Leaf", "Terminal/Non-Terminal", "Line Number", "Lexeme", "Data Type", "Operator", "Value", "Rule Number");
 	}
 	if(!(root->type == AST_NODE_LEAF 
 		&& root->parent->type == AST_NODE_AOBEXPR 
@@ -1596,29 +1593,3 @@ void printAST(ASTNode* root){
 		ch = ch -> next;
 	}
 }
-
-
-//BFS (delete):
-// void printAST(ASTNode* root) {
-// 	Queue q = getQueue();
-// 	q = enqueue(q, root);
-
-// 	while(!isQueueEmpty(q)) {
-// 		ASTNode* curr = (ASTNode *) frontElement(q);
-// 		q = dequeue(q);
-// 		while(curr != NULL) {
-// 			/* print current node */
-
-// 			printNode(curr); /* pre-order traversal */
-// 			if(curr->child != NULL) {
-// 				/* add first child of current node to queue */
-// 				q = enqueue(q, curr->child);
-// 			}
-// 			/* Traverse to next node of the linked list of nodes */
-// 			curr = curr->next;
-// 		}
-// 		if(isQueueEmpty(q))
-// 			printf("emptttty\n");
-// 	}
-// }
-
