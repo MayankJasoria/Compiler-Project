@@ -489,7 +489,7 @@ typedef struct ASTNode {
 	* (This contains pointer to variable symbol table)
 	*/
 	struct SymTableFunc* localST;
-	
+	int associatedRule;	
 	/* TODO: add data fields later */
 
 

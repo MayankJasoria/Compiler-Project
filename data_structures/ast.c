@@ -8,6 +8,29 @@
 #include "n_ary_tree.h"
 #include "queue.h"
 
+#define AST_FMT_HEADERS "%-20s%-20s%-9s%-22s%-12s%-22s%-10s%-10s%-8s%-8s"
+#define AST_FMT_LEAF_NUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8d%-8d"
+#define AST_FMT_LEAF_RNUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8f%-8d"
+#define AST_FMT_LEAF_ID "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      ----    %-8d"
+#define AST_FMT_LEAF_BOOL "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8s%-8d"
+#define AST_FMT_NON_LEAF_DATA_OP "%-20s%-20sNo       %-22s%-12s----                  %-10s%-10s----    %-8d"
+#define AST_FMT_NON_LEAF_DATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  %-10s----      ----    %-8d"
+#define AST_FMT_NON_LEAF_NODATA_OP "%-20s%-20sNo      %-22s%-12s----                  ----      %-10s----    %-8d"
+#define AST_FMT_NON_LEAF_NODATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  ----      ----      ----    %-8d"
+
+/* 
+	type (string)
+	parent node (string)
+	is_leaf (string: Yes/No)
+	associated non-terminal/terminal (string)
+	lineNumber (if leaf) (int)
+	lex (if leaf) (string)
+	dataType(id, expr, ) (string)
+	operator (string)
+	val_if_number (int/real/string: true/false)
+	ruleNum (int)
+*/
+
 /**
 * @see ast.h
  */
@@ -211,6 +234,22 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 }
 
 /**
+ * Returns datatype of expression
+ * @param expr	AST Node representing the root of expression subtree
+ */
+int getExprType(ASTNode * expr) {
+	
+	if(expr -> type == AST_NODE_LEAF)
+		return expr -> nodeData.leaf -> dataType;
+	else if(expr -> type == AST_NODE_VARIDNUM)
+		return expr -> nodeData.var -> dataType;
+	else if(expr -> type == AST_NODE_AOBEXPR)
+		return expr -> nodeData.AOBExpr -> dataType;
+	else if(expr -> type == AST_NODE_UNARY)
+		return expr -> nodeData.unary -> dataType;
+}
+
+/**
  * Assumption: child's 'child' pointer need not be tampered with:
  * It has its own subtree
  * @see ast.h
@@ -322,6 +361,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, om1);
 			addChild(curr, md);
 			curr -> type = AST_NODE_PROGRAM;	
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 			
@@ -335,6 +375,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, mds);
 			addChild(curr, md);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 			
@@ -357,6 +398,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			
 			addChild(curr, om1);
 			addChild(curr, mod);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 			
@@ -372,6 +414,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			ASTNode* modDef = constructAST(curr, NULL, findinPT(ch, moduledef));
 			addChild(curr, modDef);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -392,6 +435,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, inplist);
 			addChild(curr, idNode);
 
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}	
 			
@@ -418,6 +462,8 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, inList);
 			addChild(curr, typeNode);
 			addChild(curr, idNode);
+
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -434,6 +480,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, n11);
 			addChild(curr, typeNode);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 			
@@ -457,6 +504,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, outList);
 			addChild(curr, typeNode);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -475,6 +523,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, n21);
 			addChild(curr, typeNode);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 			
@@ -488,7 +537,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			curr = getASTNode(nodeData, AST_NODE_LEAF);
 			lf -> tn = ch;
 			lf -> type = AST_LEAF_INT;
-			// TODO: add data for leaf
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -499,6 +548,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			lf -> tn = ch;
 			lf -> type = AST_LEAF_RNUM;
 			// TODO: add data for leaf
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -509,6 +559,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			lf -> tn = ch;
 			lf -> type = AST_LEAF_BOOL;
 			// TODO: add data for leaf
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -527,6 +578,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, typeNode);
 			addChild(curr, rangeNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -552,6 +604,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 		
 			addChild(curr, stmtsNode);
 			addChild(curr, stmtNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}	
 
@@ -587,6 +640,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			ASTNode* idNode = constructAST(curr, NULL, ch -> next -> next);
 
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 
@@ -598,6 +652,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			ASTNode* vNode = constructAST(curr, NULL, ch -> next -> next);
 
 			addChild(curr, vNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -637,6 +692,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			ASTNode* stmt = constructAST(curr, NULL, ch);
 			addChild(curr, stmt);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -648,6 +704,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			ASTNode* stmt = constructAST(curr, NULL, ch);
 			addChild(curr, stmt);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -661,6 +718,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, wNode);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -679,6 +737,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, list);
 			addChild(curr, idNode);
 			addChild(curr, opt);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -700,6 +759,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, n3);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 	
@@ -714,6 +774,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, n3);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}			
 	
@@ -768,6 +829,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, prev_sibling);
 
 			ch = findinPT(ch, arithorboolexprnew);
+			curr -> associatedRule = tn -> rule_num;
 			return constructAST(parent, curr, ch);
 		}															
 
@@ -796,6 +858,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, ae);
 			addChild(curr, relop);
 			addChild(curr, prev_sibling);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -820,6 +883,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, prev_sibling);
 
 			ch = findinPT(ch, arithmeticexprnew);
+			curr -> associatedRule = tn -> rule_num;
 			return constructAST(parent, curr, ch);
 		}	
 		
@@ -844,6 +908,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, prev_sibling);
 
 			ch = findinPT(ch, termnew);
+			curr -> associatedRule = tn -> rule_num;
 			return constructAST(parent, curr, ch);
 		}	
 		
@@ -1002,6 +1067,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, type);
 			addChild(curr, list);
 
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}	
 		
@@ -1034,6 +1100,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 				ch = ch -> next;
 			}
 			curr -> nodeData.condStmt -> end_line_num = ch -> line_num;
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}	
 		
@@ -1052,6 +1119,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, n9);
 			addChild(curr, stmt);
 			addChild(curr, val);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}	
 		
@@ -1070,6 +1138,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, n9);
 			addChild(curr, stmt);
 			addChild(curr, val);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}	
 		
@@ -1138,7 +1207,8 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 			addChild(curr, stmt);
 			addChild(curr, range);
 			addChild(curr, idNode);
-
+			
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1159,6 +1229,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, stmt);
 			addChild(curr, aob);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1187,6 +1258,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, n2);
 			addChild(curr, n1);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1200,6 +1272,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, i2);
 			addChild(curr, i1);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1233,6 +1306,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, whichid);
 			addChild(curr, idNode);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1280,6 +1354,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, expr);
 			addChild(curr, idx);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1293,6 +1368,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 
 			addChild(curr, new);
 			addChild(curr, uop);
+			curr -> associatedRule = tn -> rule_num;
 			return curr;
 		}
 		
@@ -1344,43 +1420,108 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* tn) {
 }
 
 
+/* 
+	type (string)
+	parent node (string)
+	is_leaf (string: Yes/No)
+	associated non-terminal/terminal (string)
+	lineNumber (if leaf) (int)
+	lex (if leaf) (string)
+	dataType(id, expr, ) (string)
+	val_if_number (int/real)
+	ruleNum (int)
+*/
 void printNode(ASTNode* curr) {
-	if(curr->type == AST_NODE_LEAF) { /* Leaf Node */
-		/* Print Lexeme */
-		printf("%s %s",curr->nodeData.leaf->tn->lex,leafTypeList[curr->nodeData.leaf->type]);
-		
-		/* Print Type */
-		//printf(" ",leafTypeList[curr->nodeData.leaf->type]);
+	FILE* fp = fopen("AST_OUT.txt", "a");
+	astNodeType nodeType = curr -> type;
+	int is_leaf = curr -> type == AST_NODE_LEAF;
+	
+	char leafType[30];
+	strcpy(leafType, "----");
+	if(is_leaf)
+		strcpy(leafType, leafTypeList[curr -> nodeData.leaf -> type]);
+	
+	char line_num[10];	
+	strcpy(line_num, "----");
+	if(is_leaf)
+		strcpy(line_num, toString(curr -> nodeData.leaf -> tn -> lex));
+	
+	char lexeme[30];
+	strcpy(lexeme, "----");
+	if(is_leaf)
+		strcpy(lexeme, curr -> nodeData.leaf -> tn -> lex);
+	
+	char datatype[20];
+	strcpy(datatype, "----");
+	if(curr -> type == AST_NODE_AOBEXPR || curr -> type == AST_NODE_UNARY || 
+		curr -> type == AST_NODE_VARIDNUM)
+		strcpy(datatype, getExprType(curr));
 
-
-		printf("\n");
-	} else {
-		/* Print Type */
-		printf("%s",astNodeTypeList[curr->type]);
-		printf("\n");
-	}
-}
-
-void printAST(ASTNode* root) {
-	Queue q = getQueue();
-	q = enqueue(q, root);
-
-	while(!isQueueEmpty(q)) {
-		ASTNode* curr = (ASTNode *) frontElement(q);
-		q = dequeue(q);
-		while(curr != NULL) {
-			/* print current node */
-
-			printNode(curr);
-			if(curr->child != NULL) {
-				/* add first child of current node to queue */
-				q = enqueue(q, curr->child);
-			}
-			/* Traverse to next node of the linked list of nodes */
-			curr = curr->next;
+	int int_val;
+	float float_val;
+	char bool_val[10];
+	if(curr -> type == AST_NODE_LEAF) {
+		leaf_type t = curr -> nodeData.leaf -> type;
+		if(t == AST_LEAF_NUM || AST_LEAF_IDXNUM || AST_LEAF_VARIDNUM_NUM || AST_LEAF_VALNUM) {
+			int_val = curr -> nodeData.leaf -> tn -> value.val_int;
 		}
-		if(isQueueEmpty(q))
-			printf("emptttty\n");
+		if(t == AST_LEAF_VARIDNUM_RNUM) {
+			float_val = curr -> nodeData.leaf -> tn -> value.val_float;
+		}
+		if(t == AST_LEAF_BOOLTRUE || AST_LEAF_BOOLFALSE || AST_LEAF_VALTRUE || AST_LEAF_VALFALSE
+			|| AST_LEAF_TRUE || AST_LEAF_FALSE)
+			strcpy(bool_val, curr -> nodeData.leaf -> tn -> lex);
+	}
+	
+	int associatedRule = curr -> associatedRule;
+	char associatedNT[20];
+	if(curr -> type == AST_NODE_LEAF) 
+		strcpy(associatedNT, terminals[curr -> nodeData.leaf -> tn -> sym.T]);
+	else
+		strcpy(associatedNT, nonterminals[G[associatedRule].left]);
+
+	// usage: fprintf(fp, AST_FMT_LEAF_NUM, type, parent, terminal, lineNum, lex, dataType, value, rule);
+
+	// fprintf(fp,"Is Leaf?: %s Line number: %s Lexeme: %s Data Type: %s",is_leaf,linenum,lexeme,datatype);
+
+	
+	fclose(fp);
+}
+
+/**
+ * @see ast.h
+ */
+void printAST(ASTNode* root){
+	printNode(root);
+	ASTNode * ch = root -> child;
+	while(ch != NULL) {
+		printAST(ch);
+		ch = ch -> next;
 	}
 }
+
+
+//BFS (delete):
+// void printAST(ASTNode* root) {
+// 	Queue q = getQueue();
+// 	q = enqueue(q, root);
+
+// 	while(!isQueueEmpty(q)) {
+// 		ASTNode* curr = (ASTNode *) frontElement(q);
+// 		q = dequeue(q);
+// 		while(curr != NULL) {
+// 			/* print current node */
+
+// 			printNode(curr); /* pre-order traversal */
+// 			if(curr->child != NULL) {
+// 				/* add first child of current node to queue */
+// 				q = enqueue(q, curr->child);
+// 			}
+// 			/* Traverse to next node of the linked list of nodes */
+// 			curr = curr->next;
+// 		}
+// 		if(isQueueEmpty(q))
+// 			printf("emptttty\n");
+// 	}
+// }
 

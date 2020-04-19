@@ -16,7 +16,13 @@
  * 
  * @return a new AST node of specified type
  */
-ASTNode* getASTNode(astNodeType type); 
+ASTNode* getASTNode(astNodeType type);
+
+/**
+ * Returns datatype of expression
+ * @param expr	AST Node representing the root of expression subtree
+ */
+int getExprType(ASTNode * expr);
 
 /**
  * Adds a child to a given node as the first child
@@ -41,7 +47,7 @@ ASTNode* constructAST(ASTNode* parent, ASTNode* prev_sibling, treeNode* pt);
 void printAST(ASTNode* root);
 
 /**
-* Prints all the details of an AST Node
+* Prints all the details of an AST Node, in DFS order
 * @param curr The current AST Node
 */ 
 void printNode(ASTNode* curr);

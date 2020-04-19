@@ -141,22 +141,6 @@ int getExprOffset(ASTNode * expr) {
 }
 
 /**
- * Returns datatype of expression
- * @param expr	AST Node representing the root of expression subtree
- */
-int getExprType(ASTNode * expr) {
-	
-	if(expr -> type == AST_NODE_LEAF)
-		return expr -> nodeData.leaf -> dataType;
-	else if(expr -> type == AST_NODE_VARIDNUM)
-		return expr -> nodeData.var -> dataType;
-	else if(expr -> type == AST_NODE_AOBEXPR)
-		return expr -> nodeData.AOBExpr -> dataType;
-	else if(expr -> type == AST_NODE_UNARY)
-		return expr -> nodeData.unary -> dataType;
-}
-
-/**
  * Populates  	r10w : left index
  * 				r11w : right index 
  */
