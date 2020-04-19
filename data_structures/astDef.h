@@ -427,6 +427,7 @@ typedef struct {
 	case_stmt_type type;
 	int breakLabel;
 	int label;
+	int lastLabel;
 	char switchVar[30];
 	astDataType dataType; /* for checking bool int etc */
 } caseStmtNode;
