@@ -99,11 +99,21 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 
 		if(t == AST_NODE_IO) {
 			if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
-				if((ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
-					(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+				if(ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) {
 					fprintf(stderr, 
-					"Static bound checking failed on line number %d\n", ch -> next -> nodeData.leaf -> tn -> line_num);	
-						curr -> nodeData.io -> b = BOUND_ERROR;
+					"Line number (%d): semantic error -- Index %d is less than the lower bound %d\n",
+					ch -> next -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> nodeData.leaf -> tn -> value.val_int,
+					tmp -> sdt.r -> low);	
+					curr -> nodeData.io -> b = BOUND_ERROR;
+				}
+				if(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high) {
+					fprintf(stderr, 
+					"Line number (%d): semantic error -- Index %d is greater than the upper bound %d\n",
+					ch -> next -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> nodeData.leaf -> tn -> value.val_int,
+					tmp -> sdt.r -> high);	
+					curr -> nodeData.io -> b = BOUND_ERROR;
 				}
 				else 
 					curr -> nodeData.io -> b = BOUND_CORRECT;
@@ -114,11 +124,21 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 
 		if(t == AST_NODE_VARIDNUM) {
 			if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
-				if((ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
-					(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+				if(ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) {
 					fprintf(stderr, 
-					"Static bound checking failed on line number %d\n", ch -> next -> nodeData.leaf -> tn -> line_num);	
-						curr -> nodeData.var -> b = BOUND_ERROR;
+					"Line number (%d): semantic error -- Index %d is less than the lower bound %d\n",
+					ch -> next -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> nodeData.leaf -> tn -> value.val_int,
+					tmp -> sdt.r -> low);	
+					curr -> nodeData.io -> b = BOUND_ERROR;
+				}
+				if(ch -> next -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high) {
+					fprintf(stderr, 
+					"Line number (%d): semantic error -- Index %d is greater than the upper bound %d\n",
+					ch -> next -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> nodeData.leaf -> tn -> value.val_int,
+					tmp -> sdt.r -> high);	
+					curr -> nodeData.io -> b = BOUND_ERROR;
 				}
 				else 
 					curr -> nodeData.var -> b = BOUND_CORRECT;
@@ -129,11 +149,21 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 
 		if(t == AST_NODE_ASSIGN) {
 			if(ch -> next -> child -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
-				if((ch -> next -> child -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) ||
-					(ch -> next -> child -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high)) {
+				if(ch -> next -> child -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) {
 					fprintf(stderr, 
-					"Static bound checking failed on line number %d\n", ch -> next -> child -> nodeData.leaf -> tn -> line_num);	
-						curr -> nodeData.assign -> b = BOUND_ERROR;
+					"Line number (%d): semantic error -- Index %d is lower than the lower bound %d\n",
+					ch -> next -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> child -> nodeData.leaf -> tn -> value.val_int,
+					tmp -> sdt.r -> low);	
+					curr -> nodeData.io -> b = BOUND_ERROR;
+				}
+				if(ch -> next -> child -> nodeData.leaf -> tn -> value.val_int > tmp -> sdt.r -> high) {
+					fprintf(stderr, 
+					"Line number (%d): semantic error -- Index %d is greater than the upper bound %d\n",
+					ch -> next -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> child -> nodeData.leaf -> tn -> value.val_int,
+					tmp -> sdt.r -> high);	
+					curr -> nodeData.io -> b = BOUND_ERROR;
 				}
 				else 
 					curr -> nodeData.assign -> b = BOUND_CORRECT;
@@ -155,7 +185,7 @@ typedef struct node {
 int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 	/* check if head or node is NULL */
 	if (head == NULL) {
-		fprintf(stderr, "Assigning a value from a function which does not return a value\n");
+		fprintf(stderr, "Line number (%d): semantic error -- Assigning a value from a function which does not return a value\n", node -> child -> nodeData.leaf -> tn -> line_num);
 		return 0;
 	}
 
@@ -167,7 +197,9 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 		SymTableVar* curr = fetchVarData(localST, node -> child -> nodeData.leaf -> tn -> lex);
 		if(curr == NULL) {
 			fprintf(stderr, 
-			"The parameter %s is not declared.\n", node -> child -> nodeData.leaf -> tn -> lex);
+			"Line number (%d): semantic error -- The parameter '%s' is not declared.\n", 
+			node -> child -> nodeData.leaf -> tn -> line_num,
+			node -> child -> nodeData.leaf -> tn -> lex);
 			return 0;
 		}
 		if(tmp -> dataType != curr -> dataType)
@@ -321,7 +353,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 				SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
 				if(tmp == NULL) {
 					fprintf(stderr, 
-					"The variable taken as input is not being declared line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- variable taken as input has not been declared.\n", 
+					ch -> nodeData.leaf -> tn -> line_num);
 				}
 				else {
 					tmp -> isAssigned = 1;
@@ -333,11 +366,13 @@ void traverseAST(ASTNode* curr, char* fname) {
 					SymTableVar* tmp = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
 					if(tmp == NULL) {
 						fprintf(stderr, 
-						"The variable to be output is not declared line %d.\n", ch -> child -> nodeData.leaf -> tn -> line_num);
+						"Line number (%d): semantic error -- the variable to be output has not been declared.\n", 
+						ch -> child -> nodeData.leaf -> tn -> line_num);
 					}
 					else if(ch -> child -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {   //int a; a[4];  --> error
 						fprintf(stderr, 
-						"A non array type variable access using whichId on line %d\n", ch -> child -> nodeData.leaf -> tn -> line_num);
+						"Line number (%d): semantic error -- attempt to access non-array type variable %s using index.\n", 
+						ch -> child -> nodeData.leaf -> tn -> line_num,ch -> child -> nodeData.leaf -> tn -> lex);
 					}
 					else if(ch -> child ->next != NULL) {
 						boundChecking(tmp, curr -> child);
@@ -358,9 +393,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			SymTableVar* tmp = fetchVarData(curr->localST, ch -> nodeData.leaf -> tn -> lex);
 			if(tmp == NULL) {
 				fprintf(stderr, 
-				"The lhs of the Assignment statement %s on line %d is not defined.\n",
-				ch -> nodeData.leaf -> tn -> lex,
-				ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- the left-hand-side of assignment statement %s is not defined.\n",
+				ch -> nodeData.leaf -> tn -> line_num,
+				ch -> nodeData.leaf -> tn -> lex
+				);
 			}
 			else
 				tmp -> whileNest = globalNest;
@@ -375,7 +411,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					if(ch -> child -> next -> type == AST_NODE_VARIDNUM) {
 						if(tmp -> sdt.r -> dataType != ch -> child -> next -> nodeData.var -> dataType) {
 							fprintf(stderr, 
-							"Type mismatch1 in assignment statement on line %d.\n",
+							"Line number (%d): semantic error -- type mismatch in assignment statement.\n",
 							ch -> child -> next -> child -> nodeData.leaf -> tn -> line_num);
 						}
 					}
@@ -389,15 +425,15 @@ void traverseAST(ASTNode* curr, char* fname) {
 							t = ch -> child -> next -> nodeData.unary -> dataType;	
 						if(tmp -> sdt.r -> dataType != t) { 
 							fprintf(stderr, 
-							"Type mismatch2 in assignment statement on line %d.\n",
+							"Line number (%d): semantic error -- type mismatch in assignment statement.\n",
 							curr -> child -> nodeData.leaf -> tn -> line_num);
 						}
 					}
 				}
 				else {
 					fprintf(stderr, 
-					"Non array type element accessed with index on line %d.\n",
-					curr -> child -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- attempt to access non-array type variable %s using index.\n",
+					curr -> child -> nodeData.leaf -> tn -> line_num, curr -> child -> nodeData.leaf -> tn -> lex);
 				}
 			}
 			else {
@@ -412,19 +448,35 @@ void traverseAST(ASTNode* curr, char* fname) {
 					t = ch -> nodeData.unary -> dataType;
 				if(tmp -> dataType != t) {
 					fprintf(stderr, 
-					"Type mismatch3 in assignment statement on line %d.\n",
-					curr -> child -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- type mismatch in assignment statement. LHS = %s, RHS = %s\n",
+					curr -> child -> nodeData.leaf -> tn -> line_num,
+					typeName[tmp->dataType],
+					typeName[t]);
 					return;
 				}
 				if(tmp -> dataType == AST_TYPE_ARRAY) {
 					SymTableVar *rhs = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
-					if((tmp -> sdt.r -> dataType != rhs -> sdt.r -> dataType)||
-						(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(rhs -> sdt.r -> lowId, "") == 0 && tmp -> sdt.r -> low != rhs -> sdt.r -> low)||
-						(strcmp(tmp -> sdt.r -> highId, "") == 0 && strcmp(rhs -> sdt.r -> highId, "") == 0 && tmp -> sdt.r -> high != rhs -> sdt.r -> high)) {
+
+					if(tmp -> sdt.r -> dataType != rhs -> sdt.r -> dataType) {
 						fprintf(stderr, 
-						"Type mismatch4 in assignment statement on line %d.\n",
-						curr -> child -> nodeData.leaf -> tn -> line_num);
-						return;
+						"Line number (%d): semantic error -- type mismatch in assignment statement. LHS = %s, RHS = %s\n",
+						curr -> child -> nodeData.leaf -> tn -> line_num,
+						typeName[tmp -> sdt.r -> dataType],
+						typeName[rhs -> sdt.r -> dataType]);
+					}
+					if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(rhs -> sdt.r -> lowId, "") == 0 && tmp -> sdt.r -> low != rhs -> sdt.r -> low) {
+						fprintf(stderr, 
+						"Line number (%d): semantic error -- Lower bound of array on LHS %d is not equal to lower bound of array on RHS %d in assignment statement\n",
+						curr -> child -> nodeData.leaf -> tn -> line_num,
+						tmp -> sdt.r -> low,
+						rhs -> sdt.r -> low);
+					}
+					if(strcmp(tmp -> sdt.r -> highId, "") == 0 && strcmp(rhs -> sdt.r -> highId, "") == 0 && tmp -> sdt.r -> high != rhs -> sdt.r -> high) {
+						fprintf(stderr,
+						"Line number (%d): semantic error -- Upper bound of array on LHS %d is not equal to upper bound of array on RHS %d in assignment statement\n",
+						curr -> child -> nodeData.leaf -> tn -> line_num,
+						tmp -> sdt.r -> high,
+						rhs -> sdt.r -> high);
 					}
 				}
 			}
@@ -446,12 +498,15 @@ void traverseAST(ASTNode* curr, char* fname) {
 			SymTableFunc* tmp = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
 			if(tmp == NULL) {
 				fprintf(stderr, 
-				"Function called (reused)'%s' is not defined on line %d.\n", ch -> nodeData.leaf -> tn -> lex, line_num);
+				"Line number (%d): semantic error -- function called (reused) '%s' is not defined.\n", 
+				line_num,
+				ch -> nodeData.leaf -> tn -> lex
+				);
 				return;
 			}
 			if(strcmp(fname, tmp -> name) == 0) {
 				fprintf(stderr, 
-				"Recursion is not supported on line %d.\n", line_num);
+				"Line number (%d): semantic error -- recursion (function: %s) is not supported.\n", line_num, fname);
 				return;
 			}
 			/* To be done in pass2 if the function is not defined. */
@@ -461,11 +516,14 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			if(ch -> prev != NULL && !listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
 				fprintf(stderr, 
-				"Output list type mismatch on line %d.\n", line_num);
+				"Line number (%d): semantic error -- type mismatch on output parameter name: '%s'.\n", 
+				line_num,
+				tmp->name 
+				);
 			}
 			if(ch -> prev != NULL && listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST) == -1) {
 				fprintf(stderr, 
-				"Number of output parameters mismatch on line %d.\n", line_num);
+				"Line number (%d): semantic error -- number of output parameters mismatch.\n", line_num);
 			}
 
 			/* searching the idList in case 38, optioanal may be NULL*/
@@ -475,11 +533,15 @@ void traverseAST(ASTNode* curr, char* fname) {
 
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
 				fprintf(stderr, 
-				"Input list type mismatch name : %s on line %d.\n", tmp -> name, line_num);
+				"Line number (%d): semantic error -- type mismatch on input list name: '%s'.\n", 
+				line_num,
+				tmp -> name 
+				
+				);
 			}
 			if(listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST) == -1) {
 				fprintf(stderr, 
-				"Number of input parameters mismatch on line %d.\n", line_num);
+				"Line number (%d): semantic error -- number of input parameters mismatch.\n", line_num);
 			}
 		}
 		break;
@@ -539,7 +601,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 				}
 				else if(ch -> type == AST_NODE_VARIDNUM){
 					fprintf(stderr, 
-					"Array type variable '%s' in arithmetic operation on line %d.\n", ch -> child -> nodeData.leaf -> tn -> lex, ch -> child -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- array type variable '%s' in arithmetic operation.\n", 
+					ch -> child -> nodeData.leaf -> tn -> line_num,
+					ch -> child -> nodeData.leaf -> tn -> lex 
+					);
 					return;
 				}
 			}
@@ -550,7 +615,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 				}
 				else {
 					fprintf(stderr, 
-					"Array type variable '%s' in arithmetic operation on line %d.\n", ch -> next -> next -> child -> nodeData.leaf -> tn -> lex, ch -> next -> next -> child -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- array type variable '%s' in arithmetic operation.\n", 
+					ch -> next -> next -> child -> nodeData.leaf -> tn -> line_num,
+					ch -> next -> next -> child -> nodeData.leaf -> tn -> lex 
+					);
 					return;
 				}
 			}
@@ -558,12 +626,16 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if((ch -> next) -> nodeData.leaf -> op == AST_AOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
-					"Type mismatch1 in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
-						typeName[tl], typeName[tr]);
+					"Line number (%d): semantic error -- type mismatch in the expression: type on left = %s, type on right = %s.\n", 
+					(ch -> next) -> nodeData.leaf -> tn -> line_num,
+					typeName[tl], 
+					typeName[tr]
+					);
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
-					"Bool type variables in arithmetic operation on line %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- boolean type sub-expression in arithmetic operation.\n", 
+					(ch -> next) -> nodeData.leaf -> tn -> line_num);
 				}
 				else 
 					curr -> nodeData.AOBExpr -> dataType = tl;
@@ -571,24 +643,27 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if((ch -> next) -> nodeData.leaf -> op == AST_RELOP) {
 				if(tl != tr) {
 					fprintf(stderr, 
-					"Type mismatch2 in the expression line %d, tl = %s, tr = %s.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num,
-						typeName[tl], typeName[tr]);
+					"Line number (%d): semantic error -- type mismatch in the expression: type on left = %s, type on right = %s.\n", 
+					(ch -> next) -> nodeData.leaf -> tn -> line_num,
+					typeName[tl], 
+					typeName[tr]);
 				}
 				else if(tl == AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
-					"Bool type variables in arithmetic operation on line %d.\n", (ch -> next) -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- boolean type variable in arithmetic operation.\n", 
+					(ch -> next) -> nodeData.leaf -> tn -> line_num);
 				}
 				curr -> nodeData.AOBExpr -> dataType = AST_TYPE_BOOLEAN;
 			}
 			else if((ch -> next) -> nodeData.leaf -> op == AST_LOP) {
 				if(tl != AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
-					"Left operator of LOP is not boolean type line %d.\n", 
+					"Line number (%d): semantic error -- left operand of logical operator is not of boolean type.\n", 
 					(ch -> next) -> nodeData.leaf -> tn -> line_num);		
 				}
 				if(tr != AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
-					"Right operator of LOP is not boolean type line %d.\n",
+					"Line number (%d): semantic error -- right operand of logical operator is not of boolean type.\n",
 					(ch -> next) -> nodeData.leaf -> tn -> line_num);
 				}
 				curr -> nodeData.AOBExpr -> dataType = AST_TYPE_BOOLEAN;
@@ -627,8 +702,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			traverseAST(ch, fname);
 			if((ch -> nodeData).leaf -> dataType == AST_TYPE_REAL) {
 				fprintf(stderr, 
-				"Switch variable('%s') is of real type on line %d.\n", ch -> nodeData.leaf -> tn -> lex,
-					ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- switch variable '%s' is of real type.\n", 
+				ch -> nodeData.leaf -> tn -> line_num,
+				ch -> nodeData.leaf -> tn -> lex
+				);
 				return;
 			}
 			SymTableFunc* newST = getFuncTable(fname, curr -> localST);
@@ -644,7 +721,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(ch -> nodeData.leaf -> dataType == AST_TYPE_BOOLEAN) {
 				if(curr -> nodeData.condStmt -> def == 1) {
 					fprintf(stderr, 
-					"Default case in bool type switch statement on line %d.\n", curr -> nodeData.condStmt -> def_line_num);
+					"Line number (%d): semantic error -- default case in switch statement on boolean variable.\n", curr -> nodeData.condStmt -> def_line_num);
 				}
 				if(ch2 == NULL)
 					return;
@@ -654,7 +731,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			else if(ch -> nodeData.leaf -> dataType == AST_TYPE_INT) {
 				if(curr -> nodeData.condStmt -> def == 0) {
 					fprintf(stderr, 
-					"Default case not present in int type switch statement line %d.\n", curr -> nodeData.condStmt -> end_line_num);
+					"Line number (%d): semantic error -- default case not present in switch statement on integer variable.\n", 
+					curr -> nodeData.condStmt -> end_line_num);
 				}
 				else {
 					if(ch2 == NULL) {
@@ -667,7 +745,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			else {
 				fprintf(stderr, 
-				"Switch variable not of feasible type on line %d.\n", ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- switch variable is not of feasible type.\n", 
+				ch -> nodeData.leaf -> tn -> line_num);
 				if(ch2 == NULL)
 					return;
 				ch2 -> localST = newST;
@@ -724,8 +803,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			else if(par -> dataType != AST_TYPE_ARRAY) {
 				fprintf(stderr, 
-				"A non array type variable('%s') access using whichId on line %d\n", par -> name,
-					ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- attempt to access non-array type variable '%s' using index.\n", 
+					ch -> nodeData.leaf -> tn -> line_num,
+					par -> name
+					);
 			}
 			else if(ch -> next != NULL) {
 				boundChecking(par, curr -> parent);
@@ -750,9 +831,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
 				if(ch -> nodeData.leaf -> dataType != AST_TYPE_INT) {
 					fprintf(stderr, 
-					"For loop variable('%s') is not of int type on line %d.\n",
-					ch -> nodeData.leaf -> tn -> lex,
-					ch -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- for loop variable '%s' is not of integer type.\n",
+					ch -> nodeData.leaf -> tn -> line_num,
+					ch -> nodeData.leaf -> tn -> lex
+					);
 					return;
 				}
 			}
@@ -766,7 +848,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					t = ch -> nodeData.leaf -> dataType;
 				if(t != AST_TYPE_BOOLEAN) {
 					fprintf(stderr, 
-					"While loop expression is not of boolean type on line %d.\n",
+					"Line number (%d): semantic error -- while loop expression is not of boolean type.\n",
 					curr -> nodeData.iterStmt -> start_line_num);
 				}
 			}
@@ -787,7 +869,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				varPresent = 0;
 				if(checkWhileAssignment(curr, ch) == 0 && varPresent > 0) {
 					fprintf(stderr, 
-					"None of while loop expression variables are assigned within the scope line %d.\n",
+					"Line number (%d): semantic error -- none of the while loop expression variables are assigned within the scope.\n",
 					curr -> nodeData.iterStmt -> start_line_num);
 				}
 				return;
@@ -816,21 +898,27 @@ void traverseAST(ASTNode* curr, char* fname) {
 			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			if(idNode == NULL) {
 				fprintf(stderr, 
-				"VarIdNum id('%s') not declared before %d\n", ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- variable '%s' not declared before line %d.\n", 
+				ch -> nodeData.leaf -> tn -> line_num,
+				ch -> nodeData.leaf -> tn -> lex,
+				ch -> nodeData.leaf -> tn -> line_num 
+				);
 				return;
 			}
 			curr -> nodeData.var -> dataType = idNode -> dataType;
 			if(curr -> nodeData.var -> dataType == AST_TYPE_ARRAY && ch-> next == NULL && curr -> parent -> type != AST_NODE_ASSIGN) {
 				fprintf(stderr, 
-				"Array variable('%s') used without index on line %d.\n",
-				idNode -> name, ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- array variable '%s' used without index.\n",
+				ch -> nodeData.leaf -> tn -> line_num,
+				idNode -> name 
+				);
 				return;
 			}
 			if(curr -> nodeData.var -> dataType != AST_TYPE_ARRAY && ch-> next != NULL) {
 				fprintf(stderr, 
-				"Non Array variable('%s') used with index line %d.\n", 
-				idNode -> name,
-				ch -> nodeData.leaf -> tn -> line_num);
+				"Line number (%d): semantic error -- attempt to access non-array type variable '%s' using index.\n", 
+				ch -> nodeData.leaf -> tn -> line_num,
+				idNode -> name);
 			}
 			if(ch -> next != NULL) {
 				curr -> nodeData.var -> dataType = idNode -> sdt.r -> dataType;
@@ -866,7 +954,9 @@ void traverseAST(ASTNode* curr, char* fname) {
 						case AST_NODE_MODULEDECLARATION: {
 							SymTableFunc * tmp = insertFuncRecord(str);
 							if(tmp == NULL) {
-								fprintf(stderr, "A record with the given already exists within the symbol table on line %d.", curr -> nodeData.leaf -> tn -> line_num);
+								fprintf(stderr, 
+								"Line number (%d): semantic error -- redeclaration of module '%s'.\n", 
+								curr -> nodeData.leaf -> tn -> line_num, str);
 							}
 							return;
 						}
@@ -875,12 +965,17 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableFunc* tmp = fetchFuncData(str);
 							if(tmp != NULL && tmp -> isDeclared == 1) {
 								fprintf(stderr, 
-								"Redundant declaration of the function '%s' on line %d.\n", str, curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- redundant declaration of function '%s'.\n", 
+								curr -> nodeData.leaf -> tn -> line_num,
+								str 
+								);
 							}
 							if(tmp != NULL && tmp -> isDefined == 1) {
 								fprintf(stderr, 
-								"Multiple definitions for the function '%s' on line %d.\n", str,
-								curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- multiple definitions for the function '%s'.\n", 
+								curr -> nodeData.leaf -> tn -> line_num,
+								str
+								);
 								return;
 							}
 							if(tmp == NULL) {
@@ -911,14 +1006,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 								SymTableVar* idx = fetchVarData(curr -> localST, str);
 								if(idx == NULL) {
 									fprintf(stderr, 
-									"Index variable('%s') is not defined on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
+									"Line number (%d): semantic error -- index variable '%s' not defined.\n",
+									curr -> nodeData.leaf -> tn -> line_num,
+									str
+									);
 									return;
 								}
 								if(idx -> dataType != AST_TYPE_INT) {
 									fprintf(stderr, 
-									"Index variable('%s') is not Integer on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
+									"Line number (%d): semantic error -- index variable '%s' is not an integer.\n", 
+									curr -> nodeData.leaf -> tn -> line_num,
+									str
+									);
 								}
 								curr -> nodeData.leaf -> dataType = idx -> dataType;
 							}
@@ -938,14 +1037,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableVar* idx = fetchVarData(curr -> localST, str);
 							if(idx == NULL) {
 								fprintf(stderr, 
-								"Index variable('%s') is not defined on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- index variable '%s' not defined.\n", 
+								curr -> nodeData.leaf -> tn -> line_num,
+								str
+								);
 								return;
 							}
 							if(idx -> dataType != AST_TYPE_INT) {
 								fprintf(stderr, 
-								"Range Arrays variable('%s') is not Integer on line %d.\n", str,
-									curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- range arrays variable '%s' is not integer.\n", 
+								curr -> nodeData.leaf -> tn -> line_num,
+								str
+								);
 							}
 						}
 						break;
@@ -963,7 +1066,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableFunc* func = fetchFuncData(str);
 							if(func == NULL) {
 								fprintf(stderr, 
-								"The function used('%s') is not declared and defined on line %d.\n", str, curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- module used (called) '%s' is not declared or defined.\n", 
+								curr -> nodeData.leaf -> tn -> line_num,
+								str
+								);
 								return;
 							}
 							if(func -> isDefined == 0) {
@@ -979,8 +1085,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableVar* idx = fetchVarData(curr -> localST, str);
 							if(idx == NULL) {
 								fprintf(stderr, 
-								"Switch variable('%s') is not defined line %d.\n",
-								str, curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- switch variable '%s' is not defined.\n",
+								curr -> nodeData.leaf -> tn -> line_num,
+								str
+								);
 								return;
 							}
 							else {
@@ -992,8 +1100,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 							SymTableVar* idx = fetchVarData(curr -> localST, str);
 							if(idx == NULL) {
 								fprintf(stderr, 
-								"Loop variable('%s') is not defined line %d.\n",
-								str, curr -> nodeData.leaf -> tn -> line_num);
+								"Line number (%d): semantic error -- Loop variable '%s' is not defined.\n",
+								curr -> nodeData.leaf -> tn -> line_num, str);
 								/* not declared, still giving it a type*/
 								curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
 								return;
@@ -1036,14 +1144,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 						tmp = tmp -> parent;
 					if(idx == NULL && tmp != NULL && tmp -> type != AST_NODE_INPUTLIST) {
 						fprintf(stderr, 
-						"Index variable is not defined on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
+						"Line number (%d): semantic error -- index variable '%s' not defined.\n", 
+						curr -> nodeData.leaf -> tn -> line_num, curr->nodeData.leaf->tn->lex);
 						return;
 					}
 					if(idx == NULL)
 						return;
 					if(idx -> dataType != AST_TYPE_INT) {
 						fprintf(stderr, 
-						"Index variable in range arrays is not Integer on line %d.\n", curr -> nodeData.leaf -> tn -> line_num);
+						"Line number (%d): semantic error -- index variable '%s' in range arrays not an integer.\n", 
+						curr -> nodeData.leaf -> tn -> line_num,
+						idx->name
+						);
 					}
 				}
 				break;
@@ -1125,7 +1237,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 					SymTableVar* tmp = fetchVarData(curr -> localST, str);
 					if(tmp == NULL) {
 						fprintf(stderr, 
-						"The identifier not declared.\n");
+						"Line number (%d): semantic error -- undeclared identifier '%s'.\n",
+						curr -> nodeData.leaf -> tn -> line_num,
+						str
+						);
 					}
 					curr -> nodeData.leaf -> dataType = tmp -> dataType;
 				}
