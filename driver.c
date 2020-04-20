@@ -44,10 +44,10 @@ int main(int argc, char* argv[]) {
 	createParseTable();
 
 	printf(KCYN "**************** IMPLEMENTATION STATUS ****************\n" KNRM);
-	printf("1: FIRST and FOLLOW set automated\n");
-	printf("2: Both lexical and syntax analyzer modules implemented\n");
-	printf("3: Code works on all given test cases\n");
-
+	// printf("1: FIRST and FOLLOW set automated\n");
+	// printf("2: Both lexical and syntax analyzer modules implemented\n");
+	// printf("3: Code works on all given test cases\n");
+	printf("Level 4: All errors have been handled\n");
 	printf(KCYN "*******************************************************\n" KNRM);
 
 	int option = 0;
@@ -352,7 +352,7 @@ int main(int argc, char* argv[]) {
 					emitCodeInit(argv[2]);
 					emitCodeAST(root, NULL);
 					emitCodeFinalize();
-					printf("Code generated successfully....\n");
+					printf("Code compiles successfully....\n");
 				} else {
 					fprintf(stderr, "Code not generated due to semantic errors\n");
 				}
