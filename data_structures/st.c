@@ -111,7 +111,7 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 	} 
 	else {
 		fprintf(stderr, 
-		"Line number (%d): semantic error -- Redeclaration of %s (it already exists within the scope of this function).\n", line_num, varName);
+		"Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the scope of this function).\n", line_num, varName);
 	}
 }
 
@@ -149,7 +149,7 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 	} 
 	else {
 		fprintf(stderr, 
-		"Line number (%d): semantic error -- Redeclaration of %s (it already exists within the scope of this function).\n", line_num, varName);
+		"Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the scope of this function).\n", lft -> nodeData.leaf -> tn -> line_num, varName);
 	}
 }
 
