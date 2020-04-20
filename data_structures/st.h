@@ -141,4 +141,16 @@ void printFunc(void* data);
  */
 void outputSymbolTable(ASTNode * curr, int operation);
 
+static inline void outputActivationRecords() {
+	printSymbolTable(globalST, printFunc);
+}
+
+/**
+ * Prints the array type expression and widths
+ * @param curr	The root of current AST subtree
+ */
+static inline void outputArrayExprs(ASTNode* curr) {
+	outputSymbolTable(curr, 1);
+}
+
 #endif

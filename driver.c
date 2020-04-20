@@ -47,13 +47,14 @@ int main(int argc, char* argv[]) {
 	printf("1: FIRST and FOLLOW set automated\n");
 	printf("2: Both lexical and syntax analyzer modules implemented\n");
 	printf("3: Code works on all given test cases\n");
+
 	printf(KCYN "*******************************************************\n" KNRM);
 
 	int option = 0;
 	boolean executed = False;
 	ASTNode* root = NULL;
 	do {
-		printf("Enter an option\n");
+		printf("\nEnter an option\n");
 		printf("1: Print token list from lexer\n");
 		printf("2: Run Parser and produce Parse Tree\n");
 		printf("3: Print AST (Abstract Syntax Tree) \n");
@@ -79,11 +80,13 @@ int main(int argc, char* argv[]) {
 				FILE * fp = fopen(argv[1], "r");
 				int i = 1;
 				token * tok;
+				lexerinit();
 				printf(KGRN "%-25s%-25s%s\n" KNRM, "line_num", "lexeme", "Token_name");
 				while((tok = getNextToken(fp))->id != DOLLAR) {
 					printf("%-25d%-25s%d\n", tok->line_num, tok->lex, tok->id);
 					i++;
 				}
+				fclose(fp);
 			}
 			break;
 
@@ -105,19 +108,24 @@ int main(int argc, char* argv[]) {
 				 * Also specify the traversal order at the beginning. (On Console)
 				 */
 			
-				printf("\nTraversal Order of AST: Preorder\n");
 				if(PT == NULL) {
-					// generate parse tree
+					/* generate parse tree */
 					parseInputSourceCode(argv[1]);
 				}
 
 				/* Construct the AST */
-				if(root == NULL) {
+				if(root == NULL && syntacticallyCorrect) {
 					root = constructAST(NULL, NULL, PT);
 				}
 
-				/* Print the AST */
-				printAST(root);
+				if(syntacticallyCorrect) {
+					/* Print the AST */
+					printf("\nTraversal Order of AST: Preorder, DFS\n");
+					printAST(root);
+				} else {
+					/* Syntactically incorrect. Report error instead */
+					fprintf(stderr, "AST not generated due to syntactic errors, hence it was not printed\n");
+				}
 
 			}
 			break;
@@ -133,14 +141,12 @@ int main(int argc, char* argv[]) {
 					parseInputSourceCode(argv[1]);
 				}
 
-				if(root == NULL) {
+				if(root == NULL && syntacticallyCorrect) {
 					root = constructAST(NULL, NULL, PT);
 				}
 
 				int parseTreeSize = getParseTreeSize();
-				int astSize = getASTSize();
 				int numParseTreeNodes = getParseTreeNumNodes();
-				int astNodesCount = getASTnumNodes();
 
 				char buf[40];
 				sprintf(buf, "Number of parse tree nodes: %d", numParseTreeNodes);
@@ -149,15 +155,22 @@ int main(int argc, char* argv[]) {
 				sprintf(buf, "Allocated Memory for Parse Tree: %d", parseTreeSize);
 				printf("%-40s\n", buf);
 
-				sprintf(buf, "Number of AST nodes: %d", astNodesCount);
-				printf("%-40s", buf);
+				if(syntacticallyCorrect) {
+					int astSize = getASTSize();
+					int astNodesCount = getASTnumNodes();
 
-				sprintf(buf, "Allocated Memory for AST Tree: %d", astSize);
-				printf("%-40s\n", buf);
+					sprintf(buf, "Number of AST nodes: %d", astNodesCount);
+					printf("%-40s", buf);
 
-				float compression = ((parseTreeSize-astSize)/((float)parseTreeSize)) * 100.0;
-				printf("Compression is %f\n",compression);
+					sprintf(buf, "Allocated Memory for AST Tree: %d", astSize);
+					printf("%-40s\n", buf);
 
+					float compression = ((parseTreeSize-astSize)/((float)parseTreeSize)) * 100.0;
+					printf("Compression is %f\n",compression);
+				} else {
+					/* Syntactically incorrect. Report error instead */
+					fprintf(stderr, "AST not generated due to syntactic errors, hence no computation was possible\n");
+				}
 			}
 			break;
 
@@ -172,9 +185,15 @@ int main(int argc, char* argv[]) {
 				if(PT == NULL) {
 					parseInputSourceCode(argv[1]);
 				}
+				if(syntacticallyCorrect == False) {
+					fprintf(stderr, "Symbol Table not generated due to syntactic errors\n\n");
+					break;
+				}
+
 				if(root == NULL) {
 					root = constructAST(NULL, NULL, PT);
 				}
+				
 				/**
 				 * TODO: find a way to ensure no errors are reported here
 				 */
@@ -183,6 +202,8 @@ int main(int argc, char* argv[]) {
 					traverseAST(root, "");
 					pass2AST(root, "");
 				}
+
+				/* print the symbol table */
 				outputSymbolTable(root, 0);
 			}
 			break;
@@ -197,6 +218,12 @@ int main(int argc, char* argv[]) {
 				if(PT == NULL) {
 					parseInputSourceCode(argv[1]);
 				}
+
+				if(syntacticallyCorrect == False) {
+					fprintf(stderr, "Activation Record not generated due to syntactic errors\n\n");
+					break;
+				}
+
 				if(root == NULL) {
 					root = constructAST(NULL, NULL, PT);
 				}
@@ -208,7 +235,7 @@ int main(int argc, char* argv[]) {
 					traverseAST(root, "");
 					pass2AST(root, "");
 				}
-				printSymbolTable(globalST, printFunc);
+				outputActivationRecords();
 			}
 			break;
 			
@@ -220,6 +247,12 @@ int main(int argc, char* argv[]) {
 				if(PT == NULL) {
 					parseInputSourceCode(argv[1]);
 				}
+
+				if(syntacticallyCorrect == False) {
+					fprintf(stderr, "Type expression and widths of arrays not generated due to syntactic errors\n\n");
+					break;
+				}
+
 				if(root == NULL) {
 					root = constructAST(NULL, NULL, PT);
 				}
@@ -231,7 +264,7 @@ int main(int argc, char* argv[]) {
 					traverseAST(root, "");
 					pass2AST(root, "");
 				}
-				outputSymbolTable(root, 1);
+				outputArrayExprs(root);
 			}
 			break;
 
@@ -242,10 +275,13 @@ int main(int argc, char* argv[]) {
 				 * If the code is syntactically correct, then all type checking and semantic errors are reported
 				 */
 
+				/* Cleanup to prevent incorrect time computation */
 				PT = NULL;
 				root = NULL;
 				globalST = NULL;
+				destroyError();
 				
+				/* initialize timer */
 				clock_t	start_time, end_time;
 
 				double total_CPU_time, total_CPU_time_in_seconds;
@@ -254,6 +290,11 @@ int main(int argc, char* argv[]) {
 
 				/* Generate Parse Table: */
 				parseInputSourceCode(argv[1]);
+
+				if(syntacticallyCorrect == False) {
+					fprintf(stderr, "Semantic tests not performed due to syntactic errors\n\n");
+					break;
+				}
 
 				/* Construct AST */
 				root = constructAST(NULL, NULL, PT);
@@ -266,6 +307,9 @@ int main(int argc, char* argv[]) {
 
 				/* Pass 2 */
 				pass2AST(root, "");
+
+				/* prints all errors */
+				printErrorList();
 
 				end_time = clock();
 
@@ -282,9 +326,36 @@ int main(int argc, char* argv[]) {
 				 * Produces NASM assembly code 
 				 * Assumption: There is no syntactic, semantic or type mismatch error in the test cases 
 				 */
-				emitCodeInit(argv[2]);
-				emitCodeAST(root, NULL);
-				emitCodeFinalize();
+				if(PT == NULL) {
+					parseInputSourceCode(argv[1]);
+				}
+
+				if(syntacticallyCorrect == False) {
+					fprintf(stderr, "Semantic check not performed due to syntactic errors\n\n");
+					break;
+				}
+
+				if(root == NULL) {
+					root = constructAST(NULL, NULL, PT);
+				}
+				/**
+				 * TODO: find a way to ensure no errors are reported here
+				 */
+				if(globalST == NULL) {
+					destroyError();
+					globalST = getSymbolTable();
+					traverseAST(root, "");
+					pass2AST(root, "");
+				}
+
+				if(syntacticallyCorrect && semanticallyCorrect) {
+					emitCodeInit(argv[2]);
+					emitCodeAST(root, NULL);
+					emitCodeFinalize();
+					printf("Code generated successfully....\n");
+				} else {
+					fprintf(stderr, "Code not generated due to semantic errors\n");
+				}
 			}
 			break;
 			

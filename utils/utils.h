@@ -203,12 +203,31 @@ typedef struct rhsNode rhsNode;
 
 struct errorNode {
 	int line;
-	char message[100];
+	char message[200];
 	struct errorNode * next;
 };
 
 typedef struct errorNode errorNode;
 
+boolean semanticallyCorrect;
+
 errorNode * errorList;
+
+/**
+ * Registers an error
+ * @param line	The line number at which the error was encountered
+ * @param mess	The error reported 
+ */
+void reportError(int line, char * mess);
+
+/*
+ * Prints the list of semantic errors to be reported
+ */
+void printErrorList();
+
+/**
+ * Destroys any old error list
+ */
+void destroyError();
 
 #endif

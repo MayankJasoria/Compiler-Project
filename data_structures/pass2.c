@@ -11,6 +11,7 @@
 #include "st.h"
 #include "ast.h"
 #include "pass1.h"
+#include "../utils/utils.h"
 
 void pass2Children(ASTNode * head, char * fname) {
 	
@@ -31,11 +32,13 @@ void checkOutputAssignment(SymTableFunc * func) {
 		tmp = (SymTableVar *) (head -> data);
 		tmp = fetchVarData(func, tmp -> name);
 		if(tmp -> isAssigned == 0) {
-			fprintf(stderr, "Line number (%d): semantic error -- The output variable '%s' of function '%s' is not assigned any value\n",
+			char message[200];
+				sprintf(message, "Line number (%d): semantic error -- The output variable '%s' of function '%s' is not assigned any value\n",
 				func -> end_line_num,
 				tmp -> name, 
 				func -> name
 				);
+				reportError(func -> end_line_num, message);
 			
 		}
 		head = head -> next;
@@ -113,11 +116,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 			if(curr -> nodeData.io -> type == AST_IO_GETVAL) {
 				ASTNode * ch = curr -> child;
 				if(lookupDependentVar(curr -> localST, ch -> nodeData.leaf -> tn -> lex)) {
-					fprintf(stderr, 
+					char message[200];
+					sprintf(message, 
 					"Line number (%d): semantic error -- for loop variable '%s' re-assigned using get_value.\n", 
 					ch -> nodeData.leaf -> tn -> line_num,
 					ch -> nodeData.leaf -> tn -> lex
 					);
+					reportError(ch -> nodeData.leaf -> tn -> line_num, message);
 				}
 				SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 				if(lhs == NULL)
@@ -137,11 +142,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 			/* nothing needed */
 			ASTNode * ch = curr -> child;
 			if(lookupDependentVar(curr -> localST, ch -> nodeData.leaf -> tn -> lex)) {
-				fprintf(stderr, 
+				char message[200];
+				sprintf(message, 
 				"Line number (%d): semantic error -- for loop variable '%s' re-assigned.\n", 
 				ch -> nodeData.leaf -> tn -> line_num,
 				ch -> nodeData.leaf -> tn -> lex
 				);
+				reportError(ch -> nodeData.leaf -> tn -> line_num, message);
 			}
 			SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
 			if(lhs == NULL)
@@ -169,11 +176,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 					char str[30];
 					strcpy(str, ch2 -> child -> nodeData.leaf -> tn -> lex);
 					if(lookupDependentVar(curr -> localST, str)) {
-						fprintf(stderr, 
+						char message[200];
+						sprintf(message, 
 						"Line number (%d): semantic error -- for loop variable '%s' re-assigned by module reuse.\n", 
 						ch2 -> child -> nodeData.leaf -> tn -> line_num,
 						str
 						);
+						reportError(ch2 -> child -> nodeData.leaf -> tn -> line_num, message);
 					}
 					SymTableVar * lhs = fetchVarData(curr -> localST, str);
 					if(lhs != NULL)
@@ -186,12 +195,16 @@ void pass2AST(ASTNode* curr, char* fname) {
 			if(curr -> nodeData.moduleReuse -> listCheck)
 				return;
 			if(ch -> prev != NULL && !listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST)) {
-				fprintf(stderr, 
+				char message[200];
+				sprintf(message, 
 				"Line number (%d): semantic error -- output list type mismatch.\n", line_num);
+				reportError(line_num, message);
 			}
 			if(ch -> prev != NULL && listTypeMatch(tmp -> output_plist -> head, ch -> prev, curr -> localST) == -1) {
-				fprintf(stderr, 
+				char message[200];
+				sprintf(message, 
 				"Line number (%d): semantic error -- number of output parameters mismatch.\n", line_num);
+				reportError(line_num, message);
 			}
 			
 			/* searching the idList in case 38, optioanal may be NULL*/
@@ -200,14 +213,18 @@ void pass2AST(ASTNode* curr, char* fname) {
 				ch = ch -> next;
 
 			if(!listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST)) {
-				fprintf(stderr, 
+				char message[200];
+				sprintf(message, 
 				"Line number (%d): semantic error -- input list type mismatch for '%s'.\n", 
 				line_num, tmp -> name);
+				reportError(line_num, message);
 			}
 			if(listTypeMatch(tmp -> input_plist -> head, ch, curr -> localST) == -1) {
-				fprintf(stderr, 
+				char message[200];
+				sprintf(message, 
 				"Line number (%d): semantic error -- number of input parameters mismatch for '%s'.\n", 
 				line_num, tmp -> name);
+				reportError(line_num, message);
 			}
 
 		}
@@ -236,11 +253,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 			while(tmp != NULL) {
 				ASTNode* idNode = tmp -> child;
 				if(lookupDependentVar(curr -> localST, idNode -> nodeData.leaf -> tn -> lex)) {
-					fprintf(stderr, 
+					char message[200];
+					sprintf(message, 
 					"Line number (%d): semantic error -- loop variable '%s' declared..\n",
 					idNode -> nodeData.leaf -> tn -> line_num,
 					idNode -> nodeData.leaf -> tn -> lex
 					);
+					reportError(idNode-> nodeData.leaf -> tn -> line_num, message);
 				}
 				tmp = tmp -> child;
 				tmp = tmp -> next;
@@ -254,11 +273,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 					return;
 				}
 				else if(lft -> isAssigned == 0) {
-					fprintf(stderr, 
+					char message[200];
+					sprintf(message, 
 					"Line number (%d): semantic error -- range variable '%s' might not have been initialized.\n",
 					ch -> child -> nodeData.leaf -> tn -> line_num,
 					var -> sdt.r -> lowId
 					);
+					reportError(ch -> child -> nodeData.leaf -> tn -> line_num, message);
 				}
 			}
 			if(strcmp(var -> sdt.r -> highId, "")) {
@@ -267,11 +288,13 @@ void pass2AST(ASTNode* curr, char* fname) {
 					return;
 				}
 				if(right -> isAssigned == 0) {
-					fprintf(stderr, 
+					char message[200];
+					sprintf(message, 
 					"Line number (%d): semantic error -- range variable '%s' might not have been initialized.\n",
 					ch -> child -> nodeData.leaf -> tn -> line_num,
 					var -> sdt.r -> highId
 					);
+					reportError(ch -> child -> nodeData.leaf -> tn -> line_num, message);
 				}
 			}
 		}
@@ -309,10 +332,12 @@ void pass2AST(ASTNode* curr, char* fname) {
 			astDataType t = ch -> nodeData.leaf -> dataType;
 			SymTableVar * v = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
 			if(t != v -> dataType) {
-				fprintf(stderr, 
+				char message[200];
+				sprintf(message, 	
 				"Line number (%d): semantic error -- case value type mismatch with switch variable type.\n", 
 				ch -> nodeData.leaf -> tn -> line_num
 				);
+				reportError(ch -> nodeData.leaf -> tn -> line_num, message);
 			}
 			ch = ch -> next;
 			if(ch == NULL)
@@ -375,7 +400,8 @@ void pass2AST(ASTNode* curr, char* fname) {
 		}
 		break;
 		default: {
-			fprintf(stderr, "Default error!\n");
+			char message[200];
+			sprintf(message, "Default error!\n");
 		}
 	}
 }
