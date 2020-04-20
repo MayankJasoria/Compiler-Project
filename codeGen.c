@@ -1542,6 +1542,8 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_UNARY: {
 			ASTNode* ch = curr -> child;
+			emitCodeChildren(ch, fname);
+			ch = curr -> child;
 			int tempOff = getExprOffset(ch -> next);
 			astDataType type = getExprType(ch -> next);
 			SymTableFunc * par = getParentFunc(curr -> localST);
@@ -1574,7 +1576,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 				fprintf(fp, "\tmov rdx, rsp\n");
 				fprintf(fp, "\tsub rdx, %dd\n", par -> dynamicRecSize);
-				fprintf(fp, "\tfstp word [rdx]\n");
+				fprintf(fp, "\tfstp dword [rdx]\n");
 			}
 		}
 		break;

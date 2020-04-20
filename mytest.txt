@@ -1,30 +1,40 @@
 <<module lol>>
-takes input[ B: array[10..14] of integer, C:array[9..high] of integer];
-returns [sum1:integer, sum2: integer, sum3:integer];
+takes input[ B: array[1..4] of integer, C:array[low..high] of integer];
+returns [sum1: integer, sum2: integer, sum3: integer];
 start
-	sum1 := 6;
-	sum2 := 7;
-	sum3 := 8;
+	sum1 := -(90 + 1);
+	sum2 := 90;
+	sum3 := 78;
 end
 
 <<<driver program>>>
 start
-	declare s1, s2, s3, s4: real;
+	declare s1, s2, s3, s4: integer;
 	get_value(s1);
 	get_value(s2);
-	get_value(s3);
-	get_value(s4);
-	**declare A: array[s1..s2] of integer;
-	declare B: array[s3..s4] of integer;**
-	
-	s1 := s1/s2;
 
-	print(s1);
+	declare A: array[1..4] of integer;
+	declare B: array[1..4] of integer;
+	**declare tmp: array[s1..s2] of integer;**
 
-	**A := B;
+	**get_value(A);
+	get_value(B);
+
+	tmp := A;
+	A := B;
+	B := tmp;
+
+	print(A);
+	print(B);
+	print(tmp);
+
+
+	tmp := tmp;
+
+	print(tmp);**
 
 	[s1, s2, s3]:= use module lol with parameters A, B;
 	print(s1);
 	print(s2);
-	print(s3);**
+	print(s3);
 end
