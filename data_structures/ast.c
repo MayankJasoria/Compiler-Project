@@ -160,20 +160,12 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 			ASTSize += sizeof(assignNode);
 		}
 		break;
-		case AST_NODE_WHICHSTMT: {
-			ASTSize += sizeof(whichStmtNode);
-		}
-		break;
 		case AST_NODE_MODULEREUSE: {
 			ASTSize += sizeof(moduleReuseNode);
 		}
 		break;
 		case AST_NODE_IDLIST: {
 			ASTSize += sizeof(idListNode);
-		}
-		break;
-		case AST_NODE_EXPR: {
-			ASTSize += sizeof(exprNode);
 		}
 		break;
 		case AST_NODE_AOBEXPR: {

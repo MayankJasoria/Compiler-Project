@@ -15,19 +15,22 @@
 *         'moduleDeclarationsNode' in this code to avoid confusion.
 */
 
-/**
-* nodeType: Identifies the type of node represented by the 
-*           ASTNode. 
-* Naming convention: Construct name in all uppercase letters
+/*
+* BOUND_RUNTIME: The bound checking of the array index is left for runtime.
+* BOUND_CORRECT: The given index access satisfies the bounds of the array. (if statically checked)
+* BOUND_ERROR: The given index access satisfies the bounds of the array. (if statically checked)
 */
-
-
 typedef enum {
 	BOUND_RUNTIME,
 	BOUND_ERROR,
 	BOUND_CORRECT
 } boundCheck;
 
+/**
+* nodeType: Identifies the type of node represented by the 
+*           ASTNode. 
+* Naming convention: Construct name in all uppercase letters
+*/
 typedef enum {
 	AST_NODE_PROGRAM,
 	AST_NODE_MODULEDECLARATION,
@@ -58,11 +61,10 @@ typedef enum {
 	AST_NODE_LEAF
 } astNodeType;
 
-typedef enum {
-	AST_TYPE_CAT_PRIM,
-	AST_TYPE_CAT_ARRAY,
-} astDataTypeCat;
-
+/**
+* astDataType: Identifies the datatype of node represented by the 
+*           ASTNode (if it represents some identifier or a subexpression). 
+*/
 typedef enum astDataType {
 	AST_TYPE_INT,
 	AST_TYPE_REAL,
@@ -71,6 +73,10 @@ typedef enum astDataType {
 	AST_TYPE_POINTER
 } astDataType;
 
+/* 
+* stmt_type: specifies the type of statement if it is a statement type of node
+* naming convention: Construct name in all uppercase letters
+*/
 typedef enum {
 	AST_STMT_IO,
 	AST_STMT_SIMPLE,
@@ -85,38 +91,41 @@ typedef enum {
 	AST_STMT_SIMPLE_ASSIGN
 } stmt_type;
 
+/*
+* io_type: specifies the type of IO statement for AST_NODE_IO.
+* 	AST_IO_GETVAL: used for get_value() construct
+* 	AST_IO_PRINT: used for print construct
+*/
 typedef enum {
 	AST_IO_GETVAL,
 	AST_IO_PRINT
 } io_type;
 
-typedef enum {
-	AST_WHICH_TYPE_LVALID,
-	AST_WHICH_TYPE_LVALARR
-} whichType;
-
-typedef enum {
-	AST_EXPR_AOB,
-	AST_EXPR_UNARY  
-} expr_type;
-
-typedef enum {
-	AST_VAR_TYPE_BOOLCONSTT,
-	AST_VAR_TYPE_ID,
-	AST_VAR_TYPE_NUM,
-	AST_VAR_TYPE_RNUM
-} aob_type;
-
+/* 
+*  iter_type: specifies the type of IO statement for AST_NODE_ITER.
+*	AST_ITER_FOR: used for for loop construct
+*	AST_ITER_WHILE: used for while loop construct
+*/
 typedef enum {
 	AST_ITER_FOR,
 	AST_ITER_WHILE
 } iter_type;
 
+/* 
+*	module_type: distinguishes driver modules from other modules. 
+*	AST_MODULE_DRIVER: for driver module
+*	AST_MODULE_Other: for other modules
+*/
 typedef enum {
 	AST_MODULE_DRIVER,
 	AST_MODULE_OTHER
 } module_type;
 
+
+/*
+*	leaf_type: specifies the type of leaf node.
+* 	naming convention: type of symbol represented in all uppercase.
+*/
 typedef enum {
 	AST_LEAF_INT,
 	AST_LEAF_RNUM,
@@ -151,180 +160,101 @@ typedef enum {
 	AST_LEAF_UOPMINUS
 } leaf_type;
 
+/* 
+*	optype: specifies the type of operation to be performed between subexpressions
+*	AST_LOP: Logical Operator	
+*	AST_RELOP: Relational Operator
+*	AST_AOP: Arithmetic Operator
+*/
 typedef enum {
 	AST_LOP,
 	AST_RELOP,
 	AST_AOP
 } optype;
 
-int typeSize[5];
-/**
-* NOTE: All occurrences of 'int a' are only placeholders
+/* 
+*	typeSize: array specifying the width of each dataType in bytes.
 */
+int typeSize[5];
 
+/*	
+*	typeName: specifies the string representation corresponding to the enum 'astDataType'
+*/
 char typeName[5][20];
 
 typedef struct pn {
-	int a;
-	// struct moduleDeclarationNode* dec_head; /* Linkedlist of moduleDeclarationNode */
-	// struct moduleListNode* other_mod1_head; /* Linkedlist of moduleListNode */
-	// struct moduleListNode* driver_mod;      /* Linkedlist of moduleListNode */
-	// struct moduleListNode* other_mod2_head; /* Linkedlist of moduleListNode */
+	/* no particular field needed for Program Node */
 } programNode;
 
 typedef struct {
-	int a;
-	// struct leafNode* id_ptr;
-	// struct moduleDeclarationNode* next;
-
-	// struct leafNode* id_ptr; access
-	struct ASTNode* next; /* Points to next element of type moduleDeclarations */
-
-} moduleDeclarationNode; //This is a linked list (C++ equivalent: a vector of pointers)
-
-/* NOTE: These two structures have been collapsed into moduleListNode defined below */
-
-// struct moduleListNode {
-//     struct moduleNode* data;
-//     struct ASTNode* next;
-// };
+	/* no particular field needed for moduleDeclarationNode node. */
+} moduleDeclarationNode; 
+/*
+* This is a linked list type of structure. 
+*/
 
 typedef struct moduleNode {
-	// placeholder
-	int a;
-	int start_line_num;
-	int end_line_num;
-	// struct leafNode* id_ptr;
-	// struct inputListNode* input_plist_head;
-	// struct outputListNode* output_plist_head;
-	// struct statementNode* moduleDef_head;
+
+	int start_line_num;	/* points to the line number of corresponding START Keyword */
+	int end_line_num;	/* points to the line number of corresponding END Keyword */
 } moduleNode;
 
 
 typedef struct {
-	module_type type; /* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
-	/* check note above */
-	// struct ASTNode* next; /* Points to next element of type moduleListNode */
-	int start_line_num;
-	int end_line_num;
+
+	module_type type;	/* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
+	int start_line_num;	/* points to the line number of corresponding START Keyword */
+	int end_line_num;	/* points to the line number of corresponding END Keyword */
 } moduleListNode;
 
 
 typedef struct {
-	// placeholder
-	int a;
-	// struct leafNode* id_ptr;
-	// struct leafNode* type_ptr;
-	// struct inputListNode* next; /* Points to next element of type inputListNode */
-
-	/* Check: it is not needed */
-	//struct ASTNode* next; /* Points to next element of type inputListNode */
+	
+	/* no particular field needed for moduleDeclarationNode node. */
 } inputListNode;
 
 typedef struct {
-	// struct leafNode* id_ptr;
-	// struct leafNode* type_ptr;
-	// struclt outputListNode* next;
-
-	int isAssigned;
-	/* Check: it is not needed */
-	// struct ASTNode* next; /* Points to next element of type outputListNode */
-
+	
+	int isAssigned;	/* indicates whether the output parameter is being assigned or not */
 } outputListNode;
 
 typedef struct {
-	// struct rangeArraysNode* range_arrays_ptr;
-	// struct leafNode* type_ptr;
-	// access via ASTNode
-	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */ 
-	astDataType dataType;
-	astDataTypeCat type_cat;
+	
+	unsigned is_static:1;	/* Whether Array is static: 0 - Not static, 1 - static */ 
+	astDataType dataType;	/* indicates the datatype represented by the node */
 } dataTypeNode;
 
 typedef struct {
-	int a;
-	// struct leafNode* index1;
-	// struct leafNode* index2;
-	// access via ASTNode
+
 	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */
 } rangeArraysNode;
 
-/* TODO: Need to fix statement node */
 typedef struct {
-	// union {
-	//     struct simpleStmtNode* simpleStmt;
-	//     struct whichStmtNode* whichStmt;
-	//     struct declareStmtNode* declareStmt;
-	//     struct condStmtNode* condStmt;
-	//     struct caseStmtNode* caseStmt;
-	//     struct iterStmtNode* iterStmt;
-	// } stmtData;
-	// access via ASTNode
-	stmt_type type;
-	struct ASTNode* next; /* Points to next element of type statementNode */
+	
+	stmt_type type; 		/* defined above */
+	struct ASTNode* next;	/* Points to next element of type statementNode */
 } statementNode;
 
-/* TODO */
 typedef struct {
-	stmt_type type;
 
+	stmt_type type; /* defined above */
 } simpleStmtNode;
 
 typedef struct {
-	int a;
-	boundCheck b;
-	// struct LeafNode* lhs_ptr;
-	// struct whichStmtNode* whichstmt_ptr;
 
-	/* Access of above will be through ASTNode */
+	boundCheck b;	/* defined above */	
 } assignNode;
 
 typedef struct {
 
-	/* Either we get an lvalARR statement or 
-		lvalIDStmt. In the latter case, synthesize 
-		from expression */
-	// union {
-	//     struct lvalueARRStmtNode* lvalARR;
-	//     struct node* exprNode;
-	// }; 
-
-	/* Access of above will be through ASTNode, which type 
-		we have is infered by type below */
-
-
-	
-	whichType type; /* tag: AST_WHICH_TYPE_LVALID,
-							AST_WHICH_TYPE_LVALARR*/
-
-} whichStmtNode;
-
-/* -- All nodes below were defined after having a discussion, so they 
-		do not have any older definition  -- */ 
-
-typedef struct {
 	int a;
 	int listCheck;
-	/* TODO: Add data fields later */
-	
 } moduleReuseNode;
 
 typedef struct {
-	/* TODO: add data fields later */
+	
 	struct ASTNode* next;
 } idListNode;
-
-typedef struct {
-	union {
-		int val_int;
-		float val_float;
-		unsigned x:1;
-	};
-	/* tag:
-		AST_EXPR_AOB or AST_EXPR_UNARY */
-	expr_type type;
-	
-} exprNode;
 
 typedef struct {
 	/*
@@ -335,7 +265,6 @@ typedef struct {
 	/* tag */
 	int temporaryOffset;
 	astDataType dataType;
-	aob_type type;
 } AOBExprNode;
 
 typedef struct {
@@ -453,10 +382,8 @@ typedef union {
 	ioNode* io;
 	simpleStmtNode* simpleStmt;
 	assignNode* assign;
-	whichStmtNode* whichStmt;
 	moduleReuseNode* moduleReuse;
 	idListNode* idList;
-	exprNode* expr;
 	AOBExprNode* AOBExpr;
 	declareStmtNode* declareStmt;
 	condStmtNode* condStmt;
