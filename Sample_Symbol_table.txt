@@ -172,5 +172,4 @@ q 				driver				85-117				4		no		---					---				real			101		1
 r 				driver				85-117				4		no		---					---				real			105		1
 w 				driver				85-117				2		no		---					---				integer			109		1
 D				driver				85-117				43		yes		static				[20,40]			integer			111		1
-**
 

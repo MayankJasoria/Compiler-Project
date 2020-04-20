@@ -201,4 +201,14 @@ struct rhsNode{
 
 typedef struct rhsNode rhsNode;
 
+struct errorNode {
+	int line;
+	char message[100];
+	struct errorNode * next;
+};
+
+typedef struct errorNode errorNode;
+
+errorNode * errorList;
+
 #endif
