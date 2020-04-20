@@ -100,6 +100,15 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
+	fprintf(fp, "\ninvalidbounds:\n");
+	fprintf(fp, "\tpush rbp\n");
+	fprintf(fp, "\tmov rdi, rte_invalidbounds\n");
+	alignStack();
+	fprintf(fp, "\tcall printf\n");
+	getBackStack();
+	fprintf(fp, "\tpop rbp\n");
+	fprintf(fp, "\tjmp rte\n");	
+
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
@@ -201,9 +210,6 @@ void getLeftRightIndex(SymTableVar * id) {
 	}
 	else {
 		SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId);
-		// if(l -> isAssigned == 0) {
-		// 	rte();
-		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + l -> offset);
 		fprintf(fp, "\tmov r10w, word[rax]\n");
@@ -214,9 +220,6 @@ void getLeftRightIndex(SymTableVar * id) {
 	}
 	else {
 		SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId);
-		// if(r -> isAssigned == 0) {
-		// 	rte();
-		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + r -> offset);
 		fprintf(fp, "\tmov r11w, word[rax]\n");
@@ -1025,6 +1028,7 @@ void codegenInit() {
 	fprintf(fp, "\trte_oob: db \"RUN TIME ERROR: Array index out of bounds at line %%hd.\", 0xA, 0\n");
 	fprintf(fp, "\trte_type: db \"RUN TIME ERROR: Dynamic array type checking failed on line %%hd.\", 0xA, 0\n");
 	fprintf(fp, "\trte_param: db \"RUN TIME ERROR: Dynamic array type checking failed on function reuse parameter passing on line %%hd.\", 0xA, 0\n");
+	fprintf(fp, "\trte_invalidbounds: db \"RUN TIME ERROR: Invalid dynamic array bounds on line %%hd.\", 0xA, 0\n");
 
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
@@ -1300,7 +1304,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					
 					SymTableVar * recievedParam = (SymTableVar*) (head -> data);
 					fprintf(fp, "mov rsi, %dd\n", ch -> nodeData.leaf -> tn -> line_num);
-					
+
 					if(strcmp(recievedParam -> sdt.r -> lowId, "") == 0) {
 						// getLeftRightIndex(recievedParam);
 						fprintf(fp, "mov r8w, %dd\n", recievedParam -> sdt.r -> low);
@@ -1422,8 +1426,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
 					fprintf(fp, "\tmov qword [rax], rsp\n");
 					getLeftRightIndex(id);
+					fprintf(fp, "\tmov rsi, %dd\n", idNode -> child -> nodeData.leaf -> tn -> line_num);
 					fprintf(fp, "\tcmp r10w, r11w\n");
-					fprintf(fp, "\tjg rte\n");
+					fprintf(fp, "\tjg invalidbounds\n");
 					fprintf(fp, "\tmov cx, r11w\n");
 					fprintf(fp, "\tsub cx, r10w\n");
 					fprintf(fp, "\tmovsx rcx, cx\n");
