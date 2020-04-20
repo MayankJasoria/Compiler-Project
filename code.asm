@@ -21,6 +21,7 @@ section .data
 	rte_type: db "RUN TIME ERROR: Dynamic array type checking failed on line %hd.", 0xA, 0
 	rte_param: db "RUN TIME ERROR: Dynamic array type checking failed on function reuse parameter passing on line %hd.", 0xA, 0
 	rte_invalidbounds: db "RUN TIME ERROR: Invalid dynamic array bounds on line %hd.", 0xA, 0
+	rte_divisionby0: db "RUN TIME ERROR: division by zero on line %hd.", 0xA, 0
 section .bss
 	buffer: resb 64
 	dynamic: resw 1
@@ -342,6 +343,79 @@ label_1:
 	jnz label_1
 	mov word [dynamic], r9w
 	mov rax, rbp
+	sub rax, 2d
+; --- START: pushTemporary(): type = Integer ---
+	mov dx, word [rax]
+	mov rax, rsp
+	sub rax, 2d
+	mov word [rax], dx
+; --- END: pushTemporary(): type = Integer ---
+	mov rax, rbp
+	sub rax, 4d
+; --- START: pushTemporary(): type = Integer ---
+	mov dx, word [rax]
+	mov rax, rsp
+	sub rax, 4d
+	mov word [rax], dx
+; --- END: pushTemporary(): type = Integer ---
+; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: DIV, type: Integer --- 
+	mov rax, rsp
+	sub rax, 2d
+	mov r10, rsp
+	sub r10, 4d
+	mov r8w, word [rax]
+	mov r9w, word [r10]
+	mov rsi, 20d
+	mov dx, 0
+	mov ax, r8w
+	cmp r9w, 0
+	jz divisionby0
+	div r9w
+	mov r8w, ax
+	mov rax, rsp
+	sub rax, 6d
+	mov word [rax], r8w
+; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: DIV, type: Integer --- 
+; --- START: moveOffsetToOffset(): lhsoff = 0, rhsoff = 4, type = Integer ---
+	mov rax, rsp
+	sub rax, 6d
+	mov r8w, word [rax]
+	mov rax, rbp
+	sub rax, 2d
+	mov word [rax], r8w
+; --- END: moveOffsetToOffset(): lhsoff = 0, rhsoff = 4, type = Integer ---
+; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
+	mov r9, 2d
+	mov rdx, rbp
+; --- START: outputArrayElement() for s1 --- 
+; Function is used for both Arrays and non-Array types, don't go by the name! 
+	push rbp
+	mov rdi, output_fmt_int
+	mov rax, rdx
+	sub rax, r9
+	mov si, word[rax]
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: outputArrayElement() for s1--- 
+	mov rax, rbp
 	sub rax, 24d
 ; --- START: pushTemporary(): type = Array ---
 	mov rdx, qword [rax]
@@ -349,7 +423,7 @@ label_1:
 	sub rax, 8d
 	mov qword [rax], rdx
 ; --- END: pushTemporary(): type = Array ---
-	mov rsi, 20d
+	mov rsi, 24d
 ; --- START: get left and right index of A ---
 	mov rax, rbp
 	sub rax, 2d
@@ -419,7 +493,7 @@ label_1:
 	mov rbp, r9
 	mov rax, qword [rcx]
 	mov qword [rsp], rax
-mov rsi, 22d
+mov rsi, 26d
 mov r8w, 10d
 cmp r8w, r10w
 jnz param
@@ -446,7 +520,10 @@ jnz param
 	mov rbp, r9
 	mov rax, qword [rcx]
 	mov qword [rsp], rax
-mov rsi, 22d
+mov rsi, 26d
+mov r8w, 9d
+cmp r8w, r10w
+jnz param
 	sub rsp, 2d
 	mov word[rsp], r10w
 	sub rsp, 2d
@@ -668,6 +745,31 @@ param:
 invalidbounds:
 	push rbp
 	mov rdi, rte_invalidbounds
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+	jmp rte
+
+divisionby0:
+	push rbp
+	mov rdi, rte_divisionby0
 	push rsi
 	push rdx
 	push rcx

@@ -109,6 +109,15 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");	
 
+	fprintf(fp, "\ndivisionby0:\n");
+	fprintf(fp, "\tpush rbp\n");
+	fprintf(fp, "\tmov rdi, rte_divisionby0\n");
+	alignStack();
+	fprintf(fp, "\tcall printf\n");
+	getBackStack();
+	fprintf(fp, "\tpop rbp\n");
+	fprintf(fp, "\tjmp rte\n");	
+
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
@@ -661,10 +670,11 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 			break;
 		case AST_LEAF_DIV:
 			if(type == AST_TYPE_INT) {
+				fprintf(fp, "\tmov rsi, %dd\n", operator -> nodeData.leaf -> tn -> line_num);
 				fprintf(fp, "\tmov dx, 0\n");
 				fprintf(fp, "\tmov ax, r8w\n");
 				fprintf(fp, "\tcmp r9w, 0\n");
-				fprintf(fp, "\tjz rte\n");
+				fprintf(fp, "\tjz divisionby0\n");
 				fprintf(fp, "\tdiv r9w\n");
 				fprintf(fp, "\tmov r8w, ax\n");
 			}
@@ -672,6 +682,7 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				fprintf(fp, "\tfdiv\n");
 				fprintf(fp, "\tmov rax, rsp\n");
 				fprintf(fp, "\tsub rax, %dd\n", par -> dynamicRecSize);
+				
 				// fprintf(fp, "\tsub rsp, 4\n");
 				fprintf(fp, "\tfstp dword [rax]\n");
 			}
@@ -1029,6 +1040,7 @@ void codegenInit() {
 	fprintf(fp, "\trte_type: db \"RUN TIME ERROR: Dynamic array type checking failed on line %%hd.\", 0xA, 0\n");
 	fprintf(fp, "\trte_param: db \"RUN TIME ERROR: Dynamic array type checking failed on function reuse parameter passing on line %%hd.\", 0xA, 0\n");
 	fprintf(fp, "\trte_invalidbounds: db \"RUN TIME ERROR: Invalid dynamic array bounds on line %%hd.\", 0xA, 0\n");
+	fprintf(fp, "\trte_divisionby0: db \"RUN TIME ERROR: division by zero on line %%hd.\", 0xA, 0\n");
 
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
@@ -1364,7 +1376,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
 					fprintf(fp, "\tmov ecx, dword [rax]\n");
-					fprintf(fp, "\tmov word [rdx], ecx\n");
+					fprintf(fp, "\tmov dword [rdx], ecx\n");
 				}
 				if(id -> dataType == AST_TYPE_BOOLEAN) {
 					fprintf(fp, "\tmov cl, byte [rax]\n");

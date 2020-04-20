@@ -1,5 +1,5 @@
 <<module lol>>
-takes input[ B: array[10..14] of integer, C:array[low..high] of integer];
+takes input[ B: array[10..14] of integer, C:array[9..high] of integer];
 returns [sum1:integer, sum2: integer, sum3:integer];
 start
 	sum1 := 6;
@@ -17,6 +17,10 @@ start
 	declare A: array[s1..s2] of integer;
 	declare B: array[s3..s4] of integer;
 	
+	s1 := s1/s2;
+
+	print(s1);
+
 	A := B;
 
 	[s1, s2, s3]:= use module lol with parameters A, B;
