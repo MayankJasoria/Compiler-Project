@@ -419,8 +419,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 				if(tmp -> dataType == AST_TYPE_ARRAY) {
 					SymTableVar *rhs = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
 					if((tmp -> sdt.r -> dataType != rhs -> sdt.r -> dataType)||
-						(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(rhs -> sdt.r -> lowId, "") == 0 tmp -> sdt.r -> low != rhs -> sdt.r -> low)||
-						(strcmp(tmp -> sdt.r -> highId, "") == 0 && strcmp(rhs -> sdt.r -> highId, "") == 0 tmp -> sdt.r -> high != rhs -> sdt.r -> high)) {
+						(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(rhs -> sdt.r -> lowId, "") == 0 && tmp -> sdt.r -> low != rhs -> sdt.r -> low)||
+						(strcmp(tmp -> sdt.r -> highId, "") == 0 && strcmp(rhs -> sdt.r -> highId, "") == 0 && tmp -> sdt.r -> high != rhs -> sdt.r -> high)) {
 						fprintf(stderr, 
 						"Type mismatch4 in assignment statement on line %d.\n",
 						curr -> child -> nodeData.leaf -> tn -> line_num);

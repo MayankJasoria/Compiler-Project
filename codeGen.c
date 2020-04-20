@@ -80,6 +80,16 @@ void emitCodeFinalize() {
 	getBackStack();
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
+
+	fprintf(fp, "\ntypeError:\n");
+	fprintf(fp, "\tpush rbp\n");
+	fprintf(fp, "\tmov rdi, rte_type\n");
+	alignStack();
+	fprintf(fp, "\tcall printf\n");
+	getBackStack();
+	fprintf(fp, "\tpop rbp\n");
+	fprintf(fp, "\tjmp rte\n");
+
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
@@ -990,6 +1000,7 @@ void codegenInit() {
 	fprintf(fp, "\tbool_false: db \"false\", 0\n");
 
 	fprintf(fp, "\trte_oob: db \"RUN TIME ERROR: Array index out of bounds at line %%hd.\", 0xA, 0\n");
+	fprintf(fp, "\trte_type: db \"RUN TIME ERROR: Dynamic array type checking failed on line %%hd.\", 0xA, 0\n");
 
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
@@ -1171,6 +1182,21 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				int lhsOff = getIDOffset(ch);
 				int rhsOff = getExprOffset(ch -> next);
 				SymTableVar * tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				if(tmp -> dataType == AST_TYPE_ARRAY) {
+					SymTableVar * rhs = fetchVarData(curr -> localST, ch -> next -> child -> nodeData.leaf -> tn -> lex);
+					fprintf(fp, "\tmov rsi, %dd\n", ch -> nodeData.leaf -> tn -> line_num);
+					getLeftRightIndex(tmp);
+					fprintf(fp, "\tmov ax, r10w\n");
+					getLeftRightIndex(rhs);
+					fprintf(fp, "\tcmp ax, r10w\n");
+					fprintf(fp, "\tjnz typeError\n");
+
+					getLeftRightIndex(tmp);
+					fprintf(fp, "\tmov ax, r11w\n");
+					getLeftRightIndex(rhs);
+					fprintf(fp, "\tcmp ax, r11w\n");
+					fprintf(fp, "\tjnz typeError\n");
+				}
 				astDataType type = tmp -> dataType;
 				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
