@@ -685,6 +685,11 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 				
 				// fprintf(fp, "\tsub rsp, 4\n");
 				fprintf(fp, "\tfstp dword [rax]\n");
+				fprintf(fp, "\tfstsw ax\n");
+				fprintf(fp, "\tmov rsi, %dd\n", operator -> nodeData.leaf -> tn -> line_num);
+				fprintf(fp, "\tand eax,	0000000000000100B\n");
+				fprintf(fp, "\tcmp eax, 0000000000000100B\n");
+				fprintf(fp, "\tje divisionby0\n");
 			}
 			break;
 		default:

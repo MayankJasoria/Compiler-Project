@@ -78,65 +78,12 @@ mov word [dynamic], 0
 ; ### Begining of the driver program. ### 
 main:
 mov rbp, rsp
-	sub rsp, 24d
+	sub rsp, 16d
 	mov word [dynamic], 0
-; --- START: takeInput(): type: Integer, Name: s1 --- 
+; --- START: takeInput(): type: Real, Name: s1 --- 
 	push rbp
 	mov rdi, op1
-	mov rsi, type_int
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-	mov r9, 2d
-; START: --- getInputElement() ---
-	push rbp
-	mov rdi, fmt_int
-	mov rax, rbp
-	sub rax, r9
-	mov rsi, rax
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call scanf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: getInputElement() --- 
-; --- END: takeInput(): type: Integer, Name: s1 --- 
-; --- START: takeInput(): type: Integer, Name: s2 --- 
-	push rbp
-	mov rdi, op1
-	mov rsi, type_int
+	mov rsi, type_float
 	push rsi
 	push rdx
 	push rcx
@@ -160,7 +107,7 @@ mov rbp, rsp
 	mov r9, 4d
 ; START: --- getInputElement() ---
 	push rbp
-	mov rdi, fmt_int
+	mov rdi, fmt_float
 	mov rax, rbp
 	sub rax, r9
 	mov rsi, rax
@@ -185,64 +132,11 @@ mov rbp, rsp
 	pop rsi
 	pop rbp
 ; --- END: getInputElement() --- 
-; --- END: takeInput(): type: Integer, Name: s2 --- 
-; --- START: takeInput(): type: Integer, Name: s3 --- 
+; --- END: takeInput(): type: Real, Name: s1 --- 
+; --- START: takeInput(): type: Real, Name: s2 --- 
 	push rbp
 	mov rdi, op1
-	mov rsi, type_int
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-	mov r9, 6d
-; START: --- getInputElement() ---
-	push rbp
-	mov rdi, fmt_int
-	mov rax, rbp
-	sub rax, r9
-	mov rsi, rax
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call scanf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: getInputElement() --- 
-; --- END: takeInput(): type: Integer, Name: s3 --- 
-; --- START: takeInput(): type: Integer, Name: s4 --- 
-	push rbp
-	mov rdi, op1
-	mov rsi, type_int
+	mov rsi, type_float
 	push rsi
 	push rdx
 	push rcx
@@ -266,7 +160,7 @@ mov rbp, rsp
 	mov r9, 8d
 ; START: --- getInputElement() ---
 	push rbp
-	mov rdi, fmt_int
+	mov rdi, fmt_float
 	mov rax, rbp
 	sub rax, r9
 	mov rsi, rax
@@ -291,317 +185,166 @@ mov rbp, rsp
 	pop rsi
 	pop rbp
 ; --- END: getInputElement() --- 
-; --- END: takeInput(): type: Integer, Name: s4 --- 
+; --- END: takeInput(): type: Real, Name: s2 --- 
+; --- START: takeInput(): type: Real, Name: s3 --- 
+	push rbp
+	mov rdi, op1
+	mov rsi, type_float
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+	mov r9, 12d
+; START: --- getInputElement() ---
+	push rbp
+	mov rdi, fmt_float
 	mov rax, rbp
-	sub rax, 16d
-	mov qword [rax], rsp
-; --- START: get left and right index of A ---
+	sub rax, r9
+	mov rsi, rax
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: getInputElement() --- 
+; --- END: takeInput(): type: Real, Name: s3 --- 
+; --- START: takeInput(): type: Real, Name: s4 --- 
+	push rbp
+	mov rdi, op1
+	mov rsi, type_float
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+	mov r9, 16d
+; START: --- getInputElement() ---
+	push rbp
+	mov rdi, fmt_float
 	mov rax, rbp
-	sub rax, 2d
-	mov r10w, word[rax]
+	sub rax, r9
+	mov rsi, rax
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rbp
+; --- END: getInputElement() --- 
+; --- END: takeInput(): type: Real, Name: s4 --- 
 	mov rax, rbp
 	sub rax, 4d
-	mov r11w, word[rax]
-; --- END: got left and right index of A in r10w and r11w --- 
-	mov rsi, 17d
-	cmp r10w, r11w
-	jg invalidbounds
-	mov cx, r11w
-	sub cx, r10w
-	movsx rcx, cx
-	inc rcx
-	mov r9w, word [dynamic]
-label_0:
-	sub rsp, 2d
-	add r9w, 2d
-	dec rcx
-	jnz label_0
-	mov word [dynamic], r9w
-	mov rax, rbp
-	sub rax, 24d
-	mov qword [rax], rsp
-; --- START: get left and right index of B ---
-	mov rax, rbp
-	sub rax, 6d
-	mov r10w, word[rax]
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
+	mov rax, rsp
+	sub rax, 4d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
 	mov rax, rbp
 	sub rax, 8d
-	mov r11w, word[rax]
-; --- END: got left and right index of B in r10w and r11w --- 
-	mov rsi, 18d
-	cmp r10w, r11w
-	jg invalidbounds
-	mov cx, r11w
-	sub cx, r10w
-	movsx rcx, cx
-	inc rcx
-	mov r9w, word [dynamic]
-label_1:
-	sub rsp, 2d
-	add r9w, 2d
-	dec rcx
-	jnz label_1
-	mov word [dynamic], r9w
-	mov rax, rbp
-	sub rax, 2d
-; --- START: pushTemporary(): type = Integer ---
-	mov dx, word [rax]
+; --- START: pushTemporary(): type = Real ---
+	mov edx, dword [rax]
 	mov rax, rsp
-	sub rax, 2d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-	mov rax, rbp
-	sub rax, 4d
-; --- START: pushTemporary(): type = Integer ---
-	mov dx, word [rax]
+	sub rax, 8d
+	mov dword [rax], edx
+; --- END: pushTemporary(): type = Real ---
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: DIV, type: Real --- 
 	mov rax, rsp
 	sub rax, 4d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: DIV, type: Integer --- 
-	mov rax, rsp
-	sub rax, 2d
 	mov r10, rsp
-	sub r10, 4d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
+	sub r10, 8d
+	finit
+	fld dword [rax]
+	fld dword [r10]
+	fdiv
+	mov rax, rsp
+	sub rax, 12d
+	fstp dword [rax]
+	fstsw ax
 	mov rsi, 20d
-	mov dx, 0
-	mov ax, r8w
-	cmp r9w, 0
-	jz divisionby0
-	div r9w
-	mov r8w, ax
+	and eax,	0000000000000100B
+	cmp eax, 0000000000000100B
+	je divisionby0
+; --- START: applyOperator(): leftOp: 0, rightOp: 4, operator: DIV, type: Real --- 
+; --- START: moveOffsetToOffset(): lhsoff = 0, rhsoff = 8, type = Real ---
 	mov rax, rsp
-	sub rax, 6d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: DIV, type: Integer --- 
-; --- START: moveOffsetToOffset(): lhsoff = 0, rhsoff = 4, type = Integer ---
-	mov rax, rsp
-	sub rax, 6d
-	mov r8w, word [rax]
-	mov rax, rbp
-	sub rax, 2d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 0, rhsoff = 4, type = Integer ---
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 2d
-	mov rdx, rbp
-; --- START: outputArrayElement() for s1 --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for s1--- 
-	mov rax, rbp
-	sub rax, 24d
-; --- START: pushTemporary(): type = Array ---
-	mov rdx, qword [rax]
-	mov rax, rsp
-	sub rax, 8d
-	mov qword [rax], rdx
-; --- END: pushTemporary(): type = Array ---
-	mov rsi, 24d
-; --- START: get left and right index of A ---
-	mov rax, rbp
-	sub rax, 2d
-	mov r10w, word[rax]
+	sub rax, 12d
+	mov r8d, dword [rax]
 	mov rax, rbp
 	sub rax, 4d
-	mov r11w, word[rax]
-; --- END: got left and right index of A in r10w and r11w --- 
-	mov r8w, r10w
-; --- START: get left and right index of B ---
-	mov rax, rbp
-	sub rax, 6d
-	mov r10w, word[rax]
-	mov rax, rbp
-	sub rax, 8d
-	mov r11w, word[rax]
-; --- END: got left and right index of B in r10w and r11w --- 
-	cmp r8w, r10w
-	jnz typeError
-; --- START: get left and right index of A ---
-	mov rax, rbp
-	sub rax, 2d
-	mov r10w, word[rax]
-	mov rax, rbp
-	sub rax, 4d
-	mov r11w, word[rax]
-; --- END: got left and right index of A in r10w and r11w --- 
-	mov r8w, r11w
-; --- START: get left and right index of B ---
-	mov rax, rbp
-	sub rax, 6d
-	mov r10w, word[rax]
-	mov rax, rbp
-	sub rax, 8d
-	mov r11w, word[rax]
-; --- END: got left and right index of B in r10w and r11w --- 
-	cmp r8w, r11w
-	jnz typeError
-; --- START: moveOffsetToOffset(): lhsoff = 8, rhsoff = 0, type = Array ---
-	mov rax, rsp
-	sub rax, 8d
-	mov r8, qword [rax]
-	mov rax, rbp
-	sub rax, 16d
-	mov qword [rax], r8
-; --- END: moveOffsetToOffset(): lhsoff = 8, rhsoff = 0, type = Array ---
-; --- Setting up the stack frame ---
-	sub rsp, 2
-	mov ax, word [dynamic]
-	mov word [rsp], ax
-	sub rsp, 8
-	mov qword [rsp], rbp
-	mov rbp, rsp
-	mov rcx, qword [rbp]
-	sub rcx, 16d
-	sub rsp, 8d
-	mov r9, rbp
-	mov rbp, qword [rbp]
-; --- START: get left and right index of A ---
-	mov rax, rbp
-	sub rax, 2d
-	mov r10w, word[rax]
-	mov rax, rbp
-	sub rax, 4d
-	mov r11w, word[rax]
-; --- END: got left and right index of A in r10w and r11w --- 
-	mov rbp, r9
-	mov rax, qword [rcx]
-	mov qword [rsp], rax
-mov rsi, 26d
-mov r8w, 10d
-cmp r8w, r10w
-jnz param
-mov r8w, 14d
-cmp r8w, r11w
-jnz param
-	sub rsp, 2d
-	mov word[rsp], r10w
-	sub rsp, 2d
-	mov word[rsp], r11w
-	mov rcx, qword [rbp]
-	sub rcx, 24d
-	sub rsp, 8d
-	mov r9, rbp
-	mov rbp, qword [rbp]
-; --- START: get left and right index of B ---
-	mov rax, rbp
-	sub rax, 6d
-	mov r10w, word[rax]
-	mov rax, rbp
-	sub rax, 8d
-	mov r11w, word[rax]
-; --- END: got left and right index of B in r10w and r11w --- 
-	mov rbp, r9
-	mov rax, qword [rcx]
-	mov qword [rsp], rax
-mov rsi, 26d
-mov r8w, 9d
-cmp r8w, r10w
-jnz param
-	sub rsp, 2d
-	mov word[rsp], r10w
-	sub rsp, 2d
-	mov word[rsp], r11w
-	sub rsp, 6d
-	call lol
-	mov rax, qword [rbp]
-	add rbp, 8d
-	mov dx, word [rbp]
-	mov word [dynamic], dx
-	add rbp, 2d
-	mov rsp, rbp
-	mov rbp, rax
-	mov rdx, rbp
-	sub rdx, 2d
-	mov rax, rsp
-	sub rax, 8
-	sub rax, 2
-	sub rax, 26d
-	mov cx, word [rax]
-	mov word [rdx], cx
-	mov rdx, rbp
-	sub rdx, 4d
-	mov rax, rsp
-	sub rax, 8
-	sub rax, 2
-	sub rax, 28d
-	mov cx, word [rax]
-	mov word [rdx], cx
-	mov rdx, rbp
-	sub rdx, 6d
-	mov rax, rsp
-	sub rax, 8
-	sub rax, 2
-	sub rax, 30d
-	mov cx, word [rax]
-	mov word [rdx], cx
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 2d
-	mov rdx, rbp
-; --- START: outputArrayElement() for s1 --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for s1--- 
+	mov dword [rax], r8d
+; --- END: moveOffsetToOffset(): lhsoff = 0, rhsoff = 8, type = Real ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 4d
 	mov rdx, rbp
-; --- START: outputArrayElement() for s2 --- 
+; --- START: outputArrayElement() for s1 --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
 	push rbp
-	mov rdi, output_fmt_int
+	mov rdi, output_fmt_float
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]
+	cvtss2sd xmm0, dword[rax]
+	mov rax, 1
 	push rsi
 	push rdx
 	push rcx
@@ -622,43 +365,12 @@ jnz param
 	pop rdx
 	pop rsi
 	pop rbp
-; --- END: outputArrayElement() for s2--- 
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 6d
-	mov rdx, rbp
-; --- START: outputArrayElement() for s3 --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop rbp
-; --- END: outputArrayElement() for s3--- 
+; --- END: outputArrayElement() for s1--- 
 
 ; ### Resetting(aligning) the rsp. ### 
 	movsx rax, word [dynamic]
 	add rsp, rax
-	add rsp, 24d
+	add rsp, 16d
 	ret
 
 ; ### End of driver function. ### 

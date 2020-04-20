@@ -9,22 +9,22 @@ end
 
 <<<driver program>>>
 start
-	declare s1, s2, s3, s4: integer;
+	declare s1, s2, s3, s4: real;
 	get_value(s1);
 	get_value(s2);
 	get_value(s3);
 	get_value(s4);
-	declare A: array[s1..s2] of integer;
-	declare B: array[s3..s4] of integer;
+	**declare A: array[s1..s2] of integer;
+	declare B: array[s3..s4] of integer;**
 	
 	s1 := s1/s2;
 
 	print(s1);
 
-	A := B;
+	**A := B;
 
 	[s1, s2, s3]:= use module lol with parameters A, B;
 	print(s1);
 	print(s2);
-	print(s3);
+	print(s3);**
 end
