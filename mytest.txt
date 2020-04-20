@@ -6,62 +6,9 @@ Multiple modules with the driver module with single level of nesting
 
 **
 <<module array_parameter_demo>>
-takes input[ B: array[10..14] of integer, C:array[low..high] of integer];
-returns [sum1:integer, sum2: integer, sum3:integer];
+takes input[ B: array[10..14] of integer];
 start
 	print(B);
-	print(C);               
-
-	declare k, i, p, q: integer;
-	get_value(p);	
-	get_value(q);
-	declare A, D: array[10..14] of integer;                          
-	declare E: array[p..q] of integer;         
-
-	get_value(A);
-	get_value(E);
-
-**Using local variable A - static array**
-	print(A);
-	sum1:= 0;
-	for(k in 10..14)
-        start
-        declare popp: integer;
-		print(A[k]);		**requires dynamic bound checking- value of k is available at run time**
-		sum1:= sum1+A[k];
-		print(sum1);
-	end
-	print(A);                   **printing A again to verify that the data of its elements in corresponding locations is intact**
-	print(sum1);
-
-**using local variable E - dynamic array**
-	E[5]:= E[6]+E[7];                **requires dynamic bound checking - ranges of E are available at run time**
-	print(E);
-
-**using parameter B - static array**
-	sum2:=0;
-	D:=B;
-	print(D);
-	for(i in 10..14)
-        start
-		print(D[i]);			**requires dynamic bound checking- value of i is available at run time**
-		sum2:= sum2+D[i];
-		print(sum2);
-	end
-	print(D);
-	print(sum2);
-
-**using parameter C - dynamic array**
-	sum3:=0;
-	print(C);
-	declare j, index:integer;
-	for(j in 1..4)
-	start
-		get_value(index);
-		sum3:= sum3 + C[index];                 **runtime bound checking required**
-		print(sum3);
-	end
-	print(sum3);
 end
 
 <<<driver program>>>
@@ -74,11 +21,8 @@ start
 	declare array_B: array[m..n] of integer;
 	get_value(array_A);
 	get_value(array_B);
-	[s1, s2, s3]:= use module array_parameter_demo with parameters array_A, array_B;	
+	use module array_parameter_demo with parameters array_B;	
 **formal parameter C of the callee function array_parameter_demo receives the range values from the actual parameter array_B**		
-	print(s1);
-	print(s2);
-	print(s3);
 end
 
 ** On the console                                                 Following Notes are for reference and are not supposed be printed on the console

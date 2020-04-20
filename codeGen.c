@@ -90,6 +90,16 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
+
+	fprintf(fp, "\nparam:\n");
+	fprintf(fp, "\tpush rbp\n");
+	fprintf(fp, "\tmov rdi, rte_param\n");
+	alignStack();
+	fprintf(fp, "\tcall printf\n");
+	getBackStack();
+	fprintf(fp, "\tpop rbp\n");
+	fprintf(fp, "\tjmp rte\n");
+
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
@@ -159,14 +169,27 @@ void getLeftRightIndex(SymTableVar * id) {
 	SymTableFunc * local = id -> table;
 	SymTableFunc * func = getParentFunc(local);
 	if(id -> offset < func -> inputSize) {
+		int lft, right;
 		int offset = id -> offset;
-		fprintf(fp, "\tmov rax, rbp\n");
-		fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER] + typeSize[AST_TYPE_INT]);
-		fprintf(fp, "\tmov r10w, word [rax]\n");
+		if(strcmp(id -> sdt.r -> lowId, "") == 0) {
+			lft = id -> sdt.r -> low;
+			fprintf(fp, "\tmov r10w, %dd\n", lft);		
+		}
+		else {
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER] + typeSize[AST_TYPE_INT]);
+			fprintf(fp, "\tmov r10w, word [rax]\n");
+		}
 
-		fprintf(fp, "\tmov rax, rbp\n");
-		fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER] + 2*typeSize[AST_TYPE_INT]);
-		fprintf(fp, "\tmov r11w, word [rax]\n");
+		if(strcmp(id -> sdt.r -> highId, "") == 0) { 
+			right = id -> sdt.r -> high;
+			fprintf(fp, "\tmov r11w, %dd\n", right);	
+		}
+		else {
+			fprintf(fp, "\tmov rax, rbp\n");
+			fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER] + 2*typeSize[AST_TYPE_INT]);
+			fprintf(fp, "\tmov r11w, word [rax]\n");	
+		}
 		return;
 	}
 
@@ -1001,6 +1024,7 @@ void codegenInit() {
 
 	fprintf(fp, "\trte_oob: db \"RUN TIME ERROR: Array index out of bounds at line %%hd.\", 0xA, 0\n");
 	fprintf(fp, "\trte_type: db \"RUN TIME ERROR: Dynamic array type checking failed on line %%hd.\", 0xA, 0\n");
+	fprintf(fp, "\trte_param: db \"RUN TIME ERROR: Dynamic array type checking failed on function reuse parameter passing on line %%hd.\", 0xA, 0\n");
 
 	fprintf(fp, "section .bss\n");
 	fprintf(fp, "\tbuffer: resb 64\n");
@@ -1226,6 +1250,13 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			if(inParam -> type != AST_NODE_IDLIST)
 				inParam = inParam -> next;
 
+			ch = curr -> child;
+			if(ch -> type != AST_NODE_LEAF)
+				ch = ch -> next;
+
+			SymTableFunc * func = fetchFuncData(inParam -> prev -> nodeData.leaf -> tn -> lex);
+			Node * head = func -> input_plist -> head;
+
 			int inputSize = 0;
 			/* Traversing actual parameters */
 			while(inParam != NULL) {
@@ -1263,18 +1294,37 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					getLeftRightIndex(id);
 					fprintf(fp, "\tmov rbp, r9\n");
 					fprintf(fp, "\tmov rax, qword [rcx]\n");
+
 					// fprintf(fp, "\tpush rax\n");
 					fprintf(fp, "\tmov qword [rsp], rax\n");
+					
+					SymTableVar * recievedParam = (SymTableVar*) (head -> data);
+					fprintf(fp, "mov rsi, %dd\n", ch -> nodeData.leaf -> tn -> line_num);
+					
+					if(strcmp(recievedParam -> sdt.r -> lowId, "") == 0) {
+						// getLeftRightIndex(recievedParam);
+						fprintf(fp, "mov r8w, %dd\n", recievedParam -> sdt.r -> low);
+						fprintf(fp, "cmp r8w, r10w\n");
+						fprintf(fp, "jnz param\n");	
+					}
+
+					if(strcmp(recievedParam -> sdt.r -> highId, "") == 0) {
+						// getLeftRightIndex(recievedParam);
+						fprintf(fp, "mov r8w, %dd\n", recievedParam -> sdt.r -> high);
+						// getLeftRightIndex(id);
+						fprintf(fp, "cmp r8w, r11w\n");
+						fprintf(fp, "jnz param\n");	
+					}
+
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[AST_TYPE_INT]);
 					fprintf(fp, "\tmov word[rsp], r10w\n");
 					fprintf(fp, "\tsub rsp, %dd\n", typeSize[AST_TYPE_INT]);
 					fprintf(fp, "\tmov word[rsp], r11w\n");
 				}
 				inParam = inParam -> child -> next;
+				head = head -> next;
 			}
-			ch = curr -> child;
-			if(ch -> type != AST_NODE_LEAF)
-				ch = ch -> next;
+			
 			SymTableFunc * fun = fetchFuncData(ch -> nodeData.leaf -> tn -> lex);
 			int actRecSize = fun -> actRecSize;
 			fprintf(fp, "\tsub rsp, %dd\n", actRecSize - inputSize);
