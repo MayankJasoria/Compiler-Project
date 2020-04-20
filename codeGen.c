@@ -1214,15 +1214,15 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					SymTableVar * rhs = fetchVarData(curr -> localST, ch -> next -> child -> nodeData.leaf -> tn -> lex);
 					fprintf(fp, "\tmov rsi, %dd\n", ch -> nodeData.leaf -> tn -> line_num);
 					getLeftRightIndex(tmp);
-					fprintf(fp, "\tmov ax, r10w\n");
+					fprintf(fp, "\tmov r8w, r10w\n");
 					getLeftRightIndex(rhs);
-					fprintf(fp, "\tcmp ax, r10w\n");
+					fprintf(fp, "\tcmp r8w, r10w\n");
 					fprintf(fp, "\tjnz typeError\n");
 
 					getLeftRightIndex(tmp);
-					fprintf(fp, "\tmov ax, r11w\n");
+					fprintf(fp, "\tmov r8w, r11w\n");
 					getLeftRightIndex(rhs);
-					fprintf(fp, "\tcmp ax, r11w\n");
+					fprintf(fp, "\tcmp r8w, r11w\n");
 					fprintf(fp, "\tjnz typeError\n");
 				}
 				astDataType type = tmp -> dataType;

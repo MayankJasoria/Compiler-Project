@@ -14,10 +14,11 @@ start
 	get_value(s2);
 	get_value(s3);
 	get_value(s4);
-
 	declare A: array[s1..s2] of integer;
 	declare B: array[s3..s4] of integer;
 	
+	A := B;
+
 	[s1, s2, s3]:= use module lol with parameters A, B;
 	print(s1);
 	print(s2);

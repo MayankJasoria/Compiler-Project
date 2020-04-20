@@ -302,7 +302,7 @@ mov rbp, rsp
 	sub rax, 4d
 	mov r11w, word[rax]
 ; --- END: got left and right index of A in r10w and r11w --- 
-	mov rsi, 18d
+	mov rsi, 17d
 	cmp r10w, r11w
 	jg invalidbounds
 	mov cx, r11w
@@ -327,7 +327,7 @@ label_0:
 	sub rax, 8d
 	mov r11w, word[rax]
 ; --- END: got left and right index of B in r10w and r11w --- 
-	mov rsi, 19d
+	mov rsi, 18d
 	cmp r10w, r11w
 	jg invalidbounds
 	mov cx, r11w
@@ -341,6 +341,61 @@ label_1:
 	dec rcx
 	jnz label_1
 	mov word [dynamic], r9w
+	mov rax, rbp
+	sub rax, 24d
+; --- START: pushTemporary(): type = Array ---
+	mov rdx, qword [rax]
+	mov rax, rsp
+	sub rax, 8d
+	mov qword [rax], rdx
+; --- END: pushTemporary(): type = Array ---
+	mov rsi, 20d
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 2d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 4d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+	mov r8w, r10w
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 6d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 8d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+	cmp r8w, r10w
+	jnz typeError
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 2d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 4d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+	mov r8w, r11w
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 6d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 8d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+	cmp r8w, r11w
+	jnz typeError
+; --- START: moveOffsetToOffset(): lhsoff = 8, rhsoff = 0, type = Array ---
+	mov rax, rsp
+	sub rax, 8d
+	mov r8, qword [rax]
+	mov rax, rbp
+	sub rax, 16d
+	mov qword [rax], r8
+; --- END: moveOffsetToOffset(): lhsoff = 8, rhsoff = 0, type = Array ---
 ; --- Setting up the stack frame ---
 	sub rsp, 2
 	mov ax, word [dynamic]
@@ -364,7 +419,7 @@ label_1:
 	mov rbp, r9
 	mov rax, qword [rcx]
 	mov qword [rsp], rax
-mov rsi, 21d
+mov rsi, 22d
 mov r8w, 10d
 cmp r8w, r10w
 jnz param
@@ -391,7 +446,7 @@ jnz param
 	mov rbp, r9
 	mov rax, qword [rcx]
 	mov qword [rsp], rax
-mov rsi, 21d
+mov rsi, 22d
 	sub rsp, 2d
 	mov word[rsp], r10w
 	sub rsp, 2d
