@@ -46,9 +46,6 @@ int main(int argc, char* argv[]) {
 	createParseTable();
 
 	printf(KCYN "**************** IMPLEMENTATION STATUS ****************\n" KNRM);
-	// printf("1: FIRST and FOLLOW set automated\n");
-	// printf("2: Both lexical and syntax analyzer modules implemented\n");
-	// printf("3: Code works on all given test cases\n");
 	printf("Level 4: All errors have been handled\n");
 	printf(KCYN "*******************************************************\n" KNRM);
 
@@ -139,7 +136,7 @@ int main(int argc, char* argv[]) {
 				 * tree for the test case used. 
 				 */
 				if(PT == NULL) {
-					// generate parse tree
+					/* generate parse tree */
 					parseInputSourceCode(argv[1]);
 				}
 
@@ -196,9 +193,6 @@ int main(int argc, char* argv[]) {
 					root = constructAST(NULL, NULL, PT);
 				}
 				
-				/**
-				 * TODO: find a way to ensure no errors are reported here
-				 */
 				if(globalST == NULL) {
 					destroyError();
 					globalST = getSymbolTable();
@@ -230,9 +224,7 @@ int main(int argc, char* argv[]) {
 				if(root == NULL) {
 					root = constructAST(NULL, NULL, PT);
 				}
-				/**
-				 * TODO: find a way to ensure no errors are reported here
-				 */ 
+			
 				if(globalST == NULL) {
 					destroyError();
 					globalST = getSymbolTable();
@@ -260,9 +252,7 @@ int main(int argc, char* argv[]) {
 				if(root == NULL) {
 					root = constructAST(NULL, NULL, PT);
 				}
-				/**
-				 * TODO: find a way to ensure no errors are reported here
-				 */
+				
 				if(globalST == NULL) {
 					destroyError();
 					globalST = getSymbolTable();
@@ -314,7 +304,7 @@ int main(int argc, char* argv[]) {
 				/* Pass 2 */
 				pass2AST(root, "");
 
-				/* prints all errors */
+				/* Prints all errors */
 				printErrorList();
 
 				end_time = clock();
@@ -344,9 +334,7 @@ int main(int argc, char* argv[]) {
 				if(root == NULL) {
 					root = constructAST(NULL, NULL, PT);
 				}
-				/**
-				 * TODO: find a way to ensure no errors are reported here
-				 */
+				
 				if(globalST == NULL) {
 					destroyError();
 					globalST = getSymbolTable();
