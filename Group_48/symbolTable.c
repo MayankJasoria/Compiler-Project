@@ -652,11 +652,11 @@ void printSymbolTable(SymbolTable st, void (printElement)(void*)) {
 }
 
 /*	Scope - module name (string) -
-        scope - line number pairs of start and end of the scope -
-        Name of array variable -
-        whether static or dynamic - dynamic array - 
-        range variables or number lexemes - 
-        type of element */
+	scope - line number pairs of start and end of the scope -
+	Name of array variable -
+	whether static or dynamic - dynamic array - 
+	range variables or number lexemes - 
+	type of element */
 
 void outputChildren(ASTNode * head, int operation) {
 	ASTNode * ch = head;
