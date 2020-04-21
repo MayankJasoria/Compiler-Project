@@ -1,25 +1,28 @@
-/*  GROUP 48:
+/*  
+	GROUP 48:
 	PUNEET ANAND    2016B4A70487P
 	MAYANK JASORIA  2016B1A70703P
 	SHUBHAM TIWARI  2016B4A70935P
-	VIBHAV OSWAL    2016B4A70594P */
+	VIBHAV OSWAL    2016B4A70594P 
+*/
+
+/**
+ *  astDef.h: Contains definitions for constructing abstract syntax tree 
+ *  Note: 'declarationNode' in our semantic rules documentation has been changed to
+ *         'moduleDeclarationsNode' in this code to avoid confusion.
+ */
+
 
 #ifndef _AST_DEF
 #define _AST_DEF
 
 #include "hash_map.h"
 
-/**
-*  astDef.h: Contains definitions for constructing abstract syntax tree 
-*  Note: 'declarationNode' in our semantic rules documentation has been changed to
-*         'moduleDeclarationsNode' in this code to avoid confusion.
-*/
-
 /*
-* BOUND_RUNTIME: The bound checking of the array index is left for runtime.
-* BOUND_CORRECT: The given index access satisfies the bounds of the array. (if statically checked)
-* BOUND_ERROR: The given index access satisfies the bounds of the array. (if statically checked)
-*/
+ * BOUND_RUNTIME: The bound checking of the array index is left for runtime.
+ * BOUND_CORRECT: The given index access satisfies the bounds of the array. (if statically checked)
+ * BOUND_ERROR: The given index access satisfies the bounds of the array. (if statically checked)
+ */
 typedef enum {
 	BOUND_RUNTIME,
 	BOUND_ERROR,
@@ -62,9 +65,9 @@ typedef enum {
 } astNodeType;
 
 /**
-* astDataType: Identifies the datatype of node represented by the 
-*           ASTNode (if it represents some identifier or a subexpression). 
-*/
+ * astDataType: Identifies the datatype of node represented by the 
+ * ASTNode (if it represents some identifier or a subexpression). 
+ */
 typedef enum astDataType {
 	AST_TYPE_INT,
 	AST_TYPE_REAL,
@@ -73,10 +76,10 @@ typedef enum astDataType {
 	AST_TYPE_POINTER
 } astDataType;
 
-/* 
-* stmt_type: specifies the type of statement if it is a statement type of node
-* naming convention: Construct name in all uppercase letters
-*/
+/** 
+ * stmt_type: specifies the type of statement if it is a statement type of node
+ * naming convention: Construct name in all uppercase letters
+ */
 typedef enum {
 	AST_STMT_IO,
 	AST_STMT_SIMPLE,
@@ -91,41 +94,41 @@ typedef enum {
 	AST_STMT_SIMPLE_ASSIGN
 } stmt_type;
 
-/*
-* io_type: specifies the type of IO statement for AST_NODE_IO.
-* 	AST_IO_GETVAL: used for get_value() construct
-* 	AST_IO_PRINT: used for print construct
-*/
+/**
+ * io_type: specifies the type of IO statement for AST_NODE_IO.
+ * AST_IO_GETVAL: used for get_value() construct
+ * AST_IO_PRINT: used for print construct
+ */
 typedef enum {
 	AST_IO_GETVAL,
 	AST_IO_PRINT
 } io_type;
 
-/* 
-*  iter_type: specifies the type of IO statement for AST_NODE_ITER.
-*	AST_ITER_FOR: used for for loop construct
-*	AST_ITER_WHILE: used for while loop construct
-*/
+/** 
+ * iter_type: specifies the type of IO statement for AST_NODE_ITER.
+ * AST_ITER_FOR: used for for loop construct
+ * AST_ITER_WHILE: used for while loop construct
+ */
 typedef enum {
 	AST_ITER_FOR,
 	AST_ITER_WHILE
 } iter_type;
 
-/* 
-*	module_type: distinguishes driver modules from other modules. 
-*	AST_MODULE_DRIVER: for driver module
-*	AST_MODULE_Other: for other modules
-*/
+/** 
+ *	module_type: distinguishes driver modules from other modules. 
+ *	AST_MODULE_DRIVER: for driver module
+ *	AST_MODULE_Other: for other modules
+ */
 typedef enum {
 	AST_MODULE_DRIVER,
 	AST_MODULE_OTHER
 } module_type;
 
 
-/*
-*	leaf_type: specifies the type of leaf node.
-* 	naming convention: type of symbol represented in all uppercase.
-*/
+/**
+ *	leaf_type: specifies the type of leaf node.
+ * 	naming convention: type of symbol represented in all uppercase.
+ */
 typedef enum {
 	AST_LEAF_INT,
 	AST_LEAF_RNUM,
@@ -160,124 +163,126 @@ typedef enum {
 	AST_LEAF_UOPMINUS
 } leaf_type;
 
-/* 
-*	optype: specifies the type of operation to be performed between subexpressions
-*	AST_LOP: Logical Operator	
-*	AST_RELOP: Relational Operator
-*	AST_AOP: Arithmetic Operator
-*/
+/** 
+ *	optype: specifies the type of operation to be performed between subexpressions
+ *	AST_LOP: Logical Operator	
+ *	AST_RELOP: Relational Operator
+ *	AST_AOP: Arithmetic Operator
+ */
 typedef enum {
 	AST_LOP,
 	AST_RELOP,
 	AST_AOP
 } optype;
 
-/* 
-*	typeSize: array specifying the width of each dataType in bytes.
-*/
+/* typeSize: array specifying the width of each dataType in bytes */
 int typeSize[5];
 
-/*	
-*	typeName: specifies the string representation corresponding to the enum 'astDataType'
-*/
+/* typeName: specifies the string representation corresponding to the enum 'astDataType' */
 char typeName[5][20];
 
 typedef struct pn {
 	/* no particular field needed for Program Node */
 } programNode;
 
+/* This is a linked list type of structure */
 typedef struct {
 	/* no particular field needed for moduleDeclarationNode node. */
 } moduleDeclarationNode; 
-/*
-* This is a linked list type of structure. 
-*/
 
 typedef struct moduleNode {
+	/* points to the line number of corresponding START Keyword */
+	int start_line_num;
 
-	int start_line_num;	/* points to the line number of corresponding START Keyword */
-	int end_line_num;	/* points to the line number of corresponding END Keyword */
+	/* points to the line number of corresponding END Keyword */
+	int end_line_num;	
 } moduleNode;
 
-
 typedef struct {
+	/* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
+	module_type type;
 
-	module_type type;	/* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
-	int start_line_num;	/* points to the line number of corresponding START Keyword */
-	int end_line_num;	/* points to the line number of corresponding END Keyword */
+	/* points to the line number of corresponding START Keyword */
+	int start_line_num;
+
+	/* points to the line number of corresponding END Keyword */
+	int end_line_num;	
 } moduleListNode;
 
-
 typedef struct {
-	
 	/* no particular field needed for moduleDeclarationNode node. */
 } inputListNode;
 
 typedef struct {
-	
-	int isAssigned;	/* indicates whether the output parameter is being assigned or not */
+	/* indicates whether the output parameter is being assigned or not */
+	int isAssigned;	
 } outputListNode;
 
 typedef struct {
-	
-	unsigned is_static:1;	/* Whether Array is static: 0 - Not static, 1 - static */ 
-	astDataType dataType;	/* indicates the datatype represented by the node */
+	/* Whether Array is static: 0 - Not static, 1 - static */ 
+	unsigned is_static:1;
+
+	/* indicates the datatype represented by the node */
+	astDataType dataType;	
 } dataTypeNode;
 
 typedef struct {
-
-	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */
+	/* Whether Array is static: 0 - Not static, 1 - static */
+	unsigned is_static:1; 
 } rangeArraysNode;
 
 typedef struct {
-	
-	stmt_type type; 		/* defined above */
-	struct ASTNode* next;	/* Points to next element of type statementNode */
+	/* defined above */
+	stmt_type type;
+
+	/* Points to next element of type statementNode */
+	struct ASTNode* next;	
 } statementNode;
 
 typedef struct {
-
-	stmt_type type; /* defined above */
+	/* defined above */
+	stmt_type type; 
 } simpleStmtNode;
 
 typedef struct {
-
-	boundCheck b;	/* defined above */	
+	/* defined above */	
+	boundCheck b;	
 } assignNode;
 
 typedef struct {
-
-	int a;
-	int listCheck;
+	/* indicates the type check of the actual and formal parameters */
+	int listCheck; 
 } moduleReuseNode;
 
 typedef struct {
-	
-	struct ASTNode* next;
+	/* Points to the next identifier in the id list. */
+	struct ASTNode* next; 
 } idListNode;
 
 typedef struct {
-	/*
-	* Three children.
-	* TODO: Define Data fields later
-	*/
-	
-	/* tag */
-	int temporaryOffset;
+	/* Stores the temporary offset during sub-expression evaluation */
+	int temporaryOffset;  
+
+	/* Enum value which stores the data type of sub-expression*/
 	astDataType dataType;
 } AOBExprNode;
 
 typedef struct {
-	int a;
-	/* TODO: add data fields later */
+	/* No particular field needed */
 } declareStmtNode;
 
 typedef struct {
+	/* Indicates whether the conditional statement has a default case */
 	int def;
+	
+	/* Starting line number of conditional statement scope*/
 	int start_line_num;
+	
+	/* Ending line number of conditional statement scope*/
 	int end_line_num;
+
+	/*  Starting line number of default statement */
 	int def_line_num;
-	/* TODO: add data fields later */
 } condStmtNode;
 
 typedef enum {
