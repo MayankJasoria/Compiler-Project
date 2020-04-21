@@ -19,16 +19,10 @@
 #include "hash_map.h"
 
 /**
-*  astDef.h: Contains definitions for constructing abstract syntax tree 
-*  Note: 'declarationNode' in our semantic rules documentation has been changed to
-*         'moduleDeclarationsNode' in this code to avoid confusion.
-*/
-
-/*
-* BOUND_RUNTIME: The bound checking of the array index is left for runtime.
-* BOUND_CORRECT: The given index access satisfies the bounds of the array. (if statically checked)
-* BOUND_ERROR: The given index access satisfies the bounds of the array. (if statically checked)
-*/
+ * BOUND_RUNTIME: The bound checking of the array index is left for runtime.
+ * BOUND_CORRECT: The given index access satisfies the bounds of the array. (if statically checked)
+ * BOUND_ERROR: The given index access satisfies the bounds of the array. (if statically checked)
+ */
 typedef enum {
 	BOUND_RUNTIME,
 	BOUND_ERROR,
@@ -36,10 +30,10 @@ typedef enum {
 } boundCheck;
 
 /**
-* nodeType: Identifies the type of node represented by the 
-*           ASTNode. 
-* Naming convention: Construct name in all uppercase letters
-*/
+ * nodeType: Identifies the type of node represented by the 
+ *           ASTNode. 
+ * Naming convention: Construct name in all uppercase letters
+ */
 typedef enum {
 	AST_NODE_PROGRAM,
 	AST_NODE_MODULEDECLARATION,
@@ -71,9 +65,9 @@ typedef enum {
 } astNodeType;
 
 /**
-* astDataType: Identifies the datatype of node represented by the 
-*           ASTNode (if it represents some identifier or a subexpression). 
-*/
+ * astDataType: Identifies the datatype of node represented by the 
+ * ASTNode (if it represents some identifier or a subexpression). 
+ */
 typedef enum astDataType {
 	AST_TYPE_INT,
 	AST_TYPE_REAL,
@@ -82,10 +76,10 @@ typedef enum astDataType {
 	AST_TYPE_POINTER
 } astDataType;
 
-/* 
-* stmt_type: specifies the type of statement if it is a statement type of node
-* naming convention: Construct name in all uppercase letters
-*/
+/** 
+ * stmt_type: specifies the type of statement if it is a statement type of node
+ * naming convention: Construct name in all uppercase letters
+ */
 typedef enum {
 	AST_STMT_IO,
 	AST_STMT_SIMPLE,
@@ -100,41 +94,41 @@ typedef enum {
 	AST_STMT_SIMPLE_ASSIGN
 } stmt_type;
 
-/*
-* io_type: specifies the type of IO statement for AST_NODE_IO.
-* 	AST_IO_GETVAL: used for get_value() construct
-* 	AST_IO_PRINT: used for print construct
-*/
+/**
+ * io_type: specifies the type of IO statement for AST_NODE_IO.
+ * AST_IO_GETVAL: used for get_value() construct
+ * AST_IO_PRINT: used for print construct
+ */
 typedef enum {
 	AST_IO_GETVAL,
 	AST_IO_PRINT
 } io_type;
 
-/* 
-*  iter_type: specifies the type of IO statement for AST_NODE_ITER.
-*	AST_ITER_FOR: used for for loop construct
-*	AST_ITER_WHILE: used for while loop construct
-*/
+/** 
+ * iter_type: specifies the type of IO statement for AST_NODE_ITER.
+ * AST_ITER_FOR: used for for loop construct
+ * AST_ITER_WHILE: used for while loop construct
+ */
 typedef enum {
 	AST_ITER_FOR,
 	AST_ITER_WHILE
 } iter_type;
 
-/* 
-*	module_type: distinguishes driver modules from other modules. 
-*	AST_MODULE_DRIVER: for driver module
-*	AST_MODULE_Other: for other modules
-*/
+/** 
+ * module_type: distinguishes driver modules from other modules. 
+ * AST_MODULE_DRIVER: for driver module
+ * AST_MODULE_Other: for other modules
+ */
 typedef enum {
 	AST_MODULE_DRIVER,
 	AST_MODULE_OTHER
 } module_type;
 
 
-/*
-*	leaf_type: specifies the type of leaf node.
-* 	naming convention: type of symbol represented in all uppercase.
-*/
+/**
+ *	leaf_type: specifies the type of leaf node.
+ * 	naming convention: type of symbol represented in all uppercase.
+ */
 typedef enum {
 	AST_LEAF_INT,
 	AST_LEAF_RNUM,
@@ -169,184 +163,239 @@ typedef enum {
 	AST_LEAF_UOPMINUS
 } leaf_type;
 
-/* 
-*	optype: specifies the type of operation to be performed between subexpressions
-*	AST_LOP: Logical Operator	
-*	AST_RELOP: Relational Operator
-*	AST_AOP: Arithmetic Operator
-*/
+/** 
+ *	optype: specifies the type of operation to be performed between subexpressions
+ *	AST_LOP: Logical Operator	
+ *	AST_RELOP: Relational Operator
+ *	AST_AOP: Arithmetic Operator
+ */
 typedef enum {
 	AST_LOP,
 	AST_RELOP,
 	AST_AOP
 } optype;
 
-/* 
-*	typeSize: array specifying the width of each dataType in bytes.
-*/
+/* typeSize: array specifying the width of each dataType in bytes */
 int typeSize[5];
 
-/*	
-*	typeName: specifies the string representation corresponding to the enum 'astDataType'
-*/
+/* typeName: specifies the string representation corresponding to the enum 'astDataType' */
 char typeName[5][20];
 
 typedef struct pn {
 	/* no particular field needed for Program Node */
 } programNode;
 
+/* This is a linked list type of structure */
 typedef struct {
 	/* no particular field needed for moduleDeclarationNode node. */
 } moduleDeclarationNode; 
-/*
-* This is a linked list type of structure. 
-*/
 
 typedef struct moduleNode {
+	/* points to the line number of corresponding START Keyword */
+	int start_line_num;	
 
-	int start_line_num;	/* points to the line number of corresponding START Keyword */
-	int end_line_num;	/* points to the line number of corresponding END Keyword */
+	/* points to the line number of corresponding END Keyword */
+	int end_line_num;	
 } moduleNode;
 
-
 typedef struct {
+	/* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
+	module_type type;
 
-	module_type type;	/* tag AST_MODULE_DRIVER, AST_MODULE_OTHER */
-	int start_line_num;	/* points to the line number of corresponding START Keyword */
-	int end_line_num;	/* points to the line number of corresponding END Keyword */
+	/* points to the line number of corresponding START Keyword */
+	int start_line_num;
+
+	/* points to the line number of corresponding END Keyword */
+	int end_line_num;	
 } moduleListNode;
 
-
 typedef struct {
-	
 	/* no particular field needed for moduleDeclarationNode node. */
 } inputListNode;
 
 typedef struct {
-	
-	int isAssigned;	/* indicates whether the output parameter is being assigned or not */
+	/* indicates whether the output parameter is being assigned or not */
+	int isAssigned;	
 } outputListNode;
 
 typedef struct {
-	
-	unsigned is_static:1;	/* Whether Array is static: 0 - Not static, 1 - static */ 
-	astDataType dataType;	/* indicates the datatype represented by the node */
+	/* Whether Array is static: 0 - Not static, 1 - static */ 
+	unsigned is_static:1;
+
+	/* indicates the datatype represented by the node */
+	astDataType dataType;	
 } dataTypeNode;
 
 typedef struct {
-
-	unsigned is_static:1; /* Whether Array is static: 0 - Not static, 1 - static */
+	/* Whether Array is static: 0 - Not static, 1 - static */
+	unsigned is_static:1; 
 } rangeArraysNode;
 
 typedef struct {
-	
-	stmt_type type; 		/* defined above */
-	struct ASTNode* next;	/* Points to next element of type statementNode */
+	/* defined above */
+	stmt_type type;
+
+	/* Points to next element of type statementNode */
+	struct ASTNode* next;	
 } statementNode;
 
 typedef struct {
-
-	stmt_type type; /* defined above */
+	/* defined above */
+	stmt_type type; 
 } simpleStmtNode;
 
 typedef struct {
-
-	boundCheck b;	/* defined above */	
+	/* defined above */	
+	boundCheck b;	
 } assignNode;
 
 typedef struct {
-
+	//delete
 	int a;
+
+	/* indicates the type check of the actual and formal parameters */
 	int listCheck;
 } moduleReuseNode;
 
 typedef struct {
-	
+	/* Points to the next identifier in the id list. */
 	struct ASTNode* next;
 } idListNode;
 
 typedef struct {
-	int temporaryOffset;
+	/* Stores the temporary offset during sub-expression evaluation */
+	int temporaryOffset;  
+
+	/* Enum value which stores the data type of sub-expression*/
 	astDataType dataType;
 } AOBExprNode;
 
 typedef struct {
+	/* No particular field needed */
+	//delete
 	int a;
-	
 } declareStmtNode;
 
 typedef struct {
+	/* Indicates whether the conditional statement has a default case */
 	int def;
-	int start_line_num;
-	int end_line_num;
-	int def_line_num;
 	
+	/* Starting line number of conditional statement scope*/
+	int start_line_num;
+	
+	/* Ending line number of conditional statement scope*/
+	int end_line_num;
+
+	/*  Starting line number of default statement */
+	int def_line_num;
 } condStmtNode;
 
 typedef struct {
+
+	//delete
 	struct ASTNode* next; /* Points to next element of type caseStmtNode */
+	
+	/* Label number of the break statement to jump to */
 	int breakLabel;
+
+	/* Label number of the current case statement */
 	int label;
+
+	/* Helper variable */
 	int lastLabel;
+
+	/* Name of the switch variable of the corresponding conditional statement construct */
 	char switchVar[30];
-	astDataType dataType; /* for checking bool int etc */
+
+	/* Data type of switch variable */
+	astDataType dataType; 
 } caseStmtNode;
 
 typedef struct {
+	//delete
 	int a;
+
+	/* Stores the temporary offset during sub-expression evaluation */
 	int temporaryOffset;
+
+	/* Enum value which stores the data type of sub-expression */
 	astDataType dataType;
-	
 } unaryNode;
 
 typedef struct {
+	//delete
 	int a;
+
+	/* Enum value which stores the data type of sub-expression */
 	astDataType dataType;
-	
 } lvalueARRStmtNode;
 
 typedef struct {
-	
-	iter_type type; /* tag for iterative statement */
+	/* tag for iterative statement */
+	iter_type type; 
+
+	/* Start line number of the scope of for loop */
 	int start_line_num;
+
+	/* End line number of the scope of for loop */
 	int end_line_num;
 } iterStmtNode;
 
+//delete
 typedef struct {
 	int a;
 	
 } forNode;
 
+//delete
 typedef struct {
 	
 } whileNode;
 
 typedef struct {
+	/* Indicates the bound check in case of array type variable */
 	boundCheck b;
+
+	/* Tag for the type of IO Node: print or get_value */
 	io_type type;
 } ioNode;
 
 typedef struct {
-
+	/* Indicates the bound check in case of array type variable */
 	boundCheck b;
+
+	/* Stores the temporary offset during sub-expression evaluation */
 	int temporaryOffset;
+
+	/* Enum value which stores the data type of sub-expression */
 	astDataType dataType;
+
+	//delete
 	int a;
 } varidnumNode;
 
 typedef struct {
-	struct treeNode* tn; /* from leaf of parse tree */
+	/** 
+	 * Corresponding Parse Tree Node of the given leaf 
+	 * These parse tree nodes are preserved and not freed
+	 */
+	struct treeNode* tn; 
+
+	/* Offset in case it represents an ID, NUM, RNUM */
 	int temporaryOffset;
+
+	/* Enum value which stores the data type in case it represents an ID, NUM, RNUM */
 	astDataType dataType;
+
+	/* Tag if it is a operator */
 	optype op;
+
+	/* Tag for the data type of leaf */
 	leaf_type type; 
 } leafNode;
 
 
-/**
-* Represents a node in the abstract syntax tree (AST)
-*/ 
-
+/* Represents a node in the AST */ 
 typedef union {
 	programNode* program;
 	moduleDeclarationNode* moduleDeclaration;
@@ -377,28 +426,33 @@ typedef union {
 
 struct SymTableFunc;
 
+
+/**
+ * Attributes specific to the AST node 
+ * Naming convention: 
+ * 1. Name of node type is the construct name is small case
+ * 2. If the construct name is a keyword in C then append '_n' at the end in (1)
+ * 3. Typedefs not used as they abstract out the record type representing the node and reduce code readability   
+ */
+
 typedef struct ASTNode {
 
-	/* Attributes specific to the AST node 
-	Naming convention: 
-		1. Name of node type is the construct name is small case
-		2. If the construct name is a keyword in C then append '_n' at the end in (1)
-		3. Typedefs not used as they abstract out the record type representing the node and reduce code readability   
-	*/ 
+	 /* Union structure to hold the specific type of node */
 	astNodeData nodeData;
 
-	astNodeType type; /* Type of node represented by this AST node */
+	/* Type of node represented by this AST node */
+	astNodeType type; 
 
 	/**
-	* Include pointer to Symbol Table Entry of nested constructs [if, while etc.].
-	* (This contains pointer to variable symbol table)
-	*/
+	 * Include pointer to Symbol Table Entry of nested constructs [if, while etc.].
+	 * This contains pointer to variable symbol table
+	 */
 	struct SymTableFunc* localST;
+	
+	/* Grammar rule corresponding to the given Node while extracting the corresponding tree structure */
 	int associatedRule;	
-	/* TODO: add data fields later */
-
-
-	/* n-ary tree pointers */
+	
+	/* Pointers to maintain the logical n-ary tree structure */
 	struct ASTNode* parent;
 	struct ASTNode* prev;
 	struct ASTNode* next;
@@ -406,10 +460,10 @@ typedef struct ASTNode {
 } ASTNode;
 
 /** 
-* -------------------------------------------------------------------------------- 
-* 	START OF stDef.h Code here copied from stDef.h to avoid circulardependenncies
-* --------------------------------------------------------------------------------
-*/
+ * -------------------------------------------------------------------------------- 
+ * 	START OF stDef.h Code here copied from stDef.h to avoid circulardependenncies
+ * --------------------------------------------------------------------------------
+ */
 
 /* defining a symbol table */
 typedef HashTable SymbolTable;
@@ -417,26 +471,58 @@ typedef HashTable SymbolTable;
 SymbolTable globalST;
 
 typedef enum {
+	/* Symbol Table for a given local scope */
 	SYM_VARIABLE,
+
+	/* Specifies the symbol table entry is for a function which holds the pointer to its local symbol table */
 	SYM_FUNCTION,
+
+	//delete
 	SYM_OTHER   /* Ex: If Else Construct */
 } SymTableType;
 
 typedef struct arrayInfo {
-	astDataType dataType; /* can only be int, real, boolean? */
-	int low; /*low..high */
-	int high;
-	char lowId[30]; /*lowID..highId*/
-	char highId[30];
+	/* can only be int, real, boolean */
+	astDataType dataType; 
+	
+	/* lower bound if statically declared */
+	int low; 
+	
+	/* upper bound if statically declared */
+	int high; 
+
+	/* identifier of the lower bound of the array variable if array is dynamic */
+	char lowId[30]; 
+	
+	/* identifier of the upper bound of the array variable if array is dynamic */
+	char highId[30]; 
 } arrayInfo;
 
+/* dataType of the elements in the local symbol tables, contains relevent information */
 typedef union {
+	/* 
+	 * If the local variable is of array datatype, it contains pointer 
+	 * to its corresponding arrayInfo structure defined above
+	 */
 	arrayInfo* r;	
+	
+	/* Contains the integral value for an integer type local variable */
 	int intVal;
+
+	/* Containg the real value for a floating point local variable */
 	float floatVal;
+
+	/* Containg the boolean value for a floating point local variable */
 	int boolVal:1;
 } SymDataType;
 
+/* 
+ * scopeType: stores the type of local scope
+ * SCOPE_FOR: if it is local scope corresponding to a For statement construct.
+ * SCOPE_COND: if it is local scope corresponding to a conditional statement construct.
+ * SCOPE_WHILE: if it is local scope corresponding to a While statement construct construct.
+ * SCOPE_DEFAULT: if it is local scope corresponding to a module construct.
+ */
 typedef enum {
 	SCOPE_FOR,
 	SCOPE_COND,
@@ -445,46 +531,110 @@ typedef enum {
 } scopeType;
 
 typedef struct SymTableFunc {
-	SymTableType type;  /*to cross check if it is a function (type==SYM_FUNCTION) */
-	int isDefined;			/*to check if the function is defined*/
-	int isDeclared;			/*to check if the function is declared*/
-	struct SymTableFunc * parent; /* pointer to the static parent of the scope. */
-	int baseAdd; /* base address of the fuction activation record. */
-	char name[30]; /* name of the function */
-	List input_plist; /* List of input parameter variables */
-	List output_plist; /* List of output parameter variables */
-	SymbolTable dataTable; /* symbol table associated with the local elements of this function , it contains entries of type SymTableVar */
-	int actRecSize; /* field for storing activation record size */
+	/* To cross check if it is a function (type==SYM_FUNCTION) */
+	SymTableType type;  
+
+	/* To check if the function is defined*/
+	int isDefined;		
+
+	/* To check if the function is declared*/	
+	int isDeclared;			
+
+	/* Pointer to the static parent of the scope. */
+	struct SymTableFunc * parent; 
+
+	/* Base address of the fuction activation record. */
+	int baseAdd; 
+
+	/* Name of the function */
+	char name[30]; 
+	
+	/* List of input parameter variables */
+	List input_plist; 
+	
+	/* List of output parameter variables */
+	List output_plist; 
+	
+	/* Symbol table associated with the local elements of this function, it contains entries of type SymTableVar */
+	SymbolTable dataTable; 
+	
+	/* Field for storing activation record size */
+	int actRecSize; 
+
+	/* The sum of the width of the dynamically allocated temporaries in the given scope */
 	int dynamicRecSize;
+	
+	/** 
+	 * If loop, then stores the variable involved in the loop statement
+	 * If switch-case, then stores the variable involved in the switch statement
+	 */
 	char dependentVar[30];
+	
+	/* Tag for the given type of scope */
 	scopeType scope;
+	
+	/* Nested level of the scope */
 	int level;
+
+	/* Starting line number of the local scope */
 	int start_line_num;
+	
+	/* Ending line number of the local scope */
 	int end_line_num;
+	
+	/* The sum of the width of the input parameters */
 	int inputSize;
+
+	/* The sum of the width of the output parameters */
 	int outputSize;
+
+	//delete
 	char nextJump[30];
 } SymTableFunc;
 
 typedef struct symTableVar {	
+	/* To cross check if it is a function (type==SYM_FUNCTION) */
 	SymTableType type;
+
+	/* Name of the local variable */
 	char name[30];
+	
+	/* Tag to check if the variable is assigned */
 	int isAssigned;
-	int width; /* total memory space to be allocated */
+
+	/* Total memory space to be allocated in bytes */
+	int width; 
+
+	/* Offset of the local variable with respect to the parent module in bytes */
 	int offset;
+
+	/* Additional paremeter used */
 	int whileNest;
-	/*
-	* datatype of variable -> INT, RNUM, BOOL, ARRAY
-	*/
+
+	//delete
 	int declarationLine;
+
+	
+	/* Datatype of variable -> INT, RNUM, BOOL, ARRAY */
 	astDataType dataType;
+
+	/* SymTableType record of the corresponding local variable */
 	SymDataType sdt;
+	
+	/* Pointer to the local symbol table */
 	SymTableFunc * table;
 } SymTableVar;
 
+/* Additional Parameter used */
 int varPresent;
+
+/* Additional Parameter used */
 int globalNest;
+
+/* Number of Nodes in the AST */
 int numASTnodes;
+
+/* Total memory used for the AST */
 int ASTSize;
 
 #endif

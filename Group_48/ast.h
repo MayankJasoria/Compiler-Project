@@ -30,7 +30,6 @@ int getExprType(ASTNode * expr);
  * Adds a child to a given node as the first child
  * @param parent	The parent node, to which a child should be added
  * @param child		The child node to be added	
- * 
  * @return updated parent node
  */
 ASTNode* addChild(ASTNode* parent, ASTNode* child);
