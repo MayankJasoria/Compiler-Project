@@ -24,6 +24,12 @@ end
 
 <<<driver program>>>
 start
+<<<<<<< HEAD
+	declare A, B: integer;
+	A := 25;
+	B := 30;
+	use module letsparty with parameters A, B;
+=======
 	** use swap once and the functions below once **
 	declare m, n: integer;
 	m := 1;
@@ -40,13 +46,28 @@ start
 	declare R: array[m..n] of real;
 	get_value(R);
 	use module yusocompiler with parameters R, m;
+>>>>>>> 738dd7cd30b2b7f9994611e552afc3e061337864
 end
 
 
 <<module letsparty>>
-takes input[A: array[1..4] of integer, B: integer];
+takes input[A: integer, B: integer];
 start
+<<<<<<< HEAD
+	print(B);
+	declare B: integer;
+	B := -2;
+	print(B);
+	for(A in 1..2)
+	start
+		print(B);
+		declare B: integer;
+		B := 5;
+		print(B);
+	end
+=======
 	print(A);
+>>>>>>> 738dd7cd30b2b7f9994611e552afc3e061337864
 	print(B);
 end
 

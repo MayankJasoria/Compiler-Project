@@ -131,7 +131,7 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 /**
  * Given a width, updates the activation record size of a function
  * (to be used when adding a variable to a child scope of a function)
- * @param st			The Symbol Table
+ * @param st		The Symbol Table
  * @param funcName	The name of the function
  * @param varWidth	The width of the variable
  * 
@@ -141,7 +141,6 @@ SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
 
 /**
  * Prints all elements of a given symbol table
- * @param fp			The FILE pointer into which table should be printed
  * @param st			The symbol table to be printed
  * @param printElement	Function specifying how each element of
  * 						the symbol table should be printed
@@ -150,14 +149,12 @@ void printSymbolTable(SymbolTable st, void (*printElement)(void*));
 
 /**
  * Function to print the details of a variable in the symbol table
- * @param fp			The FILE pointer into which table should be printed
  * @param data	The data to be printed
  */
 void printVar(void* data);
 
 /**
  * Function to print the details of a function in the symbol table
- * @param fp			The FILE pointer into which table should be printed
  * @param data	The data to be printed
  */
 void printFunc(void* data);
@@ -171,6 +168,9 @@ void printFunc(void* data);
  */
 void outputSymbolTable(ASTNode * curr, int operation);
 
+/**
+ * Prints the activation record sizes of all functions
+ */
 static inline void outputActivationRecords() {
 	printSymbolTable(globalST, printFunc);
 }

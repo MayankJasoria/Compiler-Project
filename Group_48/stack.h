@@ -1,0 +1,70 @@
+/*  
+    GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P 
+*/
+	
+#ifndef _STACK
+#define _STACK
+
+#include "utils.h"
+#include "linked_list.h"
+
+struct stack {
+    int elemCount;
+    List st;
+};
+
+typedef struct stack* Stack;
+
+/**
+ * Creates and returns a new stack
+ * @return a new Stack
+ */
+Stack getStack();
+
+/**
+ * Adds the given element to top of stack
+ * @param element The element to be added to the top of the stack
+ * 
+ * @return Updated Stack
+ */
+Stack push(Stack stack, void* element);
+
+/**
+ * Removes the top element from the stack
+ * 
+ * @return Updated Stack
+ */
+Stack pop(Stack stack);
+
+/**
+ * Removes the specified number of elements from the top of the stack
+ * 
+ * @param num Number of elements to remove
+ * @return Updated Stack
+ */
+Stack popMany(Stack stack, int num);
+
+/**
+ * Returns the element present at the top of the stack
+ */
+void* top(Stack stack);
+
+/**
+ * Returns number of elements in stack
+ */
+int numElementsInStack(Stack stack);
+
+/**
+ * Informs if a given stack is empty
+ * 
+ * @return True if the stack is empty, false otherwise
+ */
+boolean isStackEmpty(Stack stack);
+
+void printStack(Stack st, void (*printElement)(void* data));
+
+#endif

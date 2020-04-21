@@ -74,6 +74,12 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 			return data;
 		}
 		func = func -> parent;
+		/*q
+		
+		if(func == NULL) { [also note: I'm not getting NULL, I'm getting garbage]
+			findInList(input_plist);
+		}
+		*/
 	}
 	return data;
 }

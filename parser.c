@@ -8,15 +8,15 @@
 
 #define ull unsigned long long int
 
-void sdsd(void* data) {
-	stackElement * tmp = data;
-	// printf("%d %s %s",stackElement->tag, terminals[stackElement->sym.T], nonterminals[stackElement->sym.NT]);
-	if(tmp->tag == T) {
-		printf("%d %s", tmp->tag, terminals[tmp->sym.T]);	
-	} else {
-		printf("%d %s", tmp->tag, nonterminals[tmp->sym.T]);
-	}
-}
+// void sdsd(void* data) {
+// 	stackElement * tmp = data;
+// 	// printf("%d %s %s",stackElement->tag, terminals[stackElement->sym.T], nonterminals[stackElement->sym.NT]);
+// 	if(tmp->tag == T) {
+// 		printf("%d %s", tmp->tag, terminals[tmp->sym.T]);	
+// 	} else {
+// 		printf("%d %s", tmp->tag,` nonterminals[tmp->sym.T]);
+// 	}
+// }
 
 char * nonterminals[] = { 
 			"program",
@@ -500,8 +500,6 @@ void parseInputSourceCode(char *testcaseFile) {
 
 	token * nextToken = getNextToken(fp);
 	while(numElementsInStack(S) > 0) {
-		// printf("%d\n", numElementsInStack(S));
-		// printStack(S, sdsd);
 		if(numElementsInStack(S) == 1 && syntacticallyCorrect) {
 			printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 			break;

@@ -257,19 +257,13 @@ typedef struct {
 } idListNode;
 
 typedef struct {
-	/*
-	* Three children.
-	* TODO: Define Data fields later
-	*/
-	
-	/* tag */
 	int temporaryOffset;
 	astDataType dataType;
 } AOBExprNode;
 
 typedef struct {
 	int a;
-	/* TODO: add data fields later */
+	
 } declareStmtNode;
 
 typedef struct {
@@ -277,11 +271,10 @@ typedef struct {
 	int start_line_num;
 	int end_line_num;
 	int def_line_num;
-	/* TODO: add data fields later */
+	
 } condStmtNode;
 
 typedef struct {
-	/* TODO: add data fields later */
 	struct ASTNode* next; /* Points to next element of type caseStmtNode */
 	int breakLabel;
 	int label;
@@ -294,36 +287,32 @@ typedef struct {
 	int a;
 	int temporaryOffset;
 	astDataType dataType;
-	/* TODO: add data fields later */
+	
 } unaryNode;
 
 typedef struct {
 	int a;
 	astDataType dataType;
-	/* TODO: add data fields later */
+	
 } lvalueARRStmtNode;
 
 typedef struct {
-	/* TODO: add data fields later */
+	
 	iter_type type; /* tag for iterative statement */
 	int start_line_num;
 	int end_line_num;
 } iterStmtNode;
 
-/* Temporary Node */
 typedef struct {
 	int a;
-	/* TODO: add data fields later */
+	
 } forNode;
 
-/* Temporary Node */
 typedef struct {
-	int a;
-	/* TODO: add data fields later */
+	
 } whileNode;
 
 typedef struct {
-	/* TODO: add data fields later */
 	boundCheck b;
 	io_type type;
 } ioNode;
@@ -335,22 +324,8 @@ typedef struct {
 	astDataType dataType;
 	int a;
 } varidnumNode;
-	
-/* remember: leaf nodes not to be freed */
-// typedef union {
-//     // typeNode type;
-//     // indexNode idx;
-// } leafData;
 
 typedef struct {
-	/* TODO: add data fields later */
-	// leafData ld;
-
-	/* Tags:
-	AST_LEAF_INT,
-	AST_LEAF_RNUM,
-	AST_LEAF_NUM,
-	AST_LEAF_BOOL */
 	struct treeNode* tn; /* from leaf of parse tree */
 	int temporaryOffset;
 	astDataType dataType;
