@@ -341,17 +341,6 @@ typedef struct {
 	int end_line_num;
 } iterStmtNode;
 
-//delete
-typedef struct {
-	int a;
-	
-} forNode;
-
-//delete
-typedef struct {
-	
-} whileNode;
-
 typedef struct {
 	/* Indicates the bound check in case of array type variable */
 	boundCheck b;
@@ -418,8 +407,6 @@ typedef union {
 	unaryNode* unary;
 	lvalueARRStmtNode* lvalueARRStmt;
 	iterStmtNode* iterStmt;
-	forNode* for_n;
-	whileNode* while_n;
 	varidnumNode* var;
 	leafNode* leaf;
 } astNodeData;

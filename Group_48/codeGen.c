@@ -143,18 +143,6 @@ int getLastCaseLabel(ASTNode * curr) {
 	return tmp -> nodeData.caseStmt -> lastLabel;
 }
 
-// void rte(char * str, int line_num) {
-
-// 	fprintf(fp, "\tpush rbp\n");
-// 	fprintf(fp, "\tmov rdi, %s\n", str);
-// 	fprintf(fp, "\tmov si, %dd\n", line_num);
-// 	alignStack();
-// 	fprintf(fp, "\tcall printf\n");
-// 	getBackStack();
-// 	fprintf(fp, "\tpop rbp\n");
-// 	fprintf(fp, "\tjmp rte\n");
-// }
-
 int getIDOffset(ASTNode * idNode) {
 	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 	return tmp -> offset;
