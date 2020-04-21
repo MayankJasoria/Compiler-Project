@@ -56,9 +56,9 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num);
 SymTableFunc * getParentFunc(SymTableFunc * local);
 
 /**
- * @param func 	Symbol Table of the 		
- * @param name 	
- *
+ * @param func 	Symbol Table of the current local scope		
+ * @param name 	name of the identifier to lookout for.
+ * Returns 1 if any of the outer scope have a variable of the same name as 'name'
  */
 int lookupDependentVar(SymTableFunc * func, char* name);
 
@@ -84,20 +84,22 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par);
  * @param funcData		The record of a function
  * @param varName		Name of the variable
  * @param varDataType	The dataType of the variable
- * 
- * @return updated Symbol Table
+ * @param line_num		Line number of declaration
+ *
+ * @return updated Symbol Table after inserting the given record
  */
 void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType, int line_num);
 
 /**
- * Adds a new array variable into the symbol table of variables associated with a function
+ * Adds a new variable into the symbol table of variables associated with a function
  * @param funcData		The record of a function
- * @param paramType		0 -> input, 1 -> output
+ * @param fname 		Name of the module
  * @param varName		Name of the variable
+ * @param lft 			AST Node of the lower bound of the array
+ * @param right			AST Node of the upper bound of the array
  * @param varDataType	The dataType of the variable
- * @param line_num		The line number at which the variable appears
- * 
- * @return updated Symbol Table
+ *
+ * @return updated Symbol Table after inserting the given record
  */
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
@@ -107,22 +109,22 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
  * @param paramType		0 -> input, 1 -> output
  * @param varName		Name of the variable
  * @param varDataType	The dataType of the variable
- * @param line_num		The line number at which the variable appears
+ * @param line_num		Line number of parameter list
  * 
- * @return updated Symbol Table
+ * @return updated Symbol Table after inserting the record to the Input/Output parameters linked list
  */
 void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType, int line_num);
 
 /**
- * Inserts a given array variable to the input list of a function
+ * Inserts a given variable to the input list of a function
  * @param funcData		The record of a function
  * @param paramType		0 -> input, 1 -> output
+ * @param lft 			AST Node of the lower bound of the array
+ * @param right			AST Node of the upper bound of the array
  * @param varName		Name of the variable
- * @param lft			The left (lower) bound of array
- * @param right			The right (upper) bound of array
  * @param varDataType	The dataType of the variable
  * 
- * @return updated Symbol Table
+ * @return updated Symbol Table after inserting the array record to the Input/Output parameters linked list
  */
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 

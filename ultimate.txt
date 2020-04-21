@@ -1,0 +1,30 @@
+delcare module add;
+
+<<module swap>>
+takes input[A: array [m..n] of real, m: real, start:integer, end:integer];
+returns [b:boolean];
+start
+	declare i:integer;
+	i := start;
+	while(i <= end)
+	start
+		declare tmp:real;
+		tmp := A[i];
+		[tmp] := use module add with parameters tmp, m;
+		A[i] := tmp;
+	end
+end
+
+<<module swap>>
+takes input[tmp: real, m: real];
+returns [r:real];
+start
+	r := tmp + m;
+end
+
+
+
+
+
+
+

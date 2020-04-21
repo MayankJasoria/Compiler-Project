@@ -1,17 +1,59 @@
 declare module letsparty;
+declare module yusocompiler;
+declare module erplag;
+
+<<module swap>>
+takes input[ A: integer, B: integer, c: boolean];
+returns [C: integer, D: integer];
+start
+	declare tmp: integer;
+	print(A);
+	print(B);
+	print(c);
+	
+	**tmp := A;
+	A := B;
+	B := tmp;**
+	
+	C := B;
+	D := A;
+	
+	print(C);
+	print(D);
+end
 
 <<<driver program>>>
 start
+<<<<<<< HEAD
 	declare A, B: integer;
 	A := 25;
 	B := 30;
 	use module letsparty with parameters A, B;
+=======
+	** use swap once and the functions below once **
+	declare m, n: integer;
+	m := 1;
+	n := 4;
+	declare A: array[m..n] of integer;
+	declare d: boolean;
+	declare x: real;
+	x := -3.14159257235732908609;
+	d := true;
+	use module letsparty with parameters A, m;
+	[m, n] := use module swap with parameters m,n, d;
+	d := false;
+	[d] := use module erplag with parameters d, x;
+	declare R: array[m..n] of real;
+	get_value(R);
+	use module yusocompiler with parameters R, m;
+>>>>>>> 738dd7cd30b2b7f9994611e552afc3e061337864
 end
 
 
 <<module letsparty>>
 takes input[A: integer, B: integer];
 start
+<<<<<<< HEAD
 	print(B);
 	declare B: integer;
 	B := -2;
@@ -23,5 +65,24 @@ start
 		B := 5;
 		print(B);
 	end
+=======
+	print(A);
+>>>>>>> 738dd7cd30b2b7f9994611e552afc3e061337864
 	print(B);
+end
+
+<<module yusocompiler>>
+takes input[A: array[a..b] of real, B: integer];
+start
+	print(A);
+	print(B);
+end
+
+<<module erplag>>
+takes input[m: boolean, n: real];
+returns [c: boolean];
+start
+	c := true;
+	c := false;
+	print(n);
 end

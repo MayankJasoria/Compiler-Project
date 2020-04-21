@@ -16,8 +16,6 @@
 #define AST_FMT_LEAF_BOOL "%-20s%-20sYes      %-23s%-12d%-22s%-10s----      %-8s%-12d\n"
 #define AST_FMT_NON_LEAF "%-20s%-20sNo       %-23s----        %-22s%-10s%-10s----    %-12d\n"
 
-
-
 char* astNodeTypeList[] = {
 	"Program",
 	"Module Declaration",
@@ -1545,16 +1543,3 @@ void printAST(ASTNode* root){
 		ch = ch -> next;
 	}
 }
-
-
-// #define AST_FMT_HEADERS "%-20s%-20s%-9s%-22s%-12s%-22s%-10s%-10s%-8s%-8s"
-// #define AST_FMT_LEAF_NUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8d%-8d"
-// #define AST_FMT_LEAF_RNUM "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8f%-8d"
-// #define AST_FMT_LEAF_ID "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      ----    %-8d"
-// #define AST_FMT_LEAF_BOOL "%-20s%-20sYes      %-22s%-12d%-22s%-10s----      %-8s%-8d"
-// #define AST_FMT_NON_LEAF_DATA_OP "%-20s%-20sNo       %-22s%-12s----                  %-10s%-10s----    %-8d"
-// #define AST_FMT_NON_LEAF_DATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  %-10s----      ----    %-8d"
-// #define AST_FMT_NON_LEAF_NODATA_OP "%-20s%-20sNo      %-22s%-12s----                  ----      %-10s----    %-8d"
-// #define AST_FMT_NON_LEAF_NODATA_NOOP "%-20s%-20sNo      %-22s%-12s----                  ----      ----      ----    %-8d"
-
-// 	// fprintf(fp,"Is Leaf?: %s Line number: %s Lexeme: %s Data Type: %s",is_leaf,linenum,lexeme,datatype);
