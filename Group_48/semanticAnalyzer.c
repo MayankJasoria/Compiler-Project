@@ -18,11 +18,18 @@
 /* names of types required while error reporting */
 char typeName[][20] = {"Integer", "Real", "Boolean", "Array", "Pointer"};
 
+/*
+ * @see semanticAnalyser.h
+ */
 void insertplist(ASTNode * curr, char * str) {
 	
+	/* paramType: 0:input 1:output */
 	int paramType;
+
 	if(curr == NULL)
 		return;
+	
+	/* assigning paramType using tag of the passed ASTNode */
 	if(curr -> type == AST_NODE_INPUTLIST)
 		paramType = 0;
 	else if(curr -> type == AST_NODE_OUTPUTLIST)
@@ -30,6 +37,7 @@ void insertplist(ASTNode * curr, char * str) {
 	else
 		return;
 
+	/* Iterating and populating the list in the corresponding symbol table */
 	while(curr != NULL) {
 		ASTNode * idNode = curr -> child;
 		ASTNode * typeNode = idNode -> next;
@@ -50,8 +58,12 @@ void insertplist(ASTNode * curr, char * str) {
 
 }
 
+/*
+ * @see semanticAnalyser.h
+ */
 void traverseChildren(ASTNode * head, char * fname) {
 	
+	/* iterating over the children */
 	ASTNode* ch = head;
 	while(ch != NULL) {
 		ch -> localST = ch -> parent -> localST;
@@ -67,6 +79,7 @@ void traverseChildren(ASTNode * head, char * fname) {
 */ 
 void processWhileExpression(ASTNode * wh, ASTNode * ch) {
 
+	/* action is taken according to the tag of the subexpression node in AST */
 	if(ch -> type == AST_NODE_LEAF)
 		return;
 	else if(ch -> type == AST_NODE_VARIDNUM) {
@@ -88,6 +101,11 @@ void processWhileExpression(ASTNode * wh, ASTNode * ch) {
  */ 
 int checkWhileAssignment(ASTNode * wh, ASTNode * ch) {
 
+	/* Logic: 
+	 * The function looks up the whileNest which stores the highest nest within the while scope when a variable is assigned
+	 * If that nesting level > globalNest, the corresponding variable is assigned,
+	 * otherwise it is not.
+	 */
 	if(ch -> type == AST_NODE_LEAF)
 		return 0;
 	else if(ch -> type == AST_NODE_VARIDNUM) {
@@ -106,11 +124,17 @@ int checkWhileAssignment(ASTNode * wh, ASTNode * ch) {
 	return 0;
 }
 
+/**
+ * @see semanticAnalyzer.h
+ */
 void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	astNodeType t = curr -> type;
 	ASTNode* ch = curr -> child;
+	
+	/* checking if the array variable bounds are statically declared */ 
 	if(strcmp(tmp -> sdt.r -> lowId, "") == 0 && strcmp(tmp -> sdt.r -> highId, "") == 0) {
 
+		/* Action is taken according to the type of construct (IO, VARIDNUM) */
 		if(t == AST_NODE_IO) {
 			if(ch -> next -> nodeData.leaf -> type == AST_LEAF_IDXNUM) {
 				if(ch -> next -> nodeData.leaf -> tn -> value.val_int < tmp -> sdt.r -> low) {
@@ -200,7 +224,9 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	}
 }
 
-
+/**
+ * @see semanticAnalyzer.h
+ */
 int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 	/* check if head or node is NULL */
 	if (head == NULL) {
@@ -246,6 +272,11 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 	return -1;
 }
 
+/*
+ * @see semanticAnalyzer.h
+ * It is the principle driver of Pass 1 over the AST and uses a traversal and computation based on the tag of AST Node
+ * tag = Node -> type (astNodeType)
+ */
 void traverseAST(ASTNode* curr, char* fname) {
 
 	switch(curr -> type) {
