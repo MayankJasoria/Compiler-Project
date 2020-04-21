@@ -280,15 +280,9 @@ typedef struct {
 	/* TODO: add data fields later */
 } condStmtNode;
 
-typedef enum {
-	AST_CASE_STD,
-	AST_CASE_DEFAULT
-} case_stmt_type;
-
 typedef struct {
 	/* TODO: add data fields later */
 	struct ASTNode* next; /* Points to next element of type caseStmtNode */
-	case_stmt_type type;
 	int breakLabel;
 	int label;
 	int lastLabel;
