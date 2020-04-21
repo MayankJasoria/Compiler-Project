@@ -24,6 +24,7 @@ void emitCodeInit(const char* fname) {
     fp = fopen(fname, "w");
 }
 
+/* Pushes the registers on the stack */
 void pushRegs() {
 	fprintf(fp, "\tpush r10\n");
 	fprintf(fp, "\tpush r11\n");
@@ -35,6 +36,7 @@ void pushRegs() {
 	fprintf(fp, "\tpush rax\n");
 }
 
+/* Pops the registers from the stack */
 void popRegs() {
 	fprintf(fp, "\tpop rax\n");
 	fprintf(fp, "\tpop r9\n");
@@ -46,6 +48,10 @@ void popRegs() {
 	fprintf(fp, "\tpop r10\n");
 }
 
+/**
+ * It aligns the 'rsp' register to the nearest 16 bytes boundary 
+ * for calling extern scanf and printf
+ */
 void alignStack() {
 
 	pushRegs();
@@ -56,14 +62,23 @@ void alignStack() {
 	fprintf(fp, "; --- END: ALIGN STACK ---\n");
 }
 
+/* Restore back the 'rsp' after calling printf and scanf */
 void getBackStack() {
 
 	fprintf(fp, "\tmov rsp, qword [rspreserve]\n");
 	popRegs();
 }
 
+/**
+ * Calls the exit to console interrupt and restore back the stack pointer to the original address
+ * And contains labels for the various runtime issues to be handled
+ * Out of Bounds Error
+ * Type Mismatch for Dynamic Arrays.
+ * Divide by 0 error.
+ */
 void emitCodeFinalize() {
 
+	/* calls the exit to console interrupt, may have to be called in case of exceptions */
 	fprintf(fp, "rte:\n");
 	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
 	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
@@ -77,6 +92,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
+	/* Label defined to interrupt when a dynamic type mismatch arises */
 	fprintf(fp, "\ntypeError:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_type\n");
@@ -86,7 +102,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
-
+	/* Label defined to interrupt when a dynamic parameter type mismatch arises */
 	fprintf(fp, "\nparam:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_param\n");
@@ -96,6 +112,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
+	/* Label defined to interrupt when array index out of bounds exception is raised */
 	fprintf(fp, "\ninvalidbounds:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_invalidbounds\n");
@@ -105,6 +122,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");	
 
+	/* Label defined to interrupt when arithmetic exception (division by 0) is encountered */
 	fprintf(fp, "\ndivisionby0:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_divisionby0\n");
@@ -114,14 +132,21 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");	
 
+	/* closing the asm code file pointer */
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
 	}
 }
 
+/**
+ * @param head		pointer to the current ASTNode 
+ * @param fname		name of the module
+ * It calls emitCodeAST for the siblings of head.
+ */
 void emitCodeChildren(ASTNode * head, char * fname) {
 	
+	/* traversal over the children in AST */
     ASTNode* ch = head;
     while(ch != NULL) {
         emitCodeAST(ch, fname);
@@ -129,11 +154,19 @@ void emitCodeChildren(ASTNode * head, char * fname) {
     }
 }
 
+/**
+ * @param str: The string to be added as a comment to the asm file
+ * Add comments to the ASM file.	
+ */
 void asmComment(char * str) {
 
 	fprintf(fp, "\n; ### %s ### \n", str);
 }
 
+/**
+ * @param curr: Points to the ASTNode corresponding to the Conditional Statement construct.
+ * Fetches the last label used by the cases of the construct.
+ */
 int getLastCaseLabel(ASTNode * curr) {
 
 	ASTNode * tmp = curr -> child -> next;
