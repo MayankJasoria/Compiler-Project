@@ -2,23 +2,26 @@ declare module letsparty;
 
 <<<driver program>>>
 start
-	** use swap once and the functions below once **
-	declare m, n: integer;
-	m := 1;
-	n := 4;
-	declare A: array[m..n] of integer;
-	use module letsparty with parameters A, m;
-	print(A);
+	declare A, B: integer;
+	A := 25;
+	B := 30;
+	use module letsparty with parameters A, B;
 end
 
 
 <<module letsparty>>
-takes input[A: array[1..4] of integer, B: integer];
+takes input[A: integer, B: integer];
 start
-	declare i:integer;
-	for(i in 1..4)
+	print(B);
+	declare B: integer;
+	B := -2;
+	print(B);
+	for(A in 1..2)
 	start
-		A[i] := -(i*(i+1));
+		print(B);
+		declare B: integer;
+		B := 5;
+		print(B);
 	end
 	print(B);
 end

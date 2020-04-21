@@ -26,8 +26,10 @@ HashTable getHashTable();
 
 /**
  * Inserts a new {key, data} pair into the hash table
+ * @param table The hash table into which data should be inserted
  * @param key	The key to be used as identifier of the data
  * @param data 	The data to be stored in the table
+ * @param hash  The hash function to use
  * 
  * @return updated Hash Table
  */
@@ -35,7 +37,9 @@ HashTable insertToTable(HashTable table, void* key, void* data, int (*hash)(void
 
 /**
  * Informs whether a given entry (by key) is present in the table or not
+ * @param table The hash table into which data should be inserted
  * @param key	The key for identifying the entry
+ * @param hash  The hash function to use
  * 
  * @return TRUE (== 1) if the entry is present, FALSE (== 0) otherwise
  */
@@ -43,7 +47,9 @@ boolean isPresent(HashTable table, void* key, int (*hash)(void*));
 
 /**
  * Returns the data associated with the given key from the table
+ * @param table The hash table into which data should be inserted
  * @param key	The key for identifying the entry
+ * @param hash  The hash function to use
  * 
  * @return The requested data, if it is present. Otherwise NULL
  */
@@ -51,7 +57,9 @@ void* getDataFromTable(HashTable table, void* key, int (*hash)(void*));
 
 /**
  * Removes an entry (by key) from the table, if it exists
+ * @param table The hash table into which data should be inserted
  * @param key	The key for identifying the entry
+ * @param hash  The hash function to use
  * 
  * @return updated Hash Table
  */
@@ -63,7 +71,7 @@ HashTable removeFromTable(HashTable table, void* key, int (*hash)(void*));
  * 
  * @return hash value for the given string
  */
-int numberHash(void* y);
+int numberHash(void* val);
 
 /**
  * Computes a hash value for a given string
@@ -71,7 +79,7 @@ int numberHash(void* y);
  * 
  * @return hash value for the given string
  */
-int stringHash(void* y);
+int stringHash(void* str);
 
 /**
  * Prints the 'valid entries' of the hash table

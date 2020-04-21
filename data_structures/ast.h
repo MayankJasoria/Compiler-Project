@@ -52,34 +52,16 @@ void printAST(ASTNode* root);
 */ 
 void printNode(ASTNode* curr);
 
-
-// write after this line
-
-// Grammar rule:
-// r: stmts -> stmt stmts1
-
-// ASTNode* ast(treeNode * curr, ASTNode* parent, ASTNode* prev_sibling) {
-
-//     ASTNode* ret ;
-
-// 	/* first ever call: NULL */
-// 	subsequent calls:
-// 	ASTNode* ret = malloc();
-// 	/* assign whatever needed for inheritance */
-
-//     ASTNode * p1 = ast(curr->child, ret, NULL)
-//     ASTNode * p2 = ast(curr->child->next, ret, stmt)
-
-//     addChild (ret, p1, p2);
-// 	/* assign whatever needed for synthesis */
-
-//     return p1;
-// }
-
+/**
+ * Returns the size of the current AST
+ */
 static inline int getASTSize() {
     return ASTSize;
 }
 
+/**
+ * Returns the number of nodes in the current AST
+ */
 static inline int getASTnumNodes() {
     return numASTnodes;
 }

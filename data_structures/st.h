@@ -89,6 +89,16 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par);
  */
 void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType, int line_num);
 
+/**
+ * Adds a new array variable into the symbol table of variables associated with a function
+ * @param funcData		The record of a function
+ * @param paramType		0 -> input, 1 -> output
+ * @param varName		Name of the variable
+ * @param varDataType	The dataType of the variable
+ * @param line_num		The line number at which the variable appears
+ * 
+ * @return updated Symbol Table
+ */
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
 /**
@@ -97,17 +107,29 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
  * @param paramType		0 -> input, 1 -> output
  * @param varName		Name of the variable
  * @param varDataType	The dataType of the variable
+ * @param line_num		The line number at which the variable appears
  * 
  * @return updated Symbol Table
  */
 void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType, int line_num);
 
+/**
+ * Inserts a given array variable to the input list of a function
+ * @param funcData		The record of a function
+ * @param paramType		0 -> input, 1 -> output
+ * @param varName		Name of the variable
+ * @param lft			The left (lower) bound of array
+ * @param right			The right (upper) bound of array
+ * @param varDataType	The dataType of the variable
+ * 
+ * @return updated Symbol Table
+ */
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 
 /**
  * Given a width, updates the activation record size of a function
  * (to be used when adding a variable to a child scope of a function)
- * @param st			The Symbol Table
+ * @param st		The Symbol Table
  * @param funcName	The name of the function
  * @param varWidth	The width of the variable
  * 
@@ -117,7 +139,6 @@ SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
 
 /**
  * Prints all elements of a given symbol table
- * @param fp			The FILE pointer into which table should be printed
  * @param st			The symbol table to be printed
  * @param printElement	Function specifying how each element of
  * 						the symbol table should be printed
@@ -126,14 +147,12 @@ void printSymbolTable(SymbolTable st, void (*printElement)(void*));
 
 /**
  * Function to print the details of a variable in the symbol table
- * @param fp			The FILE pointer into which table should be printed
  * @param data	The data to be printed
  */
 void printVar(void* data);
 
 /**
  * Function to print the details of a function in the symbol table
- * @param fp			The FILE pointer into which table should be printed
  * @param data	The data to be printed
  */
 void printFunc(void* data);
@@ -147,6 +166,9 @@ void printFunc(void* data);
  */
 void outputSymbolTable(ASTNode * curr, int operation);
 
+/**
+ * Prints the activation record sizes of all functions
+ */
 static inline void outputActivationRecords() {
 	printSymbolTable(globalST, printFunc);
 }
