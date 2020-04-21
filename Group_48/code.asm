@@ -35,9 +35,436 @@ section .text
 ; ### Begining of the driver program. ### 
 main:
 mov rbp, rsp
-	sub rsp, 7d
+	sub rsp, 42d
 	mov word [dynamic], 0
-; --- START: takeInput(): type: Integer, Name: x --- 
+; --- START: takeInput(): type: Integer, Name: low --- 
+	push rbp
+	mov rdi, op1
+	mov rsi, type_int
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+	mov r9, 16d
+; START: --- getInputElement() ---
+	push rbp
+	mov rdi, fmt_int
+	mov rax, rbp
+	sub rax, r9
+	mov rsi, rax
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+; --- END: getInputElement() --- 
+; --- END: takeInput(): type: Integer, Name: low --- 
+; --- START: takeInput(): type: Integer, Name: high --- 
+	push rbp
+	mov rdi, op1
+	mov rsi, type_int
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+	mov r9, 18d
+; START: --- getInputElement() ---
+	push rbp
+	mov rdi, fmt_int
+	mov rax, rbp
+	sub rax, r9
+	mov rsi, rax
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+; --- END: getInputElement() --- 
+; --- END: takeInput(): type: Integer, Name: high --- 
+	mov rax, rbp
+	sub rax, 26d
+	mov qword [rax], rsp
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+	mov rsi, 15d
+	cmp r10w, r11w
+	jg invalidbounds
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
+	inc rcx
+	mov r9w, word [dynamic]
+label_0:
+	sub rsp, 2d
+	add r9w, 2d
+	dec rcx
+	jnz label_0
+	mov word [dynamic], r9w
+	mov rax, rbp
+	sub rax, 34d
+	mov qword [rax], rsp
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+	mov rsi, 15d
+	cmp r10w, r11w
+	jg invalidbounds
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
+	inc rcx
+	mov r9w, word [dynamic]
+label_1:
+	sub rsp, 2d
+	add r9w, 2d
+	dec rcx
+	jnz label_1
+	mov word [dynamic], r9w
+	mov rax, rbp
+	sub rax, 42d
+	mov qword [rax], rsp
+; --- START: get left and right index of C ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of C in r10w and r11w --- 
+	mov rsi, 15d
+	cmp r10w, r11w
+	jg invalidbounds
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
+	inc rcx
+	mov r9w, word [dynamic]
+label_2:
+	sub rsp, 2d
+	add r9w, 2d
+	dec rcx
+	jnz label_2
+	mov word [dynamic], r9w
+; --- START: takeInput(): type: Array, Name: A --- 
+	push rbp
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+
+; --- Asking for user input for Array ---
+	mov rdi, op2
+	mov si, r11w
+	sub si, r10w
+	movsx rsi, si
+	inc rsi
+	mov rdx, type_int
+	movsx rcx, r10w
+	movsx r8, r11w
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+
+; --- rdx will be the address of the first element of the array ---
+	mov rax, rbp
+	sub rax, 26d
+	mov rdx, qword [rax]
+
+; --- Loop for scanning each element of the array --- 
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
+	inc rcx
+label_3:
+	push rdx
+	push rcx
+	push rbp
+
+; --- Scanning input ---
+	mov rdi, fmt_int
+	sub rdx, 2d
+	mov rsi, rdx
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+	pop rcx
+	pop rdx
+	sub rdx, 2d
+	dec rcx
+	cmp rcx, 0x0
+	jnz label_3
+; --- END: takeInput(): type: Array, Name: A --- 
+; --- START: takeInput(): type: Array, Name: B --- 
+	push rbp
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+
+; --- Asking for user input for Array ---
+	mov rdi, op2
+	mov si, r11w
+	sub si, r10w
+	movsx rsi, si
+	inc rsi
+	mov rdx, type_int
+	movsx rcx, r10w
+	movsx r8, r11w
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+
+; --- rdx will be the address of the first element of the array ---
+	mov rax, rbp
+	sub rax, 34d
+	mov rdx, qword [rax]
+
+; --- Loop for scanning each element of the array --- 
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+	mov cx, r11w
+	sub cx, r10w
+	movsx rcx, cx
+	inc rcx
+label_4:
+	push rdx
+	push rcx
+	push rbp
+
+; --- Scanning input ---
+	mov rdi, fmt_int
+	sub rdx, 2d
+	mov rsi, rdx
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+	pop rcx
+	pop rdx
+	sub rdx, 2d
+	dec rcx
+	cmp rcx, 0x0
+	jnz label_4
+; --- END: takeInput(): type: Array, Name: B --- 
+	mov ax, 7d
+	mov rdx, rsp
+	sub rdx, 2d
+	mov word [rdx], ax
+; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
+	mov rax, rsp
+	sub rax, 2d
+	mov r8w, word [rax]
+	mov rax, rbp
+	sub rax, 6d
+	mov word [rax], r8w
+; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
+	mov cx, 1d
+label_5:
+; --- START: scopeBegin() --- 
+	sub rsp, 2d
+	mov ax, word [dynamic]
+	mov word [rsp], ax
+	mov ax, 0
+	mov word [dynamic], ax
+; --- END: scopeBegin() --- 
+	mov rax, rbp
+	sub rax, 8d
+	mov word [rax], cx
+; --- START: takeInput(): type: Integer, Name: m --- 
 	push rbp
 	mov rdi, op1
 	mov rsi, type_int
@@ -97,232 +524,358 @@ mov rbp, rsp
 	pop r10
 	pop rbp
 ; --- END: getInputElement() --- 
-; --- END: takeInput(): type: Integer, Name: x --- 
-	mov ax, 19d
-	mov rdx, rsp
-	sub rdx, 2d
-	mov word [rdx], ax
-; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
-	mov rax, rsp
+; --- END: takeInput(): type: Integer, Name: m --- 
+; --- START: takeInput(): type: Integer, Name: n --- 
+	push rbp
+	mov rdi, op1
+	mov rsi, type_int
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call printf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+	mov r9, 4d
+; START: --- getInputElement() ---
+	push rbp
+	mov rdi, fmt_int
+	mov rax, rbp
+	sub rax, r9
+	mov rsi, rax
+	push r10
+	push r11
+	push rsi
+	push rdx
+	push rcx
+	push r8
+	push r9
+	push rax
+; --- START: ALIGN STACK---
+	mov qword [rspreserve], rsp
+	and rsp, 0xfffffffffffffff0
+	sub rsp, 10000B
+; --- END: ALIGN STACK ---
+	call scanf
+	mov rsp, qword [rspreserve]
+	pop rax
+	pop r9
+	pop r8
+	pop rcx
+	pop rdx
+	pop rsi
+	pop r11
+	pop r10
+	pop rbp
+; --- END: getInputElement() --- 
+; --- END: takeInput(): type: Integer, Name: n --- 
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
+	mov rax, rbp
 	sub rax, 2d
 	mov r8w, word [rax]
+	mov rsi, 23d
+	cmp r8w, r10w
+	jl oob
+	cmp r8w, r11w
+	jg oob
 	mov rax, rbp
-	sub rax, 4d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
-	mov ax, 56d
-	mov rdx, rsp
-	sub rdx, 2d
-	mov word [rdx], ax
-; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
-	mov rax, rsp
-	sub rax, 2d
-	mov r8w, word [rax]
-	mov rax, rbp
-	sub rax, 6d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 0, type = Integer ---
-; --- START: scopeBegin() --- 
-	sub rsp, 2d
-	mov ax, word [dynamic]
-	mov word [rsp], ax
-	mov ax, 0
-	mov word [dynamic], ax
-; --- END: scopeBegin() --- 
-	mov rax, rbp
-	sub rax, 2d
-	mov ax, word [rax]
-	cmp ax, 1d
-	jnz label_1
-	mov rax, rbp
-	sub rax, 2d
+	sub rax, 26d
+	mov rdx, qword [rax]
+	mov r9w, 0
+	sub r8w, r10w
+	inc r8w
+	mov rcx, 2d
+label_6:
+	add r9w, r8w
+	dec rcx
+	jnz label_6
+	movsx r9, r9w
+; --- END: fetchArraybyIndex() for array A: base: rdx, offset: r9 --- 
+	mov rax, rdx
+	sub rax, r9
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
 	mov rax, rsp
 	sub rax, 2d
 	mov word [rax], dx
 ; --- END: pushTemporary(): type = Integer ---
-	mov ax, 2d
-	mov rdx, rsp
-	sub rdx, 4d
-	mov word [rdx], ax
-; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: MUL, type: Integer --- 
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+; --- START: fetchArraybyIndex() for array B: base: rdx, offset: r9  --- 
+	mov rax, rbp
+	sub rax, 4d
+	mov r8w, word [rax]
+	mov rsi, 23d
+	cmp r8w, r10w
+	jl oob
+	cmp r8w, r11w
+	jg oob
+	mov rax, rbp
+	sub rax, 34d
+	mov rdx, qword [rax]
+	mov r9w, 0
+	sub r8w, r10w
+	inc r8w
+	mov rcx, 2d
+label_7:
+	add r9w, r8w
+	dec rcx
+	jnz label_7
+	movsx r9, r9w
+; --- END: fetchArraybyIndex() for array B: base: rdx, offset: r9 --- 
+	mov rax, rdx
+	sub rax, r9
+; --- START: pushTemporary(): type = Integer ---
+	mov dx, word [rax]
+	mov rax, rsp
+	sub rax, 4d
+	mov word [rax], dx
+; --- END: pushTemporary(): type = Integer ---
+; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: PLUS, type: Integer --- 
 	mov rax, rsp
 	sub rax, 2d
 	mov r10, rsp
 	sub r10, 4d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
-	mov ax, r8w
-	mul r9w
-	mov r8w, ax
+	add r8w, r9w
 	mov rax, rsp
 	sub rax, 6d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 0, rightOp: 2, operator: PLUS, type: Integer --- 
+; --- START: moveOffsetToOffset(): lhsoff = 8, rhsoff = 4, type = Integer ---
+	mov rax, rsp
+	sub rax, 6d
+	mov r8w, word [rax]
 	mov rax, rbp
-	sub rax, 4d
+	sub rax, 10d
+	mov word [rax], r8w
+; --- END: moveOffsetToOffset(): lhsoff = 8, rhsoff = 4, type = Integer ---
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
+	mov rax, rbp
+	sub rax, 6d
+	mov r8w, word [rax]
+	mov rsi, 24d
+	cmp r8w, r10w
+	jl oob
+	cmp r8w, r11w
+	jg oob
+	mov rax, rbp
+	sub rax, 26d
+	mov rdx, qword [rax]
+	mov r9w, 0
+	sub r8w, r10w
+	inc r8w
+	mov rcx, 2d
+label_8:
+	add r9w, r8w
+	dec rcx
+	jnz label_8
+	movsx r9, r9w
+; --- END: fetchArraybyIndex() for array A: base: rdx, offset: r9 --- 
+	mov rax, rdx
+	sub rax, r9
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
 	mov rax, rsp
 	sub rax, 8d
 	mov word [rax], dx
 ; --- END: pushTemporary(): type = Integer ---
-; --- START: applyOperator(): leftOp: 4, rightOp: 6, operator: MINUS, type: Integer --- 
-	mov rax, rsp
-	sub rax, 6d
-	mov r10, rsp
-	sub r10, 8d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
-	sub r8w, r9w
-	mov rax, rsp
-	sub rax, 10d
-	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 4, rightOp: 6, operator: MINUS, type: Integer --- 
-; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 8, type = Integer ---
-	mov rax, rsp
-	sub rax, 10d
-	mov r8w, word [rax]
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+; --- START: fetchArraybyIndex() for array B: base: rdx, offset: r9  --- 
 	mov rax, rbp
 	sub rax, 4d
-	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 8, type = Integer ---
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 4d
-	mov rdx, rbp
-; --- START: outputArrayElement() for y --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
+	mov r8w, word [rax]
+	mov rsi, 24d
+	cmp r8w, r10w
+	jl oob
+	cmp r8w, r11w
+	jg oob
+	mov rax, rbp
+	sub rax, 34d
+	mov rdx, qword [rax]
+	mov r9w, 0
+	sub r8w, r10w
+	inc r8w
+	mov rcx, 2d
+label_9:
+	add r9w, r8w
+	dec rcx
+	jnz label_9
+	movsx r9, r9w
+; --- END: fetchArraybyIndex() for array B: base: rdx, offset: r9 --- 
 	mov rax, rdx
 	sub rax, r9
-	mov si, word[rax]
-	push r10
-	push r11
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop r11
-	pop r10
-	pop rbp
-; --- END: outputArrayElement() for y--- 
-	jmp label_0
-label_1:
-	mov rax, rbp
-	sub rax, 2d
-	mov ax, word [rax]
-	cmp ax, 2d
-	jnz label_2
-	mov rax, rbp
-	sub rax, 2d
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
 	mov rax, rsp
-	sub rax, 12d
+	sub rax, 10d
 	mov word [rax], dx
 ; --- END: pushTemporary(): type = Integer ---
-	mov ax, 3d
-	mov rdx, rsp
-	sub rdx, 14d
-	mov word [rdx], ax
-; --- START: applyOperator(): leftOp: 10, rightOp: 12, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 6, rightOp: 8, operator: PLUS, type: Integer --- 
 	mov rax, rsp
-	sub rax, 12d
+	sub rax, 8d
 	mov r10, rsp
-	sub r10, 14d
+	sub r10, 10d
 	mov r8w, word [rax]
 	mov r9w, word [r10]
-	mov ax, r8w
-	mul r9w
-	mov r8w, ax
+	add r8w, r9w
 	mov rax, rsp
-	sub rax, 16d
+	sub rax, 12d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 10, rightOp: 12, operator: MUL, type: Integer --- 
+; --- START: applyOperator(): leftOp: 6, rightOp: 8, operator: PLUS, type: Integer --- 
+; --- START: moveOffsetToOffset(): lhsoff = 10, rhsoff = 10, type = Integer ---
+	mov rax, rsp
+	sub rax, 12d
+	mov r8w, word [rax]
 	mov rax, rbp
-	sub rax, 6d
+	sub rax, 12d
+	mov word [rax], r8w
+; --- END: moveOffsetToOffset(): lhsoff = 10, rhsoff = 10, type = Integer ---
+; --- START: get left and right index of A ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of A in r10w and r11w --- 
+; --- START: fetchArraybyIndex() for array A: base: rdx, offset: r9  --- 
+	mov rax, rbp
+	sub rax, 2d
+	mov r8w, word [rax]
+	mov rsi, 25d
+	cmp r8w, r10w
+	jl oob
+	cmp r8w, r11w
+	jg oob
+	mov rax, rbp
+	sub rax, 26d
+	mov rdx, qword [rax]
+	mov r9w, 0
+	sub r8w, r10w
+	inc r8w
+	mov rcx, 2d
+label_10:
+	add r9w, r8w
+	dec rcx
+	jnz label_10
+	movsx r9, r9w
+; --- END: fetchArraybyIndex() for array A: base: rdx, offset: r9 --- 
+	mov rax, rdx
+	sub rax, r9
 ; --- START: pushTemporary(): type = Integer ---
 	mov dx, word [rax]
+	mov rax, rsp
+	sub rax, 14d
+	mov word [rax], dx
+; --- END: pushTemporary(): type = Integer ---
+; --- START: get left and right index of B ---
+	mov rax, rbp
+	sub rax, 16d
+	mov r10w, word[rax]
+	mov rax, rbp
+	sub rax, 18d
+	mov r11w, word[rax]
+; --- END: got left and right index of B in r10w and r11w --- 
+; --- START: fetchArraybyIndex() for array B: base: rdx, offset: r9  --- 
+	mov rax, rbp
+	sub rax, 6d
+	mov r8w, word [rax]
+	mov rsi, 25d
+	cmp r8w, r10w
+	jl oob
+	cmp r8w, r11w
+	jg oob
+	mov rax, rbp
+	sub rax, 34d
+	mov rdx, qword [rax]
+	mov r9w, 0
+	sub r8w, r10w
+	inc r8w
+	mov rcx, 2d
+label_11:
+	add r9w, r8w
+	dec rcx
+	jnz label_11
+	movsx r9, r9w
+; --- END: fetchArraybyIndex() for array B: base: rdx, offset: r9 --- 
+	mov rax, rdx
+	sub rax, r9
+; --- START: pushTemporary(): type = Integer ---
+	mov dx, word [rax]
+	mov rax, rsp
+	sub rax, 16d
+	mov word [rax], dx
+; --- END: pushTemporary(): type = Integer ---
+; --- START: applyOperator(): leftOp: 12, rightOp: 14, operator: PLUS, type: Integer --- 
+	mov rax, rsp
+	sub rax, 14d
+	mov r10, rsp
+	sub r10, 16d
+	mov r8w, word [rax]
+	mov r9w, word [r10]
+	add r8w, r9w
 	mov rax, rsp
 	sub rax, 18d
-	mov word [rax], dx
-; --- END: pushTemporary(): type = Integer ---
-; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MINUS, type: Integer --- 
-	mov rax, rsp
-	sub rax, 16d
-	mov r10, rsp
-	sub r10, 18d
-	mov r8w, word [rax]
-	mov r9w, word [r10]
-	sub r8w, r9w
-	mov rax, rsp
-	sub rax, 20d
 	mov word [rax], r8w
-; --- START: applyOperator(): leftOp: 14, rightOp: 16, operator: MINUS, type: Integer --- 
-; --- START: moveOffsetToOffset(): lhsoff = 4, rhsoff = 18, type = Integer ---
+; --- START: applyOperator(): leftOp: 12, rightOp: 14, operator: PLUS, type: Integer --- 
+; --- START: moveOffsetToOffset(): lhsoff = 12, rhsoff = 16, type = Integer ---
 	mov rax, rsp
-	sub rax, 20d
+	sub rax, 18d
 	mov r8w, word [rax]
 	mov rax, rbp
-	sub rax, 6d
+	sub rax, 14d
 	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 4, rhsoff = 18, type = Integer ---
+; --- END: moveOffsetToOffset(): lhsoff = 12, rhsoff = 16, type = Integer ---
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 6d
-	mov rdx, rbp
-; --- START: outputArrayElement() for z --- 
-; Function is used for both Arrays and non-Array types, don't go by the name! 
-	push rbp
-	mov rdi, output_fmt_int
-	mov rax, rdx
-	sub rax, r9
-	mov si, word[rax]
-	push r10
-	push r11
-	push rsi
-	push rdx
-	push rcx
-	push r8
-	push r9
-	push rax
-; --- START: ALIGN STACK---
-	mov qword [rspreserve], rsp
-	and rsp, 0xfffffffffffffff0
-	sub rsp, 10000B
-; --- END: ALIGN STACK ---
-	call printf
-	mov rsp, qword [rspreserve]
-	pop rax
-	pop r9
-	pop r8
-	pop rcx
-	pop rdx
-	pop rsi
-	pop r11
-	pop r10
-	pop rbp
-; --- END: outputArrayElement() for z--- 
-	jmp label_0
-label_2:
-; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 2d
+	mov r9, 10d
 	mov rdx, rbp
 ; --- START: outputArrayElement() for x --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
@@ -356,16 +909,8 @@ label_2:
 	pop r10
 	pop rbp
 ; --- END: outputArrayElement() for x--- 
-label_0:
-; --- START: scopeEnd() --- 
-	movsx rax, word [dynamic]
-	add rsp, rax
-	mov ax, word [rsp]
-	mov word [dynamic], ax
-	add rsp, 2d
-; --- END: scopeEnd() --- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 4d
+	mov r9, 12d
 	mov rdx, rbp
 ; --- START: outputArrayElement() for y --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
@@ -400,7 +945,7 @@ label_0:
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
-	mov r9, 6d
+	mov r9, 14d
 	mov rdx, rbp
 ; --- START: outputArrayElement() for z --- 
 ; Function is used for both Arrays and non-Array types, don't go by the name! 
@@ -434,11 +979,24 @@ label_0:
 	pop r10
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
+; --- START: scopeEnd() --- 
+	movsx rax, word [dynamic]
+	add rsp, rax
+	mov ax, word [rsp]
+	mov word [dynamic], ax
+	add rsp, 2d
+; --- END: scopeEnd() --- 
+	mov rax, rbp
+	sub rax, 8d
+	mov cx, word[rax]
+	inc cx
+	cmp cx, 4
+	jnz label_5
 
 ; ### Resetting(aligning) the rsp. ### 
 	movsx rax, word [dynamic]
 	add rsp, rax
-	add rsp, 7d
+	add rsp, 42d
 	ret
 
 ; ### End of driver function. ### 
