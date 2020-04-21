@@ -69,6 +69,10 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 			break;
 		}
 		data = NULL;
+		if(func -> parent == NULL) {
+			data = (SymTableVar*) findInList(func->input_plist, name, string_comp_id);
+			return data;
+		}
 		func = func -> parent;
 	}
 	return data;
@@ -256,6 +260,7 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	varData -> table = funcData;
 	varData -> sdt = new;
 	varData -> isAssigned = 0;
+	varData -> declarationLine = funcData -> start_line_num;
 
 	/* update activation record size */
 	funcData -> actRecSize += varData -> width;
@@ -326,6 +331,7 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	varData -> dataType = AST_TYPE_ARRAY;
 	varData -> sdt = s;
 	varData -> table = funcData;
+	varData -> declarationLine = funcData -> start_line_num;
 	if(paramType == 0) {
 		funcData -> inputSize += varWidth;
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);

@@ -1118,39 +1118,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			fprintf(fp, "mov word [dynamic], 0\n");
 			emitCodeChildren(ch, fname);
 
-			// asmComment("Copying back the output parameters.");
-			// fprintf(fp, "\tmov rax, qword [rbp]\n");
-			// while(ret != NULL) {
-			// 	ASTNode * idNode = ret -> child;
-			// 	SymTableVar * id = fetchVarData(func, idNode -> nodeData.leaf -> tn -> lex);
-			// 	fprintf(fp, "\tmov rdx, rbp\n");
-			// 	fprintf(fp, "\tsub rdx, %dd\n", typeSize[id -> dataType] + id -> offset);
-			// 	fprintf(fp, "\tsub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
-			// 	if(id -> dataType == AST_TYPE_INT) {
-			// 		fprintf(fp, "\tmov cx, word [rdx]\n");
-			// 		fprintf(fp, "\tmov word [rax], cx\n");
-			// 	}
-			// 	if(id -> dataType == AST_TYPE_REAL) {
-			// 		fprintf(fp, "\tmov ecx, dword [rdx]\n");
-			// 		fprintf(fp, "\tmov word [rax], ecx\n");
-			// 	}
-			// 	if(id -> dataType == AST_TYPE_BOOLEAN) {
-			// 		fprintf(fp, "\tmov cl, byte [rdx]\n");
-			// 		fprintf(fp, "\tmov byte [rax], cl\n");
-			// 	}
-			// 	if(id -> dataType == AST_TYPE_ARRAY) {
-			// 		fprintf(fp, "\tmov rcx, qword [rdx]\n");
-			// 		fprintf(fp, "\tmov qword [rax], rcx\n");
-			// 	}
-			// 	fprintf(fp, "\tsub rax, %dd\n", typeSize[id -> dataType] + id -> offset);
-			// 	ret = ret -> child -> next -> next;
-			// }
 			fprintf(fp, "\tmovsx rax, word [dynamic]\n");
 			fprintf(fp, "\tadd rsp, rax\n");
 			fprintf(fp, "\tret\n");
-			// fprintf(fp, "\tsub rbp, 8\n");
-			// fprintf(fp, "\tmov rsp, rbp\n");
-			// fprintf(fp, "\tmov rbp, rax\n");
 		}
 		break;
 
