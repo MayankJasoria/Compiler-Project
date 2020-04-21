@@ -47,15 +47,6 @@ List getList();
  */
 List insertToList(List list, void* data, position dir);
 
-// /**
-//  * Deletes a data from the list
-//  * @param list  The list from which the data is to be deleted
-//  * @param data  The data to be deleted
-//  * 
-//  * @return updated List
-//  */
-// List deleteByData(List list, void* data);
-
 /**
  * Deletes the given node from the list
  * @param list      The list from which the node is to be deleted

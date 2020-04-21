@@ -58,13 +58,6 @@ int hash_table[HASH_TABLE_SIZE];
 /* line_num will store the instantaneous line number position of the lexer */
 int line_num;
 
-/* chunk_size is the size of code loaded in the memory bt getStream() */
-// int chunk_size;
-
-/* 
-	size of these arrays hardcoded. Take Care.
-*/
-
 /* streamBuffer stores the part of code loaded by getStream() */
 char streamBuffer[2*chunk_size];
 

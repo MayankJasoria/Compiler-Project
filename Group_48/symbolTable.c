@@ -29,20 +29,16 @@
 #define PRINT_LDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%s, %d]%-*s%-20s\n"
 #define PRINT_RDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%d, %s]%-*s%-20s\n"
 #define PRINT_LRDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%s, %s]%-*s%-20s\n"
-
- 	
-
+	
+/* 
+ * specifies the width(in bytes) corresponding to the dataType.
+ * Index: corresponding to the astDataType enum.
+ */
 int typeSize[] = {2, 4, 1, 8, 8};
 
-/* Doubts regarding the hash table implementation:
-	1. if item not there in table, does getDataFromTable return NULL.
-	2. make an array typeSize, after seeing the MASM doc. (done)
-	3. The st taken in the I/P of fetchVarData is same as localST
-	4. The list Type match.
-	5. Check the ast.c alone.
-	6. insertinputplist()
-*/ 
-
+/** 
+ * specifies the width(in bytes) corresponding to the dataType.
+ */
 int string_comp_id(void* data, void* list_ele);
 
 SymbolTable getSymbolTable() {
@@ -59,6 +55,7 @@ int lookupDependentVar(SymTableFunc * func, char* name) {
 	return 0;
 }
 
+/* Fetches record for a given local variable */
 SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {
@@ -76,29 +73,26 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 			return data;
 		}
 		func = func -> parent;
-		/*q
-		
-		if(func == NULL) { [also note: I'm not getting NULL, I'm getting garbage]
-			findInList(input_plist);
-		}
-		*/
 	}
 	return data;
 }
 
 SymTableFunc * fetchFuncData(char* name) {
+	/* functions can only be declared in globalST unlike variables */
 	SymTableFunc* data = (SymTableFunc*) getDataFromTable(globalST, name, stringHash); //functions can only be declared in globalST unlike variables
 	return data;
 }
 
 SymTableFunc * getParentFunc(SymTableFunc * local) {
+	/* traversing back in outer scopes */
 	while(local -> parent != NULL)
 		local = local -> parent;
 	return local;
 }
 
 void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s, int line_num) {
-
+	
+	/* allocating and assigning fields of a variable record */
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data -> name, name);
 	data -> width = width;
@@ -109,22 +103,28 @@ void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, ast
 	data -> table = func;
 	data -> declarationLine = line_num;
 
+	/* inserting the created record to the symbol table */
 	func -> dataTable = insertToTable(func -> dataTable, name, data, stringHash);
 }
 
 void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType, int line_num) {
-	
+
+	/* getting the record for the function entry in the global symbol table */
 	SymTableFunc * fun = fetchFuncData(fname);
 
+	/** 
+	 * If a record with given name already exists, report an error,
+	 * otherwise, insert it into the local Symbol Table
+	 */
 	if(getDataFromTable(funcData -> dataTable, varName, stringHash) == NULL) {
 		int offset = fun -> actRecSize;
 		int width = typeSize[varDataType];
 		SymDataType s;
 		insertVarRecord(funcData , varName, width, offset, varDataType, s, line_num);
-		// st = insertVarRecord(st, varName, varWidth, offset, varDataType);
 		fun -> actRecSize += width;
 	} 
 	else {
+		/* reporting error */
 		char message[200];
 		sprintf(message, 
 		"Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the scope of this function).\n", line_num, varName);
@@ -134,7 +134,13 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
 	
+	/* fetching Pointer to the symbol table of the function */
 	SymTableFunc * fun = fetchFuncData(fname);
+	
+	/** 
+	 * if a record exists with the same name, report a redeclaration error, 
+	 * otherwise insert it to the symbol table
+	 */
 	if(getDataFromTable(funcData -> dataTable, varName, stringHash) == NULL) {
 		int offset = fun -> actRecSize;
 		arrayInfo* a = (arrayInfo*) malloc(sizeof(arrayInfo));
@@ -175,10 +181,13 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 SymTableFunc* insertFuncRecord(char* name) {
 
 	if(fetchFuncData(name) != NULL) {
-		// sprintf(message, "A record with the given already exists within the symbol table.");
 		return NULL;
 	}
 
+	/** 
+	 * Checks if a function with the same name already exists in the global symbol table
+	 * Otherwise create a record with the given name into the global symbol table
+	 */
 	SymTableFunc* data = (SymTableFunc*) malloc(sizeof(SymTableFunc));
 	strcpy(data->name, name);
 	data->type = SYM_FUNCTION;
@@ -200,9 +209,9 @@ SymTableFunc* insertFuncRecord(char* name) {
 	return data;
 }
 
-/* Small error in it , parent */
 SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 
+	/* Creates a pointer type record of a Function type, and insert it to global symbol table */
 	SymTableFunc * parentFunc = fetchFuncData(fname);
 	SymTableFunc * data = (SymTableFunc*) malloc(sizeof(SymTableFunc));
 	data -> actRecSize = parentFunc -> actRecSize;
@@ -241,7 +250,7 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 
 	/* compute offset */
 	int offset = funcData -> actRecSize;
-	/* Todo */
+
 	if(paramType == 0 && findInList(funcData -> input_plist, varName, paramlistComparator) != NULL) {
 		char message[200];
 		sprintf(message, "Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the input parameter list of this function).\n", 
@@ -285,6 +294,11 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	}
 }
 
+/** 
+ * Analogous to addParamToFunction, only difference is the datatype of the variable, 
+ * For an array type parameter, we need to allocate space for storing the pointer to the 
+ * base address, lower and upper bound.
+ */ 
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
 
 	if(paramType == 0 && findInList(funcData -> output_plist, varName, paramlistComparator) != NULL) {
@@ -349,16 +363,12 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 	}
 
 	/* update activation record size */
-	// funcData -> actRecSize += varData -> width;
-	
 	funcData->actRecSize += varWidth;
 }
 
 /* Utility functions */
 
-/**
- * Comparator for SymTableVar type of data withing linked list
- */
+/* Comparator for SymTableVar type of data within linked list */
 int string_comp_id(void* data, void* list_ele) {
 	return strcmp((char *)data, ((SymTableVar *)list_ele)->name) == 0;
 }
@@ -366,7 +376,6 @@ int string_comp_id(void* data, void* list_ele) {
 /**
  * Utility function for computing length of an integer
  * @param num	The number whose length is to be computed
- * 
  * @return the no. of digits in the given integer
  */
 int intlen(int num) {
@@ -381,6 +390,7 @@ int intlen(int num) {
 	return count;
 }
 
+/* Print the details of the local variable */
 void printVar(void* data) {
 	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
 	SymTableFunc* tab = varData -> table;
@@ -414,34 +424,42 @@ void printVar(void* data) {
 		strcpy(type, typeName[varData -> sdt.r -> dataType]);
 	
 	int nestLevel = tab -> level;
-	/* TODO: left index, right index. Need if else in the print itself */
+	/* Check if the variable is not an array type variable */
 	if(!isArray) {
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		printf(PRINT_VARIABLE_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
 			varWidth, "No", "---", "---", type, offset, nestLevel);
-	} else if(!isDynamic) {
+	} 
+	/* Check if the array is static */
+	else if(!isDynamic) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
 		printf(PRINT_VAR_STAT_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
 			varWidth, "Yes", "Static", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
-	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+	} 
+	/* Check if the lower bound is dynamic and the upper bound is static */
+	else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
 		printf(PRINT_VAR_LDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
 			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
-	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+	} 
+	/* Check if the lower bound is static and the upper bound is dynamic */
+	else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
 		printf(PRINT_VAR_RDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
 			varWidth, "Yes", "Dynamic", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type, offset, nestLevel);
-	} else {
+	} 
+	/* Check if the array is dynamic */
+	else {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
@@ -451,6 +469,7 @@ void printVar(void* data) {
 	}
 }
 
+/* Prints details of all the variables of input plist and output plist */
 void printListVar(void* data) {
 	SymTableVar* varData = (SymTableVar*) data;
 	SymTableFunc* tab = varData -> table;
@@ -464,6 +483,8 @@ void printListVar(void* data) {
 	int varWidth = varData -> width;
 	int isArray = varData -> dataType == AST_TYPE_ARRAY;
 	int isDynamic = -1;
+
+	/* Check if the variable is an array type variable */
 	if(isArray) {
 		if(strcmp(varData -> sdt.r -> lowId, "") == 0 && strcmp(varData -> sdt.r -> highId, "") == 0)
 			isDynamic = 0;
@@ -472,38 +493,49 @@ void printListVar(void* data) {
 	}
 	char type[30];
 	strcpy(type, typeName[varData -> dataType]);
+
+	/* Check if the variable is an array type variable */
 	if(isArray)
 		strcpy(type, typeName[varData -> sdt.r -> dataType]);
 	int offset = varData -> offset;
 	int nestLevel = 0;
-	/* TODO: left index, right index. Need if else in the print itself */
+
+	/* Check if the variable is not an array type variable */
 	if(!isArray) {
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		printf(PRINT_VARIABLE_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
 			varWidth, "No", "---", "---", type, offset, nestLevel);
-	} else if(!isDynamic) {
+	} 
+	/* Check if the array is static */
+	else if(!isDynamic) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
 		printf(PRINT_VAR_STAT_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline, 
 			varWidth, "Yes", "Static", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
-	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+	} 
+	/* Check if the lower bound is dynamic and the upper bound is static */
+	else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
 		printf(PRINT_VAR_LDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
 			varWidth, "Yes", "Dynamic", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type, offset, nestLevel);
-	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+	} 
+	/* Check if the lower bound is static and the upper bound is dynamic */
+	else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
 		printf(PRINT_VAR_RDYN_ARRAY_DATA, varData->name, modName, leftWidth, startline, rightWidth, endline,
 			varWidth, "Yes", "Dynamic", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type, offset, nestLevel);
-	} else {
+	} 
+	/* Check if the array is dynamic */
+	else {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
@@ -513,11 +545,13 @@ void printListVar(void* data) {
 	}
 }
 
+/* Prints the activation record of the function */
 void printFunc(void* data) {
 	SymTableFunc* funcData = (SymTableFunc*) ((hashElement*) data)->data;
 	printf(PRINT_FUNC_DATA, funcData->name, funcData->actRecSize - funcData -> inputSize - funcData -> outputSize);
 }
 
+/* Prints the array in the input plist */
 void printListArr(void* data) {
 	SymTableVar* varData = (SymTableVar*) data;
 	int isArray = varData -> dataType == AST_TYPE_ARRAY;
@@ -539,6 +573,7 @@ void printListArr(void* data) {
 	char type[30];
 	strcpy(type, typeName[varData -> sdt.r -> dataType]);
 	
+	/* Check if the array is static */
 	if(!isDynamic) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
@@ -546,21 +581,27 @@ void printListArr(void* data) {
 		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
 		printf(PRINT_STAT_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
 			"Static Array", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type);
-	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+	} 
+	/* Check if the lower bound is dynamic and the upper bound is static */
+	else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
 		printf(PRINT_LDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
 			"Dynamic Array", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type);
-	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+	} 
+	/* Check if the lower bound is static and the upper bound is dynamic */
+	else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
 		printf(PRINT_RDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
 			"Dynamic Array", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type);
-	} else {
+	} 
+	/* Check if the array is dynamic */
+	else {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
@@ -570,6 +611,7 @@ void printListArr(void* data) {
 	}
 }
 
+/* Prints an array type variable in the local scope of a module */
 void printArr(void* data) {
 	SymTableVar* varData = (SymTableVar*) ((hashElement*) data)->data;
 	int isArray = varData -> dataType == AST_TYPE_ARRAY;
@@ -592,6 +634,7 @@ void printArr(void* data) {
 	char type[30];
 	strcpy(type, typeName[varData -> sdt.r -> dataType]);
 
+	/* Check if the array is static */
 	if(!isDynamic) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
@@ -599,21 +642,27 @@ void printArr(void* data) {
 		spaceWidth -= (intlen(varData->sdt.r->low) + intlen(varData->sdt.r->high));
 		printf(PRINT_STAT_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
 			"Static Array", varData->sdt.r->low, varData->sdt.r->high, spaceWidth, " ", type);
-	} else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
+	} 
+	/* Check if the lower bound is dynamic and the upper bound is static */
+	else if((strcmp(varData->sdt.r->lowId, "") != 0) && (strcmp(varData->sdt.r->highId, "") == 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (strlen(varData->sdt.r->lowId) + intlen(varData->sdt.r->high));
 		printf(PRINT_LDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
 			"Dynamic Array", varData->sdt.r->lowId, varData->sdt.r->high, spaceWidth, " ", type);
-	} else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
+	} 
+	/* Check if the lower bound is static and the upper bound is dynamic */
+	else if((strcmp(varData->sdt.r->lowId, "") == 0) && (strcmp(varData->sdt.r->highId, "") != 0)) {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
 		spaceWidth -= (intlen(varData->sdt.r->low) + strlen(varData->sdt.r->highId));
 		printf(PRINT_RDYN_ARR_DATA, modName, leftWidth, startline, rightWidth, endline, varData->name,
 			"Dynamic Array", varData->sdt.r->low, varData->sdt.r->highId, spaceWidth, " ", type);
-	} else {
+	} 
+	/* Check if the array is dynamic */
+	else {
 		int spaceWidth = 21;
 		int leftWidth = intlen(startline);
 		int rightWidth = 17 - leftWidth;
@@ -623,23 +672,7 @@ void printArr(void* data) {
 	}
 }
 
-
-/**
- *  For printing the Symbol Table giving following information (ten in number) for each variable identifier at each line using formatted output.[ Use width of variables of type integer as 2, of real as 4 and of boolean as 1 for printing the symbol table] 
-Variable name 
-Scope - module name
-scope - line number pairs of start and end of the scope
-width    (if a variable is of array type, then add 1 to total requirement for all elements of an array for holding address of the first element) 
-is array
-if array, whether static or dynamic    
-if array, range variables or number lexemes (e.g. [m, n], [p, q], [10, 20] etc.)
-type of element
-offset
-nesting level (for an input or output parameter, level= 0, local variable in function definition, level = 1, any variable inside a nested scope should get its level incremented appropriately)
-
-a      read_array                   19-27        4       no         ---                   ---                  real        54  3
-B      switch_var_demo1       		36- 56      43     yes      static array    	 [10,  30]        			integer    	26  2
-*/
+/* Prints the entire symbol table */
 void printSymbolTable(SymbolTable st, void (printElement)(void*)) {
 	if(printElement == printFunc) {
 		printf(PRINT_FUNC_HEADINGS, "Function Name", "Activation Record Size");
@@ -647,15 +680,10 @@ void printSymbolTable(SymbolTable st, void (printElement)(void*)) {
 	printHashTable(st, printElement);
 }
 
-/*	Scope - module name (string) -
-        scope - line number pairs of start and end of the scope -
-        Name of array variable -
-        whether static or dynamic - dynamic array - 
-        range variables or number lexemes - 
-        type of element */
-
+/* recursively calls outputSymbolTable for all the children of head */
 void outputChildren(ASTNode * head, int operation) {
 	ASTNode * ch = head;
+	/* iterating over the children. */
 	while(ch != NULL) {
 		outputSymbolTable(ch, operation);
 		ch = ch -> next;
@@ -663,12 +691,11 @@ void outputChildren(ASTNode * head, int operation) {
 }
 
 void outputSymbolTable(ASTNode * curr, int operation) {
+	/* switch on type of ASTNode */
 	switch(curr -> type) {
 		case AST_NODE_PROGRAM: {
 			ASTNode* ch = curr -> child;
-			// if(fp == NULL) {
-			// 	fp = fopen("please.txt", "w");
-			// }
+			
 			if(operation == 0) {
 				printf(PRINT_VARIABLE_HEADINGS, "Variable Name", "Module Name", "Scope Line No.","Width",
 					"Is Array", "Static/Dynamic", "Range", "Type of element", "Offset", "Nesting Level");
@@ -677,7 +704,6 @@ void outputSymbolTable(ASTNode * curr, int operation) {
 					"Static/Dynamic", "Range", "Type of Element");
 			}
 			outputChildren(ch, operation);
-			//fclose(fp);
 		}
 		break;
 

@@ -76,7 +76,6 @@ SymTableFunc* fetchFuncData(char* name);
 /**
  * Creates a record for an inner score, along with a new symbol table
  * @param fname Name of the function
- * 
  * @return pointer to the newly created record
  */
 SymTableFunc * getFuncTable(char * fname, SymTableFunc * par);
@@ -87,7 +86,6 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par);
  * @param varName		Name of the variable
  * @param varDataType	The dataType of the variable
  * @param line_num		Line number of declaration
- *
  * @return updated Symbol Table after inserting the given record
  */
 void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, astDataType varDataType, int line_num);
@@ -100,7 +98,6 @@ void addDataToFunction(SymTableFunc * funcData, char * fname, char* varName, ast
  * @param lft 			AST Node of the lower bound of the array
  * @param right			AST Node of the upper bound of the array
  * @param varDataType	The dataType of the variable
- *
  * @return updated Symbol Table after inserting the given record
  */
 void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
@@ -112,7 +109,6 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
  * @param varName		Name of the variable
  * @param varDataType	The dataType of the variable
  * @param line_num		Line number of parameter list
- * 
  * @return updated Symbol Table after inserting the record to the Input/Output parameters linked list
  */
 void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType, int line_num);
@@ -125,7 +121,6 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
  * @param right			AST Node of the upper bound of the array
  * @param varName		Name of the variable
  * @param varDataType	The dataType of the variable
- * 
  * @return updated Symbol Table after inserting the array record to the Input/Output parameters linked list
  */
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
@@ -136,7 +131,6 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
  * @param st		The Symbol Table
  * @param funcName	The name of the function
  * @param varWidth	The width of the variable
- * 
  * @return updated symbol table
  */
 SymbolTable updateOffsetOfFunc(SymbolTable st, char* funcName, int varWidth);
