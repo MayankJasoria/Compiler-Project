@@ -100,16 +100,16 @@ mov rbp, rsp
 ; --- END: takeInput(): type: Integer, Name: x --- 
 	mov ax, 19d
 	mov rdx, rsp
-	sub rdx, 22d
+	sub rdx, 2d
 	mov word [rdx], ax
-; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 20, type = Integer ---
+; --- START: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
 	mov rax, rsp
-	sub rax, 22d
+	sub rax, 2d
 	mov r8w, word [rax]
 	mov rax, rbp
 	sub rax, 4d
 	mov word [rax], r8w
-; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 20, type = Integer ---
+; --- END: moveOffsetToOffset(): lhsoff = 2, rhsoff = 0, type = Integer ---
 	mov ax, 56d
 	mov rdx, rsp
 	sub rdx, 2d
@@ -133,7 +133,7 @@ mov rbp, rsp
 	sub rax, 2d
 	mov ax, word [rax]
 	cmp ax, 1d
-	jnz label_4
+	jnz label_1
 	mov rax, rbp
 	sub rax, 2d
 ; --- START: pushTemporary(): type = Integer ---
@@ -223,13 +223,13 @@ mov rbp, rsp
 	pop r10
 	pop rbp
 ; --- END: outputArrayElement() for y--- 
-	jmp label_3
-label_4:
+	jmp label_0
+label_1:
 	mov rax, rbp
 	sub rax, 2d
 	mov ax, word [rax]
 	cmp ax, 2d
-	jnz label_5
+	jnz label_2
 	mov rax, rbp
 	sub rax, 2d
 ; --- START: pushTemporary(): type = Integer ---
@@ -319,8 +319,8 @@ label_4:
 	pop r10
 	pop rbp
 ; --- END: outputArrayElement() for z--- 
-	jmp label_3
-label_5:
+	jmp label_0
+label_2:
 ; --- START: giveInput() type: AST_NODE_VARIDNUM --- 
 	mov r9, 2d
 	mov rdx, rbp
@@ -356,7 +356,7 @@ label_5:
 	pop r10
 	pop rbp
 ; --- END: outputArrayElement() for x--- 
-label_3:
+label_0:
 ; --- START: scopeEnd() --- 
 	movsx rax, word [dynamic]
 	add rsp, rax

@@ -78,6 +78,7 @@ void getBackStack() {
  */
 void emitCodeFinalize() {
 
+	/* calls the exit to console interrupt, may have to be called in case of exceptions */
 	fprintf(fp, "rte:\n");
 	fprintf(fp, "\tmov ebx, 0	 ;return 0 status on exit - 'No errors'\n");
 	fprintf(fp, "\tmov eax, 1	 ;invoke SYS_EXIT system call (kernel opcode 1)\n");
@@ -91,6 +92,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
+	/* Label defined to interrupt when a dynamic type mismatch arises */
 	fprintf(fp, "\ntypeError:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_type\n");
@@ -100,7 +102,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
-
+	/* Label defined to interrupt when a dynamic parameter type mismatch arises */
 	fprintf(fp, "\nparam:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_param\n");
@@ -110,6 +112,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");
 
+	/* Label defined to interrupt when array index out of bounds exception is raised */
 	fprintf(fp, "\ninvalidbounds:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_invalidbounds\n");
@@ -119,6 +122,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");	
 
+	/* Label defined to interrupt when arithmetic exception (division by 0) is encountered */
 	fprintf(fp, "\ndivisionby0:\n");
 	fprintf(fp, "\tpush rbp\n");
 	fprintf(fp, "\tmov rdi, rte_divisionby0\n");
@@ -128,6 +132,7 @@ void emitCodeFinalize() {
 	fprintf(fp, "\tpop rbp\n");
 	fprintf(fp, "\tjmp rte\n");	
 
+	/* closing the asm code file pointer */
 	if (fp) {
 		fclose(fp);
 		fp = NULL;
@@ -141,6 +146,7 @@ void emitCodeFinalize() {
  */
 void emitCodeChildren(ASTNode * head, char * fname) {
 	
+	/* traversal over the children in AST */
     ASTNode* ch = head;
     while(ch != NULL) {
         emitCodeAST(ch, fname);
@@ -348,6 +354,7 @@ void outputArrayElement(SymTableVar * id, int op) {
 	if(type == AST_TYPE_ARRAY)
 		type = id -> sdt.r -> dataType;
 
+	/* Asking the user for input, according to the dataType of element */
 	fprintf(fp, "\tpush rbp\n");
 	if(type == AST_TYPE_INT) {
 		if(op == 1)
@@ -400,9 +407,9 @@ void outputArrayElement(SymTableVar * id, int op) {
  * Emits code for copying rhs to lhs
  * If lhsOff is -1, left hand side is treated as an array and assumed
  * that rdx is base and r9 is offset, already emitted.
- * @param lshOff
- * @param rhsOff
- * @param type
+ * @param lshOff 	The offset of the temporary where we have to place the data
+ * @param rhsoff 	The offset of the temporary from where we have to fetch the data to be pushed
+ * @param type 		The dataType of the temporary value to be transferred.
  */ 
 void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
@@ -411,7 +418,6 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 	fprintf(fp, "\tmov rax, rsp\n");
 	fprintf(fp, "\tsub rax, %dd\n", rhsOff + typeSize[type]);
 	
-	/*  */
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "\tmov r8w, word [rax]\n");
 		if(lhsOff == -1) {
@@ -458,6 +464,9 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 	fprintf(fp, "; --- END: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 }
 
+/** 
+ * It is used for basic if then else construct utility
+ */
 void if0else1() {
 	fprintf(fp, "; --- START: if0else1() --- \n");
 	fprintf(fp, "\tmov r8b, 0\n");
@@ -468,6 +477,12 @@ void if0else1() {
 	fprintf(fp, "; --- END: if0else1() --- \n");
 }
 
+/**
+ * @param type 		dataType of the temporary to be pushed onto stack
+ * @param par 		module whose activation record is to be populated with this temporary
+ * Pushes a temporary of the desired size (depending on dataType) onto the stack and 
+ * updates the activation record of the module
+ */
 void pushTemporary(astDataType type, SymTableFunc* par) {
 	fprintf(fp, "; --- START: pushTemporary(): type = %s ---\n", typeName[type]);
 	if(type == AST_TYPE_INT) {
@@ -521,6 +536,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
 
+	/* performs the required operations depending upon the tag of the operator fetched from AST node */
+	
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "\tmov r8w, word [rax]\n");
 		fprintf(fp, "\tmov r9w, word [r10]\n");
@@ -753,8 +770,9 @@ void scopeEnd() {
 }
 
 /**
- * @param t		
- * @param idNode
+ * @param t			dataType of the variable to be taken as input
+ * @param idNode 	AST node of the id to be taken as input
+ * Asks the user for input and calls scanf
  */
 void takeInput(astDataType t, SymTableVar * idNode) {
 

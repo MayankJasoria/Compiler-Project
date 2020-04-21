@@ -394,8 +394,6 @@ typedef union {
 	unaryNode* unary;
 	lvalueARRStmtNode* lvalueARRStmt;
 	iterStmtNode* iterStmt;
-	forNode* for_n;
-	whileNode* while_n;
 	varidnumNode* var;
 	leafNode* leaf;
 } astNodeData;

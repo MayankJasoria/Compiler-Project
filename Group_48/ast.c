@@ -194,14 +194,6 @@ ASTNode* getASTNode(astNodeData nodeData, astNodeType t) {
 			ASTSize += sizeof(iterStmtNode);
 		}
 		break;
-		case AST_NODE_FOR: {
-			ASTSize += sizeof(forNode);
-		}
-		break;
-		case AST_NODE_WHILE: {
-			ASTSize += sizeof(whileNode);
-		}
-		break;
 		case AST_NODE_VARIDNUM: {
 			ASTSize += sizeof(varidnumNode);
 		}
