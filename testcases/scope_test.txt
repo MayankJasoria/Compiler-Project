@@ -1,7 +1,18 @@
+<<module lol>>
+takes input[ B: boolean, C: integer];
+returns [sum1: boolean, sum2: integer, sum3: real];
+start
+	sum1 := true;
+	sum3 := 3.99;
+	sum3 := -(2.0*sum3);
+	sum2 := +(2+7);
+end
+
 <<<driver program>>>
 start
 	declare a, b, c: integer;
 	declare x, y, z: boolean;
+	declare q: real;
 	get_value(a);
 	get_value(b);
 	get_value(c);
@@ -59,6 +70,44 @@ start
 				end
 			end
 			break;
+
+		case 4: **Testing nested module reuse**
+			switch(x)
+			start
+				case true:
+					switch(y)
+					start 
+						case true:
+							print(b);
+							break;
+						case false:
+							print(c);				
+							break;
+					end
+					break;
+				case false:
+					switch(b)
+					start
+						case 1:
+							print(true);
+							break;
+						case 0:
+							print(false);
+							break;
+						default:
+							[x, b, q] := use module lol with parameters z, a;
+							print(q);
+							print(x);
+							print(b);
+							declare q:boolean;
+							q := true;
+							print(q);
+							break;
+					end
+					break;
+			end
+			break;
+
 		default: ** Testing for dynamic arrays **
 			declare A: array[a..b] of real;
 			declare B: array[b..c] of integer;

@@ -10,6 +10,7 @@
 #include "astDef.h"
 #include "hash_map.h"
 #include "st.h"
+#include "../utils/utils.h"
 
 #define PRINT_FUNC_HEADINGS "%-25s%-25s\n"
 #define PRINT_FUNC_DATA "%-25s%-25d\n"
@@ -56,7 +57,7 @@ int lookupDependentVar(SymTableFunc * func, char* name) {
 	return 0;
 }
 
-SymTableVar * fetchVarData(SymTableFunc * func, char* name) {
+SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {
 		data = (SymTableVar*) getDataFromTable(func -> dataTable, name, stringHash);
@@ -64,9 +65,10 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name) {
 			/* scan input_plist */
 			data = (SymTableVar*) findInList(func->input_plist, name, string_comp_id);
 		}
-		if(data != NULL) {
+		if(data != NULL && data -> declarationLine <= line_num) {
 			break;
 		}
+		data = NULL;
 		func = func -> parent;
 	}
 	return data;
@@ -83,7 +85,7 @@ SymTableFunc * getParentFunc(SymTableFunc * local) {
 	return local;
 }
 
-void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s) {
+void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s, int line_num) {
 
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data -> name, name);
@@ -93,6 +95,7 @@ void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, ast
 	data -> type = SYM_VARIABLE;
 	data -> sdt = s;
 	data -> table = func;
+	data -> declarationLine = line_num;
 
 	func -> dataTable = insertToTable(func -> dataTable, name, data, stringHash);
 }
@@ -105,13 +108,15 @@ void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astD
 		int offset = fun -> actRecSize;
 		int width = typeSize[varDataType];
 		SymDataType s;
-		insertVarRecord(funcData , varName, width, offset, varDataType, s);
+		insertVarRecord(funcData , varName, width, offset, varDataType, s, line_num);
 		// st = insertVarRecord(st, varName, varWidth, offset, varDataType);
 		fun -> actRecSize += width;
 	} 
 	else {
-		fprintf(stderr, 
+		char message[200];
+		sprintf(message, 
 		"Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the scope of this function).\n", line_num, varName);
+		reportError(line_num, message);
 	}
 }
 
@@ -144,19 +149,21 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
 			varWidth = typeSize[varDataType]*(a -> high - a -> low + 1) + typeSize[AST_TYPE_POINTER];
 		else
 			varWidth = typeSize[AST_TYPE_POINTER];
-		insertVarRecord(funcData, varName, varWidth, offset, AST_TYPE_ARRAY, s);
+		insertVarRecord(funcData, varName, varWidth, offset, AST_TYPE_ARRAY, s, lft -> nodeData.leaf -> tn -> line_num);
 		fun->actRecSize += varWidth;
 	} 
 	else {
-		fprintf(stderr, 
+		char message[200];
+		sprintf(message, 
 		"Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the scope of this function).\n", lft -> nodeData.leaf -> tn -> line_num, varName);
+		reportError(lft -> nodeData.leaf -> tn -> line_num, message);
 	}
 }
 
 SymTableFunc* insertFuncRecord(char* name) {
 
 	if(fetchFuncData(name) != NULL) {
-		// fprintf(stderr, "A record with the given already exists within the symbol table.");
+		// sprintf(message, "A record with the given already exists within the symbol table.");
 		return NULL;
 	}
 
@@ -203,16 +210,40 @@ SymTableFunc * getFuncTable(char * fname, SymTableFunc * par) {
 	return data;
 }
 
+int paramlistComparator(void * myElement, void * listElement) {
+
+	char * my = (char *)myElement;
+	SymTableVar * listEl = (SymTableVar *)listElement;
+
+	return strcmp(my, listEl -> name) == 0;
+}
+
+
 /**
  * Assumption: The function record (name) is already hashed to the symbol table
  * The size of the activation record is computed dynamically everytime this
  * function is called for a new variable. For other details, 
  * @see symbol_table.h
  */
-void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType) {
+void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType, int line_num) {
 
 	/* compute offset */
 	int offset = funcData -> actRecSize;
+	/* Todo */
+	if(paramType == 0 && findInList(funcData -> input_plist, varName, paramlistComparator) != NULL) {
+		char message[200];
+		sprintf(message, "Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the input parameter list of this function).\n", 
+			line_num, varName);
+		reportError(line_num, message);
+		return;
+	}
+	else if(paramType == 1 && fetchVarData(funcData, varName, funcData -> end_line_num) != NULL) {
+		char message[200];
+		sprintf(message, "Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the parameter list of this function).\n", 
+			line_num, varName);
+		reportError(line_num, message);
+		return;
+	}
 
 	/* Create a record for the variable */
 	SymTableVar* varData = (SymTableVar*) malloc(sizeof(SymTableVar));
@@ -237,11 +268,26 @@ void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, as
 	else {
 		funcData -> outputSize += varData -> width;
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);
-		insertVarRecord(funcData, varName, varData->width, varData->offset, varData->dataType, new);
+		insertVarRecord(funcData, varName, varData->width, varData->offset, varData->dataType, new, line_num);
 	}
 }
 
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType) {
+
+	if(paramType == 0 && findInList(funcData -> output_plist, varName, paramlistComparator) != NULL) {
+		char message[200];
+		sprintf(message, "Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the input parameter list of this function).\n", 
+			lft -> nodeData.leaf -> tn -> line_num, varName);
+		reportError(line_num, message);
+		return;
+	}
+	else if(paramType == 1 && fetchVarData(funcData, varName, funcData -> end_line_num) != NULL) {
+		char message[200];
+		sprintf(message, "Line number (%d): semantic error -- Redeclaration of '%s' (it already exists within the parameter list of this function).\n", 
+			lft -> nodeData.leaf -> tn -> line_num, varName);
+		reportError(line_num, message);
+		return;
+	}
 
 	int offset = funcData -> actRecSize;
 	arrayInfo* a = (arrayInfo*) malloc(sizeof(arrayInfo));
@@ -285,7 +331,7 @@ void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName
 		funcData -> input_plist = insertToList(funcData -> input_plist, varData, BACK);
 	} else {
 		funcData -> output_plist = insertToList(funcData -> output_plist, varData, BACK);
-		insertVarRecord(funcData, varName, varWidth, offset, AST_TYPE_ARRAY, s);
+		insertVarRecord(funcData, varName, varWidth, offset, AST_TYPE_ARRAY, s, lft -> nodeData.leaf -> tn -> line_num);
 	}
 
 	/* update activation record size */
@@ -663,6 +709,8 @@ void outputSymbolTable(ASTNode * curr, int operation) {
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode * ch = curr -> child -> next;
+			if(ch -> localST == NULL)
+				return;
 			if(operation == 0)
 				printSymbolTable(ch -> localST -> dataTable, printVar);
 			else

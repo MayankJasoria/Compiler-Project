@@ -33,6 +33,8 @@ void emitCodeInit(const char* fname) {
 }
 
 void pushRegs() {
+	fprintf(fp, "\tpush r10\n");
+	fprintf(fp, "\tpush r11\n");
 	fprintf(fp, "\tpush rsi\n");
 	fprintf(fp, "\tpush rdx\n");
 	fprintf(fp, "\tpush rcx\n");
@@ -48,6 +50,8 @@ void popRegs() {
 	fprintf(fp, "\tpop rcx\n");
 	fprintf(fp, "\tpop rdx\n");
 	fprintf(fp, "\tpop rsi\n");
+	fprintf(fp, "\tpop r11\n");
+	fprintf(fp, "\tpop r10\n");
 }
 
 void alignStack() {
@@ -160,7 +164,7 @@ int getLastCaseLabel(ASTNode * curr) {
 // }
 
 int getIDOffset(ASTNode * idNode) {
-	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex);
+	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 	return tmp -> offset;
 }
 
@@ -218,7 +222,7 @@ void getLeftRightIndex(SymTableVar * id) {
 		fprintf(fp, "\tmov r10w, %dd\n", lft);		
 	}
 	else {
-		SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId);
+		SymTableVar * l = fetchVarData(id -> table, id -> sdt.r -> lowId, id -> declarationLine);
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + l -> offset);
 		fprintf(fp, "\tmov r10w, word[rax]\n");
@@ -228,7 +232,7 @@ void getLeftRightIndex(SymTableVar * id) {
 		fprintf(fp, "\tmov r11w, %dd\n", right);	
 	}
 	else {
-		SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId);
+		SymTableVar * r = fetchVarData(id -> table, id -> sdt.r -> highId, id -> declarationLine);
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + r -> offset);
 		fprintf(fp, "\tmov r11w, word[rax]\n");
@@ -270,7 +274,7 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	ASTNode * i = index;
 
 	/* Fetch array from symbol table */ 
-	SymTableVar * id = fetchVarData(arr -> parent -> localST, arr -> nodeData.leaf -> tn -> lex);
+	SymTableVar * id = fetchVarData(arr -> parent -> localST, arr -> nodeData.leaf -> tn -> lex, arr -> nodeData.leaf -> tn -> line_num);
 	
 	/* DataType of elements of array */
 	astDataType type = id -> sdt.r -> dataType;
@@ -285,7 +289,7 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	}
 	else {
 		/* index is of type ID */
-		SymTableVar * tmp = fetchVarData(arr -> parent -> localST, i -> nodeData.leaf -> tn -> lex);
+		SymTableVar * tmp = fetchVarData(arr -> parent -> localST, i -> nodeData.leaf -> tn -> lex, i -> nodeData.leaf -> tn -> line_num);
 		// if(tmp -> isAssigned == 0) {
 		// 	rte();
 		// }
@@ -928,7 +932,7 @@ void giveOutput(ASTNode * curr) {
 
 		/* non array variable */
 		ASTNode * idNode = ch -> child;
-		SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
+		SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 		if(id -> dataType != AST_TYPE_ARRAY) {
 			// if(id -> isAssigned == 0) {
 			// 	rte();
@@ -1180,7 +1184,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_IO: {
 			ASTNode* ch = curr -> child;
 			if(curr -> nodeData.io -> type == AST_IO_GETVAL) {
-				SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 				astDataType t = idNode -> dataType;
 				takeInput(t, idNode);
 			}
@@ -1202,7 +1206,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			ch = curr -> child;
 			if(ch -> next -> type == AST_NODE_LVALARRSTMT) {
 				/* Fetching Array data form Symbol Table */
-				SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 				
 				/* Getting index of array element being accessed */
 				ASTNode * index = ch -> next -> child;
@@ -1226,9 +1230,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				/* LVALUE_ID_STMT */
 				int lhsOff = getIDOffset(ch);
 				int rhsOff = getExprOffset(ch -> next);
-				SymTableVar * tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				SymTableVar * tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 				if(tmp -> dataType == AST_TYPE_ARRAY) {
-					SymTableVar * rhs = fetchVarData(curr -> localST, ch -> next -> child -> nodeData.leaf -> tn -> lex);
+					SymTableVar * rhs = fetchVarData(curr -> localST, ch -> next -> child -> nodeData.leaf -> tn -> lex, ch -> next -> child -> nodeData.leaf -> tn -> line_num);
 					fprintf(fp, "\tmov rsi, %dd\n", ch -> nodeData.leaf -> tn -> line_num);
 					getLeftRightIndex(tmp);
 					fprintf(fp, "\tmov r8w, r10w\n");
@@ -1283,7 +1287,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			while(inParam != NULL) {
 				ASTNode * idNode = inParam -> child;
 				/* Fetch current ID from symbol table */
-				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
+				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 				// if(id -> isAssigned == 0)
 				// 	rte();
 				fprintf(fp, "\tmov rcx, qword [rbp]\n");
@@ -1367,7 +1371,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			while(ret != NULL) {
 
 				ASTNode * idNode = ret -> child;
-				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex);
+				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 				fprintf(fp, "\tmov rdx, rbp\n");
 				fprintf(fp, "\tsub rdx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				fprintf(fp, "\tmov rax, rsp\n");
@@ -1427,7 +1431,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = arr -> nodeData.dataType -> dataType;
 				if(arr -> nodeData.dataType -> is_static == 1) {
 					while(idNode != NULL) {
-						SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex);
+						SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex, idNode -> child -> nodeData.leaf -> tn -> line_num);
 						fprintf(fp, "\tmov rax, rbp\n");
 						fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
 						fprintf(fp, "\tmov rcx, rax\n");
@@ -1438,7 +1442,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				}
 
 				while(idNode != NULL) {
-					SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex); 
+					SymTableVar * id = fetchVarData(curr -> localST, idNode -> child -> nodeData.leaf -> tn -> lex, idNode -> child -> nodeData.leaf -> tn -> line_num); 
 					fprintf(fp, "\tmov rax, rbp\n");
 					fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_POINTER] + id -> offset);
 					fprintf(fp, "\tmov qword [rax], rsp\n");
@@ -1465,7 +1469,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode* ch = curr -> child;
-			SymTableVar * switchVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableVar * switchVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 			ch -> next -> nodeData.caseStmt -> breakLabel = label_num++;
 			int tmp = label_num - 1;
 			scopeBegin();
@@ -1486,7 +1490,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		/* todo: complete it */
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
-			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
+			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar, curr -> localST -> start_line_num);
 			
 			if(curr -> parent -> type == AST_NODE_CASESTMT)
 				fprintf(fp, "label_%d:\n", curr -> nodeData.caseStmt -> label);
@@ -1592,7 +1596,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			ASTNode * ch = curr -> child;
 			if(curr -> nodeData.iterStmt -> type == AST_ITER_FOR) {
 
-				SymTableVar * loopVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				SymTableVar * loopVar = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 				
 				int num1 = ch -> next -> child -> nodeData.leaf -> tn -> value.val_int;
 				int num2 = ch -> next -> child -> next -> nodeData.leaf -> tn -> value.val_int;
@@ -1657,7 +1661,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		case AST_NODE_VARIDNUM: {
 			ASTNode* ch = curr -> child;
 			SymTableFunc * par = getParentFunc(curr -> localST);
-			SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableVar * id = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 			if(ch -> next == NULL) {
 				fprintf(fp, "\tmov rax, rbp\n");
 				fprintf(fp, "\tsub rax, %dd\n", id -> offset + typeSize[id -> dataType]);

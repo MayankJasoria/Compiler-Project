@@ -25,10 +25,10 @@ SymbolTable getSymbolTable();
  * @param offset	The offset of a variable from the base address of a function
  * @param dataType	The dataType of the variable
  * @param s			Value of the variable
- * 
+ * @param line_num 	The line number of the source code where the variable is declared
  * @return updated symbol table
  */
-void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s);
+void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s, int line_num);
 
 /**
  * Inserts a record for a function into the symbol table
@@ -47,7 +47,7 @@ SymTableFunc * insertFuncRecord(char* name);
  * 
  * @return pointer to the record if it is found, otherwise NULL
  */
-SymTableVar * fetchVarData(SymTableFunc * func, char* name);
+SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num);
 
 /**
  * Returns the Record for the parent function of a nested scope
@@ -55,7 +55,13 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name);
  */
 SymTableFunc * getParentFunc(SymTableFunc * local);
 
+/**
+ * @param func 	Symbol Table of the 		
+ * @param name 	
+ *
+ */
 int lookupDependentVar(SymTableFunc * func, char* name);
+
 /**
  * Returns the record for a function from the symbol table,
  * if it exists. Otherwise returns NULL
@@ -94,7 +100,7 @@ void addArrToFunction(SymTableFunc * funcData, char * fname, char* varName, ASTN
  * 
  * @return updated Symbol Table
  */
-void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType);
+void addParamToFunction(SymTableFunc* funcData, int paramType, char* varName, astDataType varDataType, int line_num);
 
 void addArrParamToFunction(SymTableFunc * funcData, int paramType, char* varName, ASTNode * lft, ASTNode * right, astDataType varDataType);
 

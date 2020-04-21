@@ -1,40 +1,24 @@
-<<module lol>>
-takes input[ B: array[1..4] of integer, C:array[low..high] of integer];
-returns [sum1: integer, sum2: integer, sum3: integer];
-start
-	sum1 := -(90 + 1);
-	sum2 := 90;
-	sum3 := 78;
-end
+declare module letsparty;
 
 <<<driver program>>>
 start
-	declare s1, s2, s3, s4: integer;
-	get_value(s1);
-	get_value(s2);
-
-	declare A: array[1..4] of integer;
-	declare B: array[1..4] of integer;
-	**declare tmp: array[s1..s2] of integer;**
-
-	**get_value(A);
-	get_value(B);
-
-	tmp := A;
-	A := B;
-	B := tmp;
-
+	** use swap once and the functions below once **
+	declare m, n: integer;
+	m := 1;
+	n := 4;
+	declare A: array[m..n] of integer;
+	use module letsparty with parameters A, m;
 	print(A);
+end
+
+
+<<module letsparty>>
+takes input[A: array[1..4] of integer, B: integer];
+start
+	declare i:integer;
+	for(i in 1..4)
+	start
+		A[i] := -(i*(i+1));
+	end
 	print(B);
-	print(tmp);
-
-
-	tmp := tmp;
-
-	print(tmp);**
-
-	[s1, s2, s3]:= use module lol with parameters A, B;
-	print(s1);
-	print(s2);
-	print(s3);
 end

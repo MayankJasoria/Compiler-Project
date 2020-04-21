@@ -198,6 +198,7 @@ int main(int argc, char* argv[]) {
 				 * TODO: find a way to ensure no errors are reported here
 				 */
 				if(globalST == NULL) {
+					destroyError();
 					globalST = getSymbolTable();
 					traverseAST(root, "");
 					pass2AST(root, "");
@@ -231,6 +232,7 @@ int main(int argc, char* argv[]) {
 				 * TODO: find a way to ensure no errors are reported here
 				 */ 
 				if(globalST == NULL) {
+					destroyError();
 					globalST = getSymbolTable();
 					traverseAST(root, "");
 					pass2AST(root, "");
@@ -260,6 +262,7 @@ int main(int argc, char* argv[]) {
 				 * TODO: find a way to ensure no errors are reported here
 				 */
 				if(globalST == NULL) {
+					destroyError();
 					globalST = getSymbolTable();
 					traverseAST(root, "");
 					pass2AST(root, "");
@@ -288,6 +291,7 @@ int main(int argc, char* argv[]) {
 
 				start_time = clock();
 
+				lexerinit();
 				/* Generate Parse Table: */
 				parseInputSourceCode(argv[1]);
 

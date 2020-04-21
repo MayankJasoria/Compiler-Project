@@ -40,7 +40,7 @@ void insertplist(ASTNode * curr, char * str) {
 		}
 		else {
 			addParamToFunction(func, paramType, varName, 
-				typeNode -> nodeData.leaf -> dataType);
+				typeNode -> nodeData.leaf -> dataType, idNode -> nodeData.leaf -> tn -> line_num);
 		}
 		curr = curr -> child -> next -> next;
 	}
@@ -63,7 +63,7 @@ void processWhileExpression(ASTNode * wh, ASTNode * ch) {
 		return;
 	else if(ch -> type == AST_NODE_VARIDNUM) {
 		ASTNode * idNode = ch -> child;
-		SymTableVar * id = fetchVarData(wh -> localST, idNode -> nodeData.leaf -> tn -> lex);
+		SymTableVar * id = fetchVarData(wh -> localST, idNode -> nodeData.leaf -> tn -> lex, wh -> nodeData.iterStmt -> start_line_num);
 		if(id != NULL)
 			id -> whileNest = globalNest;
 	}
@@ -80,7 +80,7 @@ int checkWhileAssignment(ASTNode * wh, ASTNode * ch) {
 	else if(ch -> type == AST_NODE_VARIDNUM) {
 		varPresent = 1;
 		ASTNode * idNode = ch -> child;
-		SymTableVar * id = fetchVarData(wh -> localST, idNode -> nodeData.leaf -> tn -> lex);
+		SymTableVar * id = fetchVarData(wh -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 		if(id != NULL && id -> whileNest > globalNest)
 			return 1;
 	}
@@ -209,7 +209,7 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 		node = NULL;
 	while(head != NULL && node != NULL) {
 		tmp = (SymTableVar*) (head -> data);
-		SymTableVar* curr = fetchVarData(localST, node -> child -> nodeData.leaf -> tn -> lex);
+		SymTableVar* curr = fetchVarData(localST, node -> child -> nodeData.leaf -> tn -> lex, node -> child -> nodeData.leaf -> tn -> line_num);
 		if(curr == NULL) {
 			char message[200];
 			sprintf(message, 
@@ -366,12 +366,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;	
 			ch -> localST = curr -> localST;		
 			if(curr -> nodeData.io -> type == AST_IO_GETVAL) {
-				SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
+				SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num); //Args: Symbol Table, Name
 				if(tmp == NULL) {
 					char message[200];
 					sprintf(message, 
-					"Line number (%d): semantic error -- variable taken as input has not been declared.\n", 
-					ch -> nodeData.leaf -> tn -> line_num);
+					"Line number (%d): semantic error -- variable '%s' taken as input has not been declared.\n", 
+					ch -> nodeData.leaf -> tn -> line_num, ch -> nodeData.leaf -> tn -> lex);
 					reportError(ch -> nodeData.leaf -> tn -> line_num, message);
 				}
 				else {
@@ -381,12 +381,12 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			else { // AST_IO_PRINT
 				if(ch -> type == AST_NODE_VARIDNUM) {
-					SymTableVar* tmp = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex); //Args: Symbol Table, Name
+					SymTableVar* tmp = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex, ch -> child -> nodeData.leaf -> tn -> line_num); //Args: Symbol Table, Name
 					if(tmp == NULL) {
 						char message[200];
 						sprintf(message, 
-						"Line number (%d): semantic error -- the variable to be output has not been declared.\n", 
-						ch -> child -> nodeData.leaf -> tn -> line_num);
+						"Line number (%d): semantic error -- the variable '%s' to be output has not been declared.\n", 
+						ch -> child -> nodeData.leaf -> tn -> line_num, ch -> child -> nodeData.leaf -> tn -> lex);
 						reportError(ch -> child -> nodeData.leaf -> tn -> line_num, message);
 					}
 					else if(ch -> child -> next != NULL && tmp -> dataType != AST_TYPE_ARRAY) {   //int a; a[4];  --> error
@@ -412,7 +412,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_ASSIGN: {
 			ASTNode* ch = curr -> child;
-			SymTableVar* tmp = fetchVarData(curr->localST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableVar* tmp = fetchVarData(curr->localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 			if(tmp == NULL) {
 				char message[200];
 				sprintf(message, 
@@ -487,7 +487,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					return;		
 				}
 				if(tmp -> dataType == AST_TYPE_ARRAY) {
-					SymTableVar *rhs = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+					SymTableVar *rhs = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex, ch -> child -> nodeData.leaf -> tn -> line_num);
 
 					if(tmp -> sdt.r -> dataType != rhs -> sdt.r -> dataType) {
 						char message[200];
@@ -600,7 +600,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			if(curr -> parent -> type == AST_NODE_MODULEREUSE && curr -> prev == NULL) {
 				ASTNode * tmp = curr;
 				while(tmp != NULL) {
-					SymTableVar * id = fetchVarData(curr -> localST, tmp -> child -> nodeData.leaf -> tn -> lex);
+					SymTableVar * id = fetchVarData(curr -> localST, tmp -> child -> nodeData.leaf -> tn -> lex, tmp -> child -> nodeData.leaf -> tn -> line_num);
 					if(id != NULL)
 						id -> whileNest = globalNest;
 					tmp = tmp -> child -> next;
@@ -645,7 +645,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			if(tl == AST_TYPE_ARRAY) {
 				if(ch -> type == AST_NODE_VARIDNUM && ch -> child -> next != NULL) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex, ch -> child -> nodeData.leaf -> tn -> line_num);
 					tl = var -> sdt.r -> dataType;
 				}
 				else if(ch -> type == AST_NODE_VARIDNUM){
@@ -661,7 +661,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			}
 			if(tr == AST_TYPE_ARRAY) {
 				if(ch -> next -> next -> type == AST_NODE_VARIDNUM && ch -> next -> next -> child -> next != NULL) {
-					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex);
+					SymTableVar * var = fetchVarData(curr -> localST, ch -> next -> next -> child -> nodeData.leaf -> tn -> lex, ch -> next -> next -> child -> nodeData.leaf -> tn -> line_num);
 					tr = var -> sdt.r -> dataType;
 				}
 				else {
@@ -867,8 +867,8 @@ void traverseAST(ASTNode* curr, char* fname) {
 		
 		case AST_NODE_LVALARRSTMT: {
 			ASTNode* ch = curr -> child;
-			SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
-			SymTableVar* par = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex);
+			SymTableVar* tmp = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
+			SymTableVar* par = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex, curr -> parent -> child -> nodeData.leaf -> tn -> line_num);
 			if(par == NULL) {
 				// "Lvalue The variable taken as input is not being declared.\n");
 				/* already been taken care of */
@@ -975,7 +975,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 			ASTNode* ch = curr -> child;
 			traverseChildren(ch, fname);
 			ch = curr -> child;
-			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableVar * idNode = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 			if(idNode == NULL) {
 				char message[200];
 				sprintf(message, 
@@ -1075,6 +1075,10 @@ void traverseAST(ASTNode* curr, char* fname) {
 								tmp -> isDeclared = 0;
 								tmp -> isDefined = 1;
 							}
+							if(tmp != NULL) {
+								tmp -> start_line_num = curr -> parent -> nodeData.module -> start_line_num;
+								tmp -> end_line_num = curr -> parent -> nodeData.module -> end_line_num;
+							}
 							tmp -> isDefined = 1;
 							curr -> localST = tmp;
 							insertplist(curr -> next, str);
@@ -1095,7 +1099,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						break;
 						case AST_NODE_VARIDNUM: {
 							if(curr -> prev != NULL) {
-								SymTableVar* idx = fetchVarData(curr -> localST, str);
+								SymTableVar* idx = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 								if(idx == NULL) {
 									char message[200];
 									sprintf(message, 
@@ -1118,7 +1122,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 								curr -> nodeData.leaf -> dataType = idx -> dataType;
 							}
 							else {
-								SymTableVar* tmp = fetchVarData(curr -> localST, str);
+								SymTableVar* tmp = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 								if(tmp == NULL) {
 									// char message[200];
 									// "The identifier('%s') not declared on line %d.\n", str, 
@@ -1130,7 +1134,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						}
 						break;
 						case AST_NODE_LVALARRSTMT: {
-							SymTableVar* idx = fetchVarData(curr -> localST, str);
+							SymTableVar* idx = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 							if(idx == NULL) {
 								char message[200];
 								sprintf(message, 
@@ -1183,7 +1187,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						}
 						break;
 						case AST_NODE_CONDSTMT: {
-							SymTableVar* idx = fetchVarData(curr -> localST, str);
+							SymTableVar* idx = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 							if(idx == NULL) {
 								char message[200];
 								sprintf(message, 
@@ -1200,7 +1204,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						}
 						break;
 						case AST_NODE_ITERSTMT: {
-							SymTableVar* idx = fetchVarData(curr -> localST, str);
+							SymTableVar* idx = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 							if(idx == NULL) {
 								char message[200];
 								sprintf(message, 
@@ -1227,7 +1231,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 					
 					curr -> nodeData.leaf -> dataType = AST_TYPE_INT;
 					if(curr -> parent -> type == AST_NODE_VARIDNUM) {
-						SymTableVar* arr = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex);
+						SymTableVar* arr = fetchVarData(curr -> localST, curr -> parent -> child -> nodeData.leaf -> tn -> lex, curr -> parent -> child -> nodeData.leaf -> tn -> line_num);
 						if(arr == NULL) { 
 							// "The array variable is not defined.\n");
 							return;
@@ -1240,7 +1244,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				case AST_LEAF_IDXID: {
 					char str[30];
 					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
-					SymTableVar* idx = fetchVarData(curr -> localST, str);
+					SymTableVar* idx = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 					ASTNode * tmp = curr -> parent;
 					if(tmp != NULL)
 						tmp = tmp -> parent;
@@ -1342,7 +1346,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 				case AST_LEAF_VARIDNUM_ID: {
 					char str[30];
 					strcpy(str, curr -> nodeData.leaf -> tn -> lex);
-					SymTableVar* tmp = fetchVarData(curr -> localST, str);
+					SymTableVar* tmp = fetchVarData(curr -> localST, str, curr -> nodeData.leaf -> tn -> line_num);
 					if(tmp == NULL) {
 						char message[200];
 						sprintf(message, 

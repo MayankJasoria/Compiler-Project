@@ -30,7 +30,7 @@ void checkOutputAssignment(SymTableFunc * func) {
 	Node * head = func -> output_plist -> head;
 	while(head != NULL) {
 		tmp = (SymTableVar *) (head -> data);
-		tmp = fetchVarData(func, tmp -> name);
+		tmp = fetchVarData(func, tmp -> name, func -> end_line_num);
 		if(tmp -> isAssigned == 0) {
 			char message[200];
 				sprintf(message, "Line number (%d): semantic error -- The output variable '%s' of function '%s' is not assigned any value\n",
@@ -124,7 +124,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 					);
 					reportError(ch -> nodeData.leaf -> tn -> line_num, message);
 				}
-				SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+				SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 				if(lhs == NULL)
 					return;
 				lhs -> isAssigned = 1;
@@ -150,7 +150,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 				);
 				reportError(ch -> nodeData.leaf -> tn -> line_num, message);
 			}
-			SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableVar * lhs = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 			if(lhs == NULL)
 				return;
 			lhs -> isAssigned = 1;
@@ -184,7 +184,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 						);
 						reportError(ch2 -> child -> nodeData.leaf -> tn -> line_num, message);
 					}
-					SymTableVar * lhs = fetchVarData(curr -> localST, str);
+					SymTableVar * lhs = fetchVarData(curr -> localST, str, ch2 -> child -> nodeData.leaf -> tn -> line_num);
 					if(lhs != NULL)
 						lhs -> isAssigned = 1;
 					ch2 = ch2 -> child -> next;
@@ -264,11 +264,11 @@ void pass2AST(ASTNode* curr, char* fname) {
 				tmp = tmp -> child;
 				tmp = tmp -> next;
 			}
-			SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex);
+			SymTableVar * var = fetchVarData(curr -> localST, ch -> child -> nodeData.leaf -> tn -> lex, ch -> child -> nodeData.leaf -> tn -> line_num);
 			if(var == NULL || var -> dataType !=AST_TYPE_ARRAY)
 				return;
 			if(strcmp(var -> sdt.r -> lowId, "")) {
-				SymTableVar * lft = fetchVarData(curr -> localST, var -> sdt.r -> lowId);
+				SymTableVar * lft = fetchVarData(curr -> localST, var -> sdt.r -> lowId, ch -> child -> nodeData.leaf -> tn -> line_num);
 				if(lft == NULL) {
 					return;
 				}
@@ -283,7 +283,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 				}
 			}
 			if(strcmp(var -> sdt.r -> highId, "")) {
-				SymTableVar * right = fetchVarData(curr -> localST, var -> sdt.r -> highId);
+				SymTableVar * right = fetchVarData(curr -> localST, var -> sdt.r -> highId, ch -> child -> nodeData.leaf -> tn -> line_num);
 				if(right == NULL) {
 					return;
 				}
@@ -302,7 +302,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 
 		case AST_NODE_CONDSTMT: {
 			ASTNode* ch = curr -> child;
-			SymTableVar* idx = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex);
+			SymTableVar* idx = fetchVarData(curr -> localST, ch -> nodeData.leaf -> tn -> lex, ch -> nodeData.leaf -> tn -> line_num);
 			if(idx == NULL) {
 				return;
 			}
@@ -330,7 +330,7 @@ void pass2AST(ASTNode* curr, char* fname) {
 		case AST_NODE_CASESTMT: {
 			ASTNode* ch = curr -> child;
 			astDataType t = ch -> nodeData.leaf -> dataType;
-			SymTableVar * v = fetchVarData(curr -> localST, curr -> localST -> dependentVar);
+			SymTableVar * v = fetchVarData(curr -> localST, curr -> localST -> dependentVar, curr -> localST -> start_line_num);
 			if(t != v -> dataType) {
 				char message[200];
 				sprintf(message, 	

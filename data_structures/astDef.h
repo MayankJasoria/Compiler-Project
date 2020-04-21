@@ -498,6 +498,7 @@ typedef struct symTableVar {
 	/*
 	* datatype of variable -> INT, RNUM, BOOL, ARRAY
 	*/
+	int declarationLine;
 	astDataType dataType;
 	SymDataType sdt;
 	SymTableFunc * table;
