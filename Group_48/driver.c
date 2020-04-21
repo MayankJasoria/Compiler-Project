@@ -109,7 +109,9 @@ int main(int argc, char* argv[]) {
 				 * AST: For printing the Abstract Syntax Tree in appropriate format. 
 				 * Also specify the traversal order at the beginning. (On Console)
 				 */
-			
+				PT = NULL;
+				root = NULL;
+				globalST = NULL;
 				if(PT == NULL) {
 					/* generate parse tree */
 					parseInputSourceCode(argv[1]);

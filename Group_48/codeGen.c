@@ -176,6 +176,10 @@ int getLastCaseLabel(ASTNode * curr) {
 	return tmp -> nodeData.caseStmt -> lastLabel;
 }
 
+/**
+ * @param idNode
+ * Fetches the offset of the identifier in the current activation record.
+ */ 
 int getIDOffset(ASTNode * idNode) {
 	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 	return tmp -> offset;
@@ -254,6 +258,10 @@ void getLeftRightIndex(SymTableVar * id) {
 	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w --- \n", id->name);
 }
 
+/**
+ * @param t: datatype
+ * It scans the input of datatype t.
+ */
 void getInputElement(astDataType t) {
 	fprintf(fp, "; START: --- getInputElement() ---\n");
 	
@@ -303,9 +311,6 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	else {
 		/* index is of type ID */
 		SymTableVar * tmp = fetchVarData(arr -> parent -> localST, i -> nodeData.leaf -> tn -> lex, i -> nodeData.leaf -> tn -> line_num);
-		// if(tmp -> isAssigned == 0) {
-		// 	rte();
-		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + tmp -> offset);
 		fprintf(fp, "\tmov r8w, word [rax]\n");
@@ -317,11 +322,6 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	fprintf(fp, "\tcmp r8w, r11w\n");
 	fprintf(fp, "\tjg oob\n");
 
-	/* TODO: write this in assembly */
-	// if(idx < lft || idx > right) {
-	// 	rte();
-	// }
-	/* Move base address of array to r8x */
 	fprintf(fp, "\tmov rax, rbp\n");
 	fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
 	fprintf(fp, "\tmov rdx, qword [rax]\n");
@@ -405,9 +405,9 @@ void outputArrayElement(SymTableVar * id, int op) {
  * Emits code for copying rhs to lhs
  * If lhsOff is -1, left hand side is treated as an array and assumed
  * that rdx is base and r9 is offset, already emitted.
- * @param lshOff
- * @param rhsOff
- * @param type
+ * @param lshOff 	The offset of the temporary where we have to place the data
+ * @param rhsoff 	The offset of the temporary from where we have to fetch the data to be pushed
+ * @param type 		The dataType of the temporary value to be transferred.
  */ 
 void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 
@@ -463,6 +463,9 @@ void moveOffsetToOffset(int lhsOff, int rhsOff, astDataType type) {
 	fprintf(fp, "; --- END: moveOffsetToOffset(): lhsoff = %d, rhsoff = %d, type = %s ---\n", lhsOff, rhsOff, typeName[type]);
 }
 
+/** 
+ * It is used for basic if then else construct utility
+ */
 void if0else1() {
 	fprintf(fp, "; --- START: if0else1() --- \n");
 	fprintf(fp, "\tmov r8b, 0\n");
@@ -473,6 +476,12 @@ void if0else1() {
 	fprintf(fp, "; --- END: if0else1() --- \n");
 }
 
+/**
+ * @param type 		dataType of the temporary to be pushed onto stack
+ * @param par 		module whose activation record is to be populated with this temporary
+ * Pushes a temporary of the desired size (depending on dataType) onto the stack and 
+ * updates the activation record of the module
+ */
 void pushTemporary(astDataType type, SymTableFunc* par) {
 	fprintf(fp, "; --- START: pushTemporary(): type = %s ---\n", typeName[type]);
 	if(type == AST_TYPE_INT) {
@@ -526,6 +535,8 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	SymTableFunc * par = getParentFunc(operator -> parent -> localST);
 	operator -> parent -> nodeData.AOBExpr -> temporaryOffset = par -> dynamicRecSize;
 	par -> dynamicRecSize += typeSize[operator -> parent -> nodeData.AOBExpr -> dataType];
+
+	/* performs the required operations depending upon the tag of the operator fetched from AST node */
 
 	if(type == AST_TYPE_INT) {
 		fprintf(fp, "\tmov r8w, word [rax]\n");
@@ -727,6 +738,9 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type]);
 }
 
+/**
+ * Starts a local scope
+ */
 void scopeBegin() {
 	fprintf(fp, "; --- START: scopeBegin() --- \n");
 
@@ -739,6 +753,9 @@ void scopeBegin() {
 	fprintf(fp, "; --- END: scopeBegin() --- \n");
 }
 
+/**
+ * Ends a scope
+ */
 void scopeEnd() {
 
 	fprintf(fp, "; --- START: scopeEnd() --- \n");
@@ -752,6 +769,11 @@ void scopeEnd() {
 	fprintf(fp, "; --- END: scopeEnd() --- \n");
 }
 
+/**
+ * @param t			dataType of the variable to be taken as input
+ * @param idNode 	AST node of the id to be taken as input
+ * Asks the user for input and calls scanf
+ */
 void takeInput(astDataType t, SymTableVar * idNode) {
 
 	fprintf(fp, "; --- START: takeInput(): type: %s, Name: %s --- \n", typeName[t], idNode->name);
@@ -1030,9 +1052,9 @@ void giveOutput(ASTNode * curr) {
 
 void codegenInit() {
 	/*
-		init data section and code section
-		global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
-    */
+	 *	init data section and code section
+	 *	global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
+     */
 		   
 	fprintf(fp, "; --- START: init code and data --- \n");
 	fprintf(fp, "section .data\n");

@@ -31,17 +31,11 @@
 #define PRINT_LRDYN_ARR_DATA "%-22s%-*d - %-*d%-22s%-16s[%s, %s]%-*s%-20s\n"
 
  	
-
+/* 
+ * specifies the width(in bytes) corresponding to the dataType.
+ * Index: corresponding to the astDataType enum.
+ */
 int typeSize[] = {2, 4, 1, 8, 8};
-
-/* Doubts regarding the hash table implementation:
-	1. if item not there in table, does getDataFromTable return NULL.
-	2. make an array typeSize, after seeing the MASM doc. (done)
-	3. The st taken in the I/P of fetchVarData is same as localST
-	4. The list Type match.
-	5. Check the ast.c alone.
-	6. insertinputplist()
-*/ 
 
 int string_comp_id(void* data, void* list_ele);
 
@@ -49,6 +43,9 @@ SymbolTable getSymbolTable() {
 	return getHashTable();
 }
 
+/**
+ * @see symbolTable.h
+ */
 int lookupDependentVar(SymTableFunc * func, char* name) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {
@@ -59,6 +56,10 @@ int lookupDependentVar(SymTableFunc * func, char* name) {
 	return 0;
 }
 
+/**
+ * @see symbolTable.h
+ */
+/* Fetches record for a given local variable */
 SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 	SymTableVar* data = NULL;
 	while(func != NULL) {
@@ -76,22 +77,18 @@ SymTableVar * fetchVarData(SymTableFunc * func, char* name, int line_num) {
 			return data;
 		}
 		func = func -> parent;
-		/*q
-		
-		if(func == NULL) { [also note: I'm not getting NULL, I'm getting garbage]
-			findInList(input_plist);
-		}
-		*/
 	}
 	return data;
 }
 
 SymTableFunc * fetchFuncData(char* name) {
+	/* functions can only be declared in globalST unlike variables */
 	SymTableFunc* data = (SymTableFunc*) getDataFromTable(globalST, name, stringHash); //functions can only be declared in globalST unlike variables
 	return data;
 }
 
 SymTableFunc * getParentFunc(SymTableFunc * local) {
+	/* traversing back in outer scopes */
 	while(local -> parent != NULL)
 		local = local -> parent;
 	return local;
@@ -99,6 +96,7 @@ SymTableFunc * getParentFunc(SymTableFunc * local) {
 
 void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, astDataType dataType, SymDataType s, int line_num) {
 
+	/* allocating and assigning fields of a variable record */
 	SymTableVar* data = (SymTableVar*) malloc(sizeof(SymTableVar));
 	strcpy(data -> name, name);
 	data -> width = width;
@@ -109,13 +107,19 @@ void insertVarRecord(SymTableFunc * func, char* name, int width, int offset, ast
 	data -> table = func;
 	data -> declarationLine = line_num;
 
+	/* inserting the created record to the symbol table */
 	func -> dataTable = insertToTable(func -> dataTable, name, data, stringHash);
 }
 
 void addDataToFunction(SymTableFunc* funcData, char * fname, char* varName, astDataType varDataType, int line_num) {
 	
+	/* getting the record for the function entry in the global symbol table */
 	SymTableFunc * fun = fetchFuncData(fname);
 
+	/** 
+	 * If a record with given name already exists, report an error,
+	 * otherwise, insert it into the local Symbol Table
+	 */
 	if(getDataFromTable(funcData -> dataTable, varName, stringHash) == NULL) {
 		int offset = fun -> actRecSize;
 		int width = typeSize[varDataType];
