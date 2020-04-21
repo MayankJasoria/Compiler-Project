@@ -60,6 +60,11 @@ void traverseChildren(ASTNode * head, char * fname) {
 	}
 }
 
+/**
+* @param wh	ASTNode corresponding to while cond=struct
+* @param ch	ASTNode node corresponding to the while expression
+* It initializes the check for the assignment of the while expression variables in the while construct scope.
+*/ 
 void processWhileExpression(ASTNode * wh, ASTNode * ch) {
 
 	if(ch -> type == AST_NODE_LEAF)
@@ -76,6 +81,11 @@ void processWhileExpression(ASTNode * wh, ASTNode * ch) {
 	}
 }
 
+/**
+ * @param wh	ASTNode corresponding to while cond=struct
+ * @param ch	ASTNode node corresponding to the while expression
+ * It checks whether any of the variables(if any) in the while loop expression is assigned in the while scope or not.
+ */ 
 int checkWhileAssignment(ASTNode * wh, ASTNode * ch) {
 
 	if(ch -> type == AST_NODE_LEAF)
@@ -190,14 +200,7 @@ void boundChecking(SymTableVar * tmp, ASTNode * curr) {
 	}
 }
 
-/*
-typedef struct node {
-	void* data;
-	struct node* next;
-	struct node* prev;
-} Node;
-*/
-//head: plist Node, node: AST
+
 int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 	/* check if head or node is NULL */
 	if (head == NULL) {
@@ -234,14 +237,6 @@ int listTypeMatch(Node* head, ASTNode* node, SymTableFunc* localST) {
 
 			if(strcmp(tmp -> sdt.r -> highId, "") == 0 && strcmp(curr -> sdt.r -> highId, "") == 0 && (tmp -> sdt.r -> high != curr -> sdt.r -> high))
 				return 0;
-				// {
-				// if(strcmp(curr -> sdt.r -> lowId, "") == 0 && strcmp(curr -> sdt.r -> highId, "") == 0) {
-				// 	if(tmp -> sdt.r -> low != curr -> sdt.r -> low)
-				// 		return 0;
-				// 	if(tmp -> sdt.r -> high != curr -> sdt.r -> high)
-				// 		return 0;	
-				// }
-			// }
 		}
 		node = node -> child -> next;
 		head = head -> next;
@@ -313,20 +308,17 @@ void traverseAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_INPUTLIST: {
-			/* Verify: nothing to do*/
+			/* Nothing to do*/
 		}
 		break;
 
 		case AST_NODE_OUTPUTLIST: {
-			/* Verify: nothing to do*/
+			/* Nothing to do*/
 		}
 		break;
 
 		case AST_NODE_ARRAY: {
-			/**
-			* TODO: replace dataNode->type with:
-			*  dataNode->type_cat = AST_TYPE_CAT_PRIM / AST_TYPE_CAT_ARRAY
-			*/
+	
 			ASTNode* ch = curr -> child;
 			ch -> localST = curr -> localST;
 			traverseAST(ch, fname);
@@ -339,14 +331,18 @@ void traverseAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_RANGEARRAYS: {
-			ASTNode* ch1 = curr -> child;  //lower range
+			/* lower range */
+			ASTNode* ch1 = curr -> child;  
 			ch1 -> localST = curr -> localST;
 
 			/* Traversing important to validate index types allowed*/
 			traverseAST(ch1, fname);
+
 			/* Note whle debugging: ch->next changed to curr -> next -> child*/
-			ASTNode* ch2 = curr -> child -> next; //upper range
+			/* upper range */
+			ASTNode* ch2 = curr -> child -> next; 
 			ch2 -> localST = curr -> localST;
+
 			/* Traversing important to validate index types allowed*/
 			traverseAST(ch2, fname);
 			
@@ -813,7 +809,6 @@ void traverseAST(ASTNode* curr, char* fname) {
 						return;
 					}
 					ch2 -> localST = newST;
-					// ch2 -> nodeData.statement -> type = ch -> nodeData.leaf -> dataType;
 					traverseAST(ch2, fname);
 				}
 			}
@@ -1160,12 +1155,7 @@ void traverseAST(ASTNode* curr, char* fname) {
 						}
 						break;
 						case AST_NODE_ASSIGN: {
-							// SymTableVar* idx = fetchVarData(curr -> localST, str);
-							// if(idx == NULL) {
-							// 	"The variable to be assigned is not declared.\n");
-								return;
-							// }
-							/* No need */
+							return;
 						}
 						break;
 						case AST_NODE_MODULEREUSE: {
