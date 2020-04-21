@@ -250,8 +250,6 @@ typedef struct {
 } assignNode;
 
 typedef struct {
-	//delete
-	int a;
 
 	/* indicates the type check of the actual and formal parameters */
 	int listCheck;
@@ -272,8 +270,6 @@ typedef struct {
 
 typedef struct {
 	/* No particular field needed */
-	//delete
-	int a;
 } declareStmtNode;
 
 typedef struct {
@@ -291,9 +287,6 @@ typedef struct {
 } condStmtNode;
 
 typedef struct {
-
-	//delete
-	struct ASTNode* next; /* Points to next element of type caseStmtNode */
 	
 	/* Label number of the break statement to jump to */
 	int breakLabel;
@@ -312,8 +305,6 @@ typedef struct {
 } caseStmtNode;
 
 typedef struct {
-	//delete
-	int a;
 
 	/* Stores the temporary offset during sub-expression evaluation */
 	int temporaryOffset;
@@ -323,8 +314,6 @@ typedef struct {
 } unaryNode;
 
 typedef struct {
-	//delete
-	int a;
 
 	/* Enum value which stores the data type of sub-expression */
 	astDataType dataType;
@@ -340,17 +329,6 @@ typedef struct {
 	/* End line number of the scope of for loop */
 	int end_line_num;
 } iterStmtNode;
-
-//delete
-typedef struct {
-	int a;
-	
-} forNode;
-
-//delete
-typedef struct {
-	
-} whileNode;
 
 typedef struct {
 	/* Indicates the bound check in case of array type variable */
@@ -370,8 +348,6 @@ typedef struct {
 	/* Enum value which stores the data type of sub-expression */
 	astDataType dataType;
 
-	//delete
-	int a;
 } varidnumNode;
 
 typedef struct {
@@ -477,7 +453,6 @@ typedef enum {
 	/* Specifies the symbol table entry is for a function which holds the pointer to its local symbol table */
 	SYM_FUNCTION,
 
-	//delete
 	SYM_OTHER   /* Ex: If Else Construct */
 } SymTableType;
 
@@ -611,9 +586,8 @@ typedef struct symTableVar {
 	/* Additional paremeter used */
 	int whileNest;
 
-	//delete
+	/* Line number on which the corresponding variable was declared in current scope */
 	int declarationLine;
-
 	
 	/* Datatype of variable -> INT, RNUM, BOOL, ARRAY */
 	astDataType dataType;

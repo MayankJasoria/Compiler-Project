@@ -16,14 +16,15 @@
 #include "codeGenDef.h"
 
 /**
-* @param fname 	Name of the file to contain the .asm code
-* It opens the file and initializes the file pointer for the assembly code file.
-*/
+ * @param fname Name of the file to contain the .asm code
+ * It opens the file and initializes the file pointer for the assembly code file.
+ */
 void emitCodeInit(const char* fname) {
     /* Open fname */
     fp = fopen(fname, "w");
 }
 
+/* Pushes the registers on the stack */
 void pushRegs() {
 	fprintf(fp, "\tpush r10\n");
 	fprintf(fp, "\tpush r11\n");
@@ -35,6 +36,7 @@ void pushRegs() {
 	fprintf(fp, "\tpush rax\n");
 }
 
+/* Pops the registers from the stack */
 void popRegs() {
 	fprintf(fp, "\tpop rax\n");
 	fprintf(fp, "\tpop r9\n");
@@ -46,6 +48,10 @@ void popRegs() {
 	fprintf(fp, "\tpop r10\n");
 }
 
+/**
+ * It aligns the 'rsp' register to the nearest 16 bytes boundary 
+ * for calling extern scanf and printf
+ */
 void alignStack() {
 
 	pushRegs();
@@ -56,12 +62,20 @@ void alignStack() {
 	fprintf(fp, "; --- END: ALIGN STACK ---\n");
 }
 
+/* Restore back the 'rsp' after calling printf and scanf */
 void getBackStack() {
 
 	fprintf(fp, "\tmov rsp, qword [rspreserve]\n");
 	popRegs();
 }
 
+/**
+ * Calls the exit to console interrupt and restore back the stack pointer to the original address
+ * And contains labels for the various runtime issues to be handled
+ * Out of Bounds Error
+ * Type Mismatch for Dynamic Arrays.
+ * Divide by 0 error.
+ */
 void emitCodeFinalize() {
 
 	fprintf(fp, "rte:\n");
@@ -120,6 +134,11 @@ void emitCodeFinalize() {
 	}
 }
 
+/**
+ * @param head		pointer to the current ASTNode 
+ * @param fname		name of the module
+ * It calls emitCodeAST for the siblings of head.
+ */
 void emitCodeChildren(ASTNode * head, char * fname) {
 	
     ASTNode* ch = head;
@@ -129,11 +148,19 @@ void emitCodeChildren(ASTNode * head, char * fname) {
     }
 }
 
+/**
+ * @param str: The string to be added as a comment to the asm file
+ * Add comments to the ASM file.	
+ */
 void asmComment(char * str) {
 
 	fprintf(fp, "\n; ### %s ### \n", str);
 }
 
+/**
+ * @param curr: Points to the ASTNode corresponding to the Conditional Statement construct.
+ * Fetches the last label used by the cases of the construct.
+ */
 int getLastCaseLabel(ASTNode * curr) {
 
 	ASTNode * tmp = curr -> child -> next;
@@ -143,18 +170,10 @@ int getLastCaseLabel(ASTNode * curr) {
 	return tmp -> nodeData.caseStmt -> lastLabel;
 }
 
-// void rte(char * str, int line_num) {
-
-// 	fprintf(fp, "\tpush rbp\n");
-// 	fprintf(fp, "\tmov rdi, %s\n", str);
-// 	fprintf(fp, "\tmov si, %dd\n", line_num);
-// 	alignStack();
-// 	fprintf(fp, "\tcall printf\n");
-// 	getBackStack();
-// 	fprintf(fp, "\tpop rbp\n");
-// 	fprintf(fp, "\tjmp rte\n");
-// }
-
+/**
+ * @param idNode
+ * Fetches the offset of the identifier in the current activation record.
+ */ 
 int getIDOffset(ASTNode * idNode) {
 	SymTableVar * tmp = fetchVarData(idNode -> parent -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 	return tmp -> offset;
@@ -175,8 +194,8 @@ int getExprOffset(ASTNode * expr) {
 }
 
 /**
- * Populates  	r10w : left index
- * 				r11w : right index 
+ * Populates  	r10w : left index of the array
+ * 				r11w : right index of the array
  */
 void getLeftRightIndex(SymTableVar * id) { 
 	
@@ -233,6 +252,10 @@ void getLeftRightIndex(SymTableVar * id) {
 	fprintf(fp, "; --- END: got left and right index of %s in r10w and r11w --- \n", id->name);
 }
 
+/**
+ * @param t: datatype
+ * It scans the input of datatype t.
+ */
 void getInputElement(astDataType t) {
 	fprintf(fp, "; START: --- getInputElement() ---\n");
 	
@@ -282,9 +305,6 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	else {
 		/* index is of type ID */
 		SymTableVar * tmp = fetchVarData(arr -> parent -> localST, i -> nodeData.leaf -> tn -> lex, i -> nodeData.leaf -> tn -> line_num);
-		// if(tmp -> isAssigned == 0) {
-		// 	rte();
-		// }
 		fprintf(fp, "\tmov rax, rbp\n");
 		fprintf(fp, "\tsub rax, %dd\n", typeSize[AST_TYPE_INT] + tmp -> offset);
 		fprintf(fp, "\tmov r8w, word [rax]\n");
@@ -296,10 +316,6 @@ void fetchArraybyIndex(ASTNode * arr, ASTNode * index) {
 	fprintf(fp, "\tcmp r8w, r11w\n");
 	fprintf(fp, "\tjg oob\n");
 
-	/* TODO: write this in assembly */
-	// if(idx < lft || idx > right) {
-	// 	rte();
-	// }
 	/* Move base address of array to r8x */
 	fprintf(fp, "\tmov rax, rbp\n");
 	fprintf(fp, "\tsub rax, %dd\n", offset + typeSize[AST_TYPE_POINTER]);
@@ -487,11 +503,10 @@ void pushTemporary(astDataType type, SymTableFunc* par) {
  * Floating point operations source: https://gist.github.com/nikAizuddin/0e307cac142792dcdeba
  *	cmp    eax, 0000000000000000B ;is st0 > source ?
  *  je     .example_11_greater
-    cmp    eax, 0000000100000000B ;is st0 < source ?
-    je     .example_11_less
-    cmp    eax, 0100000000000000B ;is st0 = source ?
-    je     .example_11_equal
-
+ *  cmp    eax, 0000000100000000B ;is st0 < source ?
+ *  je     .example_11_less
+ *  cmp    eax, 0100000000000000B ;is st0 = source ?
+ *  je     .example_11_equal
  */
 void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type) {
 
@@ -706,6 +721,9 @@ void applyOperator(int leftOp, int rightOp, ASTNode * operator, astDataType type
 	fprintf(fp, "; --- START: applyOperator(): leftOp: %d, rightOp: %d, operator: %s, type: %s --- \n", leftOp, rightOp, operator->nodeData.leaf->tn->lex, typeName[type]);
 }
 
+/**
+ * Starts a local scope
+ */
 void scopeBegin() {
 	fprintf(fp, "; --- START: scopeBegin() --- \n");
 
@@ -718,6 +736,9 @@ void scopeBegin() {
 	fprintf(fp, "; --- END: scopeBegin() --- \n");
 }
 
+/**
+ * Ends a scope
+ */
 void scopeEnd() {
 
 	fprintf(fp, "; --- START: scopeEnd() --- \n");
@@ -731,6 +752,10 @@ void scopeEnd() {
 	fprintf(fp, "; --- END: scopeEnd() --- \n");
 }
 
+/**
+ * @param t		
+ * @param idNode
+ */
 void takeInput(astDataType t, SymTableVar * idNode) {
 
 	fprintf(fp, "; --- START: takeInput(): type: %s, Name: %s --- \n", typeName[t], idNode->name);
@@ -778,10 +803,6 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 		case AST_TYPE_ARRAY: {
 			
 			getLeftRightIndex(idNode);
-			/* TODO write it in register format */
-			// if(lft > right) {
-			// 	rte();
-			// }
 			astDataType type = idNode -> sdt.r -> dataType;
 
 			fprintf(fp, "\n; --- Asking for user input for Array ---\n");
@@ -842,7 +863,6 @@ void takeInput(astDataType t, SymTableVar * idNode) {
 			fprintf(fp, "\tdec rcx\n");
 			fprintf(fp, "\tcmp rcx, 0x0\n");
 			fprintf(fp, "\tjnz label_%d\n", label_num - 1);
-			// fprintf(fp, "\tpop rbp\n");
 		}
 		break;
 	}
@@ -926,9 +946,6 @@ void giveOutput(ASTNode * curr) {
 		ASTNode * idNode = ch -> child;
 		SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
 		if(id -> dataType != AST_TYPE_ARRAY) {
-			// if(id -> isAssigned == 0) {
-			// 	rte();
-			// }
 			fprintf(fp, "\tmov r9, %dd\n", (id -> offset) + typeSize[id -> dataType]);
 			fprintf(fp, "\tmov rdx, rbp\n");
 			outputArrayElement(id, 0);
@@ -936,9 +953,7 @@ void giveOutput(ASTNode * curr) {
 		}
 
 		getLeftRightIndex(id);
-		// if(lft > right) {
-		// 	rte();
-		// }
+		
 		astDataType type = id -> sdt.r -> dataType;
 
 		if(idNode -> next == NULL) {
@@ -1008,10 +1023,10 @@ void giveOutput(ASTNode * curr) {
 }
 
 void codegenInit() {
-	/*
-		init data section and code section
-		global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
-    */
+	/**
+	 * init data section and code section
+	 * global main ;NOTE: In case you are linking with ld, use _start. Use main when linking with gcc
+     */
 		   
 	fprintf(fp, "; --- START: init code and data --- \n");
 	fprintf(fp, "section .data\n");
@@ -1090,7 +1105,6 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tmovsx rax, word [dynamic]\n");
 				fprintf(fp, "\tadd rsp, rax\n");
 				fprintf(fp, "\tadd rsp, %dd\n", driver -> actRecSize);
-				// rte();
 				fprintf(fp, "\tret\n");
 				asmComment("End of driver function.");
 			}
@@ -1117,29 +1131,28 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 		break;
 
 		case AST_NODE_INPUTLIST: {
-			/* Verify: nothing to do*/
+			/* Nothing to do*/
 		}
 		break;
 
 		case AST_NODE_OUTPUTLIST: {
-			/* Verify: nothing to do */
+			/* Nothing to do */
 		}
 		break;
 
 		case AST_NODE_ARRAY: {
-			/* nothing required */
+			/* Nothing required */
 		}
 		break;
 
 		case AST_NODE_RANGEARRAYS: {
-			/* nothing required */
+			/* Nothing required */
 		}
 		break;
 
 		case AST_NODE_STATEMENT: {
 			ASTNode* ch = curr -> child;
 			emitCodeChildren(ch, fname);
-			/* Todo: if end stament of moduledef fprinf ret*/
 		}
 		break;
 
@@ -1211,7 +1224,6 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				astDataType type = tmp -> dataType;
 				moveOffsetToOffset(lhsOff, rhsOff, type);
 			}
-			// fprintf(fp, "\tadd rsp, %dd\n", curr -> localST -> dynamicRecSize);
 			curr -> localST -> dynamicRecSize = 0;
 		}
 		break;
@@ -1229,7 +1241,6 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			fprintf(fp, "\tsub rsp, 8\n");
 			fprintf(fp, "\tmov qword [rsp], rbp\n");
 			
-			// fprintf(fp, "\tpush rbp\n");
 			fprintf(fp, "\tmov rbp, rsp\n");
 
 			/* Actual parameters */
@@ -1250,10 +1261,9 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				ASTNode * idNode = inParam -> child;
 				/* Fetch current ID from symbol table */
 				SymTableVar * id = fetchVarData(curr -> localST, idNode -> nodeData.leaf -> tn -> lex, idNode -> nodeData.leaf -> tn -> line_num);
-				// if(id -> isAssigned == 0)
-				// 	rte();
+				
 				fprintf(fp, "\tmov rcx, qword [rbp]\n");
-				// fprintf(fp, "\tmov rcx, [rax]\n");
+
 				fprintf(fp, "\tsub rcx, %dd\n", typeSize[id -> dataType] + id -> offset);
 				inputSize += typeSize[id -> dataType];
 				if(id -> dataType == AST_TYPE_ARRAY)
@@ -1262,17 +1272,14 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tsub rsp, %dd\n", typeSize[id -> dataType]);
 				if(id -> dataType == AST_TYPE_INT) {
 					fprintf(fp, "\tmov ax, word [rcx]\n");
-					// fprintf(fp, "\tpush ax\n");
 					fprintf(fp, "\tmov word [rsp], ax\n");
 				}
 				if(id -> dataType == AST_TYPE_REAL) {
 					fprintf(fp, "\tmov eax, dword [rcx]\n");
-					// fprintf(fp, "\tpush eax\n");
 					fprintf(fp, "\tmov dword [rsp], eax\n");
 				}
 				if(id -> dataType == AST_TYPE_BOOLEAN) {
 					fprintf(fp, "\tmov al, byte [rcx]\n");
-					// fprintf(fp, "\tpush al\n");
 					fprintf(fp, "\tmov byte [rsp], al\n");
 				}
 				if(id -> dataType == AST_TYPE_ARRAY) {
@@ -1282,23 +1289,19 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 					fprintf(fp, "\tmov rbp, r9\n");
 					fprintf(fp, "\tmov rax, qword [rcx]\n");
 
-					// fprintf(fp, "\tpush rax\n");
 					fprintf(fp, "\tmov qword [rsp], rax\n");
 					
 					SymTableVar * recievedParam = (SymTableVar*) (head -> data);
 					fprintf(fp, "mov rsi, %dd\n", ch -> nodeData.leaf -> tn -> line_num);
 
 					if(strcmp(recievedParam -> sdt.r -> lowId, "") == 0) {
-						// getLeftRightIndex(recievedParam);
 						fprintf(fp, "mov r8w, %dd\n", recievedParam -> sdt.r -> low);
 						fprintf(fp, "cmp r8w, r10w\n");
 						fprintf(fp, "jnz param\n");	
 					}
 
 					if(strcmp(recievedParam -> sdt.r -> highId, "") == 0) {
-						// getLeftRightIndex(recievedParam);
 						fprintf(fp, "mov r8w, %dd\n", recievedParam -> sdt.r -> high);
-						// getLeftRightIndex(id);
 						fprintf(fp, "cmp r8w, r11w\n");
 						fprintf(fp, "jnz param\n");	
 					}
@@ -1445,11 +1448,10 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 			
 			fprintf(fp, "label_%d:\n", tmp);
 			scopeEnd();
-			/* Check: defualt will automatically be handled(statements) */
+			/* Default will automatically be handled(statements) */
 		}
 		break;
 		
-		/* todo: complete it */
 		case AST_NODE_CASESTMT: {
 			ASTNode * ch = curr -> child;
 			SymTableVar * switchvar = fetchVarData(curr -> localST, curr -> localST -> dependentVar, curr -> localST -> start_line_num);
@@ -1464,8 +1466,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				fprintf(fp, "\tcmp ax, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
 				int nextcase = label_num - 1;
-				// fprintf(fp, "label_%d:\n", label_num - 2);
-				
+
 				emitCodeAST(ch -> next, fname);
 				
 				fprintf(fp, "\tjmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
@@ -1486,9 +1487,7 @@ void emitCodeAST(ASTNode* curr, char* fname) {
 				int val = (ch -> nodeData.leaf -> tn -> sym.T == TRUE);
 				fprintf(fp, "\tcmp al, %dd\n", val);
 				fprintf(fp, "\tjnz label_%d\n", label_num++);
-				int nextcase = label_num - 1;
-				// fprintf(fp, "label_%d:\n", label_num - 2);
-				
+				int nextcase = label_num - 1;				
 				emitCodeAST(ch -> next, fname);
 				
 				fprintf(fp, "jmp label_%d\n", curr -> nodeData.caseStmt -> breakLabel);
