@@ -67,4 +67,12 @@ static inline int getASTnumNodes() {
     return numASTnodes;
 }
 
+/**
+ * Resets all AST counters
+ */
+static inline void resetASTCounts() {
+    ASTSize = 0;
+    numASTnodes = 0;
+}
+
 #endif

@@ -112,6 +112,10 @@ int main(int argc, char* argv[]) {
 				PT = NULL;
 				root = NULL;
 				globalST = NULL;
+				resetParseTreeCounts();
+				resetASTCounts();
+				destroyError();
+				
 				if(PT == NULL) {
 					/* generate parse tree */
 					parseInputSourceCode(argv[1]);
@@ -140,6 +144,13 @@ int main(int argc, char* argv[]) {
 				 * number of nodes to each of parse tree and abstract syntax 
 				 * tree for the test case used. 
 				 */
+				PT = NULL;
+				root = NULL;
+				globalST = NULL;
+				resetParseTreeCounts();
+				resetASTCounts();
+				destroyError();
+
 				if(PT == NULL) {
 					// generate parse tree
 					parseInputSourceCode(argv[1]);
@@ -186,6 +197,13 @@ int main(int argc, char* argv[]) {
 				 * type integer as 2, of real as 4 and of boolean as 1 for printing 
 				 * the symbol table]
 				 */
+				PT = NULL;
+				root = NULL;
+				globalST = NULL;
+				resetParseTreeCounts();
+				resetASTCounts();
+				destroyError();
+
 				if(PT == NULL) {
 					parseInputSourceCode(argv[1]);
 				}
@@ -198,9 +216,6 @@ int main(int argc, char* argv[]) {
 					root = constructAST(NULL, NULL, PT);
 				}
 				
-				/**
-				 * TODO: find a way to ensure no errors are reported here
-				 */
 				if(globalST == NULL) {
 					destroyError();
 					globalST = getSymbolTable();
@@ -220,6 +235,13 @@ int main(int argc, char* argv[]) {
 				 * of all variables in the function scope) for each function.
 				 */
 				
+				PT = NULL;
+				root = NULL;
+				globalST = NULL;
+				resetParseTreeCounts();
+				resetASTCounts();
+				destroyError();
+
 				if(PT == NULL) {
 					parseInputSourceCode(argv[1]);
 				}
@@ -250,6 +272,13 @@ int main(int argc, char* argv[]) {
 				 * Static and dynamic arrays: Printing the type expressions and 
 				 * width of array variables in a line for a test case
 				 */
+				PT = NULL;
+				root = NULL;
+				globalST = NULL;
+				resetParseTreeCounts();
+				resetASTCounts();
+				destroyError();
+
 				if(PT == NULL) {
 					parseInputSourceCode(argv[1]);
 				}
@@ -286,6 +315,8 @@ int main(int argc, char* argv[]) {
 				PT = NULL;
 				root = NULL;
 				globalST = NULL;
+				resetParseTreeCounts();
+				resetASTCounts();
 				destroyError();
 				
 				/* initialize timer */

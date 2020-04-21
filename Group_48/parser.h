@@ -61,4 +61,11 @@ static inline int getParseTreeNumNodes() {
     return numNodes;
 }
 
+/**
+ * Resets the count of number of parse tree nodes
+ */
+static inline void resetParseTreeCounts() {
+    numNodes = 0;
+}
+
 #endif
