@@ -1,30 +1,60 @@
-delcare module add;
+declare module add;
 
 <<module swap>>
-takes input[A: array [m..n] of real, m: real, start:integer, end:integer];
+takes input[A: array [m..n] of real, m: real, st:integer, en:integer];
 returns [b:boolean];
 start
 	declare i:integer;
-	i := start;
-	while(i <= end)
+	i := st;
+	while(i <= en)
 	start
 		declare tmp:real;
 		tmp := A[i];
 		[tmp] := use module add with parameters tmp, m;
 		A[i] := tmp;
+		i := i + 1;
 	end
+	b := i <= en;
 end
 
-<<module swap>>
+<<module add>>
 takes input[tmp: real, m: real];
 returns [r:real];
 start
 	r := tmp + m;
 end
 
+<<<driver program>>>
+start
+	** use swap once and the functions below once **
+	declare m, n: integer;
+	get_value(m);
+	get_value(n);
+	declare A: array[m..n] of real;
+	get_value(A);
+	declare d: boolean;
+	declare x: real;
+	get_value(x);
+	[d] := use module swap with parameters A, x, m, n;
+	print(A);
+	print(d);
+end
 
 
-
-
-
-
+**
+Input: Enter an Integer Value
+5
+Input: Enter an Integer Value
+10
+Input: Enter 6 array elements of Real Number type for range 5 to 10
+3.45
+1.90
+9.12
+9021.1
+-904.123
+1.23
+Input: Enter an Real Number Value
+2.0
+Output: 5.450000 3.900000 11.120000 9023.099609 -902.122986 3.230000
+Output: false
+**
