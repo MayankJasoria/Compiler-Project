@@ -1,0 +1,43 @@
+<<module lol>>
+takes input[ B: array[1..4] of integer, C:array[low..high] of integer];
+returns [sum1: boolean, sum2: integer, sum3: real];
+start
+	sum1 := true;
+	sum3 := -(7.1);
+	sum2 := -(2+7);
+end
+
+<<<driver program>>>
+start
+	**declare s1, s2, s3, s4: boolean;**
+	declare s1: boolean;
+	declare s2: integer;
+	declare s3: real;
+	get_value(s1);
+	get_value(s2);
+
+	declare A: array[1..4] of integer;
+	declare B: array[1..4] of integer;
+	declare tmp: array[1..4] of integer;
+
+	**get_value(A);
+	get_value(B);
+
+	tmp := A;
+	A := B;
+	B := tmp;
+
+	print(A);
+	print(B);
+	print(tmp);
+
+
+	tmp := tmp;
+
+	print(tmp);**
+
+	[s1, s2, s3]:= use module lol with parameters A, B;
+	print(s1);
+	print(s2);
+	print(s3);
+end

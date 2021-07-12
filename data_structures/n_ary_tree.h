@@ -1,24 +1,16 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #ifndef _N_ARY_TREE
 #define _N_ARY_TREE
 
 #include "../utils/utils.h"
+#include "../parserDef.h"
+#include "../lexerDef.h"
 
-typedef struct treeElement {
-	stackElement* token;
-	char lex[25];
-	int depth;
-	int id;
-} TreeElement;
-
-typedef struct treeNode {
-	TreeElement data;
-	struct treeNode* parent;
-	struct treeNode* prev;
-	struct treeNode* next;
-	struct treeNode* child;
-} TreeNode;
-
-typedef TreeNode* Tree;
 
 
 /**
@@ -27,7 +19,7 @@ typedef TreeNode* Tree;
  * 
  * @return new tree
  */
-Tree getTree(TreeElement data);
+Tree getTree(stackElement * s);
 
 /**
  * Inserts a new child to a given node of the tree
@@ -36,9 +28,9 @@ Tree getTree(TreeElement data);
  * 
  * @return updated tree
  */
-Tree insertChild(Tree node, TreeElement data);
+// Tree insertChild(Tree node, rhsNode * ch);
 
-// 
+// Tree insertChildList(Tree node, List children)
 
 /**
  * Inserts a list of children (present in linked list rhsNode)
@@ -47,8 +39,8 @@ Tree insertChild(Tree node, TreeElement data);
  * @param children	The list of children to be added
  * 
  * @return updated tree
- */
-Tree insertChildList(Tree node, List children);
+ */ 
+Tree insertChildren(Tree node, rhsNode* children);
 
 // Tree findElement(Tree root, TreeElement data);
 
@@ -57,5 +49,7 @@ Tree insertChildList(Tree node, List children);
 //  * @param root The root node of the tree to be printed
 //  */
 // void printTree(Tree root);
+
+int numNodes;
 
 #endif

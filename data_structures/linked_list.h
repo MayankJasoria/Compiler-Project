@@ -1,6 +1,13 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #ifndef _LINKED_LIST
 #define _LINKED_LIST
 #include "../utils/utils.h"
+#include <stdio.h>
 
 typedef struct node {
     void* data;
@@ -56,14 +63,15 @@ List insertToList(List list, void* data, position dir);
  */
 List deleteByNode(List list, Node* element);
 
-// /**
-//  * Returns the address of an element in list
-//  * @param list  The list to be searched
-//  * @param data  The data to be found in the list
-//  * 
-//  * @return Node address of the data; NULL if not found
-//  */
-// Node* findInList(List list, void* data);
+/**
+ * Returns the address of an element in list
+ * @param list  The list to be searched
+ * @param data  The data to be found in the list
+ * @param comp  Comparator for comparing required data with data in list
+ * 
+ * @return Node address of the data; NULL if not found
+ */
+void* findInList(List list, void* data, int (*comp)(void *, void *));
 
 /**
  * Completely destroys a list, freeing all associated memory
@@ -77,6 +85,6 @@ void destroyList(List list);
  * @param list  		The list to be printed
  * @param printElement 	Function to print an element of the given list
  */
-void printList(List list, void (*printElement)(void* data));
+void printList(List list, void (*printElement)(void*));
 
 #endif

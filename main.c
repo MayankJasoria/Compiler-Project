@@ -1,3 +1,10 @@
+/*  GROUP 48:
+	PUNEET ANAND    2016B4A70487P
+	MAYANK JASORIA  2016B1A70703P
+	SHUBHAM TIWARI  2016B4A70935P
+	VIBHAV OSWAL    2016B4A70594P */
+
+
 #include "lexer.h"
 #include "lexerDef.h"
 #include <stdio.h>
@@ -7,9 +14,8 @@
 #include <math.h>
 #include <time.h>
 #include "data_structures/stack.h"
-#include "data_structures/hash_map.h"
 
-void printList(List ll) {
+void printList1(List ll) {
 	Node* curr = ll->head;
 	while(curr != NULL) {
 		printf("[ %d ] --> ", *((int*)(curr->data)));
@@ -28,31 +34,37 @@ void printListReverse(List ll) {
 	printf("\n");
 }
 
-void hash_table_test(HashTable hashtable, char* key) {
-	if (isPresent(hashtable, key, stringHash)) {
-		printf("%s is a keyword\n", (char *)key);
-	} else {
-		printf("%s is not a keyword\n", (char *)key);
-	}
-}
-
 int main() {
 	lexerinit();
 	FILE * fp = fopen("prog.eg", "r");
-	if(fp == NULL) {
-		printf("Error opening file\n");
-		return 0;
+	int i = 1;
+	token * tok;
+	while(1) {
+		tok = getNextToken(fp);
+		if(tok -> id == 57)
+			break;
+		else {
+			printf("Token Sequence: %d Token id:%d Token Lexeme: %s %d\n", i + 1, tok -> id, tok -> lex, tok -> line_num);
+			i++;
+		}
 	}
-	while(endofLexer == 0) {
-		fp = getStream(fp);
-	}
-	//printf("%d\n", hash("driver"));
-	//printf("%d\n", hash_table[hash("driver")]);
-	int i;
-	for(i = 0; i < ntokens; i++)
-		printf("Token Sequence: %d Token id:%d Token Lexeme: %s\n", i + 1, tokenStream[i] -> id, tokenStream[i] -> lex);
+
+
+
+
+	// if(fp == NULL) {
+	// 	printf("Error opening file\n");
+	// 	return 0;
+	// }
+	// while(endofLexer == 0) {
+	// 	fp = getStream(fp);
+	// }
+	// int i;
+	// printf("%d\n", line_num);
+	// for(i = 0; i < ntokens; i++)
+	// 	printf("Token Sequence: %d Token id:%d Token Lexeme: %s %d\n", i + 1, tokenStream[i] -> id, tokenStream[i] -> lex, tokenStream[i] -> line_num);
 	printf("Total number of token generated: %d\n", ntokens);
-	removeComments("prog.eg", "clean.eg");
+	// removeComments("prog.eg", "clean.eg");
 
 	// Testing Linked List
 	// List ll = getList();
@@ -109,37 +121,4 @@ int main() {
 	// printf("new Top: %d\n", *((int*)top(st)));
 
 	// popMany(st, 39);
-
-	HashTable hashtable = getHashTable();
-
-	// srand(time(0));
-
-	// for (int i=0; i < 34567; i++) {
-	// 	int *key = malloc(sizeof(int));
-	// 	*key = rand();
-	// 	hashtable = insertToTable(hashtable, key, key, numberHash);
-	// 	//free(key);
-	// }
-
-	srand(time(0));
-
-	for (int i=0; i < 32; i++) {
-		char* key = malloc(strlen(keywordList[i]));
-		strcpy(key, keywordList[i]);
-		int *data = malloc(sizeof(int));
-		*data = rand();
-		hashtable = insertToTable(hashtable, key, data, stringHash);
-	}
-
-	// for (int i=0; i<32; i++) {
-	// 	printf("")
-	// }
-
-	hash_table_test(hashtable, "hey");
-	hash_table_test(hashtable, "delete");
-	hash_table_test(hashtable, "module");
-	hash_table_test(hashtable, "print");
-	hash_table_test(hashtable, "use");
-	hash_table_test(hashtable, "why");
-
 }

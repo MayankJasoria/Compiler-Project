@@ -1,0 +1,26 @@
+<<module something>>
+takes input [a: integer, b: integer, a: integer];
+returns [c: real, b: boolean, a: real, b: integer];
+start
+	a := 2.75;
+	a := a + 3.2;
+	c := a/3.6 * 4.1;
+	b := true;
+end
+
+<<<driver program>>>
+start
+	declare a: integer;
+	declare c: real;
+	declare b: boolean;
+	declare q: real;
+	declare p1, p2, p3: integer;
+	get_value(p1);
+	get_value(p2);
+	get_value(p3);
+	[c, b, q, a] := use module something with parameters p1, p2, p3;
+	print(c);
+	print(b);
+	print(q);
+	print(a);
+end

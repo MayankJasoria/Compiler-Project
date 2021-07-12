@@ -1,0 +1,128 @@
+<<module lol>>
+takes input[ B: boolean, C: integer];
+returns [sum1: boolean, sum2: integer, sum3: real];
+start
+	sum1 := true;
+	sum3 := 3.99;
+	sum3 := -(2.0*sum3);
+	sum2 := +(2+7);
+end
+
+<<<driver program>>>
+start
+	declare a, b, c: integer;
+	declare x, y, z: boolean;
+	declare q: real;
+	get_value(a);
+	get_value(b);
+	get_value(c);
+	get_value(x);
+	get_value(y);
+	get_value(z);
+	switch(a)
+	start
+		case 1: ** testing of 'nested' switch **
+			switch(x)
+			start
+				case true:
+					print(a);
+					break;
+				case false:
+					print(b);
+					break;
+			end
+			break;
+		case 2: ** Testing of for loop **
+			for(b in 2..7)
+			start
+				c := c + b;
+				print(c);
+				switch(y)
+				start
+					case true:
+						print(y);
+						print(b);
+						break;
+					case false:
+						print(y);
+						break;
+				end
+			end
+			break;
+		case 3: ** Testing for while loop **
+			while(a + b - c > 0)
+			start
+				c := c + 2;
+				switch(z)
+				start
+					case true:
+						print(z);
+						declare p: integer;
+						p := a + b - c;
+						print(p);
+						break;
+					case false:
+						print(z);
+						declare q: integer;
+						q := a + b - c;
+						print(q);
+						break;
+				end
+			end
+			break;
+
+		case 4: **Testing nested module reuse**
+			switch(x)
+			start
+				case true:
+					switch(y)
+					start 
+						case true:
+							print(b);
+							break;
+						case false:
+							print(c);				
+							break;
+					end
+					break;
+				case false:
+					switch(b)
+					start
+						case 1:
+							print(true);
+							break;
+						case 0:
+							print(false);
+							break;
+						default:
+							[x, b, q] := use module lol with parameters z, a;
+							print(q);
+							print(x);
+							print(b);
+							declare q:boolean;
+							q := true;
+							print(q);
+							break;
+					end
+					break;
+			end
+			break;
+
+		default: ** Testing for dynamic arrays **
+			declare A: array[a..b] of real;
+			declare B: array[b..c] of integer;
+			declare c: boolean;
+			get_value(A);
+			get_value(B);
+			get_value(c);
+			print(A);
+			declare i: integer;
+			for(i in 1..4)
+			start
+				declare z: integer;
+				z := a + i;
+				print(A[z]);
+			end
+			break;
+	end
+end

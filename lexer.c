@@ -1,4 +1,9 @@
-
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #include "lexer.h"
 #include "lexerDef.h"
 #include "data_structures/hash_map.h"
@@ -32,8 +37,8 @@ char * keywordList[] = {
 		"takes",
 		"input",
 		"returns",
-		"and",
-		"or",
+		"AND",
+		"OR",
 		"for",
 		"in",
 		"switch",
@@ -44,71 +49,59 @@ char * keywordList[] = {
 		"\0"
 	};
 
-// void insertkey (int idx, char * str, int en) {
-// 	keyNode * prev = NULL, * curr = NULL;
+void insertkey (int idx, char * str, int en) {
+	keyNode * prev = NULL, * curr = NULL;
 	
-// 	/* initializing the new Node to be inserted */
-// 	keyNode * new = (keyNode *)malloc(sizeof(keyNode));
-// 	strcpy(new -> str, str);
-// 	new -> next = NULL;
-// 	new -> id = en;
+	/* initializing the new Node to be inserted */
+	keyNode * new = (keyNode *)malloc(sizeof(keyNode));
+	strcpy(new -> str, str);
+	new -> next = NULL;
+	new -> id = en;
 
-// 	curr = keys[idx].head;
+	curr = keys[idx].head;
 	
-// 	if(keys[idx].count == 0) {
-// 		keys[idx].head = new;
-// 		keys[idx].count++;
-// 		return;
-// 	}
+	if(keys[idx].count == 0) {
+		keys[idx].head = new;
+		keys[idx].count++;
+		return;
+	}
 	
-// 	while(curr != NULL) {
-// 		prev = curr;
-// 		curr = curr -> next;
-// 	}
-// 	prev -> next = new;
-// 	keys[idx].count++;
-// }
+	while(curr != NULL) {
+		prev = curr;
+		curr = curr -> next;
+	}
+	prev -> next = new;
+	keys[idx].count++;
+}
 
-// keyNode * keyLookup(int idx, char * str) {
+keyNode * keyLookup(int idx, char * str) {
 
-// 	keyNode * curr = keys[idx].head;
-// 	while(curr != NULL) {
-// 		if(strcmp(curr -> str, str) == 0)
-// 			break;
-// 		curr = curr -> next;
-// 	}
-// 	return curr;
-// }
+	keyNode * curr = keys[idx].head;
+	while(curr != NULL) {
+		if(strcmp(curr -> str, str) == 0)
+			break;
+		curr = curr -> next;
+	}
+	return curr;
+}
 
-// int hash(const char *str)
-// {
-// 	unsigned long hash = 5381;
-// 	int c;
-// 	while (c = *str++)
-// 		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+int hash(const char *str)
+{
+	unsigned long hash = 5381;
+	int c;
+	while (c = *str++)
+		hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-// 	return hash % HASH_TABLE_SIZE;
-// }
+	return hash % HASH_TABLE_SIZE;
+}
 
 void hashTableinit() {
-	// int i;
-	// for(i = 0; i < HASH_TABLE_SIZE; i++) 
-	// 	hash_table[i] = -1;
-	// for(i = 1; i <= num_keywords; i++) {
-	// 	int key = hash(keywordList[i]);
-	// 	insertkey(key, keywordList[i], i);
-	// 	// hash_table[key] = i;
-	// }
-
-	/* --- New table --- */
-	hashtable = getHashTable();
-	int keyword_size = sizeof(keywordList)/sizeof(keywordList[0]) - 1;
-	for (int i=0; i < keyword_size; i++) {
-		char* key = malloc(strlen(keywordList[i]));
-		strcpy(key, keywordList[i]);
-		int *data = malloc(sizeof(int));
-		*data = i;
-		hashtable = insertToTable(hashtable, key, data, stringHash);
+	int i;
+	for(i = 0; i < HASH_TABLE_SIZE; i++) 
+		hash_table[i] = -1;
+	for(i = 1; i <= num_keywords; i++) {
+		int key = hash(keywordList[i]);
+		insertkey(key, keywordList[i], i);
 	}
 	/* ------------------*/
 }
@@ -116,36 +109,26 @@ void hashTableinit() {
 int checkIdentifier(char * str) {
 	if(strlen(str) > 20)
 		return -1;
-	// int key = hash(str);
-	// keyNode * k = keyLookup(key, str);
-	// if(keyLookup(key, str) == NULL)
-	// 	return 0;
-	// // if(strcmp(keywordList[hash_table[key]], str))
-	// // 	return 0;
-	// return k -> id;
-
-	/* New hash */
-	if (isPresent(hashtable, str, stringHash)) { 
-		// hashElement* ele = (hashElement *)getDataFromTable(hashtable, str, stringHash);
-		// return *((int *)(ele->data));
-		return *((int *)getDataFromTable(hashtable, str, stringHash)); 
-	} else {
+	int key = hash(str);
+	keyNode * k = keyLookup(key, str);
+	if(keyLookup(key, str) == NULL)
 		return 0;
-	}
-	/*---------*/
+	return k -> id;
 }
 
 void lexerinit() {
 	printf("Lexical Analysis is being initialized\n");
 	state = 1;
-	num_keywords = 29;
+	num_keywords = sizeof(keywordList)/sizeof(keywordList[0]) - 1;
+	// printf("%d\n", num_keywords);
 	hashTableinit();
 	endofLexer = 0;
 	lexeme[0] = '\0';
 	streamBuffer[0] = '\0';
-	chunk_size = 30;
 	tokenStream_cap = 4;
 	line_num = 1;
+	buffer_id = 0;
+	ntokens = 0;
 	tokenStream = (token **)malloc(tokenStream_cap * (sizeof(token *)));
 }
 
@@ -163,13 +146,15 @@ token * makeNewToken(int id) {
 		t -> val.val_int = val;
 	}
 	else if(id == 53) {
-		val = atof(lexeme);
+		t -> val.val_float = atof(lexeme);
 		t -> is_float = 1;
-		(t -> val).val_float = val;
 	}
-	(t -> val).val_float = -1;
-	if(id != -1)
+	// (t -> val).val_float = -1;
+	if(id != 57) {
 		lexeme[0] = '\0';
+		ntokens++;
+	}
+	state = 1;
 	return t;
 }
 
@@ -189,15 +174,16 @@ void retract(int num) {
 
 void error() {
 	errorInst * e = makeNewError(line_num, lexeme);
-	/* To do: should we store errors or just print? */
-	printf("Lexical Error: '%s' on line %d\n", lexeme, line_num);
+	// printf(KRED "\nLexical Error: " KNRM "stray " KCYN "'%s'" KNRM " on line " KMAG "%d\n" KNRM, lexeme, line_num);
+	printf("Line number (%d): lexical error -- stray '%s'\n\n", line_num, lexeme);
 	lexeme[0] = '\0';
 	state = 1;
 }
 
 
 void idlengthError() {
-	printf("Lexical Error: '%s' (length of the identifier exceeded) on line %d\n", lexeme, line_num);
+	// printf(KRED "Lexical Error: " KCYN "'%s'" KNRM "(max. length of the identifier exceeded) on line " KMAG "%d\n\n" KNRM, lexeme, line_num);
+	printf("Line number (%d): lexical error -- maximum length of identifier exceeded for '%s'\n\n", line_num, lexeme);
 	lexeme[0] = '\0';
 	state = 1;
 }
@@ -210,12 +196,35 @@ void ctoa(char ch) {
 	strcat(lexeme, tmp);
 }
 
-token * getNextToken() {
+token * getNextToken(FILE * fp) {
+
+	/* Check if the fp is valid. Ideally, this check should be performed in parseInputSourceCode(),
+		in parser.c, however due to design of the main program (which sometimes uses this function as the entry 
+		point), this check had to be kept here) */
+	if (!fp) {
+		printf("Error: source file could not be opened, exiting...\n");
+
+		/* Exiting right away, since there is no point returning to the main menu */
+		exit(0); 
+	}
+
 	char ch, nxt;
 	token * newtok;
+	int flag = 0;
 	while(1) {
-		if((buffer_id == strlen(streamBuffer)))
+		if(flag == 1 && state == 1)
 			break;
+		if((buffer_id == strlen(streamBuffer)) && flag == 0) {
+			fp = getStream(fp);
+			if(strlen(lexeme) == strlen(streamBuffer)) {
+				char tmp[3];
+				tmp[2] = '\0';
+				tmp[1] = '#';
+				tmp[0] = '#';
+				strcat(streamBuffer, tmp);
+				flag = 1;
+			}
+		}
 		switch(state) { 
 			/* To Do : DRIVERDEF, DRIVERENDDEF */
 			case 1: 
@@ -295,6 +304,12 @@ token * getNextToken() {
 				else if(ch == '*') {
 					state = 42;
 					strcat(lexeme, "*");
+				}
+				else if(ch == '#') {
+					flag = 1;
+					break;
+				} else if(ch == '\r') {
+					// do nothing
 				}
 				else {	
 					error();
@@ -406,8 +421,6 @@ token * getNextToken() {
 				}
 				buffer_id++;
 				break;
-				// newtok = makeNewToken(41);
-				// return newtok;
 			case 20:
 				newtok = makeNewToken(36);
 				return newtok;
@@ -443,8 +456,6 @@ token * getNextToken() {
 				}
 				buffer_id++;
 				break;
-				// newtok = makeNewToken(42);
-				// return newtok;
 			case 24:
 				newtok = makeNewToken(37);
 				return newtok;
@@ -627,9 +638,10 @@ token * getNextToken() {
 			case 45:
 				line_num++;
 				nxt = streamBuffer[buffer_id];
-				if(nxt != '\n')
+				if(nxt == '*') 
+					state = 46;
+				else if(nxt != '\n')
 					state = 44; 
-				// To DO: what if we reach end of chunk here.
 				buffer_id++;
 				break;
 			case 46:
@@ -662,96 +674,88 @@ token * getNextToken() {
 				return newtok;
 		}
 	}
-	token * tok = makeNewToken(-1);
+	token * tok = makeNewToken(57);
 	return tok;
 }
 
 FILE * getStream(FILE * fp) {
 
 	/* read about fread() from : http://www.cplusplus.com/reference/cstdio/fread/ */
-	char tmpBuffer[50];
+	char tmpBuffer[2*chunk_size];
 	size_t bytes_read = fread (tmpBuffer, sizeof(char), chunk_size, fp);
-	printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);
+	// printf("Loaded a block from the source code file of size: %zu bytes\n", bytes_read);f
+	streamBuffer[0] = '\0';
 	strcpy(streamBuffer, lexeme);
 	tmpBuffer[bytes_read] = '\0';
 	buffer_id = strlen(lexeme);
 	if(bytes_read > 0)
 		strcat(streamBuffer, tmpBuffer);
-	else if(bytes_read == 0) {
-		char tmp[3];
-		tmp[2] = '\0';
-		tmp[1] = 4;
-		tmp[0] = 4;
-		strcat(streamBuffer, tmp);
-	}
-	
-	/* Since EOF is not a character, concatinating a char(4), so that any transitions which have 'others' do their transition */
-	if(strlen(streamBuffer) <= 1) {
-		endofLexer = 1;
-		return fp;
-	}/* to do: check this */
-
-	while(1) {
-		token * tok = getNextToken();
-		if(tok -> id == -1)
-			break;
-		else {
-			if(ntokens >= tokenStream_cap) {
-				tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-				tokenStream_cap *= 2;
-			}
-			tokenStream[ntokens] = tok;
-			ntokens++;
-		}
-		state = 1;
-		lexeme[0] = '\0';
-		if(streamBuffer[buffer_id] == 4) {
-			endofLexer = 1;
-			break;
-		}
-	}
 	return fp;
 }
 
-void removeComments(char *testcaseFile, char *cleanFile) {
+void removeComments(char *testcaseFile) {
 	FILE * test = fopen(testcaseFile, "r");
-	FILE * clean = fopen(cleanFile, "w");
 
+	/* Check if the fp is valid. Ideally, this check should be performed in parseInputSourceCode(),
+		in parser.c, however due to design of the main program (which sometimes uses this function as the entry 
+		point), this check had to be kept here) */
+	if (!test) {
+		printf("Error: source file '%s' could not be opened, exiting...\n", testcaseFile);
+
+		/* Exiting right away, since there is no point returning to the main menu */
+		exit(0); 
+	}
+	
+
+	int lineno = 1;
 	char ch;
-	boolean commentOn = False;
-	boolean end1 = False;
-	boolean start1 = False;
+	int commentOn = 0;
+	int end1 = 0;
+	int start1 = 0;
+	int linePrinted = 0;
 	while((ch = fgetc(test)) != EOF) {
+		if(!linePrinted) {
+			printf("%d  ", lineno);
+			linePrinted = true;
+		}
 		if(commentOn) {
-			if(ch == '\n')
-				fputc(ch, clean);
+			if(ch == '\n') {
+				putchar(ch);
+				// putc(ch, clean);
+				lineno++;
+				linePrinted = False;
+			}
 			else if(ch == '*' && end1) {
-				end1 = False;
-				commentOn = False;
+				end1 = 0;
+				commentOn = 0;
 			} 
 			else if(ch != '*' && end1) {
-				end1 = False;
+				end1 = 0;
 			}
 			else if(ch == '*')
-				end1 = True;
+				end1 = 1;
 		}
 		else {
 			if(ch == '*' && start1) {
-				start1 = False;
-				commentOn = True;
+				start1 = 0;
+				commentOn = 1;
 			}
 			else if(ch == '*') {
-				start1 = True;
+				start1 = 1;
 			}
 			else if(ch != '*' && start1) {
-				fputc('*', clean);
-				fputc(ch, clean);
-				start1 = False;
+				putchar('*');
+				putchar(ch);
+				start1 = 0;
 			}
-			else
-				fputc(ch, clean);
+			else {
+				putchar(ch);
+				if(ch == '\n') {
+					lineno++;
+					linePrinted = False;
+				}
+			}
 		}
 	}
 	fclose(test);
-	fclose(clean);
 }

@@ -1,3 +1,9 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #include <stdio.h>
 #include <stdlib.h>
 #include "linked_list.h"
@@ -11,7 +17,7 @@ List getList() {
 
 List insertToList(List list, void* data, position dir) {
 	if(list == NULL) {
-		printf("The given list was undefined. Created a new list\n");
+		// printf("The given list was undefined. Created a new list\n");
 		list = getList();
 	}
 	/* Defining new node to be inserted */
@@ -24,7 +30,8 @@ List insertToList(List list, void* data, position dir) {
 		newNode -> next = NULL;
 		newNode -> prev = NULL;
 		return list;
-	} if(dir == FRONT) {
+	}
+	if(dir == FRONT) {
 		/* Insert at beginning of list */
 		newNode->next = list->head;
 		newNode->prev = NULL;
@@ -38,7 +45,7 @@ List insertToList(List list, void* data, position dir) {
 		list->end = newNode;
 	} else {
 		/* Some unknown type of position has been entered */
-		fprintf(stderr,"Error: Unknown Direction\n");
+		// fprintf(stderr,"Error: Unknown Direction\n");
 	}
 	return list;
 }
@@ -88,11 +95,11 @@ List insertToList(List list, void* data, position dir) {
 
 List deleteByNode(List list, Node* element) {
 	if(element == NULL) {
-		fprintf(stderr,"Element does not exist\n");
+		// fprintf(stderr,"Element does not exist\n");
 		return list;
 	}
 	if(list->head == NULL) {
-		fprintf(stderr,"List is empty\n");
+		// fprintf(stderr,"List is empty\n");
 		return list;
 	}
 	if(element->prev == NULL) {
@@ -118,16 +125,16 @@ List deleteByNode(List list, Node* element) {
 	return list;
 }
 
-// Node* findInList(List list, void* data) {
-// 	Node* curr = list->head;
-// 	while(curr != NULL) {
-// 		if(curr->data == data) {
-// 			break;
-// 		}
-// 		curr = curr->next;
-// 	}
-// 	return curr;
-// }
+void* findInList(List list, void* data, int (*comp)(void *, void *)) {
+	Node* curr = list->head;
+	while(curr != NULL) {
+		if(comp(data, curr->data)) {
+			break;
+		}
+		curr = curr->next;
+	}
+	return (curr != NULL) ? curr->data : NULL;
+}
 
 void destroyList(List list) {
 	/* traverse from end of list */
@@ -153,10 +160,10 @@ void printList(List list, void (*printElement)(void* data)) {
 
 	Node* curr = list->head;
 	while(curr != NULL) {
-		printf("{");
+		// printf("{");
 		printElement(curr->data);
-		printf("} --> ");
+		// printf("} --> ");
 		curr = curr->next;
 	}
-	printf("NULL\n");
+	// printf("NULL\n");
 }

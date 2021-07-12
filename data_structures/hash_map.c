@@ -1,3 +1,9 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +14,8 @@ boolean initialized = False;
 
 HashTable getHashTable() {
 	/* Creating a Hash Table */
-	HashTable table = (HashTable) malloc(sizeof(List)*HASH_TABLE_SIZE);
-	for(int i = 0; i < HASH_TABLE_SIZE; i++) {
+	HashTable table = (HashTable) malloc(sizeof(List)*HASH_MAP_SIZE);
+	for(int i = 0; i < HASH_MAP_SIZE; i++) {
 		/* Initializing all hash cells to NULL */
 		table[i] = NULL;
 	}
@@ -40,7 +46,8 @@ HashTable insertToTable(HashTable table, void* key, void* data, int (*hash)(void
 
 	/* Create a new entry for hash table */
 	hashElement* elem = (hashElement*) malloc(sizeof(hashElement));
-	elem->key = key;
+	elem->key = malloc(sizeof(char) * 40);
+	strcpy((char*)elem->key, (char*) key);
 	elem->data = data;
 
 	/* Insert the entry to the table */
@@ -74,7 +81,7 @@ void* getDataFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	Node* hashNode = checkKeyInList(table, key, idx);
 
 	if(hashNode != NULL) {
-		return ((hashElement *)(hashNode->data))->data;
+		return ((hashElement *)hashNode->data)->data;
 	}
 
 	/* key not found */
@@ -100,7 +107,6 @@ HashTable removeFromTable(HashTable table, void* key, int (*hash)(void *)) {
 	return table;
 }
 
-
 /**
  * Credits: djb2 hash function from Dan Bernstein -> http://www.cse.yorku.ca/~oz/hash.html
  */
@@ -125,16 +131,16 @@ int numberHash(void *y) {
     return x % HASH_TABLE_SIZE;
 }
 
-/**
- * Print the hash table for debugging purposes 
- */  
 
+/**
+ * Prints the 'valid entries' of hash table for debugging purposes 
+ */  
 void printHashTable(HashTable hashtable, void (*printHash)(void* data)) {
 	for (int i=0; i < HASH_TABLE_SIZE; i++) {
-		if(hashtable[i] == NULL) {
-			printf("[NULL]\n");
-		} else {
-			printf("[%d] --> ", i);
+		if(hashtable[i] != NULL) {
+		// 	printf("[NULL]\n");
+		// } else {
+			// printf("[%d] --> ", i);
 			printList(hashtable[i], printHash);
 		}
 	}

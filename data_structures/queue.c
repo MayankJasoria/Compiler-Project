@@ -1,3 +1,9 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,14 +33,14 @@ void* frontElement(Queue queue) {
 		fprintf(stderr, "The given queue is empty\n");
 		return NULL;
 	}
-	return queue->head;
+	return queue->head->data;
 }
 
 void* backElement(Queue queue) {
 	if(queue == NULL || queue->end == NULL) {
 		fprintf(stderr, "The given queue is empty\n");
 	}
-	return queue->end;
+	return queue->end->data;
 }
 
 boolean isQueueEmpty(Queue queue) {
@@ -42,13 +48,4 @@ boolean isQueueEmpty(Queue queue) {
 		return True;
 	}
 	return False;
-}
-
-void printQueue(Queue q, void (*printElement)(void* data)) {
-    if(q == NULL) {
-        fprintf(stderr, "The given queue is empty\n");
-        return;
-    }
-    printf("Front of queue -> ");
-    printList(q, printElement);
 }

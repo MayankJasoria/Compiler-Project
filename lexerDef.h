@@ -1,11 +1,19 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #ifndef _LEXERDEF
 #define _LEXERDEF
 
-#include "utils/utils.h"
-#include "data_structures/hash_map.h"
+// #include "utils/utils.h"
 
 #define NUM_KEYWORDS 30
 
+#define HASH_TABLE_SIZE 200
+
+#define chunk_size 255
 
 int num_keywords;
 
@@ -29,39 +37,39 @@ typedef struct {
 	int line_num;
 } errorInst;
 
-// struct keyNode {
-// 	char str[25];
-// 	int id;
-// 	struct keyNode * next;
-// };
+struct keyNode {
+	char str[25];
+	int id;
+	struct keyNode * next;
+};
 
-// typedef struct keyNode keyNode;
+typedef struct keyNode keyNode;
 
-// typedef struct {
-// 	keyNode * head;
-// 	int count;
-// } keyTable[HASH_TABLE_SIZE];
+typedef struct {
+	keyNode * head;
+	int count;
+} keyTable[HASH_TABLE_SIZE];
 
-// keyTable keys;
+keyTable keys;
 
-// /* hash_table to store the keyworkds */
-// int hash_table[HASH_TABLE_SIZE];
+/* hash_table to store the keyworkds */
+int hash_table[HASH_TABLE_SIZE];
 
 /* line_num will store the instantaneous line number position of the lexer */
 int line_num;
 
 /* chunk_size is the size of code loaded in the memory bt getStream() */
-int chunk_size;
+// int chunk_size;
 
 /* 
 	size of these arrays hardcoded. Take Care.
 */
 
 /* streamBuffer stores the part of code loaded by getStream() */
-char streamBuffer[100];
+char streamBuffer[2*chunk_size];
 
 /* lexeme maintains the current lexeme whilw the dfa traversal */
-char lexeme[100];
+char lexeme[2*chunk_size];
 
 /* state maintains the current state of the dfa */
 int state;

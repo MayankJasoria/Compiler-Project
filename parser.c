@@ -1,5 +1,22 @@
-
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #include "parserDef.h"
+
+#define ull unsigned long long int
+
+// void sdsd(void* data) {
+// 	stackElement * tmp = data;
+// 	// printf("%d %s %s",stackElement->tag, terminals[stackElement->sym.T], nonterminals[stackElement->sym.NT]);
+// 	if(tmp->tag == T) {
+// 		printf("%d %s", tmp->tag, terminals[tmp->sym.T]);	
+// 	} else {
+// 		printf("%d %s", tmp->tag,` nonterminals[tmp->sym.T]);
+// 	}
+// }
 
 char * nonterminals[] = { 
 			"program",
@@ -10,9 +27,9 @@ char * nonterminals[] = {
 			"module",
 			"ret",
 			"input_plist",
-			"input_plistNew",
+			"n1",
 			"output_plist",
-			"output_plistNew",
+			"n2",
 			"type",
 			"dataType",
 			"moduleDef",
@@ -26,30 +43,39 @@ char * nonterminals[] = {
 			"moduleReuseStmt",
 			"optional",
 			"idList",
-			"idListNew",
+			"n3",
 			"expression",
-			"arithOrBoolExpr",
-			"arithOrBoolExprNew",
-			"relopExpr",
-			"relopExprNew",
+			"arithmeticOrBooleanExpr",
+			"n7",
+			"anyTerm",
+			"n8",
 			"arithmeticExpr",	
-			"arithmeticExprNew",
+			"n4",
 			"term",
-			"termNew",
+			"n5",
 			"factor",
 			"var",
-			"pm",
-			"md",
+			"op1",
+			"op2",
 			"logicalOp",
 			"relationalOp",
 			"declareStmt",
 			"condionalStmt",
 			"caseStmts",
-			"caseStmtsNew",
+			"n9",
 			"value",
 			"default",
 			"iterativeStmt",
-			"range"
+			"range",
+			"range_arrays",
+			"boolConstt",
+			"var_id_num",
+			"whichStmt",
+			"lvalueIDStmt",
+			"lvalueARRStmt",
+			"u",
+			"unary_op",
+			"new_NT"
 		};
 	
 	char * terminals[] = {
@@ -113,6 +139,8 @@ char * nonterminals[] = {
 			"DOLLAR"
 		};
 
+terminal delim[] = {SEMICOL, END, ENDDEF, DRIVERENDDEF, BC, SQBC, DOLLAR, COMMA, COLON};
+
 void insertElement (int idx, char * str, typeOfSymbol t, int en) {
 	hashNode * prev = NULL, * curr = NULL;
 	
@@ -158,12 +186,12 @@ hashNode * hashLookup(int idx, char * str) {
 void populateHashTable() {
 
 	int i;
-	for(i = 0; i < 48; i++) {
+	for(i = 0; i < NUM_NONTERM; i++) {
 		int idx = hash(nonterminals[i]);
 		insertElement(idx, nonterminals[i], NT, i);
 	}
 
-	for(i = 0; i < 58; i++) {
+	for(i = 0; i < NUM_TERM; i++) {
 		int idx = hash(terminals[i]);
 		insertElement(idx, terminals[i], T, i);
 	}
@@ -194,14 +222,14 @@ void populateGrammar(char * filename) {
 	int lhs = 1;
 	int grammar_id = 0;
 	while(fgets(str, 200, fp) != NULL) {
-		char * tok = strtok(str, " \t\n");
+		char * tok = strtok(str, " \t\n\r");
 		int idx = hash(tok);
 		hashNode * lookup = hashLookup(idx, tok);
 		G[grammar_id].left = (lookup -> sym).NT;
 		rhsNode * prev = (rhsNode *)malloc(sizeof(rhsNode));
 		prev = NULL;
 		while(tok != NULL) {
-			tok = strtok(NULL, " \t\n");
+			tok = strtok(NULL, " \t\n\r");
 			if(tok == NULL)
 				break;
 			if(strcmp(tok, "|") == 0) {
@@ -336,6 +364,8 @@ void ComputeFirstAndFollowSets() {
 	int i = 0;
 	for(i = 0; i < NUM_NONTERM; i++) {
 		firstSet(i);
+	}
+	for(i = 0; i < NUM_NONTERM; i++) {
 		followSet(i);
 		F[i].firstset = first[i];
 		F[i].followset = follow[i];
@@ -355,7 +385,7 @@ void createParseTable() {
 			parseTable[i][j] = -1;
 	for(i = 0; i < num_rules; i++) {
 		nonterminal left = G[i].left;
-		unsigned long long int first_set = firstFollow(G[i].head); //F[left].firstset;
+		unsigned long long int first_set = firstFollow(G[i].head); 
 		unsigned long long int follow_set = F[left].followset;
 		for(j = 1; j < NUM_TERM; j++) {
 			if(findinSet(first_set, j))
@@ -370,55 +400,89 @@ void createParseTable() {
 	}
 }
 
-void syntaxError(int * lookAhead, Stack S) {
+token * syntaxError(token * tok, Stack *S, FILE * fp) {
 
-	token * tok = tokenStream[*lookAhead];
-	stackElement * st = top(S);
-	printf("Syntactic Error on line %d:", tok -> line_num);
+	syntacticallyCorrect = False;
+	stackElement * st = top(*S);
+	// printf(KRED "Syntax Error " KNRM "on line " KMAG "%d" KNRM ": \n", tok -> line_num);
+	printf("Line number (%d): syntax error ", line_num);
+	int num_delim = sizeof(delim)/sizeof(delim[0]);
+	terminal del;
+	int i;
+	boolean miss = False;
 	if(st -> tag == T) {
-		printf("Expecting %s\n", terminals[(st -> sym).T]);
+		printf(KYEL "-- missing ");
+		miss = true;
 	}
-	else {
-		printf("%sNoooo\n", nonterminals[(st -> sym).NT]);
-		unsigned long long int fs = F[st -> sym.NT].firstset;
-		int i;
-		printf("Expected ");
-		for(i = 1; i < NUM_TERM; i++) {
-			if(findinSet(fs, i) == 1) {
-				printf("%s ", terminals[i]);
-			}
+	while(st -> tag == T) {
+		if(st -> sym.T == tok -> id) {
+			printf("\n");
+			return tok;
 		}
-		printf("\n");
+		printf(KCYN " '%s'" KNRM, terminals[st -> sym.T]);
+		st -> tn -> tok = tok;
+		*S = pop(*S);
+		if(numElementsInStack(*S) == 0)
+			return tok;
+		st = top(*S);
+	}
+	if(miss) {
+		printf(" ");
 	}
 
-	/* moving the lookahead pointer until the next (SEMICOL/DOLLAR) */
-	while(*lookAhead < ntokens) {
-		tok = tokenStream[*lookAhead];
-		*lookAhead = *lookAhead + 1;
-		if(tok -> id == SEMICOL || tok -> id == DOLLAR)
-			break;
-	}
+	ull follow_set = F[st -> sym.NT].followset;
+	ull first_set = F[st -> sym.NT].firstset;
 
-	/* popping the stack until:
-	We pop out 1 SEMICOL/DOLLAR */
-	while(numElementsInStack(S) > 0) {
-		stackElement * tp = top(S);
-		S = pop(S);
-		if(tp -> tag == T && tp -> sym.T == SEMICOL)
+	boolean unexp = False;
+	while(tok -> id != 57) {
+		if((findinSet(follow_set, tok -> id))) {
+			*S = pop(*S);
+			printf(" ");
+			printf(KYEL "-- expected one of: ");
+			for(i = 0; i < NUM_TERM; i++) {
+				if(findinSet(first_set, i)) {
+					printf(KCYN "'%s' " KNRM, terminals[i]);
+				}
+			}
+			printf("\n");
+			return tok;
 			break;
-		else if(tp -> tag == T && tp -> sym.T == DOLLAR)
+		}
+		if(findinSet(first_set, tok -> id)) {
+			printf("\n");
+			return tok;
+		}
+		else {
+			if(!unexp) {
+				printf(KYEL "-- unexpected ");
+				unexp = True;
+			}
+			printf(KCYN "'%s' " KNRM, tok->lex);
+		}
+		tok = getNextToken(fp);
+		if(tok -> id == DOLLAR) {
+			*S = pop(*S);
 			break;
+		}
 	}
+	printf("\n");
+	return tok;
 }
 
 void parseInputSourceCode(char *testcaseFile) {
 	
 	/* Fetching the tokens from the lexer by reading blocks from the source code file */
 	FILE * fp = fopen(testcaseFile, "r");
-	lexerinit();
-	while(endofLexer == 0) {
-		fp = getStream(fp);
+
+	/* Check if the fp is valid */
+	if (!fp) {
+		printf("Error: source file '%s' could not be opened, exiting...\n", testcaseFile);
+
+		/* Exiting right away, since there is no point returning to the main menu */
+		exit(0); 
 	}
+	lexerinit();
+	
 	Stack S = getStack();
 
 	/* pushing Dollar and <program> onto the stack */
@@ -434,39 +498,56 @@ void parseInputSourceCode(char *testcaseFile) {
 	S = push(S, s);
 	PT = (treeNode *)getTree(s);
 
-	/* pushing DOLLAR at the end of the token Stream. */
-	if(ntokens >= tokenStream_cap) {
-		tokenStream = realloc(tokenStream, 2*tokenStream_cap*sizeof(token *));
-		tokenStream_cap *= 2;
-	}
-	token * endToken = makeNewToken(57);
-	tokenStream[ntokens] = endToken;
-	ntokens++;
-
-	/* declaring the lookAhead pointer */
-	int lookAhead = 0;
-	while(lookAhead <= ntokens) {
-		if(numElementsInStack(S) == 0) {
-			printf("Parsing Complete\n");
+	token * nextToken = getNextToken(fp);
+	while(numElementsInStack(S) > 0) {
+		if(numElementsInStack(S) == 1 && syntacticallyCorrect) {
+			printf(KGRN "Input source code is syntactically correct.\n" KNRM);
 			break;
 		}
+	
 		stackElement * Top = top(S);
-		token * nextToken = tokenStream[lookAhead];
 		terminal t = nextToken -> id;
+		// printf("%s\n", terminals[t]);
 		// printf("%s\n", terminals[t]);
 		if(Top -> tag == T) {
 			if(t == (Top -> sym).T) {
-				lookAhead++;
+				if(Top -> sym.T == DOLLAR) {
+					if(syntacticallyCorrect) {
+						printf(KGRN "Input source code is syntactically correct.\n" KNRM);
+						break;
+					} 
+					else {
+						printf(KRED "Compilation ended with errors.\n" KNRM);
+						break;
+						// error
+					}
+				}
+				Top -> tn -> tok = nextToken;
+				Top -> tn -> line_num = nextToken -> line_num;
+				if(Top -> sym.T == 54) {
+					strcpy(Top -> tn -> lex, nextToken -> lex); 
+				}
+				else if(Top -> sym.T == 52) {
+					Top -> tn -> value.val_int = nextToken -> val.val_int;
+				}
+				else if(Top -> sym.T == 53) {
+					Top -> tn -> value.val_float = nextToken -> val.val_float;
+				}
+				nextToken = getNextToken(fp);
 				if(numElementsInStack(S) > 0)
 					// printf("%s\n", terminals[((stackElement *)top(S)) -> sym.T]);
 					S = pop(S);
 			}
 			else {
-				syntaxError(&lookAhead, S);
+				nextToken = syntaxError(nextToken, &S, fp);
+				if(nextToken -> id == DOLLAR && numElementsInStack(S) > 1) {
+					printf(KRED "Compilation ended with errors.\n" KNRM);
+					break;
+				}
+				printf("\n");
 			}
 		}
 		else {
-
 			unsigned long long int first_set = F[(Top -> sym).NT].firstset;
 			unsigned long long int follow_set = F[(Top -> sym).NT].followset;
 			
@@ -474,30 +555,18 @@ void parseInputSourceCode(char *testcaseFile) {
 			
 			if(parseTableVal >= 0) {
 				rhsNode * node = G[parseTableVal].head;
-				printf("%s --> ", nonterminals[(Top -> sym).NT]);
-
-				// if(node -> sym.NT == 55) {
-				// 	printf("I got caught\n");
-				// }
-
-				if(node -> sym.T > 60 && node -> sym.NT > 60) {
-					printf("caught %d %d\n", parseTableVal, lookAhead);
-					return;
-				}
 				insertChildren(Top -> tn, node);
 				treeNode * ch = Top -> tn -> child;
+				Top -> tn -> rule_num = parseTableVal;
 				S = pop(S);
 				while(ch -> next != NULL) {
-					// tmp = push(tmp, node);
-					if(ch -> tag == T)
-						printf("%s\t", terminals[ch -> sym.T]);
-					else
-						printf("%s\t", nonterminals[ch -> sym.NT]);
-					// node = node -> next;
-					// if(ch -> next != NULL)
 						ch = ch -> next;
 				}
-				printf("\n");
+				// if(ch -> tag == T)
+				// 	printf("%s\t", terminals[ch -> sym.T]);
+				// else
+				// 	printf("%s\t", nonterminals[ch -> sym.NT]);
+				// printf("\n");
 				while(ch != NULL) {
 					stackElement * new = (stackElement *)malloc(sizeof(stackElement));
 					new -> sym = ch -> sym;
@@ -509,30 +578,172 @@ void parseInputSourceCode(char *testcaseFile) {
 					}
 					S = push(S, new);
 				}
-				// while(node = top(tmp)) {
-				// 	stackElement * new = (stackElement *)malloc(sizeof(stackElement));
-				// 	new -> sym = node -> sym;
-				// 	new -> tag = node -> tag;
-				// 	new -> tn = ch;
-				// 	ch = ch -> prev;
-				// 	tmp = pop(tmp);
-
-				// 	if((new -> tag == T)&&(new -> sym.T == 0)) {
-				// 		continue;
-				// 	}
-				// 	S = push(S, new);
-				// 	/** Remember : after popping from stack the memory get deallocated **/
-				// }
+				/* Remember : after popping from stack the memory get deallocated */
 			}
 			else {
-				syntaxError(&lookAhead, S);
+				nextToken = syntaxError(nextToken, &S, fp);
+				if(nextToken -> id == DOLLAR && numElementsInStack(S) > 1) {
+					printf(KRED "Compilation ended with errors.\n" KNRM);
+						break;
+				}
+				printf("\n");
 			}
 		}
 	}
 }
 
+void inorder(Tree root) {
+
+	if(root -> tag == T) {
+		
+		char * tokName;
+		if(root -> sym.T == 0)
+			tokName = "EMPTY";
+		else
+			tokName = terminals[root -> tok -> id];
+		char isleaf = (root -> isLeaf)?'y':'n';
+		char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
+		if (root->line_num != -1) {
+			if(root -> tag == T && root -> sym.T == 52) {
+				printf(PRINT_FORMAT_BODY2,root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else if(root -> tag == T && root -> sym.T == 53) {
+				printf(PRINT_FORMAT_BODY3,root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else {
+				printf(PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);	
+			}
+		} else {
+
+			char *line_num = "----";
+			if(root -> tag == T && root -> sym.T == 52) {
+				printf(PRINT_FORMAT_BODY2_LINE_STR, root -> lex, line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else if(root -> tag == T && root -> sym.T == 53) {
+				printf(PRINT_FORMAT_BODY3_LINE_STR, root -> lex, line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else {
+				printf(PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);	
+			}
+
+		}
+		return;
+	}
+	treeNode * t = root -> child;
+	if(t == NULL) {
+		char * tokName;
+		
+		tokName = "----";
+		char isleaf = (root -> isLeaf)?'y':'n';
+		char * s = nonterminals[root -> sym.NT];
+		if (root->line_num != -1) {
+			if(root -> tag == T && root -> sym.T == 52) {
+				printf(PRINT_FORMAT_BODY2,root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else if(root -> tag == T && root -> sym.T == 53) {
+				printf(PRINT_FORMAT_BODY3,root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else {
+				printf(PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);	
+			}
+		} else {
+
+			char *line_num = "----";
+
+			if(root -> tag == T && root -> sym.T == 52) {
+				printf(PRINT_FORMAT_BODY2_LINE_STR,root -> lex, line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else if(root -> tag == T && root -> sym.T == 53) {
+				printf(PRINT_FORMAT_BODY3_LINE_STR,root -> lex, line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+			}
+			else {
+				printf(PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);	
+			}
+		}
+		return;
+	}
+	int i = 0;
+	while(t != NULL) {
+		inorder(t);
+		if(i == 0) {
+
+			char * tokName = (root -> tag == T)?terminals[root -> tok -> id]:"----";
+			char isleaf = (root -> isLeaf)?'y':'n';
+			char * s = (root -> tag == T)?terminals[root -> sym.T]:nonterminals[root -> sym.NT];
+			if (root->line_num != -1) {
+				if(root -> tag == T && root -> sym.T == 52) {
+				printf(PRINT_FORMAT_BODY2, root -> lex, root -> line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+				}
+				else if(root -> tag == T && root -> sym.T == 53) {
+					printf(PRINT_FORMAT_BODY3, root -> lex, root -> line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+							, isleaf, s, root->rule_num);
+				}
+				else if(root -> tag == NT && root -> sym.NT == 0) {
+					printf(PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", "[ROOT]"
+							, isleaf, s, root->rule_num);	
+				}
+				else {
+					printf(PRINT_FORMAT_BODY1, root -> lex, root -> line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+							, isleaf, s, root->rule_num);	
+				}
+			} else {
+				char *line_num = "----";
+
+				if(root -> tag == T && root -> sym.T == 52) {
+				printf(PRINT_FORMAT_BODY2_LINE_STR, root -> lex, line_num, tokName, root -> value.val_int, nonterminals[root -> parent -> sym.NT]
+						, isleaf, s, root->rule_num);
+				}
+				else if(root -> tag == T && root -> sym.T == 53) {
+					printf(PRINT_FORMAT_BODY3_LINE_STR, root -> lex, line_num, tokName, root -> value.val_float, nonterminals[root -> parent -> sym.NT]
+							, isleaf, s, root->rule_num);
+				}
+				else if(root -> tag == NT && root -> sym.NT == 0) {
+					printf(PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", "[ROOT]"
+							, isleaf, s, root->rule_num);	
+				}
+				else {
+					printf(PRINT_FORMAT_BODY1_LINE_STR, root -> lex, line_num, tokName, "----", nonterminals[root -> parent -> sym.NT]
+							, isleaf, s, root->rule_num);	
+				}
+			}
+
+			// if(root -> tag == T)
+			// 	printf("%s %d\n", terminals[root -> sym.T], root -> id);
+			// else 
+			// 	printf("%s %d\n", nonterminals[root -> sym.NT], root -> id);
+		}
+		i++;
+		t = t -> next;
+	}
+}
+
+void printParseTree(Tree PT) {
+
+	// FILE * fp = fopen(outfile, "w");
+
+	printf(PRINT_FORMAT_HEADER, "Lexeme", "Lineno", "tokenName", "valIfNumber", "parentNodeSymbol", "IsLeafNode(y/n)", "nodeSymbol", "RuleNum");
+
+	inorder(PT);
+	// fclose(fp);
+}
+
+
 void parserInit(char * filename) {
 	num_rules = 0;
+	syntacticallyCorrect = 1;
 	int i;
 	for(i = 0; i < 100; i++) {
 		first[i] = 0;

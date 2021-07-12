@@ -1,3 +1,9 @@
+/*  GROUP 48:
+    PUNEET ANAND    2016B4A70487P
+    MAYANK JASORIA  2016B1A70703P
+    SHUBHAM TIWARI  2016B4A70935P
+    VIBHAV OSWAL    2016B4A70594P */
+	
 #ifndef _STACK
 #define _STACK
 
@@ -67,12 +73,6 @@ int numElementsInStack(Stack stack);
  */
 boolean isStackEmpty(Stack stack);
 
-/**
- * Prints the contents of stack from top to bottom
- * 
- * @param st            The stack whose values are to be printed
- * @param printElement  Function specifying how to print each 
- */
 void printStack(Stack st, void (*printElement)(void* data));
 
 #endif

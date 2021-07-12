@@ -1,0 +1,27 @@
+<<module callmemaybe>>
+takes input[arr: array[2..10] of integer];
+returns [b:integer];
+start
+	declare i: integer;
+	b := 0;
+	for (i in 2..10)
+	start
+		b := b + arr[i];
+	end
+end
+
+<<<driver program>>>
+start
+	declare arr: array[2..10] of integer;
+	declare i: integer;
+	i := 2;
+	get_value(arr);
+	while(i > 1 AND i < 11)
+	start
+		declare sum: integer;
+		[sum] := use module callmemaybe with parameters arr;
+		print(i);
+		i := i + 1;
+		print(sum);
+	end
+end
