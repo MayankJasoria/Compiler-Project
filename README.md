@@ -150,7 +150,7 @@ ERPLAG supports the following features:
 		use module printReal with parameters pi;
 		```
 
-A detailed language specification can be found [here](/Grammar%20and%20Specs/Language%20specifications.pdf).
+A detailed language specification can be found [here](https://github.com/MayankJasoria/Compiler-Project/wiki).
 
 ## Contributing
 This project is no longer under active development. Any issues opened on this repository are likely to be ignored. However, well worked out pull requests are entertained. 
